@@ -10,12 +10,14 @@ import ru.iqsolution.tkoonline.data.models.ResponseAuth
 
 interface ServerApi {
 
+    @Headers("Accept: application/json")
     @FormUrlEncoded
     @POST("auth")
     suspend fun login(@Field("login") login: String, @Field("password") password: String, @Field("block_code") blockCode: Int?): ResponseAuth
 
-    @GET("container-sites/")
-    suspend fun getContainers(@Header("Authorization") token: String, @Path("login") login: String): ResponseAuth
+    @Headers("Accept: application/json")
+    @GET("container-sites/{date}")
+    suspend fun getContainers(@Header("Authorization") token: String, @Path("date") date: String): ResponseAuth
 
 
 
