@@ -9,4 +9,5 @@ object Versions {
     const val anko = "0.10.8"
     const val room = "2.2.0-beta01"
     const val lifecycle = "2.1.0"
+    const val retrofit = "2.6.0"
 }

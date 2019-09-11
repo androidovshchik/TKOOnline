@@ -1,0 +1,33 @@
+@file:Suppress("unused")
+
+package ru.iqsolution.tkoonline.data.remote
+
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.http.*
+import ru.iqsolution.tkoonline.data.models.ResponseAuth
+
+interface ServerApi {
+
+    @FormUrlEncoded
+    @POST("auth")
+    suspend fun login(@Field("login") login: String, @Field("password") password: String, @Field("block_code") blockCode: Int?): ResponseAuth
+
+    @GET("container-sites/")
+    suspend fun getContainers(@Header("Authorization") token: String, @Path("login") login: String): ResponseAuth
+
+
+
+    /container-sites/
+    { date }
+    @GET("backgrounds/backgrounds.json")
+    fun jsonBackgrounds(): Call<List<String>>
+
+    @POST("api/payment.php")
+    fun processPayment(@Header("Authorization") token: String, @Body body: MyPayment): Call<ResponsePayment>
+
+    @Multipart
+    @POST("api/picture.php")
+    fun processPicture(@Header("Authorization") token: String, @Part image: MultipartBody.Part): Call<ResponseBody>
+}
