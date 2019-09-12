@@ -1,23 +1,24 @@
 package ru.iqsolution.tkoonline.data.models
 
 import com.google.gson.annotations.SerializedName
+import org.joda.time.LocalTime
 
-class Datum {
+class ContainerData {
 
     @SerializedName("kp_id")
-    var kpId: Int? = null
+    var kpId = 0
 
     @SerializedName("linked_kp_id")
-    var linkedKpId: Any? = null
+    var linkedKpId: Int? = null
 
     @SerializedName("address")
-    var address: String? = null
+    lateinit var address: String
 
     @SerializedName("latitude")
-    var latitude: Float? = null
+    var latitude = 0.0
 
     @SerializedName("longitude")
-    var longitude: Float? = null
+    var longitude = 0.0
 
     @SerializedName("bal_keeper")
     var balKeeper: String? = null
@@ -32,23 +33,20 @@ class Datum {
     var regOperatorPhone: String? = null
 
     @SerializedName("container_type")
-    var containerType: String? = null
+    lateinit var containerType: String
 
     @SerializedName("container_type_volume")
-    var containerTypeVolume: Int? = null
+    var containerTypeVolume = 0f
 
     @SerializedName("container_count")
-    var containerCount: Int? = null
+    var containerCount = 0
 
     @SerializedName("time_limit_from")
-    var timeLimitFrom: String? = null
+    lateinit var timeLimitFrom: LocalTime
 
     @SerializedName("time_limit_to")
-    var timeLimitTo: String? = null
+    lateinit var timeLimitTo: LocalTime
 
     @SerializedName("status")
-    var status: Int? = null
-
-    @SerializedName("linksed_kp_id")
-    var linksedKpId: Int? = null
+    var status = 0
 }
