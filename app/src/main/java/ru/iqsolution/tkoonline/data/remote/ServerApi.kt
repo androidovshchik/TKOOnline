@@ -6,8 +6,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
-import ru.iqsolution.tkoonline.data.models.ResponseAuth
-import ru.iqsolution.tkoonline.data.models.ResponseContainers
+import ru.iqsolution.tkoonline.data.models.*
 
 interface ServerApi {
 
@@ -22,8 +21,11 @@ interface ServerApi {
 
     @Headers("Accept: application/json")
     @GET("photo-types")
-    suspend fun getPhotoTypes(): ResponseContainers
+    suspend fun getPhotoTypes(): ResponseTypes
 
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("container-sites/{kp_id}/events")
+    suspend fun sendEvent(@Header("Authorization") token: String, @Path("kp_id") kpId: Int, @Body body: RequestEvent): ResponseEvent
 
 
     @GET("backgrounds/backgrounds.json")
