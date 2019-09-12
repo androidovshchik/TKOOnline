@@ -4,14 +4,13 @@ package ru.iqsolution.tkoonline.data.remote
 
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.http.*
 import ru.iqsolution.tkoonline.data.models.*
 
 interface ServerApi {
 
-    @Headers("Accept: application/json")
     @FormUrlEncoded
+    @Headers("Accept: application/json")
     @POST("auth")
     suspend fun login(@Field("login") login: String, @Field("password") password: String, @Field("block_code") blockCode: Int?): ResponseAuth
 
@@ -23,18 +22,15 @@ interface ServerApi {
     @GET("photo-types")
     suspend fun getPhotoTypes(): ResponseTypes
 
-    @Headers("Content-Type: application/json", "Accept: application/json")
+    @Headers("Accept: application/json")
     @POST("container-sites/{kp_id}/events")
     suspend fun sendEvent(@Header("Authorization") token: String, @Path("kp_id") kpId: Int, @Body body: RequestEvent): ResponseEvent
 
-
-    @GET("backgrounds/backgrounds.json")
-    fun jsonBackgrounds(): Call<List<String>>
-
-    @POST("api/payment.php")
-    fun processPayment(@Header("Authorization") token: String, @Body body: MyPayment): Call<ResponsePayment>
-
     @Multipart
-    @POST("api/picture.php")
-    fun processPicture(@Header("Authorization") token: String, @Part image: MultipartBody.Part): Call<ResponseBody>
+    @POST("container-sites/{kp_id}/photos")
+    suspend fun sendPhoto(
+        @Header("Authorization") token: String, @Path("kp_id") kpId: Int, @Part("time") time: ResponseBody, @Part(
+            "type"
+        ) type: ResponseBody, @Part photo: MultipartBody.Part
+    ): ResponseBody
 }
