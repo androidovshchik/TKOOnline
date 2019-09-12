@@ -82,7 +82,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:lineSpacingExtra="3sp"
-                android:background="@drawable/button_problem"
+                android:background="@drawable/button_gray"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
 
@@ -98,7 +98,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:lineSpacingExtra="3sp"
-                android:background="@drawable/button_problem"
+                android:background="@drawable/button_gray"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
 
@@ -114,7 +114,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:lineSpacingExtra="3sp"
-                android:background="@drawable/button_problem"
+                android:background="@drawable/button_gray"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
 
@@ -130,7 +130,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:lineSpacingExtra="3sp"
-                android:background="@drawable/button_problem"
+                android:background="@drawable/button_gray"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
 
@@ -146,7 +146,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:lineSpacingExtra="3sp"
-                android:background="@drawable/button_problem"
+                android:background="@drawable/button_gray"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
 
@@ -162,7 +162,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:lineSpacingExtra="3sp"
-                android:background="@drawable/button_problem"
+                android:background="@drawable/button_gray"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
 
