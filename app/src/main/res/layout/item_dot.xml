@@ -31,7 +31,7 @@
         android:textColor="@color/colorTextGrayDark"
         android:lineSpacingExtra="3sp"
         fontPath="fonts/Roboto-Regular.ttf"
-        tools:text="с 07:00\nдо 23:00"/>
+        tools:text="с   07:00\nдо 23:00"/>
 
     <FrameLayout
         android:layout_width="30dp"

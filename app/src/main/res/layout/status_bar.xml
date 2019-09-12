@@ -95,7 +95,7 @@
         android:layout_alignStart="@+id/status_battery"
         android:layout_centerVertical="true"
         android:textSize="9sp"
-        android:textColor="#4D4A5B"
+        android:textColor="@color/colorTextGrayDark"
         android:lineSpacingExtra="2sp"
         fontPath="fonts/Roboto-Regular.ttf"
         tools:text="23%"/>
