@@ -18,6 +18,7 @@
         layout="@layout/status_bar"/>
 
     <RelativeLayout
+        android:id="@+id/camera_brightness"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -25,16 +26,34 @@
         android:gravity="center_vertical">
 
         <ImageView
+            android:id="@+id/camera_rect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:adjustViewBounds="true"
             android:src="@drawable/ic_brightness_frame"/>
 
-        <ImageView
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_brightness_sun"/>
+            android:layout_toEndOf="@+id/camera_rect"
+            android:layout_marginStart="6dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_brightness_slider_bar"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_brightness_sun"/>
+
+        </FrameLayout>
 
     </RelativeLayout>
 
