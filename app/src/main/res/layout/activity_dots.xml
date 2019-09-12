@@ -6,45 +6,63 @@
     android:layout_height="match_parent"
     tools:ignore="MissingPrefix">
 
+    <include
+        layout="@layout/status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_height"
+        android:elevation="30dp"/>
+
+    <ImageView
+        android:id="@+id/dots_map"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="@dimen/status_bar_height"
+        android:adjustViewBounds="true"
+        android:elevation="20dp"
+        tools:scaleType="centerCrop"
+        tools:src="@mipmap/ic_launcher"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/dots_button"
+        android:layout_below="@+id/dots_map"
+        android:layout_above="@+id/dots_buttons"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_dot"/>
 
     <LinearLayout
-        android:id="@+id/dots_button"
+        android:id="@+id/dots_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:orientation="horizontal">
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:elevation="8dp">
 
         <Button
             android:id="@+id/photo_delete"
             android:layout_width="0dp"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="5dp"
             android:textAllCaps="false"
-            android:text="Удалить"
+            android:text="Завершить\nмаршрут"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:lineSpacingExtra="3sp"
-            android:background="@drawable/button_red"
+            android:background="@drawable/button_green"
             android:foreground="?android:attr/selectableItemBackground"
             fontPath="fonts/Roboto-Medium.ttf"/>
 
         <Button
             android:id="@+id/photo_retake"
             android:layout_width="0dp"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="5dp"
             android:textAllCaps="false"
-            android:text="Переснять"
+            android:text="Фото вне\nсправочника"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:lineSpacingExtra="3sp"
