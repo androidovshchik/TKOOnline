@@ -27,6 +27,7 @@
         android:ellipsize="marquee"
         android:textSize="16sp"
         android:textColor="@android:color/white"
+        android:lineSpacingExtra="3sp"
         fontPath="fonts/Roboto-Medium.ttf"
         tools:text="г. Тула Марфинский район Просп. Победы 6"/>
 

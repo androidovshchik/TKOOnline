@@ -19,20 +19,51 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
                 android:paddingStart="45dp"
-                android:paddingEnd="45dp"/>
+                android:paddingEnd="45dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="3sp"
+                    tools:text="ID: 1 234 567 890"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorTextGray"
+                    android:lineSpacingExtra="3sp"
+                    tools:text="с 07:00 до 23:00"/>
+
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="1dp"
+                android:background="#CFCFCF"/>
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Тип проблемы"/>
+                android:layout_height="58dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginBottom="13dp"
+                android:gravity="center"
+                android:text="Тип проблемы"
+                android:textSize="18sp"
+                android:textColor="@color/colorTextGray"
+                android:lineSpacingExtra="3sp"
+                tools:textStyle="bold"
+                fontPath="fonts/Roboto-Bold.ttf"/>
 
             <Button
                 android:id="@+id/problem_road"
@@ -45,6 +76,7 @@
                 android:text="Нет проезда"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
+                android:lineSpacingExtra="3sp"
                 android:background="@drawable/button_problem"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
@@ -60,6 +92,7 @@
                 android:text="Мусор не соответствует договору"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
+                android:lineSpacingExtra="3sp"
                 android:background="@drawable/button_problem"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
@@ -75,6 +108,7 @@
                 android:text="Пустой бак"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
+                android:lineSpacingExtra="3sp"
                 android:background="@drawable/button_problem"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
@@ -90,6 +124,7 @@
                 android:text="Контейнер повреждён"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
+                android:lineSpacingExtra="3sp"
                 android:background="@drawable/button_problem"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
@@ -105,6 +140,7 @@
                 android:text="Площадка требует уборки"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
+                android:lineSpacingExtra="3sp"
                 android:background="@drawable/button_problem"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
@@ -120,6 +156,7 @@
                 android:text="Прочее"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
+                android:lineSpacingExtra="3sp"
                 android:background="@drawable/button_problem"
                 android:foreground="?android:attr/selectableItemBackground"
                 fontPath="fonts/Roboto-Medium.ttf"/>
