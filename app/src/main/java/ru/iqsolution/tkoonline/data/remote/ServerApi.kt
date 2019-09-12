@@ -7,6 +7,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 import ru.iqsolution.tkoonline.data.models.ResponseAuth
+import ru.iqsolution.tkoonline.data.models.ResponseContainers
 
 interface ServerApi {
 
@@ -17,12 +18,14 @@ interface ServerApi {
 
     @Headers("Accept: application/json")
     @GET("container-sites/{date}")
-    suspend fun getContainers(@Header("Authorization") token: String, @Path("date") date: String): ResponseAuth
+    suspend fun getContainers(@Header("Authorization") token: String, @Path("date") date: String): ResponseContainers
+
+    @Headers("Accept: application/json")
+    @GET("photo-types")
+    suspend fun getPhotoTypes(): ResponseContainers
 
 
 
-    /container-sites/
-    { date }
     @GET("backgrounds/backgrounds.json")
     fun jsonBackgrounds(): Call<List<String>>
 
