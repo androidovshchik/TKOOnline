@@ -3,30 +3,82 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:ignore="MissingPrefix">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <include
+        layout="@layout/toolbar"/>
 
     <Button
+        android:id="@+id/problem_road"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="53dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textAllCaps="false"
+        android:text="Нет проезда"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
+        fontPath="fonts/Roboto-Medium.ttf"/>
 
     <Button
+        android:id="@+id/problem_contract"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="53dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textAllCaps="false"
+        android:text="Мусор не соответствует договору"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
+        fontPath="fonts/Roboto-Medium.ttf"/>
 
     <Button
+        android:id="@+id/problem_empty"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="53dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textAllCaps="false"
+        android:text="Пустой бак"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
+        fontPath="fonts/Roboto-Medium.ttf"/>
 
     <Button
+        android:id="@+id/problem_damaged"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="53dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textAllCaps="false"
+        android:text="Контейнер повреждён"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
+        fontPath="fonts/Roboto-Medium.ttf"/>
 
     <Button
+        android:id="@+id/problem_dirty"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="53dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textAllCaps="false"
+        android:text="Площадка требует уборки"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
+        fontPath="fonts/Roboto-Medium.ttf"/>
+
+    <Button
+        android:id="@+id/problem_other"
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textAllCaps="false"
+        android:text="Прочее"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
+        fontPath="fonts/Roboto-Medium.ttf"/>
 
 </LinearLayout>
