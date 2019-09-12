@@ -7,6 +7,9 @@
     tools:ignore="MissingPrefix">
 
     <include
+        layout="@layout/status_bar"/>
+
+    <include
         layout="@layout/toolbar"/>
 
     <ScrollView
@@ -29,6 +32,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/problem_id"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="4"
@@ -37,6 +41,7 @@
                     tools:text="ID: 1 234 567 890"/>
 
                 <TextView
+                    android:id="@+id/problem_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"

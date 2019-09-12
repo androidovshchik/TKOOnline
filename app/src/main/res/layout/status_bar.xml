@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="25dp"
+    android:background="@color/colorPrimaryDark"
+    tools:ignore="MissingPrefix">
+
+    <TextView
+        android:id="@+id/status_a"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        android:lineSpacingExtra="2sp"
+        fontPath="fonts/Roboto-Medium.ttf"
+        tools:text="А 111 АА 197"/>
+
+    <TextView
+        android:id="@+id/status_datetime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="17sp"
+        android:textColor="@android:color/white"
+        android:lineSpacingExtra="3sp"
+        fontPath="fonts/Roboto-Regular.ttf"
+        tools:text="21.04.2019"/>
+
+    <ImageView
+        android:id="@+id/status_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/status_connection"
+        android:adjustViewBounds="true"
+        tools:src="@drawable/ic_gps_fixed_green"/>
+
+    <ImageView
+        android:id="@+id/status_connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/status_uploads"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="9dp"
+        android:adjustViewBounds="true"
+        tools:src="@drawable/ic_swap_vert_green"/>
+
+    <ImageView
+        android:id="@+id/status_uploads"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/status_battery"
+        android:adjustViewBounds="true"
+        tools:src="@drawable/ic_cloud_upload_green"/>
+
+    <ImageView
+        android:id="@+id/status_battery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="5dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:adjustViewBounds="true"
+        tools:src="@drawable/ic_battery_charging"/>
+
+</RelativeLayout>
