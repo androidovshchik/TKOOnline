@@ -9,76 +9,123 @@
     <include
         layout="@layout/toolbar"/>
 
-    <Button
-        android:id="@+id/problem_road"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textAllCaps="false"
-        android:text="Нет проезда"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        fontPath="fonts/Roboto-Medium.ttf"/>
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <Button
-        android:id="@+id/problem_contract"
-        android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textAllCaps="false"
-        android:text="Мусор не соответствует договору"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        fontPath="fonts/Roboto-Medium.ttf"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/problem_empty"
-        android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textAllCaps="false"
-        android:text="Пустой бак"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        fontPath="fonts/Roboto-Medium.ttf"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="45dp"
+                android:paddingEnd="45dp"/>
 
-    <Button
-        android:id="@+id/problem_damaged"
-        android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textAllCaps="false"
-        android:text="Контейнер повреждён"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        fontPath="fonts/Roboto-Medium.ttf"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-    <Button
-        android:id="@+id/problem_dirty"
-        android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textAllCaps="false"
-        android:text="Площадка требует уборки"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        fontPath="fonts/Roboto-Medium.ttf"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Тип проблемы"/>
 
-    <Button
-        android:id="@+id/problem_other"
-        android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textAllCaps="false"
-        android:text="Прочее"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        fontPath="fonts/Roboto-Medium.ttf"/>
+            <Button
+                android:id="@+id/problem_road"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="13dp"
+                android:textAllCaps="false"
+                android:text="Нет проезда"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:background="@drawable/button_problem"
+                android:foreground="?android:attr/selectableItemBackground"
+                fontPath="fonts/Roboto-Medium.ttf"/>
+
+            <Button
+                android:id="@+id/problem_contract"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="13dp"
+                android:textAllCaps="false"
+                android:text="Мусор не соответствует договору"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:background="@drawable/button_problem"
+                android:foreground="?android:attr/selectableItemBackground"
+                fontPath="fonts/Roboto-Medium.ttf"/>
+
+            <Button
+                android:id="@+id/problem_empty"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="13dp"
+                android:textAllCaps="false"
+                android:text="Пустой бак"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:background="@drawable/button_problem"
+                android:foreground="?android:attr/selectableItemBackground"
+                fontPath="fonts/Roboto-Medium.ttf"/>
+
+            <Button
+                android:id="@+id/problem_damaged"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="13dp"
+                android:textAllCaps="false"
+                android:text="Контейнер повреждён"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:background="@drawable/button_problem"
+                android:foreground="?android:attr/selectableItemBackground"
+                fontPath="fonts/Roboto-Medium.ttf"/>
+
+            <Button
+                android:id="@+id/problem_dirty"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="13dp"
+                android:textAllCaps="false"
+                android:text="Площадка требует уборки"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:background="@drawable/button_problem"
+                android:foreground="?android:attr/selectableItemBackground"
+                fontPath="fonts/Roboto-Medium.ttf"/>
+
+            <Button
+                android:id="@+id/problem_other"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:textAllCaps="false"
+                android:text="Прочее"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:background="@drawable/button_problem"
+                android:foreground="?android:attr/selectableItemBackground"
+                fontPath="fonts/Roboto-Medium.ttf"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
