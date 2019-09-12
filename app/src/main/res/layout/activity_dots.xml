@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="8dp"
         android:layout_above="@+id/dots_buttons"
-        android:background="@drawable/shadow"/>
+        android:background="@drawable/top_shadow"/>
 
     <LinearLayout
         android:id="@+id/dots_buttons"
