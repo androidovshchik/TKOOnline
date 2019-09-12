@@ -27,9 +27,14 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/status_bar_height"
             android:adjustViewBounds="true"
-            android:src="@drawable/ф"/>
+            android:src="@drawable/ic_brightness_frame"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_brightness_sun"/>
 
     </RelativeLayout>
 
