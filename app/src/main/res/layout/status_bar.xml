@@ -58,6 +58,24 @@
         android:adjustViewBounds="true"
         tools:src="@drawable/ic_cloud_upload_green"/>
 
+    <TextView
+        android:id="@+id/status_count"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_alignEnd="@+id/status_uploads"
+        android:layout_marginEnd="-2dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:textSize="9sp"
+        android:textColor="@android:color/white"
+        android:lineSpacingExtra="2sp"
+        android:background="@drawable/text_count"
+        android:visibility="gone"
+        fontPath="fonts/Roboto-Regular.ttf"
+        tools:visibility="visible"
+        tools:text="5"/>
+
     <ImageView
         android:id="@+id/status_battery"
         android:layout_width="wrap_content"
@@ -67,6 +85,19 @@
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:adjustViewBounds="true"
-        tools:src="@drawable/ic_battery_charging"/>
+        tools:src="@drawable/ic_battery_full"/>
+
+    <TextView
+        android:id="@+id/status_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_alignStart="@+id/status_battery"
+        android:layout_centerVertical="true"
+        android:textSize="9sp"
+        android:textColor="#4D4A5B"
+        android:lineSpacingExtra="2sp"
+        fontPath="fonts/Roboto-Regular.ttf"
+        tools:text="23%"/>
 
 </RelativeLayout>
