@@ -2,23 +2,25 @@ package ru.iqsolution.tkoonline.screens
 
 import kotlinx.coroutines.*
 import timber.log.Timber
+import java.lang.ref.WeakReference
 
+@Suppress("MemberVisibilityCanBePrivate")
 open class BasePresenter<V : IBaseView> : IBasePresenter<V>, CoroutineScope {
 
-    protected var view: V? = null
+    protected lateinit var viewRef: WeakReference<V>
 
     protected val baseJob = SupervisorJob()
 
     override val isAttached: Boolean
-        get() = view != null
+        get() = ::viewRef.isInitialized
 
     override fun attachView(view: V) {
-        this.view = view
+        viewRef = WeakReference(view)
     }
 
     override fun detachView() {
         baseJob.cancelChildren()
-        view = null
+        viewRef.clear()
     }
 
     override val coroutineContext = Dispatchers.Main + baseJob + CoroutineExceptionHandler { _, e ->

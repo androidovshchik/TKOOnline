@@ -7,19 +7,19 @@ package ru.iqsolution.tkoonline.screens
 import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import java.lang.ref.WeakReference
 
 private typealias Listener<T> = (position: Int, item: T, param: Any?) -> Unit
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 abstract class BaseAdapter<T> : RecyclerView.Adapter<BaseViewHolder<T>>() {
 
-    @Suppress("MemberVisibilityCanBePrivate")
     val items = arrayListOf<T>()
 
-    protected var listener: Listener<T>? = null
+    protected var listenerRef: WeakReference<Listener<T>>? = null
 
-    fun setAdapterListener(listener: Listener<T>?) {
-        this.listener = listener
+    fun setAdapterListener(listener: Listener<T>) {
+        listenerRef = WeakReference(listener)
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<T>, position: Int) {
