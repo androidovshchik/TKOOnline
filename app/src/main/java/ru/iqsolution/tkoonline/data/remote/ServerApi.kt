@@ -3,6 +3,7 @@
 package ru.iqsolution.tkoonline.data.remote
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.http.*
 import ru.iqsolution.tkoonline.data.models.*
@@ -29,7 +30,7 @@ interface ServerApi {
     @Multipart
     @POST("container-sites/{kp_id}/photos")
     suspend fun sendPhoto(
-        @Header("Authorization") token: String, @Path("kp_id") kpId: Int, @Part("time") time: ResponseBody,
-        @Part("type") type: ResponseBody, @Part photo: MultipartBody.Part
+        @Header("Authorization") token: String, @Path("kp_id") kpId: Int, @Part("time") time: RequestBody,
+        @Part("type") type: RequestBody, @Part photo: MultipartBody.Part
     ): ResponseBody
 }
