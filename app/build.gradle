@@ -40,15 +40,18 @@ dependencies {
     implementation "org.jetbrains.anko:anko-commons:${Versions.anko}"
     implementation "org.jetbrains.anko:anko-sdk23-listeners:${Versions.anko}"
     implementation 'androidx.recyclerview:recyclerview:1.1.0-beta04'
+    implementation 'com.google.android.gms:play-services-vision:18.0.0'
     implementation "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.2.0'
     implementation "org.kodein.di:kodein-di-generic-jvm:${Versions.kodein}"
     implementation "org.kodein.di:kodein-di-framework-android-core:${Versions.kodein}"
     implementation 'net.danlew:android.joda:2.10.2'
-    implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'io.github.inflationx:calligraphy3:3.1.1'
     implementation 'io.github.inflationx:viewpump:2.0.3'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    debugImplementation "com.readystatesoftware.chuck:library:${Versions.chuck}"
+    releaseImplementation "com.readystatesoftware.chuck:library-no-op:${Versions.chuck}"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

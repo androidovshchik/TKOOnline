@@ -1,19 +1,57 @@
 package ru.iqsolution.tkoonline
 
 import android.app.Application
+import com.google.gson.GsonBuilder
+import com.readystatesoftware.chuck.ChuckInterceptor
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.KodeinTrigger
+import org.kodein.di.generic.bind
+import org.kodein.di.generic.instance
+import org.kodein.di.generic.singleton
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import ru.iqsolution.tkoonline.data.remote.ServerApi
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 @Suppress("unused")
 class MainApplication : Application(), KodeinAware {
 
     override val kodein by Kodein.lazy {
 
+        bind<OkHttpClient>() with singleton {
+            OkHttpClient.Builder().apply {
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(HttpLoggingInterceptor { message ->
+                        Timber.tag("NETWORK")
+                            .d(message)
+                    }.apply {
+                        level = HttpLoggingInterceptor.Level.BASIC
+                    })
+                    addInterceptor(ChuckInterceptor(context).showNotification(false))
+                }
+            }.connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(0, TimeUnit.SECONDS)
+                .readTimeout(0, TimeUnit.SECONDS)
+                .build()
+        }
+
+        bind<ServerApi>() with singleton {
+            Retrofit.Builder()
+                .client(instance())
+                .baseUrl("https://msknt.iqsolution.ru/mobile/v1/")
+                .addConverterFactory(GsonConverterFactory.create(GsonBuilder()
+                    .setLenient()
+                    .create()))
+                .build()
+                .create(ServerApi::class.java)
+        }
     }
 
     override val kodeinTrigger = KodeinTrigger()
