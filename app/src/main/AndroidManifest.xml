@@ -27,6 +27,7 @@
             android:value="barcode"/>
         <activity
             android:name=".screens.login.LoginActivity"
+            android:windowSoftInputMode="stateHidden"
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -35,6 +36,7 @@
         </activity>
         <activity
             android:name=".screens.dots.DotsActivity"
+            android:windowSoftInputMode="stateHidden"
             android:screenOrientation="sensorPortrait">
         </activity>
     </application>
