@@ -13,6 +13,7 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.KodeinTrigger
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
+import org.kodein.di.generic.provider
 import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -25,16 +26,22 @@ class MainApplication : Application(), KodeinAware {
 
     override val kodein by Kodein.lazy {
 
-        bind<OkHttpClient>() with singleton {
+        bind<OkHttpClient>() with provider {
             OkHttpClient.Builder().apply {
                 if (BuildConfig.DEBUG) {
-                    addInterceptor(HttpLoggingInterceptor { message ->
-                        Timber.tag("NETWORK")
-                            .d(message)
-                    }.apply {
-                        level = HttpLoggingInterceptor.Level.BASIC
+                    addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
+
+                        override fun log(message: String) {
+                            Timber.tag("NETWORK")
+                                .d(message)
+                        }
+                    }).apply {
+                        level = HttpLoggingInterceptor.Level.BODY
                     })
-                    addInterceptor(ChuckInterceptor(context).showNotification(false))
+                    addInterceptor(
+                        ChuckInterceptor(applicationContext)
+                            .showNotification(false)
+                    )
                 }
             }.connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(0, TimeUnit.SECONDS)

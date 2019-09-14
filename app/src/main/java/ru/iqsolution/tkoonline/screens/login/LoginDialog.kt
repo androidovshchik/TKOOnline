@@ -1,12 +1,12 @@
 package ru.iqsolution.tkoonline.screens.login
 
+import android.app.Activity
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.Window
 import ru.iqsolution.tkoonline.R
 
-class LoginDialog(context: Context) : Dialog(context) {
+class LoginDialog(activity: Activity) : Dialog(activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
