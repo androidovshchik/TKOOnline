@@ -2,9 +2,6 @@
 <resources>
     <dimen name="status_bar_height">25dp</dimen>
     <dimen name="toolbar_height">50dp</dimen>
-
-    <dimen name="barcode_width">250dp</dimen>
-    <dimen name="barcode_max_height">250dp</dimen>
-    <!-- = (barcode_width|barcode_max_height) + 18dp + 18dp-->
-    <dimen name="barcode_container_size">286dp</dimen>
+    <!-- 250dp + 18dp + 18dp-->
+    <dimen name="barcode_size">286dp</dimen>
 </resources>

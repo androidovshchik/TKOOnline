@@ -96,8 +96,8 @@
             android:src="@drawable/ic_selector"/>
 
         <RelativeLayout
-            android:layout_width="286dp"
-            android:layout_height="@dimen/barcode_container_size"
+            android:layout_width="@dimen/barcode_size"
+            android:layout_height="@dimen/barcode_size"
             android:layout_marginBottom="52dp"
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
@@ -106,19 +106,18 @@
             <fragment
                 android:id="@+id/barcode_fragment"
                 android:name="ru.iqsolution.tkoonline.screens.login.BarcodeFragment"
-                android:layout_width="@dimen/barcode_width"
-                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_marginStart="18dp"
-                android:layout_marginEnd="18dp"
-                tools:layout_height="@dimen/barcode_max_height"/>
+                android:layout_marginEnd="18dp"/>
 
             <View
                 android:id="@+id/barcode_line"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="#56B50D"
-                android:layout_centerVertical="true"
                 android:visibility="invisible"
+                tools:layout_centerVertical="true"
                 tools:visibility="visible"/>
 
         </RelativeLayout>
