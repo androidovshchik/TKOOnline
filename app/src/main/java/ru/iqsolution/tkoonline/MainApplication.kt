@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline
 
 import android.app.Application
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
@@ -16,6 +17,7 @@ import org.kodein.di.generic.provider
 import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -44,15 +46,24 @@ class MainApplication : Application(), KodeinAware {
                 .build()
         }
 
+        bind<Gson>() with provider {
+            GsonBuilder()
+                .setLenient()
+                .registerTypeAdapter()
+                .create()
+        }
+
         bind<ServerApi>() with singleton {
             Retrofit.Builder()
                 .client(instance())
                 .baseUrl(BuildConfig.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(GsonBuilder()
-                    .setLenient()
-                    .create()))
+                .addConverterFactory(GsonConverterFactory.create(instance()))
                 .build()
                 .create(ServerApi::class.java)
+        }
+
+        bind<Preferences>() with provider {
+            Preferences(applicationContext)
         }
     }
 

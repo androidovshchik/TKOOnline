@@ -12,5 +12,7 @@ interface LoginContract {
     interface ContractView : IBaseView {
 
         fun onQrCode(value: String)
+
+        fun onAuthorized()
     }
 }

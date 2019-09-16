@@ -52,6 +52,7 @@ dependencies {
     implementation "org.kodein.di:kodein-di-generic-jvm:${Versions.kodein}"
     implementation "org.kodein.di:kodein-di-framework-android-core:${Versions.kodein}"
     implementation "com.yandex.android:mapkit:${Versions.mapkit}"
+    implementation 'com.chibatching.kotpref:kotpref:2.9.1'
     implementation 'net.danlew:android.joda:2.10.2'
     implementation 'io.github.inflationx:calligraphy3:3.1.1'
     implementation 'io.github.inflationx:viewpump:2.0.3'

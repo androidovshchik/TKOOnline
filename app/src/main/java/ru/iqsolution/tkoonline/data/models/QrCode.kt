@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 class QrCode {
 
     @SerializedName("car_id")
-    var carId = 0
+    var carId: Int? = null
 
     @SerializedName("pass")
     lateinit var pass: String

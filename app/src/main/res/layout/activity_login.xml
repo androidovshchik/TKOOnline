@@ -115,10 +115,8 @@
                 android:id="@+id/barcode_line"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="#56B50D"
-                android:visibility="invisible"
-                tools:layout_centerVertical="true"
-                tools:visibility="visible"/>
+                android:layout_centerVertical="true"
+                android:background="#56B50D"/>
 
         </RelativeLayout>
 

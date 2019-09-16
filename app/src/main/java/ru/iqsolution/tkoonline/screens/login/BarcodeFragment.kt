@@ -100,7 +100,7 @@ class BarcodeFragment : BaseFragment() {
                 cameraView.apply {
                     cameraSource.start(holder)
                     if (maxSize > 0) {
-                        // NOTICE here is meant the portrait orientation
+                        // NOTICE here is supported only the portrait orientation
                         val size = cameraSource.previewSize
                         layoutParams = FrameLayout.LayoutParams(maxSize * size.height / size.width, maxSize).apply {
                             gravity = Gravity.CENTER

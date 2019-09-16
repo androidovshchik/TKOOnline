@@ -26,6 +26,10 @@ class LoginActivity : BaseActivity(), LoginContract.ContractView {
         presenter.login(value)
     }
 
+    override fun onAuthorized() {
+
+    }
+
     override fun onDestroy() {
         loginDialog.dismiss()
         super.onDestroy()
