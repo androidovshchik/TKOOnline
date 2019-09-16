@@ -3,7 +3,7 @@ package ru.iqsolution.tkoonline.data.models
 import com.google.gson.annotations.SerializedName
 import org.joda.time.LocalTime
 
-class ContainerData {
+class ContainerInfo {
 
     @SerializedName("kp_id")
     var kpId = 0

@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 class ResponseTypes {
 
     @SerializedName("data")
-    lateinit var data: List<PhotoType>
+    lateinit var data: List<PhotoItem>
 }
