@@ -15,9 +15,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.MediaScannerConnection
 import android.os.SystemClock
 import androidx.core.content.PermissionChecker.PermissionResult
+import org.jetbrains.anko.alarmManager
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startService
 
@@ -54,29 +54,9 @@ fun Context.pendingReceiverFor(intent: Intent): PendingIntent =
 
 inline fun <reified T : BroadcastReceiver> Context.createAlarm(interval: Int) {
     cancelAlarm<T>()
-    when {
-        isMarshmallowPlus() -> alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + interval, pendingReceiverFor<T>()
-        )
-        isKitkatPlus() -> alarmManager.setExact(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + interval, pendingReceiverFor<T>()
-        )
-        else -> alarmManager.set(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + interval, pendingReceiverFor<T>()
-        )
-    }
+    alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + interval, pendingReceiverFor<T>())
 }
 
 inline fun <reified T : BroadcastReceiver> Context.cancelAlarm() {
     alarmManager.cancel(pendingReceiverFor<T>())
-}
-
-fun Context.scanFile(path: String) {
-    sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).apply {
-        data = path.toFileUri()
-    })
-    MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
 }
