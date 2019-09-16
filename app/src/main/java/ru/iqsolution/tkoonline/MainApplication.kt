@@ -27,10 +27,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.data.local.AppDatabase
 import ru.iqsolution.tkoonline.data.local.Preferences
-import ru.iqsolution.tkoonline.data.remote.LocalDateDeserializer
-import ru.iqsolution.tkoonline.data.remote.LocalDateTimeDeserializer
-import ru.iqsolution.tkoonline.data.remote.LocalTimeDeserializer
-import ru.iqsolution.tkoonline.data.remote.ServerApi
+import ru.iqsolution.tkoonline.data.remote.*
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -62,8 +59,11 @@ class MainApplication : Application(), KodeinAware {
         bind<Gson>() with provider {
             GsonBuilder()
                 .setLenient()
+                .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
                 .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+                .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
                 .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
                 .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
                 .create()
         }
