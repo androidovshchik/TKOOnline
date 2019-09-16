@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.login
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
@@ -26,6 +25,8 @@ class BarcodeFragment : BaseFragment() {
 
     private lateinit var cameraView: SurfaceView
 
+    private var isActive = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         //val width = appContext?.resources?.getDimensionPixelSize(R.dimen.barcode_width) ?: 1024
         barcodeDetector = BarcodeDetector.Builder(appContext)
@@ -48,38 +49,11 @@ class BarcodeFragment : BaseFragment() {
         cameraSource = CameraSource.Builder(appContext, barcodeDetector)
             .setAutoFocusEnabled(true)
             .build()
-        UI {
-
-        }.view
-        cameraView = SurfaceView(appContext).apply {
-            layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
-            holder.addCallback(object : SurfaceHolder.Callback {
-
-                @SuppressLint("MissingPermission")
-                override fun surfaceCreated(holder: SurfaceHolder) {
-                    try {
-                        if (appContext?.areGranted(*DANGER_PERMISSIONS) == true) {
-                            cameraSource.start(holder)
-                            cameraSource.previewSize
-                        }
-                    } catch (e: IOException) {
-                        Timber.e(e)
-                    }
-                }
-
-                override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
-
-                override fun surfaceDestroyed(holder: SurfaceHolder) {
-                    cameraSource.stop()
-                }
-            })
-        }
         return UI {
             cameraView = surfaceView {
                 layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
                 holder.addCallback(object : SurfaceHolder.Callback {
 
-                    @SuppressLint("MissingPermission")
                     override fun surfaceCreated(holder: SurfaceHolder) {
                         startPreview()
                     }
@@ -100,21 +74,32 @@ class BarcodeFragment : BaseFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        isActive = true
+    }
+
+    @SuppressLint("MissingPermission")
     private fun startPreview() {
         try {
-            if (appContext?.areGranted(Manifest.permission.CAMERA) == true) {
+            if (appContext?.areGranted(*DANGER_PERMISSIONS) == true) {
                 cameraSource.start(cameraView.holder)
-                cameraSource.previewSize
+                //cameraSource.previewSize
             }
         } catch (e: IOException) {
             Timber.e(e)
         }
     }
 
+    override fun onStop() {
+        isActive = false
+        super.onStop()
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSIONS) {
-            if (appContext?.areGranted(Manifest.permission.CAMERA) == true) {
+            if (isActive) {
                 startPreview()
             }
         }
