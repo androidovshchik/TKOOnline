@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -24,6 +25,7 @@ import org.kodein.di.generic.provider
 import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.iqsolution.tkoonline.data.local.AppDatabase
 import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.data.remote.LocalDateDeserializer
 import ru.iqsolution.tkoonline.data.remote.LocalDateTimeDeserializer
@@ -73,6 +75,12 @@ class MainApplication : Application(), KodeinAware {
                 .addConverterFactory(GsonConverterFactory.create(instance()))
                 .build()
                 .create(ServerApi::class.java)
+        }
+
+        bind<AppDatabase>() with singleton {
+            Room.databaseBuilder(applicationContext, AppDatabase::class.java, "app.db")
+                .fallbackToDestructiveMigration()
+                .build()
         }
 
         bind<Preferences>() with provider {

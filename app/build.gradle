@@ -66,6 +66,10 @@ dependencies {
     implementation "org.jetbrains.anko:anko-sdk23:${Versions.anko}"
     implementation "org.jetbrains.anko:anko-sdk23-listeners:${Versions.anko}"
     implementation 'androidx.recyclerview:recyclerview:1.1.0-beta04'
+    implementation "androidx.lifecycle:lifecycle-livedata:${Versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}"
+    implementation "androidx.room:room-runtime:${Versions.room}"
+    kapt "androidx.room:room-compiler:${Versions.room}"
     implementation 'com.google.android.gms:play-services-vision:18.0.0'
     implementation "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
