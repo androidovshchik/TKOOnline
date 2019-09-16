@@ -14,9 +14,17 @@ class Preferences(context: Context) : KotprefModel(context) {
     var accessToken by nullableStringPref(null, "accessToken")
 
     /**
-     * In milliseconds and UTC
+     * UTC. In milliseconds
      */
     var expiresToken by longPref(0L, "expiresToken")
 
     var allowPhotoRefKp by booleanPref(false, "allowPhotoRefKp")
+
+    /**
+     * In milliseconds
+     */
+    var serverTimeDifference by longPref(0L, "serverTimeDifference")
+
+    val isLoggedIn: Boolean
+        get() =
 }

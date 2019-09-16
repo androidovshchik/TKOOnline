@@ -1,6 +1,8 @@
 package ru.iqsolution.tkoonline
 
+import android.app.Activity
 import android.app.Application
+import android.os.Bundle
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -8,6 +10,8 @@ import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.joda.time.LocalDateTime
+import org.joda.time.LocalTime
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.KodeinTrigger
@@ -18,7 +22,10 @@ import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.data.local.Preferences
+import ru.iqsolution.tkoonline.data.remote.LocalDateTimeDeserializer
+import ru.iqsolution.tkoonline.data.remote.LocalTimeDeserializer
 import ru.iqsolution.tkoonline.data.remote.ServerApi
+import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -49,7 +56,8 @@ class MainApplication : Application(), KodeinAware {
         bind<Gson>() with provider {
             GsonBuilder()
                 .setLenient()
-                .registerTypeAdapter()
+                .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
+                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
                 .create()
         }
 
@@ -66,6 +74,8 @@ class MainApplication : Application(), KodeinAware {
             Preferences(applicationContext)
         }
     }
+
+    val preferences: Preferences by instance()
 
     override val kodeinTrigger = KodeinTrigger()
 
@@ -87,5 +97,34 @@ class MainApplication : Application(), KodeinAware {
                 )
                 .build()
         )
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+
+            override fun onActivityPaused(activity: Activity) {}
+
+            override fun onActivityResumed(activity: Activity) {}
+
+            override fun onActivityStarted(activity: Activity) {
+                when (activity) {
+                    is LoginActivity -> {
+                        if (preferences.isLoggedIn) {
+                            activity.finish()
+                        }
+                    }
+                    else -> {
+                        if (!preferences.isLoggedIn) {
+                            activity.finish()
+                        }
+                    }
+                }
+            }
+
+            override fun onActivityDestroyed(activity: Activity) {}
+
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {}
+
+            override fun onActivityStopped(activity: Activity) {}
+
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+        })
     }
 }
