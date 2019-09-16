@@ -14,12 +14,16 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://msknt2.iqsolution.ru/mobile/v1/\"")
+        }
         release {
             minifyEnabled true
             useProguard true
             shrinkResources true
             signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "BASE_URL", "\"https://msknt.iqsolution.ru/mobile/v1/\"")
         }
     }
     applicationVariants.all { variant ->
@@ -52,8 +56,6 @@ dependencies {
     implementation 'io.github.inflationx:calligraphy3:3.1.1'
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    debugImplementation "com.readystatesoftware.chuck:library:${Versions.chuck}"
-    releaseImplementation "com.readystatesoftware.chuck:library-no-op:${Versions.chuck}"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

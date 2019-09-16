@@ -2,7 +2,6 @@ package ru.iqsolution.tkoonline
 
 import android.app.Application
 import com.google.gson.GsonBuilder
-import com.readystatesoftware.chuck.ChuckInterceptor
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
@@ -38,10 +37,6 @@ class MainApplication : Application(), KodeinAware {
                     }).apply {
                         level = HttpLoggingInterceptor.Level.BODY
                     })
-                    addInterceptor(
-                        ChuckInterceptor(applicationContext)
-                            .showNotification(false)
-                    )
                 }
             }.connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(0, TimeUnit.SECONDS)
@@ -52,7 +47,7 @@ class MainApplication : Application(), KodeinAware {
         bind<ServerApi>() with singleton {
             Retrofit.Builder()
                 .client(instance())
-                .baseUrl("https://msknt.iqsolution.ru/mobile/v1/")
+                .baseUrl(BuildConfig.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(GsonBuilder()
                     .setLenient()
                     .create()))
