@@ -19,7 +19,7 @@ enum class PhotoType(
 
     companion object {
 
-        private val map = values().associateBy(PhotoType::id)
+        val map = values().associateBy(PhotoType::id)
 
         fun fromId(value: Int?): PhotoType? = value?.let { map[value] }
     }

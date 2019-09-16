@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'AndResGuard'
 
 android {
     //noinspection GradleCompatible
@@ -37,6 +38,26 @@ android {
     }
 }
 
+// ./gradlew resguard[BuildType | Flavor]
+andResGuard {
+    mappingFile = null
+    use7zip = true
+    useSign = true
+    // it will keep the origin path of your resources when it's true
+    keepRoot = false
+    whiteList = []
+    compressFilePattern = [
+            "*.png",
+            "*.jpg",
+            "*.jpeg",
+            "*.gif"
+    ]
+    sevenzip {
+        artifact = "com.tencent.mm:SevenZip:${Versions.andresguard}"
+        //path = "/usr/local/bin/7za"
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
@@ -49,6 +70,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.2.0'
+    implementation 'com.rabbitmq:amqp-client:5.7.3'
     implementation "org.kodein.di:kodein-di-generic-jvm:${Versions.kodein}"
     implementation "org.kodein.di:kodein-di-framework-android-core:${Versions.kodein}"
     implementation "com.yandex.android:mapkit:${Versions.mapkit}"

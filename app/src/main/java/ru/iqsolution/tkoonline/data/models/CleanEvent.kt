@@ -3,7 +3,7 @@ package ru.iqsolution.tkoonline.data.models
 import com.google.gson.annotations.SerializedName
 import org.joda.time.LocalDateTime
 
-class CleaningEvent {
+class CleanEvent {
 
     @SerializedName("time")
     lateinit var time: LocalDateTime
