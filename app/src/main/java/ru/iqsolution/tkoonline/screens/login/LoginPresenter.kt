@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.screens.login
 import android.app.Application
 import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
@@ -20,7 +21,18 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Con
 
     val preferences: Preferences by instance()
 
+    private var loginJson: String? = null
+
+    override fun clearAuthorization() {
+        preferences.accessToken = null
+    }
+
     override fun login(data: String) {
+        if (data == loginJson) {
+            return
+        }
+        loginJson = data
+        baseJob.cancelChildren()
         launch {
             val qrCode = gson.fromJson(data, QrCode::class.java)
             val responseAuth = serverApi.login(qrCode.regNum, qrCode.pass, qrCode.carId)

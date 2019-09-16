@@ -6,6 +6,8 @@ interface LoginContract {
 
     interface ContractPresenter {
 
+        fun clearAuthorization()
+
         fun login(data: String)
     }
 

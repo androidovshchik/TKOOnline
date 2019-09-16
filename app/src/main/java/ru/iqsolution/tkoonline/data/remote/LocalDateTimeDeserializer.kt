@@ -15,6 +15,6 @@ class LocalDateTimeDeserializer : JsonDeserializer<LocalDateTime> {
 
     companion object {
 
-        val PATTERN_DATETIME = DateTimeFormat.forPattern("yyyyMMdd’T’HHmmssZ")
+        val PATTERN_DATETIME = DateTimeFormat.forPattern("yyyyMMdd'T'HHmmssZ")
     }
 }

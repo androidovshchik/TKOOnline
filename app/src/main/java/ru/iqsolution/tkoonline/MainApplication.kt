@@ -10,6 +10,8 @@ import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.intentFor
 import org.joda.time.LocalDate
 import org.joda.time.LocalDateTime
 import org.joda.time.LocalTime
@@ -108,14 +110,12 @@ class MainApplication : Application(), KodeinAware {
 
             override fun onActivityStarted(activity: Activity) {
                 when (activity) {
-                    is LoginActivity -> {
-                        if (preferences.isLoggedIn) {
-                            activity.finish()
-                        }
-                    }
-                    else -> {
+                    !is LoginActivity -> {
                         if (!preferences.isLoggedIn) {
-                            activity.finish()
+                            startActivity(
+                                intentFor<LoginActivity>()
+                                    .clearTask()
+                            )
                         }
                     }
                 }

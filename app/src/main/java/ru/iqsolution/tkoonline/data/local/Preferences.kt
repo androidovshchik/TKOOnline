@@ -25,6 +25,19 @@ class Preferences(context: Context) : KotprefModel(context) {
      */
     var serverTimeDifference by longPref(0L, "serverTimeDifference")
 
+    var mainServerAddress by stringPref("msk-mob.iqsolution.ru:7778", "mainServerAddress")
+
+    var mainTelemetryAddress by stringPref("msk-mob.iqsolution.ru:7779", "mainServerAddress")
+
+    var enableLock by booleanPref(false, "enableLock")
+
+    var lockPassword by nullableStringPref(null, "lockPassword")
+
+    /**
+     * For password to enter lock settings. UTC. In milliseconds
+     */
+    var nextAttemptsAfter by longPref(0L, "nextAttemptsAfter")
+
     val isLoggedIn: Boolean
-        get() =
+        get() = accessToken != null
 }

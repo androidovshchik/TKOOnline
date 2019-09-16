@@ -21,6 +21,7 @@ class LoginActivity : BaseActivity(), LoginContract.ContractView {
             it.attachView(this)
         }
         loginDialog = LoginDialog(this)
+        presenter.clearAuthorization()
         login_menu.onClick {
             loginDialog.show()
         }
