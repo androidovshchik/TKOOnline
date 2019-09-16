@@ -10,6 +10,7 @@ import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.joda.time.LocalDate
 import org.joda.time.LocalDateTime
 import org.joda.time.LocalTime
 import org.kodein.di.Kodein
@@ -22,6 +23,7 @@ import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.data.local.Preferences
+import ru.iqsolution.tkoonline.data.remote.LocalDateDeserializer
 import ru.iqsolution.tkoonline.data.remote.LocalDateTimeDeserializer
 import ru.iqsolution.tkoonline.data.remote.LocalTimeDeserializer
 import ru.iqsolution.tkoonline.data.remote.ServerApi
@@ -56,6 +58,7 @@ class MainApplication : Application(), KodeinAware {
         bind<Gson>() with provider {
             GsonBuilder()
                 .setLenient()
+                .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
                 .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
                 .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
                 .create()
