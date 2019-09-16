@@ -1,10 +1,19 @@
 package ru.iqsolution.tkoonline.screens.login
 
+import android.app.Application
+import kotlinx.coroutines.launch
+import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.BasePresenter
 
-class LoginPresenter : BasePresenter<LoginContract.ContractView>(), LoginContract.ContractPresenter {
+class LoginPresenter(application: Application) : BasePresenter<LoginContract.ContractView>(application),
+    LoginContract.ContractPresenter {
 
-    override fun getArticles() {
+    val serverApi: ServerApi by instance()
 
+    override fun login(data: String) {
+        launch {
+            serverApi.login()
+        }
     }
 }

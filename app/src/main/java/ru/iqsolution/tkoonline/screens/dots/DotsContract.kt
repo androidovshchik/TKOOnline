@@ -4,13 +4,7 @@ import ru.iqsolution.tkoonline.screens.IBaseView
 
 interface DotsContract {
 
-    interface ContractPresenter {
+    interface ContractPresenter
 
-        fun getArticles()
-    }
-
-    interface ContractView : IBaseView {
-
-        fun onArtilesReady()
-    }
+    interface ContractView : IBaseView
 }

@@ -10,8 +10,4 @@ class DotsActivity : BaseActivity(), DotsContract.ContractView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dots)
     }
-
-    override fun onArtilesReady() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 }

@@ -6,7 +6,7 @@ interface LoginContract {
 
     interface ContractPresenter {
 
-        fun getArticles()
+        fun login(data: String)
     }
 
     interface ContractView : IBaseView {

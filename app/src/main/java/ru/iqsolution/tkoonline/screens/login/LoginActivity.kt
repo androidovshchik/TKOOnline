@@ -8,19 +8,22 @@ import ru.iqsolution.tkoonline.screens.BaseActivity
 
 class LoginActivity : BaseActivity(), LoginContract.ContractView {
 
+    private lateinit var presenter: LoginPresenter
+
     private lateinit var loginDialog: LoginDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        presenter = LoginPresenter(application)
         loginDialog = LoginDialog(this)
         login_menu.onClick {
             loginDialog.show()
         }
     }
 
-    override fun onArtilesReady() {
-
+    override fun onQrCode(value: String) {
+        presenter.login(value)
     }
 
     override fun onDestroy() {
