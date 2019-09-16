@@ -8,8 +8,12 @@ import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
-import org.jetbrains.anko.*
+import org.jetbrains.anko.UI
+import org.jetbrains.anko.frameLayout
+import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.surfaceView
 import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
+import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.screens.BaseFragment
 import timber.log.Timber
@@ -26,7 +30,12 @@ class BarcodeFragment : BaseFragment() {
 
     private var isActive = false
 
+    private var maxSize = 0
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        appContext?.resources?.getDimensionPixelSize(R.dimen.barcode_max_size)?.let {
+            maxSize = it
+        }
         barcodeDetector = BarcodeDetector.Builder(appContext)
             .setBarcodeFormats(Barcode.ALL_FORMATS)
             .build()
@@ -35,8 +44,12 @@ class BarcodeFragment : BaseFragment() {
             override fun receiveDetections(detections: Detector.Detections<Barcode>) {
                 detections.apply {
                     if (detectorIsOperational()) {
-                        detectedItems.forEach { _, barcode: Barcode ->
-                            Timber.d(barcode.rawValue)
+                        if (detectedItems.size() > 0) {
+                            activity?.let {
+                                if (it is LoginActivity) {
+                                    it.onQrCode(detectedItems.valueAt(0).rawValue ?: "")
+                                }
+                            }
                         }
                     }
                 }
@@ -64,9 +77,7 @@ class BarcodeFragment : BaseFragment() {
                             cameraSource.stop()
                         }
                     })
-                }.lparams {
-                    gravity = Gravity.CENTER
-                }
+                }.lparams()
             }
         }.view
     }
@@ -87,22 +98,15 @@ class BarcodeFragment : BaseFragment() {
         try {
             if (appContext?.areGranted(*DANGER_PERMISSIONS) == true) {
                 cameraView.apply {
-                    Timber.d("height " + height)
-                    if (height <= 0) {
-                        cameraSource.start()
-                    } else {
-                        Timber.d("start(cameraView.holder)")
-                        cameraSource.start(holder)
-                    }
-                    Timber.d("previewSize " + cameraSource.previewSize)
-                    //holder.setFixedSize(500, 281)
-                    //
-                    layoutParams = FrameLayout.LayoutParams(dip(250) * 3 / 4, dip(250)).apply {
-                        gravity = Gravity.CENTER
+                    cameraSource.start(holder)
+                    if (maxSize > 0) {
+                        // NOTICE here is meant the portrait orientation
+                        val size = cameraSource.previewSize
+                        layoutParams = FrameLayout.LayoutParams(maxSize * size.height / size.width, maxSize).apply {
+                            gravity = Gravity.CENTER
+                        }
                     }
                 }
-                //1280x720
-                //cameraSource.previewSize
             }
         } catch (e: IOException) {
             Timber.e(e)

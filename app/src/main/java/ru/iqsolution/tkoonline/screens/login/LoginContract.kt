@@ -11,6 +11,6 @@ interface LoginContract {
 
     interface ContractView : IBaseView {
 
-        fun onArtilesReady()
+        fun onQrCode(value: String)
     }
 }

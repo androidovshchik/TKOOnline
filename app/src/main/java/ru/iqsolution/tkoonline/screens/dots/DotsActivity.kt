@@ -3,9 +3,8 @@ package ru.iqsolution.tkoonline.screens.dots
 import android.os.Bundle
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.BaseActivity
-import ru.iqsolution.tkoonline.screens.login.LoginContract
 
-class DotsActivity : BaseActivity(), LoginContract.ContractView {
+class DotsActivity : BaseActivity(), DotsContract.ContractView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -13,7 +12,6 @@ class DotsActivity : BaseActivity(), LoginContract.ContractView {
     }
 
     override fun onArtilesReady() {
-
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
 }
