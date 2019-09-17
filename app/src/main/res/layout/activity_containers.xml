@@ -10,7 +10,7 @@
         layout="@layout/status_bar"
         android:elevation="4dp"/>
 
-    <ImageView
+    <com.yandex.mapkit.mapview.MapView
         android:id="@+id/dots_map"
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -27,7 +27,7 @@
         android:layout_below="@+id/dots_map"
         android:layout_above="@+id/dots_buttons"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_dot"/>
+        tools:listitem="@layout/item_container"/>
 
     <View
         android:layout_width="match_parent"

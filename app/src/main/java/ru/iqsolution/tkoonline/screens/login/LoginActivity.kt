@@ -27,28 +27,36 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         }
         presenter.clearAuthorization()
         login_menu.onClick {
-            fragmentManager.beginTransaction()
-                .apply {
-                    if (hasPrompted) {
-                        show(settingsDialog)
-                    } else {
-                        show(passwordDialog)
-                    }
+            fragmentManager.beginTransaction().apply {
+                fragmentManager.findFragmentByTag(settingsDialog.javaClass.simpleName)?.let {
+                    remove(it)
                 }
-                .commit()
+                fragmentManager.findFragmentByTag(passwordDialog.javaClass.simpleName)?.let {
+                    remove(it)
+                }
+                addToBackStack(null)
+                if (hasPrompted) {
+                    settingsDialog.show(this, settingsDialog.javaClass.simpleName)
+                } else {
+                    passwordDialog.show(this, passwordDialog.javaClass.simpleName)
+                }
+            }
         }
     }
 
     override fun onRemovePrompt(success: Boolean) {
         hasPrompted = success
-        fragmentManager.beginTransaction()
-            .remove(passwordDialog)
-            .apply {
-                if (success) {
-                    show(settingsDialog)
-                }
+        fragmentManager.beginTransaction().apply {
+            fragmentManager.findFragmentByTag(passwordDialog.javaClass.simpleName)?.let {
+                remove(it)
             }
-            .commit()
+            if (success) {
+                addToBackStack(null)
+                settingsDialog.show(this, settingsDialog.javaClass.simpleName)
+            } else {
+                commit()
+            }
+        }
     }
 
     override fun onQrCode(value: String) {

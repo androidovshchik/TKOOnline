@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.dialog_password.*
+import org.jetbrains.anko.inputMethodManager
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.data.local.AESCBCPKCS7
@@ -44,9 +45,9 @@ class PasswordDialog : DialogFragment() {
                 when (password) {
                     null -> {
                         preferences.lockPassword = AESCBCPKCS7.encrypt(input)
-                        dismissPrompted()
+                        onPrompted()
                     }
-                    input -> dismissPrompted()
+                    input -> onPrompted()
                     else -> {
                         dialog_password.error = if (System.currentTimeMillis() - blockTime >= WAIT_TIME) {
                             attemptsCount++
@@ -69,11 +70,12 @@ class PasswordDialog : DialogFragment() {
             }
         }
         dialog_close.onClick {
+            context.inputMethodManager.hideSoftInputFromWindow(getView()?.windowToken, 0)
             dismiss()
         }
     }
 
-    private fun dismissPrompted() {
+    private fun onPrompted() {
         activity?.let {
             if (it is LoginActivity) {
                 it.onRemovePrompt(true)
