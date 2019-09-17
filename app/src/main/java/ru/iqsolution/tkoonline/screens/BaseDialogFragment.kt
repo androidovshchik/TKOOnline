@@ -2,18 +2,20 @@
 
 package ru.iqsolution.tkoonline.screens
 
-import android.app.Fragment
-import android.os.Bundle
+import android.app.DialogFragment
 import kotlinx.coroutines.*
+import org.jetbrains.anko.inputMethodManager
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
-open class BaseFragment : Fragment(), CoroutineScope {
+open class BaseDialogFragment : DialogFragment(), CoroutineScope {
 
     protected val baseJob = SupervisorJob()
 
-    protected val args: Bundle
-        get() = arguments ?: Bundle()
+    override fun dismiss() {
+        context?.inputMethodManager?.hideSoftInputFromWindow(view?.windowToken, 0)
+        super.dismiss()
+    }
 
     override fun onDestroyView() {
         baseJob.cancelChildren()
