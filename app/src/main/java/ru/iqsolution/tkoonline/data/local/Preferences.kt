@@ -27,7 +27,7 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     var mainServerAddress by stringPref("msk-mob.iqsolution.ru:7778", "mainServerAddress")
 
-    var mainTelemetryAddress by stringPref("msk-mob.iqsolution.ru:7779", "mainServerAddress")
+    var mainTelemetryAddress by stringPref("msk-mob.iqsolution.ru:7779", "mainTelemetryAddress")
 
     var enableLock by booleanPref(false, "enableLock")
 

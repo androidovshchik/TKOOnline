@@ -34,12 +34,12 @@ class PasswordDialog : DialogFragment() {
         dialog_password.apply {
             setOnlyNumbers()
             setMaxLength(4)
-            if (System.currentTimeMillis() - blockTime < WAIT_TIME) {
-                error = "Попробуйте еще раз позже"
-            }
+        }
+        if (System.currentTimeMillis() - blockTime < WAIT_TIME) {
+            dialog_error.text = "Попробуйте еще раз позже"
         }
         dialog_accept.onClick {
-            dialog_password.error = null
+            dialog_error.text = ""
             val input = dialog_password.text.toString()
             if (input.length == 4) {
                 when (password) {
@@ -49,7 +49,7 @@ class PasswordDialog : DialogFragment() {
                     }
                     input -> onPrompted()
                     else -> {
-                        dialog_password.error = if (System.currentTimeMillis() - blockTime >= WAIT_TIME) {
+                        dialog_error.text = if (System.currentTimeMillis() - blockTime >= WAIT_TIME) {
                             attemptsCount++
                             if (attemptsCount > MAX_ATTEMPTS) {
                                 attemptsCount = 0
@@ -66,13 +66,18 @@ class PasswordDialog : DialogFragment() {
                     }
                 }
             } else {
-                dialog_password.error = "Короткий пароль"
+                dialog_error.text = "Короткий пароль"
             }
         }
         dialog_close.onClick {
             context.inputMethodManager.hideSoftInputFromWindow(getView()?.windowToken, 0)
             dismiss()
         }
+    }
+
+    override fun dismiss() {
+        context.inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+        super.dismiss()
     }
 
     private fun onPrompted() {
