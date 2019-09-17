@@ -59,6 +59,7 @@ class MainApplication : Application(), KodeinAware {
         bind<Gson>() with provider {
             GsonBuilder()
                 .setLenient()
+                .setExclusionStrategies(SerializedNameStrategy())
                 .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
                 .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
                 .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())

@@ -11,10 +11,6 @@ interface EventDao {
     fun insert(vararg items: CleanEvent)
 
     @Transaction
-    @Update
-    fun update(vararg items: CleanEvent)
-
-    @Transaction
     @Delete
     fun delete(vararg items: CleanEvent)
 
