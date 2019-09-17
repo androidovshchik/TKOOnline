@@ -34,7 +34,7 @@ class PasswordDialog : DialogFragment() {
             setOnlyNumbers()
             setMaxLength(4)
             if (System.currentTimeMillis() - blockTime < WAIT_TIME) {
-                error = "Повторите попытку позже"
+                error = "Попробуйте еще раз позже"
             }
         }
         dialog_accept.onClick {
@@ -48,21 +48,19 @@ class PasswordDialog : DialogFragment() {
                     }
                     input -> dismissPrompted()
                     else -> {
-                        dialog_password?.apply {
-                            if (System.currentTimeMillis() - blockTime < WAIT_TIME) {
-                                error = "Повторите попытку позже"
+                        dialog_password.error = if (System.currentTimeMillis() - blockTime >= WAIT_TIME) {
+                            attemptsCount++
+                            if (attemptsCount > MAX_ATTEMPTS) {
+                                attemptsCount = 0
+                                blockTime = System.currentTimeMillis()
+                                preferences.nextAttemptsAfter = blockTime
+                                "Попробуйте еще раз позже"
                             } else {
-                                attemptsCount++
-                                error = if (attemptsCount > MAX_ATTEMPTS) {
-                                    attemptsCount = 0
-                                    blockTime = System.currentTimeMillis()
-                                    preferences.nextAttemptsAfter = blockTime
-                                    "Повторите попытку позже"
-                                } else {
-                                    val count = MAX_ATTEMPTS - attemptsCount
-                                    resources.getQuantityString(R.plurals.attempts, count, count)
-                                }
+                                val count = MAX_ATTEMPTS - attemptsCount
+                                resources.getQuantityString(R.plurals.attempts, count, count)
                             }
+                        } else {
+                            "Попробуйте еще раз позже"
                         }
                     }
                 }

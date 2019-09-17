@@ -86,11 +86,11 @@
         android:layout_marginStart="3dp"
         android:layout_marginBottom="10dp"
         android:layout_below="@+id/dialog_telemetry_server"
-        android:text="Разблокировать"
         android:textSize="14sp"
         android:textColor="@color/colorAccent"
         android:lineSpacingExtra="2sp"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:background="?android:attr/selectableItemBackground"
+        tools:text="Разблокировать"/>
 
     <Button
         android:id="@+id/dialog_save"

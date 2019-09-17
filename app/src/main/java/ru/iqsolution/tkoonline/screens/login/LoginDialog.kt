@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_login.*
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -16,37 +15,36 @@ import ru.iqsolution.tkoonline.data.local.Preferences
 
 class LoginDialog : DialogFragment() {
 
+    private var isEnabledLock = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_login, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setContentView(R.layout.dialog_login)
-        val preferences = Preferences(context)
-        dialog_main_server.setText(preferences.mainServerAddress)
-        dialog_telemetry_server.setText(preferences.mainTelemetryAddress)
+        val preferences = Preferences(context).apply {
+            dialog_main_server.setText(mainServerAddress)
+            dialog_telemetry_server.setText(mainTelemetryAddress)
+            setLock(enableLock)
+        }
         dialog_unlock.onClick {
-
+            setLock(!isEnabledLock)
         }
         dialog_save.onClick {
             preferences.bulk {
-                preferences.mainServerAddress = dialog_main_server.text.toString().trim()
-                preferences.mainServerAddress = dialog_main_server.text.toString().trim()
+                mainServerAddress = dialog_main_server.text.toString().trim()
+                mainTelemetryAddress = dialog_telemetry_server.text.toString().trim()
+                enableLock = isEnabledLock
             }
-            ownerActivity?.let {
-                if (it is LoginActivity) {
-                    it.
-                }
-            }
+            dismiss()
         }
         dialog_close.onClick {
-            hide()
+            dismiss()
         }
+    }
+
+    private fun setLock(enable: Boolean) {
+        isEnabledLock = enable
+        dialog_unlock.text = if (enable) "Разблокировать" else "Заблокировать"
     }
 }
