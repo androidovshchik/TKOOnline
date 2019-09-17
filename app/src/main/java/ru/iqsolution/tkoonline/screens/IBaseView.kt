@@ -1,3 +1,8 @@
 package ru.iqsolution.tkoonline.screens
 
-interface IBaseView
+interface IBaseView {
+
+    fun showLoading()
+
+    fun hideLoading()
+}

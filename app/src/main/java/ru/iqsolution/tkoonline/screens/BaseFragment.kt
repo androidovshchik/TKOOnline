@@ -14,4 +14,8 @@ open class BaseFragment : Fragment(), IBaseView {
 
     protected val args: Bundle
         get() = arguments ?: Bundle()
+
+    override fun showLoading() {}
+
+    override fun hideLoading() {}
 }

@@ -17,13 +17,15 @@ import ru.iqsolution.tkoonline.extensions.setOnlyNumbers
 
 class PasswordDialog : DialogFragment() {
 
+    private var attemptsCount = 0
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_password, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val preferences = Preferences(context)
-        val oldPassword = preferences.lockPassword?.let {
+        val password = preferences.lockPassword?.let {
             AESCBCPKCS7.decrypt(it)
         }
         dialog_password.apply {
@@ -34,18 +36,23 @@ class PasswordDialog : DialogFragment() {
             }
         }
         dialog_accept.onClick {
-            val newPassword = dialog_password.text.toString()
-            if (newPassword.length == 4) {
-                when (oldPassword) {
+            val input = dialog_password.text.toString()
+            if (input.length == 4) {
+                when (password) {
                     null -> {
-                        preferences.lockPassword = AESCBCPKCS7.encrypt(newPassword)
+                        preferences.lockPassword = AESCBCPKCS7.encrypt(input)
                         dismiss()
                     }
-                    newPassword -> {
+                    input -> {
 
                     }
                     else -> {
-                        dialog_password.error = "Неверный пароль"
+                        attemptsCount++
+                        if (attemptsCount >= 4) {
+                            preferences.nextAttemptsAfter =
+                        } else {
+                            dialog_password.error = "Неверный пароль"
+                        }
                     }
                 }
             } else {

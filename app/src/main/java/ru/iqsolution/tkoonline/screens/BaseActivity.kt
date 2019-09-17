@@ -9,8 +9,25 @@ import io.github.inflationx.viewpump.ViewPumpContextWrapper
 @SuppressLint("Registered")
 open class BaseActivity : Activity(), IBaseView {
 
+    private var waitDialog: WaitDialog? = null
+
     override fun attachBaseContext(context: Context) {
         super.attachBaseContext(ViewPumpContextWrapper.wrap(context))
+    }
+
+    override fun showLoading() {
+        if (waitDialog == null) {
+            waitDialog = WaitDialog(this)
+        }
+        waitDialog?.let {
+            if (!it.isShowing) {
+                it.show()
+            }
+        }
+    }
+
+    override fun hideLoading() {
+        waitDialog?.hide()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -20,5 +37,10 @@ open class BaseActivity : Activity(), IBaseView {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        waitDialog?.dismiss()
+        super.onDestroy()
     }
 }
