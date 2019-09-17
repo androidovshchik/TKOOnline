@@ -118,14 +118,12 @@ class MainApplication : Application(), KodeinAware {
             override fun onActivityResumed(activity: Activity) {}
 
             override fun onActivityStarted(activity: Activity) {
-                when (activity) {
-                    !is LoginActivity -> {
-                        if (!preferences.isLoggedIn) {
-                            startActivity(
-                                intentFor<LoginActivity>()
-                                    .clearTask()
-                            )
-                        }
+                if (activity !is LoginActivity) {
+                    if (!preferences.isLoggedIn) {
+                        startActivity(
+                            intentFor<LoginActivity>()
+                                .clearTask()
+                        )
                     }
                 }
             }
