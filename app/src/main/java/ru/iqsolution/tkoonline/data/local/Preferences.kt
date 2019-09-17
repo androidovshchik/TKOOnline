@@ -14,7 +14,7 @@ class Preferences(context: Context) : KotprefModel(context) {
     var accessToken by nullableStringPref(null, "accessToken")
 
     /**
-     * UTC. In milliseconds
+     * UTC (milliseconds)
      */
     var expiresToken by longPref(0L, "expiresToken")
 
@@ -34,7 +34,7 @@ class Preferences(context: Context) : KotprefModel(context) {
     var lockPassword by nullableStringPref(null, "lockPassword")
 
     /**
-     * For password to enter lock settings. Local time. In milliseconds
+     * For password to enter lock settings. Local time (milliseconds)
      */
     var nextAttemptsAfter by longPref(0L, "nextAttemptsAfter")
 

@@ -8,11 +8,16 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.BaseActivity
 import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
 
+@Suppress("DEPRECATION")
 class LoginActivity : BaseActivity(), LoginContract.View {
 
     private lateinit var presenter: LoginPresenter
 
-    private lateinit var loginDialog: LoginDialog
+    private val settingsDialog = SettingsDialog()
+
+    private val passwordDialog = PasswordDialog()
+
+    private var hasPrompted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,11 +25,30 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         presenter = LoginPresenter(application).also {
             it.attachView(this)
         }
-        loginDialog = LoginDialog(this)
         presenter.clearAuthorization()
         login_menu.onClick {
-            loginDialog.show()
+            fragmentManager.beginTransaction()
+                .apply {
+                    if (hasPrompted) {
+                        show(settingsDialog)
+                    } else {
+                        show(passwordDialog)
+                    }
+                }
+                .commit()
         }
+    }
+
+    override fun onRemovePrompt(success: Boolean) {
+        hasPrompted = success
+        fragmentManager.beginTransaction()
+            .remove(passwordDialog)
+            .apply {
+                if (success) {
+                    show(settingsDialog)
+                }
+            }
+            .commit()
     }
 
     override fun onQrCode(value: String) {
@@ -36,7 +60,8 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     }
 
     override fun onDestroy() {
-        loginDialog.dismiss()
+        settingsDialog.dismiss()
+        passwordDialog.dismiss()
         presenter.detachView()
         super.onDestroy()
     }

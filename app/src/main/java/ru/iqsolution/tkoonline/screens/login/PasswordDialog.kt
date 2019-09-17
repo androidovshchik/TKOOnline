@@ -76,10 +76,9 @@ class PasswordDialog : DialogFragment() {
     private fun dismissPrompted() {
         activity?.let {
             if (it is LoginActivity) {
-                it.hasPromptedPassword = true
+                it.onRemovePrompt(true)
             }
         }
-        dismiss()
     }
 
     companion object {

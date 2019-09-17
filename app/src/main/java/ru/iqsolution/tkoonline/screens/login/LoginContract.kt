@@ -13,6 +13,8 @@ interface LoginContract {
 
     interface View : IBaseView {
 
+        fun onRemovePrompt(success: Boolean)
+
         fun onQrCode(value: String)
 
         fun onAuthorized()

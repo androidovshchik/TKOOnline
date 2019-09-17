@@ -79,7 +79,7 @@ object AESCBCPKCS7 {
         0x31
     )
 
-    fun encrypt(data: String): String? {
+    fun encrypt(data: Any): String? {
         return try {
             val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
             cipher.init(
@@ -87,7 +87,7 @@ object AESCBCPKCS7 {
                 SecretKeySpec(KEY_BYTES, "AES"),
                 IvParameterSpec(IV_BYTES)
             )
-            Base64.encode(cipher.doFinal(data.toByteArray(Charsets.UTF_8)), Base64.NO_WRAP)
+            Base64.encode(cipher.doFinal(data.toString().toByteArray(Charsets.UTF_8)), Base64.NO_WRAP)
                 .toString(Charsets.UTF_8)
         } catch (e: Exception) {
             Timber.e(e)

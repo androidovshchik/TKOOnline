@@ -13,7 +13,7 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.data.local.Preferences
 
-class LoginDialog : DialogFragment() {
+class SettingsDialog : DialogFragment() {
 
     private var isEnabledLock = false
 
