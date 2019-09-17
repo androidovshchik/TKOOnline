@@ -1,16 +1,10 @@
 package ru.iqsolution.tkoonline.screens.containers
 
-import android.os.Bundle
-import com.yandex.mapkit.Animation
-import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.map.CameraPosition
-import com.yandex.mapkit.mapview.MapView
-import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.BaseActivity
 
 class ContainersActivity : BaseActivity(), ContainersContract.View {
 
-    private var mapView: MapView? = null
+    /*private var mapView: MapView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,5 +41,5 @@ class ContainersActivity : BaseActivity(), ContainersContract.View {
         super.onStart()
         MapKitFactory.getInstance().onStart()
         mapView!!.onStart()
-    }
+    }*/
 }

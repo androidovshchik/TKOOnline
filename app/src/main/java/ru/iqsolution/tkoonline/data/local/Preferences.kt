@@ -11,32 +11,32 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     override val kotprefName: String = "preferences"
 
-    var accessToken by nullableStringPref(null, "accessToken")
+    var accessToken by nullableStringPref(null, "0x00")
 
     /**
      * UTC (milliseconds)
      */
-    var expiresToken by longPref(0L, "expiresToken")
+    var expiresToken by longPref(0L, "0x01")
 
-    var allowPhotoRefKp by booleanPref(false, "allowPhotoRefKp")
+    var allowPhotoRefKp by booleanPref(false, "0x02")
 
     /**
      * In milliseconds
      */
-    var serverTimeDifference by longPref(0L, "serverTimeDifference")
+    var serverTimeDifference by longPref(0L, "0x03")
 
-    var mainServerAddress by stringPref("msk-mob.iqsolution.ru:7778", "mainServerAddress")
+    var mainServerAddress by stringPref("msk-mob.iqsolution.ru:7778", "0x04")
 
-    var mainTelemetryAddress by stringPref("msk-mob.iqsolution.ru:7779", "mainTelemetryAddress")
+    var mainTelemetryAddress by stringPref("msk-mob.iqsolution.ru:7779", "0x05")
 
-    var enableLock by booleanPref(false, "enableLock")
+    var enableLock by booleanPref(false, "0x06")
 
-    var lockPassword by nullableStringPref(null, "lockPassword")
+    var lockPassword by nullableStringPref(null, "0x07")
 
     /**
      * For password to enter lock settings. Local time (milliseconds)
      */
-    var nextAttemptsAfter by longPref(0L, "nextAttemptsAfter")
+    var nextAttemptsAfter by longPref(0L, "0x08")
 
     val isLoggedIn: Boolean
         get() = accessToken != null
