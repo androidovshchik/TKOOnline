@@ -8,7 +8,7 @@
     tools:ignore="MissingPrefix">
 
     <TextView
-        android:id="@+id/dialog_settings"
+        android:id="@+id/dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -16,7 +16,7 @@
         android:layout_marginStart="2dp"
         android:text="Настройки"
         android:textSize="20sp"
-        android:textColor="#de000000"
+        android:textColor="@color/colorTextBlack87"
         android:lineSpacingExtra="3sp"
         tools:textStyle="bold"
         fontPath="fonts/Roboto-Bold.ttf"/>
@@ -25,7 +25,7 @@
         android:id="@+id/dialog_caption1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/dialog_settings"
+        android:layout_below="@+id/dialog_title"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="2dp"
         android:text="Основной сервер:"
@@ -41,6 +41,13 @@
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="20dp"
         android:layout_below="@+id/dialog_caption1"
+        android:inputType="textUri"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        android:textSize="16sp"
+        android:textColor="@color/colorTextBlack87"
+        android:lineSpacingExtra="8sp"
         tools:text="msknt.iqsolution.ru:4567"/>
 
     <TextView
@@ -61,35 +68,51 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
         android:layout_below="@+id/dialog_caption2"
+        android:inputType="textUri"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        android:textSize="16sp"
+        android:textColor="@color/colorTextBlack87"
+        android:lineSpacingExtra="8sp"
         tools:text="msknt.iqsolution.ru:4568"/>
 
     <Button
         android:id="@+id/dialog_unlock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_alignParentEnd="true"
+        android:layout_marginStart="3dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/dialog_telemetry_server"
         android:text="Разблокировать"
+        android:textSize="14sp"
+        android:textColor="@color/colorAccent"
+        android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"/>
 
     <Button
         android:id="@+id/dialog_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/dialog_telemetry_server"
         android:layout_alignParentEnd="true"
         android:text="Сохранить"
+        android:textSize="14sp"
+        android:textColor="@color/colorAccent"
+        android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"/>
 
     <ImageButton
         android:id="@+id/dialog_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
+        android:padding="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_alignParentEnd="true"
         android:src="@drawable/ic_close"
         android:background="?android:attr/selectableItemBackground"/>

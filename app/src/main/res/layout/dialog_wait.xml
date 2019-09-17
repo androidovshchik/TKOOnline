@@ -20,7 +20,7 @@
         android:layout_marginStart="8dp"
         android:text="Пожалуйста, подождите..."
         android:textSize="20sp"
-        android:textColor="#de000000"
+        android:textColor="@color/colorTextBlack87"
         android:lineSpacingExtra="3sp"
         fontPath="fonts/Roboto-Medium.ttf"/>
 

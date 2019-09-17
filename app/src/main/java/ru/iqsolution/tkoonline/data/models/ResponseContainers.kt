@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 class ResponseContainers {
 
     @SerializedName("data")
-    lateinit var data: List<ContainerInfo>
+    lateinit var data: List<ContainerItem>
 }
