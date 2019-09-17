@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.dialog_password.*
-import org.jetbrains.anko.inputMethodManager
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.data.local.Preferences
@@ -31,14 +30,12 @@ class PasswordDialog : BaseDialogFragment() {
         }
         if (isBlocking(blockTime)) {
             disableInput()
-            dialog_error.text = "Попробуйте позже"
         }
         dialog_accept.onClick {
             dialog_error.text = ""
             val input = dialog_password.text.toString()
             if (isBlocking(blockTime)) {
                 disableInput()
-                dialog_error.text = "Попробуйте еще раз позже"
             } else if (checkPassword(input)) {
                 when (password) {
                     null -> {
@@ -48,23 +45,21 @@ class PasswordDialog : BaseDialogFragment() {
                     input -> onPrompted()
                     else -> {
                         attemptsCount++
-                        if (attemptsCount > MAX_ATTEMPTS) {
+                        if (attemptsCount < MAX_ATTEMPTS) {
+                            val count = MAX_ATTEMPTS - attemptsCount
+                            dialog_password.isEnabled = true
+                            dialog_error.text = resources.getQuantityString(R.plurals.attempts, count, count)
+                        } else {
                             attemptsCount = 0
                             blockTime = System.currentTimeMillis()
                             preferences.nextAttemptsAfter = blockTime
                             disableInput()
-                            dialog_error.text = "Попробуйте еще раз позже"
-                        } else {
-                            val count = MAX_ATTEMPTS - attemptsCount
-                            dialog_password.isEnabled = true
-                            dialog_error.text = resources.getQuantityString(R.plurals.attempts, count, count)
                         }
                     }
                 }
             }
         }
         dialog_close.onClick {
-            context.inputMethodManager.hideSoftInputFromWindow(getView()?.windowToken, 0)
             dismiss()
         }
     }
@@ -84,6 +79,7 @@ class PasswordDialog : BaseDialogFragment() {
             setText("")
             isEnabled = false
         }
+        dialog_error.text = "Попробуйте позже"
     }
 
     private fun onPrompted() {

@@ -33,10 +33,10 @@ class BarcodeFragment : BaseFragment() {
     private var maxSize = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        appContext?.resources?.getDimensionPixelSize(R.dimen.barcode_max_size)?.let {
+        context?.resources?.getDimensionPixelSize(R.dimen.barcode_max_size)?.let {
             maxSize = it
         }
-        barcodeDetector = BarcodeDetector.Builder(appContext)
+        barcodeDetector = BarcodeDetector.Builder(context)
             .setBarcodeFormats(Barcode.ALL_FORMATS)
             .build()
         barcodeDetector.setProcessor(object : Detector.Processor<Barcode> {
@@ -57,7 +57,7 @@ class BarcodeFragment : BaseFragment() {
 
             override fun release() {}
         })
-        cameraSource = CameraSource.Builder(appContext, barcodeDetector)
+        cameraSource = CameraSource.Builder(context, barcodeDetector)
             .setRequestedPreviewSize(640, 480) // 4:3
             .setAutoFocusEnabled(true)
             .build()
@@ -83,7 +83,7 @@ class BarcodeFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (appContext?.areGranted(*DANGER_PERMISSIONS) != true) {
+        if (context?.areGranted(*DANGER_PERMISSIONS) != true) {
             requestPermissions(DANGER_PERMISSIONS, REQUEST_PERMISSIONS)
         }
     }
@@ -96,7 +96,7 @@ class BarcodeFragment : BaseFragment() {
     @SuppressLint("MissingPermission")
     private fun startPreview() {
         try {
-            if (appContext?.areGranted(*DANGER_PERMISSIONS) == true) {
+            if (context?.areGranted(*DANGER_PERMISSIONS) == true) {
                 cameraView.apply {
                     cameraSource.start(holder)
                     if (maxSize > 0) {

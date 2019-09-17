@@ -4,7 +4,7 @@
         <item quantity="zero">Нет попыток</item>
         <item quantity="one">Осталось %1$d попытка</item>
         <item quantity="two">Осталось %1$d попытки</item>
-        <item quantity="few">Осталось %1$d попыток</item>
+        <item quantity="few">Осталось %1$d попытки</item>
         <item quantity="many">Осталось %1$d попыток</item>
         <item quantity="other">Осталось %1$d попыток</item>
     </plurals>
