@@ -34,7 +34,6 @@ class LoginActivity : BaseActivity(), LoginContract.View {
                 fragmentManager.findFragmentByTag(passwordDialog.javaClass.simpleName)?.let {
                     remove(it)
                 }
-                addToBackStack(null)
                 if (hasPrompted) {
                     settingsDialog.show(this, settingsDialog.javaClass.simpleName)
                 } else {
@@ -51,7 +50,6 @@ class LoginActivity : BaseActivity(), LoginContract.View {
                 remove(it)
             }
             if (success) {
-                addToBackStack(null)
                 settingsDialog.show(this, settingsDialog.javaClass.simpleName)
             } else {
                 commit()

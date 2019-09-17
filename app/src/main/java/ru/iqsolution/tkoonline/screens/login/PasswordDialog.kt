@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline.screens.login
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,9 @@ class PasswordDialog : BaseDialogFragment() {
         dialog_password.apply {
             setOnlyNumbers()
             setMaxLength(4)
+            if (password != null) {
+                inputType = inputType or InputType.TYPE_NUMBER_VARIATION_PASSWORD
+            }
         }
         if (isBlocking(blockTime)) {
             disableInput()
