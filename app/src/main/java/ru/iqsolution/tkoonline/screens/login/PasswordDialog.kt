@@ -14,6 +14,7 @@ import ru.iqsolution.tkoonline.data.local.AESCBCPKCS7
 import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.extensions.setMaxLength
 import ru.iqsolution.tkoonline.extensions.setOnlyNumbers
+import kotlin.math.absoluteValue
 
 class PasswordDialog : DialogFragment() {
 
@@ -28,11 +29,12 @@ class PasswordDialog : DialogFragment() {
         val password = preferences.lockPassword?.let {
             AESCBCPKCS7.decrypt(it)
         }
+        var blockTime = preferences.nextAttemptsAfter.absoluteValue
         dialog_password.apply {
             setOnlyNumbers()
             setMaxLength(4)
-            if (preferences.nextAttemptsAfter) {
-                dialog_password.error = ""
+            if (System.currentTimeMillis() - blockTime < WAIT_TIME) {
+                error = "Повторите попытку позже"
             }
         }
         dialog_accept.onClick {
@@ -40,27 +42,53 @@ class PasswordDialog : DialogFragment() {
             if (input.length == 4) {
                 when (password) {
                     null -> {
+                        dialog_password.error = null
                         preferences.lockPassword = AESCBCPKCS7.encrypt(input)
-                        dismiss()
+                        dismissPrompted()
                     }
                     input -> {
-
+                        dialog_password.error = null
+                        dismissPrompted()
                     }
                     else -> {
-                        attemptsCount++
-                        if (attemptsCount >= 4) {
-                            preferences.nextAttemptsAfter =
-                        } else {
-                            dialog_password.error = "Неверный пароль"
+                        dialog_password?.apply {
+                            if (System.currentTimeMillis() - blockTime < WAIT_TIME) {
+                                error = "Повторите попытку позже"
+                            } else {
+                                attemptsCount++
+                                if (attemptsCount >= 4) {
+                                    attemptsCount = 0
+                                    blockTime = System.currentTimeMillis()
+                                    preferences.nextAttemptsAfter = blockTime
+                                    error = "Повторите попытку позже"
+                                } else {
+                                    error =
+                                        resources.getQuantityString(R.plurals.attempts, attemptsCount, attemptsCount)
+                                }
+                            }
                         }
                     }
                 }
             } else {
-                dialog_password.error = "Требуется 4-х значный цифровой пароль"
+                dialog_password.error = "Короткий пароль"
             }
         }
         dialog_close.onClick {
             dismiss()
         }
+    }
+
+    private fun dismissPrompted() {
+        activity?.let {
+            if (it is LoginActivity) {
+                it.hasPromptedPassword = true
+            }
+        }
+        dismiss()
+    }
+
+    companion object {
+
+        private const val WAIT_TIME = 5 * 60 * 1000
     }
 }

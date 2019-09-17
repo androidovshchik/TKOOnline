@@ -34,7 +34,7 @@ class Preferences(context: Context) : KotprefModel(context) {
     var lockPassword by nullableStringPref(null, "lockPassword")
 
     /**
-     * For password to enter lock settings. UTC. In milliseconds
+     * For password to enter lock settings. Local time. In milliseconds
      */
     var nextAttemptsAfter by longPref(0L, "nextAttemptsAfter")
 
