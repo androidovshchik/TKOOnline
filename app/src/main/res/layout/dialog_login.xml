@@ -65,7 +65,7 @@
         tools:text="msknt.iqsolution.ru:4568"/>
 
     <Button
-        android:id="@+id/dialog_close"
+        android:id="@+id/dialog_unlock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -75,7 +75,7 @@
         android:background="?android:attr/selectableItemBackground"/>
 
     <Button
-        android:id="@+id/dialog_close"
+        android:id="@+id/dialog_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"

@@ -6,9 +6,9 @@ import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.BaseActivity
-import ru.iqsolution.tkoonline.screens.dots.DotsActivity
+import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
 
-class LoginActivity : BaseActivity(), LoginContract.ContractView {
+class LoginActivity : BaseActivity(), LoginContract.View {
 
     private lateinit var presenter: LoginPresenter
 
@@ -32,7 +32,7 @@ class LoginActivity : BaseActivity(), LoginContract.ContractView {
     }
 
     override fun onAuthorized() {
-        startActivity(intentFor<DotsActivity>())
+        startActivity(intentFor<ContainersActivity>())
     }
 
     override fun onDestroy() {

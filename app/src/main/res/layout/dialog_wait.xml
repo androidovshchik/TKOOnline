@@ -5,14 +5,13 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="10dp"
+    android:padding="16dp"
     tools:ignore="MissingPrefix">
 
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/colorPrimary"/>
+        android:indeterminate="true"/>
 
     <TextView
         android:id="@+id/dialog_title"

@@ -12,8 +12,8 @@ import ru.iqsolution.tkoonline.data.models.QrCode
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.BasePresenter
 
-class LoginPresenter(application: Application) : BasePresenter<LoginContract.ContractView>(application),
-    LoginContract.ContractPresenter {
+class LoginPresenter(application: Application) : BasePresenter<LoginContract.View>(application),
+    LoginContract.Presenter {
 
     val serverApi: ServerApi by instance()
 

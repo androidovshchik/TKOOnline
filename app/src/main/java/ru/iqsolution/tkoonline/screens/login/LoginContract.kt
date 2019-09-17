@@ -4,14 +4,14 @@ import ru.iqsolution.tkoonline.screens.IBaseView
 
 interface LoginContract {
 
-    interface ContractPresenter {
+    interface Presenter {
 
         fun clearAuthorization()
 
         fun login(data: String)
     }
 
-    interface ContractView : IBaseView {
+    interface View : IBaseView {
 
         fun onQrCode(value: String)
 
