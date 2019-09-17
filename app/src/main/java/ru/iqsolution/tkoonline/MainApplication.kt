@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import androidx.room.Room
+import com.facebook.stetho.Stetho
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -48,8 +50,9 @@ class MainApplication : Application(), KodeinAware {
                                 .d(message)
                         }
                     }).apply {
-                        level = HttpLoggingInterceptor.Level.BODY
+                        level = HttpLoggingInterceptor.Level.BASIC
                     })
+                    addNetworkInterceptor(StethoInterceptor())
                 }
             }.connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(0, TimeUnit.SECONDS)
@@ -108,6 +111,13 @@ class MainApplication : Application(), KodeinAware {
                 )
                 .build()
         )
+        if (BuildConfig.DEBUG) {
+            Stetho.initialize(
+                Stetho.newInitializerBuilder(applicationContext)
+                    .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(applicationContext))
+                    .build()
+            )
+        }
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
 
             override fun onActivityPaused(activity: Activity) {}

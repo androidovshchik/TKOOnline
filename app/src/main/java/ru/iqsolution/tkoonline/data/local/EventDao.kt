@@ -14,6 +14,6 @@ interface EventDao {
     @Delete
     fun delete(vararg items: CleanEvent)
 
-    @Query("SELECT * FROM Tasks LIMIT $QUERY_LIMIT OFFSET :offset")
-    fun getAllTasks(offset: Int): List<CleanEvent>
+    @Query("SELECT * FROM events ORDER BY id DESC")
+    fun getAllEvents(): List<CleanEvent>
 }

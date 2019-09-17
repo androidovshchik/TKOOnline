@@ -11,7 +11,7 @@ class CleanEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    var id = 0L
+    var id: Long? = null
 
     @ColumnInfo(name = "access_token")
     var accessToken: String? = null

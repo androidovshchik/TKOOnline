@@ -1,16 +1,59 @@
+@file:Suppress("DEPRECATION")
+
 package ru.iqsolution.tkoonline.screens.login
 
-import android.app.Activity
-import android.app.Dialog
+import android.app.DialogFragment
 import android.os.Bundle
-import android.view.Window
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import kotlinx.android.synthetic.main.dialog_password.*
+import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.data.local.AESCBCPKCS7
+import ru.iqsolution.tkoonline.data.local.Preferences
+import ru.iqsolution.tkoonline.extensions.setMaxLength
+import ru.iqsolution.tkoonline.extensions.setOnlyNumbers
 
-class PasswordDialog(activity: Activity) : Dialog(activity) {
+class PasswordDialog : DialogFragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setContentView(R.layout.dialog_password)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.dialog_password, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val preferences = Preferences(context)
+        val oldPassword = preferences.lockPassword?.let {
+            AESCBCPKCS7.decrypt(it)
+        }
+        dialog_password.apply {
+            setOnlyNumbers()
+            setMaxLength(4)
+            if (preferences.nextAttemptsAfter) {
+                dialog_password.error = ""
+            }
+        }
+        dialog_accept.onClick {
+            val newPassword = dialog_password.text.toString()
+            if (newPassword.length == 4) {
+                when (oldPassword) {
+                    null -> {
+                        preferences.lockPassword = AESCBCPKCS7.encrypt(newPassword)
+                        dismiss()
+                    }
+                    newPassword -> {
+
+                    }
+                    else -> {
+                        dialog_password.error = "Неверный пароль"
+                    }
+                }
+            } else {
+                dialog_password.error = "Требуется 4-х значный цифровой пароль"
+            }
+        }
+        dialog_close.onClick {
+            dismiss()
+        }
     }
 }

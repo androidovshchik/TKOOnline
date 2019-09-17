@@ -12,4 +12,5 @@ object Versions {
     const val retrofit = "2.6.0"
     const val mapkit = "3.4.0"
     const val andresguard = "1.2.17"
+    const val stetho = "1.5.1"
 }

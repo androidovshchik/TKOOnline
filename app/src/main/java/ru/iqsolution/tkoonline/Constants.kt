@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline
 
 import android.Manifest
 import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 val DANGER_PERMISSIONS = arrayOf(
     Manifest.permission.CAMERA,
@@ -9,8 +10,8 @@ val DANGER_PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_COARSE_LOCATION
 )
 
-val PATTERN_DATE = DateTimeFormat.forPattern("yyyy-MM-dd")
+val PATTERN_DATE: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
 
-val PATTERN_TIME = DateTimeFormat.forPattern("HH:mm:ssZZ")
+val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm:ssZZ")
 
-val PATTERN_DATETIME = DateTimeFormat.forPattern("yyyyMMdd'T'HHmmssZ")
+val PATTERN_DATETIME: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd'T'HHmmssZ")
