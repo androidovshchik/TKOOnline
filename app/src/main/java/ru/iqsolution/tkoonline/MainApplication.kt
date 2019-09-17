@@ -13,9 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.intentFor
-import org.joda.time.LocalDate
-import org.joda.time.LocalDateTime
-import org.joda.time.LocalTime
+import org.joda.time.DateTime
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.KodeinTrigger
@@ -27,7 +25,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.data.local.AppDatabase
 import ru.iqsolution.tkoonline.data.local.Preferences
-import ru.iqsolution.tkoonline.data.remote.*
+import ru.iqsolution.tkoonline.data.remote.DateTimeDeserializer
+import ru.iqsolution.tkoonline.data.remote.DateTimeSerializer
+import ru.iqsolution.tkoonline.data.remote.SerializedNameStrategy
+import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -60,12 +61,8 @@ class MainApplication : Application(), KodeinAware {
             GsonBuilder()
                 .setLenient()
                 .setExclusionStrategies(SerializedNameStrategy())
-                .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-                .registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
-                .registerTypeAdapter(LocalTime::class.java, LocalTimeSerializer())
-                .registerTypeAdapter(LocalTime::class.java, LocalTimeDeserializer())
-                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+                .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
+                .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
                 .create()
         }
 

@@ -7,7 +7,7 @@ import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.PATTERN_TIME
 import java.lang.reflect.Type
 
-class LocalDateTimeSerializer : JsonSerializer<DateTime> {
+class DateTimeSerializer : JsonSerializer<DateTime> {
 
     override fun serialize(src: DateTime, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         // todo check values
@@ -15,7 +15,7 @@ class LocalDateTimeSerializer : JsonSerializer<DateTime> {
     }
 }
 
-class LocalDateTimeDeserializer : JsonDeserializer<DateTime> {
+class DateTimeDeserializer : JsonDeserializer<DateTime> {
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DateTime {
         val value = json.asString

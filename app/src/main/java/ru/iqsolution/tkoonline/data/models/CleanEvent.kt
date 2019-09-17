@@ -16,19 +16,19 @@ class CleanEvent {
     @ColumnInfo(name = "access_token")
     var accessToken: String? = null
 
-    @ColumnInfo(name = "День")
+    @ColumnInfo(name = "datetime")
     @SerializedName("time")
     lateinit var time: DateTime
 
-    @ColumnInfo(name = "День")
+    @ColumnInfo(name = "container_type")
     @SerializedName("container_type_fact")
     lateinit var containerTypeFact: String
 
-    @ColumnInfo(name = "День")
+    @ColumnInfo(name = "container_volume")
     @SerializedName("container_type_volume_fact")
     var containerTypeVolumeFact = 0f
 
-    @ColumnInfo(name = "День")
+    @ColumnInfo(name = "container_count")
     @SerializedName("container_count_fact")
     var containerCountFact = 0
 }
