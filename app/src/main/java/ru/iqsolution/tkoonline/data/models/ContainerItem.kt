@@ -1,7 +1,7 @@
 package ru.iqsolution.tkoonline.data.models
 
 import com.google.gson.annotations.SerializedName
-import org.joda.time.LocalTime
+import org.joda.time.DateTime
 
 class ContainerItem {
 
@@ -41,11 +41,17 @@ class ContainerItem {
     @SerializedName("container_count")
     var containerCount = 0
 
+    /**
+     * Represents time without date
+     */
     @SerializedName("time_limit_from")
-    lateinit var timeLimitFrom: LocalTime
+    lateinit var timeLimitFrom: DateTime
 
+    /**
+     * Represents time without date
+     */
     @SerializedName("time_limit_to")
-    lateinit var timeLimitTo: LocalTime
+    lateinit var timeLimitTo: DateTime
 
     @SerializedName("status")
     var status = 0

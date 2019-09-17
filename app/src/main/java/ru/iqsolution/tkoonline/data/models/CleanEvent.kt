@@ -4,18 +4,21 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 @Entity(tableName = "events")
 class CleanEvent {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "ID")
+    @ColumnInfo(name = "id")
     var id = 0L
+
+    @ColumnInfo(name = "access_token")
+    var accessToken: String? = null
 
     @ColumnInfo(name = "День")
     @SerializedName("time")
-    lateinit var time: LocalDateTime
+    lateinit var time: DateTime
 
     @ColumnInfo(name = "День")
     @SerializedName("container_type_fact")
