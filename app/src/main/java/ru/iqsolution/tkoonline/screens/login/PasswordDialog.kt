@@ -38,32 +38,29 @@ class PasswordDialog : DialogFragment() {
             }
         }
         dialog_accept.onClick {
+            dialog_password.error = null
             val input = dialog_password.text.toString()
             if (input.length == 4) {
                 when (password) {
                     null -> {
-                        dialog_password.error = null
                         preferences.lockPassword = AESCBCPKCS7.encrypt(input)
                         dismissPrompted()
                     }
-                    input -> {
-                        dialog_password.error = null
-                        dismissPrompted()
-                    }
+                    input -> dismissPrompted()
                     else -> {
                         dialog_password?.apply {
                             if (System.currentTimeMillis() - blockTime < WAIT_TIME) {
                                 error = "Повторите попытку позже"
                             } else {
                                 attemptsCount++
-                                if (attemptsCount >= 4) {
+                                error = if (attemptsCount > MAX_ATTEMPTS) {
                                     attemptsCount = 0
                                     blockTime = System.currentTimeMillis()
                                     preferences.nextAttemptsAfter = blockTime
-                                    error = "Повторите попытку позже"
+                                    "Повторите попытку позже"
                                 } else {
-                                    error =
-                                        resources.getQuantityString(R.plurals.attempts, attemptsCount, attemptsCount)
+                                    val count = MAX_ATTEMPTS - attemptsCount
+                                    resources.getQuantityString(R.plurals.attempts, count, count)
                                 }
                             }
                         }
@@ -89,6 +86,8 @@ class PasswordDialog : DialogFragment() {
 
     companion object {
 
-        private const val WAIT_TIME = 5 * 60 * 1000
+        private const val MAX_ATTEMPTS = 3
+
+        private const val WAIT_TIME = 5 * 60 * 1000L
     }
 }

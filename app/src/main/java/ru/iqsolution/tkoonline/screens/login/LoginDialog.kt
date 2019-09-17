@@ -2,9 +2,11 @@
 
 package ru.iqsolution.tkoonline.screens.login
 
-import android.app.Activity
 import android.app.DialogFragment
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_login.*
@@ -12,7 +14,15 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.data.local.Preferences
 
-class LoginDialog(activity: Activity) : DialogFragment(activity) {
+class LoginDialog : DialogFragment() {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.dialog_login, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
