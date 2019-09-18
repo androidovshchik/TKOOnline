@@ -43,17 +43,13 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         }
     }
 
-    override fun onRemovePrompt(success: Boolean) {
-        hasPrompted = success
+    override fun onSuccessPrompt() {
+        hasPrompted = true
         fragmentManager.beginTransaction().apply {
             fragmentManager.findFragmentByTag(passwordDialog.javaClass.simpleName)?.let {
                 remove(it)
             }
-            if (success) {
-                settingsDialog.show(this, settingsDialog.javaClass.simpleName)
-            } else {
-                commit()
-            }
+            settingsDialog.show(this, settingsDialog.javaClass.simpleName)
         }
     }
 
