@@ -7,7 +7,9 @@ import android.view.MenuItem
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 
 @SuppressLint("Registered")
-open class BaseActivity : Activity(), IBaseView {
+open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
+
+    protected lateinit var presenter: T
 
     private var waitDialog: WaitDialog? = null
 
@@ -41,6 +43,7 @@ open class BaseActivity : Activity(), IBaseView {
 
     override fun onDestroy() {
         waitDialog?.dismiss()
+        presenter.detachView()
         super.onDestroy()
     }
 }

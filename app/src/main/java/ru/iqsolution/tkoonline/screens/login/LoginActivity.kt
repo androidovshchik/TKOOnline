@@ -10,9 +10,7 @@ import ru.iqsolution.tkoonline.screens.BaseActivity
 import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
 
 @Suppress("DEPRECATION")
-class LoginActivity : BaseActivity(), LoginContract.View {
-
-    private lateinit var presenter: LoginPresenter
+class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
 
     private val settingsDialog = SettingsDialog()
 
@@ -25,8 +23,8 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         setContentView(R.layout.activity_login)
         presenter = LoginPresenter(application).also {
             it.attachView(this)
+            it.clearAuthorization()
         }
-        presenter.clearAuthorization()
         login_menu.onClick {
             fragmentManager.beginTransaction().apply {
                 fragmentManager.findFragmentByTag(settingsDialog.javaClass.simpleName)?.let {
@@ -75,11 +73,6 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         if (requestCode == REQUEST_RESULT) {
             presenter.resetQrCode()
         }
-    }
-
-    override fun onDestroy() {
-        presenter.detachView()
-        super.onDestroy()
     }
 
     companion object {

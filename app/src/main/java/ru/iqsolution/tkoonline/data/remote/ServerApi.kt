@@ -21,7 +21,7 @@ interface ServerApi {
 
     @Headers("Accept: application/json")
     @GET("photo-types")
-    suspend fun getPhotoTypes(): ResponseTypes
+    suspend fun getPhotoTypes(@Header("Authorization") token: String): ResponseTypes
 
     @Headers("Accept: application/json")
     @POST("container-sites/{kp_id}/events")

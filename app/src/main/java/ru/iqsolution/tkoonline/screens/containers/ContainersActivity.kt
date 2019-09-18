@@ -10,13 +10,17 @@ import ru.iqsolution.tkoonline.data.models.ContainerItem
 import ru.iqsolution.tkoonline.data.models.PhotoItem
 import ru.iqsolution.tkoonline.screens.BaseActivity
 
-class ContainersActivity : BaseActivity(), ContainersContract.View {
+class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(MAPKIT_KEY)
         MapKitFactory.initialize(applicationContext)
         setContentView(R.layout.activity_containers)
+        presenter = ContainersPresenter(application).also {
+            it.attachView(this)
+            it.receiveData()
+        }
         containers_complete.onClick {
             finish()
         }

@@ -17,7 +17,7 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
     override fun receiveData() {
         launch {
             try {
-                val responseTypes = serverApi.getPhotoTypes()
+                val responseTypes = serverApi.getPhotoTypes(preferences.authHeader)
                 viewRef.get()?.onReceivedTypes(responseTypes.data)
                 //val responseContainers = serverApi.getContainers(preferences.authHeader, )
                 //viewRef.get()?.onReceivedContainers(responseContainers.data)
