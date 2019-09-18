@@ -6,5 +6,7 @@ interface IBasePresenter<V : IBaseView> {
 
     fun attachView(view: V)
 
+    fun clearAuthorization()
+
     fun detachView()
 }

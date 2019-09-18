@@ -12,6 +12,8 @@ import ru.iqsolution.tkoonline.screens.BaseActivity
 
 class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContract.View {
 
+    private val adapter = ContainersAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(MAPKIT_KEY)
@@ -21,7 +23,9 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
             it.attachView(this)
             it.receiveData()
         }
+        containers_list.adapter = adapter
         containers_complete.onClick {
+            presenter.clearAuthorization()
             finish()
         }
     }

@@ -9,7 +9,7 @@
     tools:ignore="MissingPrefix">
 
     <TextView
-        android:id="@+id/dot_address"
+        android:id="@+id/container_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -22,7 +22,7 @@
         tools:text="г. Тула Марфинский район Школа №7"/>
 
     <TextView
-        android:id="@+id/dot_range"
+        android:id="@+id/container_range"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -38,7 +38,7 @@
         android:layout_height="30dp">
 
         <View
-            android:id="@+id/dot_oval"
+            android:id="@+id/container_oval"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

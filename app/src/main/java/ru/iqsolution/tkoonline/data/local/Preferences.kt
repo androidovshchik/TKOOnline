@@ -23,7 +23,7 @@ class Preferences(context: Context) : KotprefModel(context) {
     /**
      * Server time UTC (format)
      */
-    var serverTime by nullableStringPref(null, "#000000")
+    var serverTime by nullableStringPref(null, "0x03")
 
     var mainServerAddress by stringPref("msk-mob.iqsolution.ru:7778", "0x04")
 
@@ -43,4 +43,7 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     val authHeader: String
         get() = "Bearer $accessToken"
+
+    val serverDay: String
+        get() = serverTime?.split("T")?.get(0).toString()
 }

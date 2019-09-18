@@ -8,7 +8,6 @@ import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.data.models.QrCode
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.BasePresenter
@@ -22,15 +21,9 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
 
     val gson: Gson by instance()
 
-    val preferences: Preferences by instance()
-
     val adminManager: AdminManager by instance()
 
     private var loginJson: String? = null
-
-    override fun clearAuthorization() {
-        preferences.accessToken = null
-    }
 
     override fun setKioskMode(activity: Activity, enable: Boolean?) {
         if (enable != null) {
