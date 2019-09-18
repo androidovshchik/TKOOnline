@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.login
 
+import android.app.Activity
 import android.app.Application
 import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
@@ -11,6 +12,7 @@ import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.data.models.QrCode
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.BasePresenter
+import ru.iqsolution.tkoonline.services.AdminManager
 
 class LoginPresenter(application: Application) : BasePresenter<LoginContract.View>(application),
     LoginContract.Presenter {
@@ -21,10 +23,16 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
 
     val preferences: Preferences by instance()
 
+    val adminManager: AdminManager by instance()
+
     private var loginJson: String? = null
 
     override fun clearAuthorization() {
         preferences.accessToken = null
+    }
+
+    override fun setKioskMode(activity: Activity, enable: Boolean) {
+        adminManager.setKioskMode(activity, enable)
     }
 
     override fun login(data: String) {

@@ -53,6 +53,10 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         }
     }
 
+    override fun onKioskMode(enter: Boolean) {
+        presenter.setKioskMode(this, enter)
+    }
+
     override fun onQrCode(value: String) {
         presenter.login(value)
     }

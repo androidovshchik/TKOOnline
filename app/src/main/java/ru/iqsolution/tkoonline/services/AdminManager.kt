@@ -91,8 +91,8 @@ class AdminManager(context: Context) {
             devicePolicyManager.setLockTaskPackages(componentName, arrayOf(packageName))
             startLockTask()
         } else {
-            stopLockTask()
             devicePolicyManager.setLockTaskPackages(componentName, arrayOf())
+            stopLockTask()
         }
     }
 }

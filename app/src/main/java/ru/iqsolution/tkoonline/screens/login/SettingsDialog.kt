@@ -26,7 +26,13 @@ class SettingsDialog : BaseDialogFragment() {
             setLock(enableLock)
         }
         dialog_unlock.onClick {
-            setLock(!isEnabledLock)
+            val enable = !isEnabledLock
+            setLock(enable)
+            activity?.let {
+                if (it is LoginActivity) {
+                    it.onKioskMode(enable)
+                }
+            }
         }
         dialog_save.onClick {
             preferences.bulk {
