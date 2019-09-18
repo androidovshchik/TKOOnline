@@ -43,6 +43,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
                 }
             }
         }
+        onKioskMode(null)
     }
 
     override fun onSuccessPrompt() {
@@ -55,7 +56,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
         }
     }
 
-    override fun onKioskMode(enter: Boolean) {
+    override fun onKioskMode(enter: Boolean?) {
         presenter.setKioskMode(this, enter)
     }
 

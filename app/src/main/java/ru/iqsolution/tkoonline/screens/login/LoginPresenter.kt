@@ -31,8 +31,12 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
         preferences.accessToken = null
     }
 
-    override fun setKioskMode(activity: Activity, enable: Boolean) {
-        adminManager.setKioskMode(activity, enable)
+    override fun setKioskMode(activity: Activity, enable: Boolean?) {
+        if (enable != null) {
+            adminManager.setKioskMode(activity, enable)
+        } else if (preferences.enableLock) {
+            adminManager.setKioskMode(activity, true)
+        }
     }
 
     override fun login(data: String) {

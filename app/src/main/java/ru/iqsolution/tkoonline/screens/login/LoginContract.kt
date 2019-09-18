@@ -9,7 +9,7 @@ interface LoginContract {
 
         fun clearAuthorization()
 
-        fun setKioskMode(activity: Activity, enable: Boolean)
+        fun setKioskMode(activity: Activity, enable: Boolean?)
 
         fun login(data: String)
     }
@@ -18,7 +18,7 @@ interface LoginContract {
 
         fun onSuccessPrompt()
 
-        fun onKioskMode(enter: Boolean)
+        fun onKioskMode(enter: Boolean?)
 
         fun onQrCode(value: String)
 
