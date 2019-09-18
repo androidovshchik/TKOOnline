@@ -87,6 +87,7 @@ class PasswordDialog : BaseDialogFragment() {
     }
 
     private fun onPrompted() {
+        dialog_password.setText("")
         activity?.let {
             if (it is LoginActivity) {
                 it.onSuccessPrompt()

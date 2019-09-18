@@ -19,5 +19,3 @@ val PATTERN_DATETIME: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd'T'
 /**
  * Extras
  */
-
-const val EXTRA_PROMPT = "extra_prompt"

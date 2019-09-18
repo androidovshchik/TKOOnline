@@ -9,7 +9,6 @@ import android.os.UserManager
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.devicePolicyManager
 import org.jetbrains.anko.toast
-import ru.iqsolution.tkoonline.EXTRA_PROMPT
 import ru.iqsolution.tkoonline.receivers.AdminReceiver
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -82,10 +81,10 @@ class AdminManager(context: Context) {
         } else {
             devicePolicyManager.setLockTaskPackages(adminComponent, arrayOf())
             stopLockTask()
-            startActivity(Intent(applicationContext, javaClass).apply {
-                putExtra(EXTRA_PROMPT, true)
-                clearTask()
-            })
+            startActivity(
+                Intent(applicationContext, javaClass)
+                    .clearTask()
+            )
         }
     }
 }

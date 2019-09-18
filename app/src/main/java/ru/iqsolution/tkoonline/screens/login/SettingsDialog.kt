@@ -24,12 +24,11 @@ class SettingsDialog : BaseDialogFragment() {
         val preferences = Preferences(context).apply {
             dialog_main_server.setText(mainServerAddress)
             dialog_telemetry_server.setText(mainTelemetryAddress)
-            setLock(enableLock)
+            setLocked(enableLock)
         }
         dialog_unlock.onClick {
             val enable = !isEnabledLock
-            setLock(enable)
-            // let's save also here
+            setLocked(enable)
             preferences.enableLock = enable
             activity?.let {
                 if (it is LoginActivity) {
@@ -41,7 +40,6 @@ class SettingsDialog : BaseDialogFragment() {
             preferences.bulk {
                 mainServerAddress = dialog_main_server.text.toString().trim()
                 mainTelemetryAddress = dialog_telemetry_server.text.toString().trim()
-                enableLock = isEnabledLock
             }
             dismiss()
         }
@@ -50,7 +48,7 @@ class SettingsDialog : BaseDialogFragment() {
         }
     }
 
-    private fun setLock(enable: Boolean) {
+    private fun setLocked(enable: Boolean) {
         isEnabledLock = enable
         Timber.d("isEnabledLock = $enable")
         dialog_unlock.text = if (enable) "Разблокировать" else "Заблокировать"

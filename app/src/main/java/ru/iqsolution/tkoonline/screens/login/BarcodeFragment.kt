@@ -17,7 +17,6 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.screens.BaseFragment
 import timber.log.Timber
-import java.io.IOException
 
 @Suppress("DEPRECATION")
 class BarcodeFragment : BaseFragment() {
@@ -108,7 +107,7 @@ class BarcodeFragment : BaseFragment() {
                     }
                 }
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             Timber.e(e)
         }
     }
