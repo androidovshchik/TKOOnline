@@ -1,15 +1,13 @@
 package ru.iqsolution.tkoonline.services
 
-import android.app.admin.SystemUpdatePolicy
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.BatteryManager
 import android.os.UserManager
-import android.provider.Settings
 import org.jetbrains.anko.devicePolicyManager
 import ru.iqsolution.tkoonline.receivers.AdminReceiver
+import ru.iqsolution.tkoonline.screens.login.LoginActivity
 
 @Suppress("MemberVisibilityCanBePrivate")
 class AdminManager(context: Context) {
@@ -27,17 +25,16 @@ class AdminManager(context: Context) {
         get() = devicePolicyManager.isDeviceOwnerApp(packageName)
 
     fun setKioskMode(context: Context, enable: Boolean): Boolean {
+        // todo
+        //setUserRestriction(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, disallow)
+        //setUserRestriction(UserManager.DISALLOW_ADJUST_VOLUME, disallow)
+        //devicePolicyManager.setSystemUpdatePolicy(componentName, null)
+        //devicePolicyManager.setKeyguardDisabled(componentName, !enable)
         if (isDeviceOwner) {
+            setRestrictions(enable)
             if (setRestrictions(enable)) {
-                if (enableStayOnWhilePluggedIn(enable)) {
-                    if (setUpdatePolicy(enable)) {
-                        if (setAsHomeApp(enable)) {
-                            if (setKeyGuardEnabled(enable)) {
-                                if (setLockTask(enable)) {
-
-                                }
-                            }
-                        }
+                if (setAsHomeApp(enable)) {
+                    if (setLockTask(enable)) {
                     }
                 }
             }
@@ -45,37 +42,46 @@ class AdminManager(context: Context) {
         return false
     }
 
+    /**
+     * @throws SecurityException if {@code admin} is not a device or profile owner.
+     */
     private fun setRestrictions(disallow: Boolean) {
-        setUserRestriction(UserManager.DISALLOW_SAFE_BOOT, disallow)
-        setUserRestriction(UserManager.DISALLOW_FACTORY_RESET, disallow)
-        setUserRestriction(UserManager.DISALLOW_ADD_USER, disallow)
-        setUserRestriction(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, disallow)
-        setUserRestriction(UserManager.DISALLOW_ADJUST_VOLUME, disallow)
+        arrayOf(
+            UserManager.DISALLOW_USER_SWITCH,
+            UserManager.DISALLOW_FACTORY_RESET,
+            UserManager.DISALLOW_SAFE_BOOT,
+            UserManager.DISALLOW_ADD_USER,
+            UserManager.DISALLOW_APPS_CONTROL,
+            UserManager.DISALLOW_UNINSTALL_APPS,
+            UserManager.DISALLOW_CREATE_WINDOWS,
+            UserManager.DISALLOW_SYSTEM_ERROR_DIALOGS,
+            UserManager.DISALLOW_DEBUGGING_FEATURES
+        ).forEach {
+            if (disallow) {
+                devicePolicyManager.addUserRestriction(componentName, it)
+            } else {
+                devicePolicyManager.clearUserRestriction(componentName, it)
+            }
+        }
     }
 
     /**
      * @throws SecurityException if {@code admin} is not a device or profile owner.
      */
-    private fun setUserRestriction(restriction: String, disallow: Boolean) = if (disallow) {
-        devicePolicyManager.addUserRestriction(componentName, restriction)
-    } else {
-        devicePolicyManager.clearUserRestriction(componentName, restriction)
-    }
-    // endregion
-
-    /**
-     * @throws SecurityException if {@code admin} is not a device owner.
-     */
-    private fun enableStayOnWhilePluggedIn(active: Boolean) = if (active) {
-        devicePolicyManager.setGlobalSetting(
-            componentName,
-            Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
-            (BatteryManager.BATTERY_PLUGGED_AC
-                    or BatteryManager.BATTERY_PLUGGED_USB
-                    or BatteryManager.BATTERY_PLUGGED_WIRELESS).toString()
-        )
-    } else {
-        devicePolicyManager.setGlobalSetting(componentName, Settings.Global.STAY_ON_WHILE_PLUGGED_IN, "0")
+    private fun setAsHomeApp(enable: Boolean) {
+        if (enable) {
+            val intentFilter = IntentFilter(Intent.ACTION_MAIN).apply {
+                addCategory(Intent.CATEGORY_HOME)
+                addCategory(Intent.CATEGORY_DEFAULT)
+            }
+            devicePolicyManager.addPersistentPreferredActivity(
+                componentName, intentFilter, ComponentName(packageName, LoginActivity::class.java.name)
+            )
+        } else {
+            devicePolicyManager.clearPackagePersistentPreferredActivities(
+                componentName, packageName
+            )
+        }
     }
 
     /**
@@ -91,46 +97,5 @@ class AdminManager(context: Context) {
         } else {
             stopLockTask()
         }
-    }
-
-    /**
-     * @throws SecurityException if {@code admin} is not a device owner.
-     */
-    private fun setUpdatePolicy(enable: Boolean) {
-        if (enable) {
-            devicePolicyManager.setSystemUpdatePolicy(
-                componentName,
-                SystemUpdatePolicy.createWindowedInstallPolicy(60, 120)
-            )
-        } else {
-            devicePolicyManager.setSystemUpdatePolicy(componentName, null)
-        }
-    }
-
-    /**
-     * @throws SecurityException if {@code admin} is not a device or profile owner.
-     */
-    private fun setAsHomeApp(enable: Boolean) {
-        if (enable) {
-            val intentFilter = IntentFilter(Intent.ACTION_MAIN).apply {
-                addCategory(Intent.CATEGORY_HOME)
-                addCategory(Intent.CATEGORY_DEFAULT)
-            }
-            devicePolicyManager.addPersistentPreferredActivity(
-                componentName, intentFilter, ComponentName(packageName, MainActivity::class.java.name)
-            )
-        } else {
-            devicePolicyManager.clearPackagePersistentPreferredActivities(
-                componentName, packageName
-            )
-        }
-    }
-
-    /**
-     * @throws SecurityException if {@code admin} is not the device owner, or a profile owner of
-     * secondary user that is affiliated with the device.
-     */
-    private fun setKeyGuardEnabled(enable: Boolean) {
-        devicePolicyManager.setKeyguardDisabled(componentName, !enable)
     }
 }
