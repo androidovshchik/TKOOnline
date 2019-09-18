@@ -6,39 +6,36 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.UserManager
+import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.devicePolicyManager
+import org.jetbrains.anko.toast
+import ru.iqsolution.tkoonline.EXTRA_PROMPT
 import ru.iqsolution.tkoonline.receivers.AdminReceiver
-import ru.iqsolution.tkoonline.screens.login.LoginActivity
 
 @Suppress("MemberVisibilityCanBePrivate")
 class AdminManager(context: Context) {
 
-    private val componentName: ComponentName = ComponentName(context, AdminReceiver::class.java)
+    private val adminComponent = ComponentName(context, AdminReceiver::class.java)
 
-    private val devicePolicyManager = context.devicePolicyManager
+    private val deviceManager = context.devicePolicyManager
 
     private val packageName = context.packageName
 
     @Suppress("unused")
     val isAdmin: Boolean
-        get() = devicePolicyManager.isAdminActive(componentName)
+        get() = deviceManager.isAdminActive(adminComponent)
 
     val isDeviceOwner: Boolean
-        get() = devicePolicyManager.isDeviceOwnerApp(packageName)
+        get() = deviceManager.isDeviceOwnerApp(packageName)
 
-    fun setKioskMode(activity: Activity, enable: Boolean): Boolean {
-        // todo
-        //setUserRestriction(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, disallow)
-        //setUserRestriction(UserManager.DISALLOW_ADJUST_VOLUME, disallow)
-        //devicePolicyManager.setSystemUpdatePolicy(componentName, null)
-        //devicePolicyManager.setKeyguardDisabled(componentName, !enable)
+    fun setKioskMode(activity: Activity, enable: Boolean) {
         if (isDeviceOwner) {
             setRestrictions(enable)
-            setAsHomeApp(enable)
+            setAsHomeApp(activity, enable)
             setLockTask(activity, enable)
-            return true
+        } else {
+            activity.toast("Требуются права владельца устройства")
         }
-        return false
     }
 
     /**
@@ -46,20 +43,15 @@ class AdminManager(context: Context) {
      */
     private fun setRestrictions(disallow: Boolean) {
         arrayOf(
-            UserManager.DISALLOW_USER_SWITCH,
             UserManager.DISALLOW_FACTORY_RESET,
             UserManager.DISALLOW_SAFE_BOOT,
-            UserManager.DISALLOW_ADD_USER,
-            UserManager.DISALLOW_APPS_CONTROL,
-            UserManager.DISALLOW_UNINSTALL_APPS,
-            UserManager.DISALLOW_CREATE_WINDOWS,
-            UserManager.DISALLOW_SYSTEM_ERROR_DIALOGS,
-            UserManager.DISALLOW_DEBUGGING_FEATURES
+            UserManager.DISALLOW_USER_SWITCH,
+            UserManager.DISALLOW_ADD_USER
         ).forEach {
             if (disallow) {
-                devicePolicyManager.addUserRestriction(componentName, it)
+                deviceManager.addUserRestriction(adminComponent, it)
             } else {
-                devicePolicyManager.clearUserRestriction(componentName, it)
+                deviceManager.clearUserRestriction(adminComponent, it)
             }
         }
     }
@@ -67,18 +59,15 @@ class AdminManager(context: Context) {
     /**
      * @throws SecurityException if {@code admin} is not a device or profile owner.
      */
-    private fun setAsHomeApp(enable: Boolean) {
+    private fun setAsHomeApp(activity: Activity, enable: Boolean) {
         if (enable) {
             val intentFilter = IntentFilter(Intent.ACTION_MAIN).apply {
                 addCategory(Intent.CATEGORY_HOME)
                 addCategory(Intent.CATEGORY_DEFAULT)
             }
-            devicePolicyManager.addPersistentPreferredActivity(
-                componentName, intentFilter,
-                ComponentName(packageName, LoginActivity::class.java.name)
-            )
+            deviceManager.addPersistentPreferredActivity(adminComponent, intentFilter, activity.componentName)
         } else {
-            devicePolicyManager.clearPackagePersistentPreferredActivities(componentName, packageName)
+            deviceManager.clearPackagePersistentPreferredActivities(adminComponent, packageName)
         }
     }
 
@@ -88,11 +77,15 @@ class AdminManager(context: Context) {
      */
     private fun setLockTask(activity: Activity, enable: Boolean) = activity.run {
         if (enable) {
-            devicePolicyManager.setLockTaskPackages(componentName, arrayOf(packageName))
+            devicePolicyManager.setLockTaskPackages(adminComponent, arrayOf(packageName))
             startLockTask()
         } else {
-            devicePolicyManager.setLockTaskPackages(componentName, arrayOf())
+            devicePolicyManager.setLockTaskPackages(adminComponent, arrayOf())
             stopLockTask()
+            startActivity(Intent(applicationContext, javaClass).apply {
+                putExtra(EXTRA_PROMPT, true)
+                clearTask()
+            })
         }
     }
 }

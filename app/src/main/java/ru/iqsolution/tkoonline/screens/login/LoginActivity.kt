@@ -4,6 +4,7 @@ import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk23.listeners.onClick
+import ru.iqsolution.tkoonline.EXTRA_PROMPT
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.BaseActivity
 import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
@@ -26,6 +27,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
             it.attachView(this)
         }
         presenter.clearAuthorization()
+        hasPrompted = intent.getBooleanExtra(EXTRA_PROMPT, false)
         login_menu.onClick {
             fragmentManager.beginTransaction().apply {
                 fragmentManager.findFragmentByTag(settingsDialog.javaClass.simpleName)?.let {
@@ -66,8 +68,6 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     }
 
     override fun onDestroy() {
-        settingsDialog.dismiss()
-        passwordDialog.dismiss()
         presenter.detachView()
         super.onDestroy()
     }
