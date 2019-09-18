@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
+import net.danlew.android.joda.JodaTimeAndroid
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.jetbrains.anko.clearTask
@@ -104,6 +105,7 @@ class MainApplication : Application(), KodeinAware {
             Timber.plant(Timber.DebugTree())
         }
         kodeinTrigger.trigger()
+        JodaTimeAndroid.init(applicationContext)
         ViewPump.init(
             ViewPump.builder()
                 .addInterceptor(

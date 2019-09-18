@@ -14,16 +14,16 @@ class Preferences(context: Context) : KotprefModel(context) {
     var accessToken by nullableStringPref(null, "0x00")
 
     /**
-     * UTC (milliseconds)
+     * UTC (format)
      */
-    var expiresToken by longPref(0L, "0x01")
+    var expiresToken by nullableStringPref(null, "0x01")
 
     var allowPhotoRefKp by booleanPref(false, "0x02")
 
     /**
-     * In milliseconds
+     * Local time minus server time (milliseconds)
      */
-    var serverTimeDifference by longPref(0L, "0x03")
+    var serverTimeDiff by longPref(0L, "0x03")
 
     var mainServerAddress by stringPref("msk-mob.iqsolution.ru:7778", "0x04")
 
@@ -34,9 +34,9 @@ class Preferences(context: Context) : KotprefModel(context) {
     var lockPassword by nullableStringPref(null, "0x07")
 
     /**
-     * For password to enter lock settings. Local time (milliseconds)
+     * Local time (milliseconds)
      */
-    var nextAttemptsAfter by longPref(0L, "0x08")
+    var blockTime by longPref(0L, "0x08")
 
     val isLoggedIn: Boolean
         get() = accessToken != null

@@ -24,7 +24,7 @@ class PasswordDialog : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val preferences = Preferences(context)
         val password = preferences.lockPassword
-        var blockTime = preferences.nextAttemptsAfter
+        var time = preferences.blockTime
         dialog_password.apply {
             setOnlyNumbers()
             setMaxLength(4)
@@ -32,13 +32,13 @@ class PasswordDialog : BaseDialogFragment() {
                 inputType = inputType or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             }
         }
-        if (shouldBlock(blockTime)) {
+        if (shouldBlock(time)) {
             disableInput()
         }
         dialog_accept.onClick {
             dialog_error.text = ""
             val input = dialog_password.text.toString()
-            if (shouldBlock(blockTime)) {
+            if (shouldBlock(time)) {
                 disableInput()
             } else if (checkPassword(input)) {
                 when (password) {
@@ -55,8 +55,8 @@ class PasswordDialog : BaseDialogFragment() {
                             dialog_error.text = resources.getQuantityString(R.plurals.attempts, count, count)
                         } else {
                             attemptsCount = 0
-                            blockTime = System.currentTimeMillis()
-                            preferences.nextAttemptsAfter = blockTime
+                            time = System.currentTimeMillis()
+                            preferences.blockTime = time
                             disableInput()
                         }
                     }
@@ -76,7 +76,7 @@ class PasswordDialog : BaseDialogFragment() {
         return true
     }
 
-    private fun shouldBlock(blockTime: Long) = System.currentTimeMillis() - blockTime < WAIT_TIME
+    private fun shouldBlock(time: Long) = System.currentTimeMillis() - time < WAIT_TIME
 
     private fun disableInput() {
         dialog_password.apply {

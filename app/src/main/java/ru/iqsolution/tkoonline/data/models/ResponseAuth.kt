@@ -9,7 +9,7 @@ class ResponseAuth {
     lateinit var accessKey: String
 
     @SerializedName("expire")
-    lateinit var expire: DateTime
+    lateinit var expire: String
 
     @SerializedName("current_time")
     lateinit var currentTime: DateTime

@@ -2,11 +2,9 @@ package ru.iqsolution.tkoonline.screens.login
 
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login.*
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.BaseActivity
-import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
 
 @Suppress("DEPRECATION")
 class LoginActivity : BaseActivity(), LoginContract.View {
@@ -66,7 +64,7 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     }
 
     override fun onAuthorized() {
-        startActivity(intentFor<ContainersActivity>())
+        //startActivity(intentFor<ContainersActivity>())
     }
 
     override fun onDestroy() {

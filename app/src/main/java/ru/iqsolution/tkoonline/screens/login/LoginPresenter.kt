@@ -4,15 +4,16 @@ import android.app.Activity
 import android.app.Application
 import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
-import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.data.models.QrCode
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.BasePresenter
 import ru.iqsolution.tkoonline.services.AdminManager
+import timber.log.Timber
 
 class LoginPresenter(application: Application) : BasePresenter<LoginContract.View>(application),
     LoginContract.Presenter {
@@ -43,15 +44,22 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
         if (data == loginJson) {
             return
         }
+        val qrCode = try {
+            gson.fromJson(data, QrCode::class.java)
+        } catch (e: JsonSyntaxException) {
+            Timber.e(e)
+            return
+        }
+        Timber.d("Qr code json: $data")
         loginJson = data
         baseJob.cancelChildren()
         launch {
-            val qrCode = gson.fromJson(data, QrCode::class.java)
-            val responseAuth = serverApi.login(qrCode.regNum, qrCode.pass, qrCode.carId)
+            val responseAuth = serverApi.login(qrCode.carId.toString(), qrCode.pass, preferences.lockPassword?.toInt())
             preferences.bulk {
                 accessToken = responseAuth.accessKey
-                expiresToken = responseAuth.expire.toDateTime(DateTimeZone.UTC).millis
+                expiresToken = responseAuth.expire
                 allowPhotoRefKp = responseAuth.noKpPhoto == 1
+                serverTimeDiff = System.currentTimeMillis() - responseAuth.currentTime.millis
             }
             viewRef.get()?.onAuthorized()
         }
