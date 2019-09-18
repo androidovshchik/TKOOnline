@@ -11,7 +11,7 @@
         android:elevation="4dp"/>
 
     <com.yandex.mapkit.mapview.MapView
-        android:id="@+id/dots_map"
+        android:id="@+id/containers_map"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_marginTop="@dimen/status_bar_height"
@@ -21,22 +21,22 @@
         android:elevation="6dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/dots_list"
+        android:id="@+id/containers_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/dots_map"
-        android:layout_above="@+id/dots_buttons"
+        android:layout_below="@+id/containers_map"
+        android:layout_above="@+id/containers_buttons"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_container"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:layout_above="@+id/dots_buttons"
+        android:layout_above="@+id/containers_buttons"
         android:background="@drawable/top_shadow"/>
 
     <LinearLayout
-        android:id="@+id/dots_buttons"
+        android:id="@+id/containers_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

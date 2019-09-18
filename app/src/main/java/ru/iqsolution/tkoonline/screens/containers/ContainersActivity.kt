@@ -6,6 +6,8 @@ import kotlinx.android.synthetic.main.activity_containers.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.MAPKIT_KEY
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.data.models.ContainerItem
+import ru.iqsolution.tkoonline.data.models.PhotoItem
 import ru.iqsolution.tkoonline.screens.BaseActivity
 
 class ContainersActivity : BaseActivity(), ContainersContract.View {
@@ -18,6 +20,26 @@ class ContainersActivity : BaseActivity(), ContainersContract.View {
         containers_complete.onClick {
             finish()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        MapKitFactory.getInstance().onStart()
+        containers_map.onStart()
+    }
+
+    override fun onReceivedTypes(data: List<PhotoItem>) {
+
+    }
+
+    override fun onReceivedContainers(data: List<ContainerItem>) {
+
+    }
+
+    override fun onStop() {
+        containers_map.onStop()
+        MapKitFactory.getInstance().onStop()
+        super.onStop()
     }
 
     override fun onBackPressed() {}
@@ -42,19 +64,5 @@ class ContainersActivity : BaseActivity(), ContainersContract.View {
             Animation(Animation.Type.SMOOTH, 5f),
             null
         )
-    }
-
-    override fun onStop() {
-        // Activity onStop call must be passed to both MapView and MapKit instance.
-        mapView!!.onStop()
-        MapKitFactory.getInstance().onStop()
-        super.onStop()
-    }
-
-    override fun onStart() {
-        // Activity onStart call must be passed to both MapView and MapKit instance.
-        super.onStart()
-        MapKitFactory.getInstance().onStart()
-        mapView!!.onStart()
     }*/
 }

@@ -63,7 +63,7 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
                 accessToken = responseAuth.accessKey
                 expiresToken = responseAuth.expire
                 allowPhotoRefKp = responseAuth.noKpPhoto == 1
-                serverTimeDiff = System.currentTimeMillis() - responseAuth.currentTime.millis
+                serverTime = responseAuth.currentTime
             }
             viewRef.get()?.onAuthorized()
         }

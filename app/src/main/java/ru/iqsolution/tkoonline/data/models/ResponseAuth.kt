@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.data.models
 
 import com.google.gson.annotations.SerializedName
-import org.joda.time.DateTime
 
 class ResponseAuth {
 
@@ -12,7 +11,7 @@ class ResponseAuth {
     lateinit var expire: String
 
     @SerializedName("current_time")
-    lateinit var currentTime: DateTime
+    lateinit var currentTime: String
 
     @SerializedName("no_kp_photo")
     var noKpPhoto = 0

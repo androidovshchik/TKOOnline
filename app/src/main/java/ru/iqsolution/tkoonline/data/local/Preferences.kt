@@ -21,9 +21,9 @@ class Preferences(context: Context) : KotprefModel(context) {
     var allowPhotoRefKp by booleanPref(false, "0x02")
 
     /**
-     * Local time minus server time (milliseconds)
+     * Server time UTC (format)
      */
-    var serverTimeDiff by longPref(0L, "0x03")
+    var serverTime by nullableStringPref(null, "#000000")
 
     var mainServerAddress by stringPref("msk-mob.iqsolution.ru:7778", "0x04")
 
@@ -40,4 +40,7 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     val isLoggedIn: Boolean
         get() = accessToken != null
+
+    val authHeader: String
+        get() = "Bearer $accessToken"
 }
