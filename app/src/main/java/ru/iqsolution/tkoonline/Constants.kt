@@ -10,6 +10,8 @@ val DANGER_PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_COARSE_LOCATION
 )
 
+const val MAPKIT_KEY = "9ef633b4-95b2-409a-a74f-e0a5c75321db"
+
 val PATTERN_DATE: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
 
 val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm:ssZZ")

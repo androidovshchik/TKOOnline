@@ -1,10 +1,13 @@
 package ru.iqsolution.tkoonline.screens.login
 
+import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login.*
+import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.BaseActivity
+import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
 
 @Suppress("DEPRECATION")
 class LoginActivity : BaseActivity(), LoginContract.View {
@@ -64,11 +67,23 @@ class LoginActivity : BaseActivity(), LoginContract.View {
     }
 
     override fun onAuthorized() {
-        //startActivity(intentFor<ContainersActivity>())
+        startActivityForResult(intentFor<ContainersActivity>(), REQUEST_RESULT)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_RESULT) {
+            presenter.resetQrCode()
+        }
     }
 
     override fun onDestroy() {
         presenter.detachView()
         super.onDestroy()
+    }
+
+    companion object {
+
+        private const val REQUEST_RESULT = 200
     }
 }

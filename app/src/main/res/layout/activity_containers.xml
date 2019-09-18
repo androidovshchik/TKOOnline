@@ -44,7 +44,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/dots_complete"
+            android:id="@+id/containers_complete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -59,7 +59,7 @@
             fontPath="fonts/Roboto-Medium.ttf"/>
 
         <Button
-            android:id="@+id/dots_photo"
+            android:id="@+id/containers_photo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

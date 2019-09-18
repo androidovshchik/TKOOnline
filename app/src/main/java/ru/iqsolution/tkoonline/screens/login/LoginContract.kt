@@ -12,6 +12,8 @@ interface LoginContract {
         fun setKioskMode(activity: Activity, enable: Boolean?)
 
         fun login(data: String)
+
+        fun resetQrCode()
     }
 
     interface View : IBaseView {

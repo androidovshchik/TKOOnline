@@ -52,7 +52,7 @@ class MainApplication : Application(), KodeinAware {
                                 .d(message)
                         }
                     }).apply {
-                        level = HttpLoggingInterceptor.Level.BASIC
+                        level = HttpLoggingInterceptor.Level.BODY
                     })
                     addNetworkInterceptor(StethoInterceptor())
                 }

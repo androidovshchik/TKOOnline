@@ -1,21 +1,36 @@
 package ru.iqsolution.tkoonline.screens.containers
 
+import android.os.Bundle
+import com.yandex.mapkit.MapKitFactory
+import kotlinx.android.synthetic.main.activity_containers.*
+import org.jetbrains.anko.sdk23.listeners.onClick
+import ru.iqsolution.tkoonline.MAPKIT_KEY
+import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.BaseActivity
 
 class ContainersActivity : BaseActivity(), ContainersContract.View {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        MapKitFactory.setApiKey(MAPKIT_KEY)
+        MapKitFactory.initialize(applicationContext)
+        setContentView(R.layout.activity_containers)
+        containers_complete.onClick {
+            finish()
+        }
+    }
+
+    override fun onBackPressed() {}
     /*private var mapView: MapView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_containers)
-        MapKitFactory.setApiKey(MAPKIT_API_KEY)
         /**
          * Initialize the library to load required native libraries.
          * It is recommended to initialize the MapKit library in the Activity.onCreate method
          * Initializing in the Application.onCreate method may lead to extra calls and increased battery use.
          */
-        MapKitFactory.initialize(this)
         // Now MapView can be created.
         setContentView(R.layout.map)
         super.onCreate(savedInstanceState)
