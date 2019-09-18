@@ -32,13 +32,13 @@ class PasswordDialog : BaseDialogFragment() {
                 inputType = inputType or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             }
         }
-        if (isBlocking(blockTime)) {
+        if (shouldBlock(blockTime)) {
             disableInput()
         }
         dialog_accept.onClick {
             dialog_error.text = ""
             val input = dialog_password.text.toString()
-            if (isBlocking(blockTime)) {
+            if (shouldBlock(blockTime)) {
                 disableInput()
             } else if (checkPassword(input)) {
                 when (password) {
@@ -76,7 +76,7 @@ class PasswordDialog : BaseDialogFragment() {
         return true
     }
 
-    private fun isBlocking(blockTime: Long) = System.currentTimeMillis() - blockTime < WAIT_TIME
+    private fun shouldBlock(blockTime: Long) = System.currentTimeMillis() - blockTime < WAIT_TIME
 
     private fun disableInput() {
         dialog_password.apply {
@@ -89,7 +89,7 @@ class PasswordDialog : BaseDialogFragment() {
     private fun onPrompted() {
         activity?.let {
             if (it is LoginActivity) {
-                it.onRemovePrompt(true)
+                it.onSuccessPrompt()
             }
         }
     }

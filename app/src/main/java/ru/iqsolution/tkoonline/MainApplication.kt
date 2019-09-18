@@ -32,6 +32,7 @@ import ru.iqsolution.tkoonline.data.remote.DateTimeSerializer
 import ru.iqsolution.tkoonline.data.remote.SerializedNameStrategy
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
+import ru.iqsolution.tkoonline.services.AdminManager
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -86,6 +87,10 @@ class MainApplication : Application(), KodeinAware {
 
         bind<Preferences>() with provider {
             Preferences(applicationContext)
+        }
+
+        bind<AdminManager>() with provider {
+            AdminManager(applicationContext)
         }
     }
 
