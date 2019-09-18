@@ -19,7 +19,7 @@ import ru.iqsolution.tkoonline.screens.BaseFragment
 import timber.log.Timber
 
 @Suppress("DEPRECATION")
-class BarcodeFragment : BaseFragment() {
+class QrCodeFragment : BaseFragment() {
 
     private lateinit var barcodeDetector: BarcodeDetector
 
@@ -36,7 +36,7 @@ class BarcodeFragment : BaseFragment() {
             maxSize = it
         }
         barcodeDetector = BarcodeDetector.Builder(context)
-            .setBarcodeFormats(Barcode.ALL_FORMATS)
+            .setBarcodeFormats(Barcode.QR_CODE)
             .build()
         barcodeDetector.setProcessor(object : Detector.Processor<Barcode> {
 

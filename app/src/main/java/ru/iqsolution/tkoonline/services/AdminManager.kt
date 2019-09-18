@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.UserManager
-import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.clearTop
 import org.jetbrains.anko.devicePolicyManager
 import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.receivers.AdminReceiver
@@ -31,6 +31,7 @@ class AdminManager(context: Context) {
         if (isDeviceOwner) {
             setRestrictions(enable)
             setAsHomeApp(activity, enable)
+            setKeyGuardEnabled(enable)
             setLockTask(activity, enable)
         } else {
             activity.toast("Требуются права владельца устройства")
@@ -70,6 +71,10 @@ class AdminManager(context: Context) {
         }
     }
 
+    private fun setKeyGuardEnabled(enable: Boolean) {
+        deviceManager.setKeyguardDisabled(adminComponent, !enable)
+    }
+
     /**
      * @throws SecurityException if {@code admin} is not the device owner, the profile owner of an
      * affiliated user or profile, or the profile owner when no device owner is set.
@@ -83,7 +88,7 @@ class AdminManager(context: Context) {
             stopLockTask()
             startActivity(
                 Intent(applicationContext, javaClass)
-                    .clearTask()
+                    .clearTop()
             )
         }
     }
