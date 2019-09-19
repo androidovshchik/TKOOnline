@@ -8,22 +8,22 @@ package ru.iqsolution.tkoonline.widgets
 
 import android.annotation.TargetApi
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.sp
 import timber.log.Timber
 
 class ContainerView : View {
 
-    var ringColor = Color.WHITE
+    private var icon: Bitmap? = null
+
+    private var ringColor = Color.WHITE
 
     private val colorWhiteAlpha = 0xe5ffffff.toInt()
 
@@ -43,7 +43,7 @@ class ContainerView : View {
 
     private val textBoxR = dip(5).toFloat()
 
-    var text: String? = null
+    private var text: String? = null
 
     private val textBounds = Rect()
 
@@ -68,11 +68,13 @@ class ContainerView : View {
         defStyleRes
     )
 
-    fun setTextAndLayout(value: String?) {
-        text = value
+    fun init(color: Int, text: String?, icon: Bitmap?) {
+        ringColor = ContextCompat.getColor(context, color)
+        this.text = text
+        this.icon = icon
         val height = circleOuterR.toInt() * 2
         var width = height
-        value?.also {
+        text?.also {
             paint.getTextBounds(it, 0, it.length, textBounds)
             Timber.d("textBounds " + textBounds.toString())
             width += 2 * (textMarginStart + textBounds.width() + textMarginEnd)
@@ -103,8 +105,8 @@ class ContainerView : View {
             }
             color = colorWhiteAlpha
             canvas.drawCircle(cX, cY, circleOuterR, this)
-            color = color
-            style = Paint.Style.FILL_AND_STROKE
+            color = ringColor
+            style = Paint.Style.STROKE
             canvas.drawCircle(cX, cY, ringInnerR, this)
         }
     }

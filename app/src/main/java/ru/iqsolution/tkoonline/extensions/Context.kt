@@ -15,11 +15,29 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.SystemClock
+import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PermissionResult
 import org.jetbrains.anko.alarmManager
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startService
+
+fun Context.getVectorBitmap(id: Int, scale: Float = 1f): Bitmap? {
+    return ContextCompat.getDrawable(applicationContext, id)?.let {
+        val bitmap = Bitmap.createBitmap(
+            (it.intrinsicWidth * scale).toInt(),
+            (it.intrinsicHeight * scale).toInt(),
+            Bitmap.Config.ARGB_8888
+        )
+        Canvas(bitmap).apply {
+            it.setBounds(0, 0, width, height)
+            it.draw(this)
+        }
+        return bitmap
+    }
+}
 
 @PermissionResult
 fun Context.areGranted(vararg permissions: String): Boolean {
