@@ -27,7 +27,7 @@ class ContainersAdapter : BaseAdapter<ContainerItem>() {
 
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: ContainerItem) {
-
+            address.text = item.address
         }
     }
 }

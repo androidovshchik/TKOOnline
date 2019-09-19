@@ -17,7 +17,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.sp
-import timber.log.Timber
 
 class ContainerView : View {
 
@@ -31,9 +30,9 @@ class ContainerView : View {
 
     private val ringOuterR = dip(42) / 2f
 
-    private val circleOuterR = dip(50) / 2f
+    private val circleOuterR = dip(44) / 2f
 
-    private val textBoxHeight = dip(40)
+    private val textBoxHeight = dip(32)
 
     private val textMarginStart = dip(3)
 
@@ -68,19 +67,16 @@ class ContainerView : View {
         defStyleRes
     )
 
-    fun init(color: Int, text: String?, icon: Bitmap?) {
+    fun init(color: Int, caption: String?, bitmap: Bitmap?) {
         ringColor = ContextCompat.getColor(context, color)
-        this.text = text
-        this.icon = icon
+        text = caption
+        icon = bitmap
         val height = circleOuterR.toInt() * 2
         var width = height
         text?.also {
             paint.getTextBounds(it, 0, it.length, textBounds)
-            Timber.d("textBounds " + textBounds.toString())
             width += 2 * (textMarginStart + textBounds.width() + textMarginEnd)
         }
-        Timber.d("height " + height)
-        Timber.d("width " + width)
         layoutParams = ViewGroup.LayoutParams(width, height)
         minimumHeight = height
         minimumWidth = width
@@ -108,6 +104,9 @@ class ContainerView : View {
             color = ringColor
             style = Paint.Style.STROKE
             canvas.drawCircle(cX, cY, ringInnerR, this)
+            icon?.let {
+                canvas.drawBitmap(it, cX - it.width / 2, cY - it.height / 2, this)
+            }
         }
     }
 
