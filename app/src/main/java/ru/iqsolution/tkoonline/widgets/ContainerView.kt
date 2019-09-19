@@ -13,21 +13,23 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.sp
+import timber.log.Timber
 
 class ContainerView : View {
 
-    var color = Color.WHITE
+    var ringColor = Color.WHITE
 
-    private val colorWhiteAlpha = 0xe5ffffff
+    private val colorWhiteAlpha = 0xe5ffffff.toInt()
 
-    private val colorInnerD = dip(33)
+    private val ringInnerR = dip(33) / 2f
 
-    private val colorOuterD = dip(42)
+    private val ringOuterR = dip(42) / 2f
 
     private val circleOuterR = dip(50) / 2f
 
@@ -39,7 +41,7 @@ class ContainerView : View {
 
     private val textMarginVert = dip(12)
 
-    private val textBoxR = dip(5)
+    private val textBoxR = dip(5).toFloat()
 
     var text: String? = null
 
@@ -47,7 +49,7 @@ class ContainerView : View {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = sp(14).toFloat()
-        letterSpacing = sp(16f / 14).toFloat()
+        strokeWidth = ringOuterR - ringInnerR
     }
 
     @JvmOverloads
@@ -67,29 +69,44 @@ class ContainerView : View {
     )
 
     fun setTextAndLayout(value: String?) {
+        text = value
         val height = circleOuterR.toInt() * 2
         var width = height
         value?.also {
             paint.getTextBounds(it, 0, it.length, textBounds)
+            Timber.d("textBounds " + textBounds.toString())
             width += 2 * (textMarginStart + textBounds.width() + textMarginEnd)
         }
+        Timber.d("height " + height)
+        Timber.d("width " + width)
         layoutParams = ViewGroup.LayoutParams(width, height)
+        minimumHeight = height
+        minimumWidth = width
     }
 
     override fun onDraw(canvas: Canvas) {
-        val cX = width / 2f
-        val cY = height / 2f
-        canvas.drawColor(Color.RED)
-        paint.color = Color.WHITE
-        canvas.drawCircle(cX, cY, circleOuterR, paint)
-        /*canvas.drawCircle(paint)
-        canvas.drawCircle()
-        canvas.drawBitmap()
-        text?.let {
-            canvas.drawRoundRect()
-            canvas.drawText(it, )
-            canvas.drawText(text, margin, (height + bounds.height()) / 2, paint)
-        }*/
+        val w = width.toFloat()
+        val h = height.toFloat()
+        val cX = w / 2
+        val cY = h / 2
+        val textPadding = (h - textBoxHeight) / 2
+        paint.apply {
+            color = colorWhiteAlpha
+            style = Paint.Style.FILL
+            if (!TextUtils.isEmpty(text)) {
+                canvas.drawRoundRect(cX, textPadding, w, h - textPadding, textBoxR, textBoxR, this)
+                color = Color.BLACK
+                canvas.drawText(
+                    text!!, cX + circleOuterR + textMarginStart,
+                    (circleOuterR + textBounds.height()) / 2 + textPadding, this
+                )
+            }
+            color = colorWhiteAlpha
+            canvas.drawCircle(cX, cY, circleOuterR, this)
+            color = color
+            style = Paint.Style.FILL_AND_STROKE
+            canvas.drawCircle(cX, cY, ringInnerR, this)
+        }
     }
 
     companion object {
