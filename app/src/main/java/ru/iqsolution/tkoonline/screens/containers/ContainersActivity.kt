@@ -45,7 +45,7 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
             objects = mapObjects.addCollection()
             objects.addPlacemark(Point(59.948, 30.323)).apply {
                 setView(ViewProvider(ContainerView(applicationContext).apply {
-                    init(R.color.colorStatusOrange, "Нет проезда", bitmap)
+                    init(R.color.colorStatusOrange, "нет проезда", bitmap)
                 }))
             }
         }

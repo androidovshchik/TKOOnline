@@ -36,7 +36,7 @@ class ContainerView : View {
 
     private val textMarginStart = dip(3)
 
-    private val textMarginEnd = dip(16)
+    private val textMarginEnd = dip(12)
 
     private val textMarginVert = dip(12)
 
@@ -89,29 +89,30 @@ class ContainerView : View {
         val cY = h / 2
         val textPadding = (h - textBoxHeight) / 2
         paint.apply {
-            color = colorWhiteAlpha
             style = Paint.Style.FILL
             if (!TextUtils.isEmpty(text)) {
+                // drawing rect
+                color = colorWhiteAlpha
                 canvas.drawRoundRect(cX, textPadding, w, h - textPadding, textBoxR, textBoxR, this)
                 color = Color.BLACK
+                // drawing text
                 canvas.drawText(
-                    text!!, cX + circleOuterR + textMarginStart,
-                    (circleOuterR + textBounds.height()) / 2 + textPadding, this
+                    text!!, cX + circleOuterR + textMarginStart, (h + textBounds.height() - textBounds.bottom) / 2, this
                 )
             }
+            // drawing circle
             color = colorWhiteAlpha
             canvas.drawCircle(cX, cY, circleOuterR, this)
+            // drawing ring
             color = ringColor
             style = Paint.Style.STROKE
             canvas.drawCircle(cX, cY, ringInnerR, this)
+            // drawing icon
             icon?.let {
                 canvas.drawBitmap(it, cX - it.width / 2, cY - it.height / 2, this)
             }
         }
     }
 
-    companion object {
-
-        private const val HEIGHT = 0
-    }
+    override fun hasOverlappingRendering() = false
 }
