@@ -31,10 +31,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.data.local.AppDatabase
 import ru.iqsolution.tkoonline.data.local.Preferences
-import ru.iqsolution.tkoonline.data.remote.DateTimeDeserializer
-import ru.iqsolution.tkoonline.data.remote.DateTimeSerializer
-import ru.iqsolution.tkoonline.data.remote.SerializedNameStrategy
-import ru.iqsolution.tkoonline.data.remote.ServerApi
+import ru.iqsolution.tkoonline.data.models.ContainerStatus
+import ru.iqsolution.tkoonline.data.remote.*
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.AdminManager
@@ -72,6 +70,8 @@ class MainApplication : Application(), KodeinAware {
                 .setExclusionStrategies(SerializedNameStrategy())
                 .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
                 .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
+                .registerTypeAdapter(ContainerStatus::class.java, ContainerStatusSerializer())
+                .registerTypeAdapter(ContainerStatus::class.java, ContainerStatusDeserializer())
                 .create()
         }
 

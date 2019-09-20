@@ -54,7 +54,7 @@ class ContainerItem {
     lateinit var timeLimitTo: DateTime
 
     @SerializedName("status")
-    var status = 0
+    lateinit var status: ContainerStatus
 
     override fun toString(): String {
         return "ContainerItem(kpId=$kpId, linkedKpId=$linkedKpId, address='$address', latitude=$latitude, longitude=$longitude, balKeeper=$balKeeper, balKeeperPhone=$balKeeperPhone, regOperator=$regOperator, regOperatorPhone=$regOperatorPhone, containerType='$containerType', containerTypeVolume=$containerTypeVolume, containerCount=$containerCount, timeLimitFrom=$timeLimitFrom, timeLimitTo=$timeLimitTo, status=$status)"

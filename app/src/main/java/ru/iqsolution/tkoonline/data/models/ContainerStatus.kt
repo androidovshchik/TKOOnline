@@ -1,26 +1,24 @@
 package ru.iqsolution.tkoonline.data.models
 
+import ru.iqsolution.tkoonline.R
+
 @Suppress("unused")
 enum class ContainerStatus(
     val id: Int,
-    val description: String,
-    val isDelete: Boolean,
-    val isError: Boolean,
-    val shortName: String
+    val color: Int,
+    val drawable: Int
 ) {
-    BEFORE(0, "До", false, false, "До"),
-    AFTER(1, "После", false, false, "Посл"),
-    ROAD(11, "Нет проезда", false, true, "НетПр"),
-    CONTRACT(12, "Мусор не соответствует договору", false, true, "МнСД"),
-    EMPTY(13, "Пустой бак", false, true, "Пуст"),
-    DAMAGED(14, "Контейнер повреждён", false, true, "Повр"),
-    DIRTY(15, "Площадка требует уборки", false, true, "ГрПл"),
-    OTHER(16, "Прочее", false, true, "Пр");
+    NO_TASK(0, 0, 0),
+    CLEANED(10, R.color.colorStatusGreen, R.drawable.oval_green),
+    CLEANED_TIMEOUT(11, R.color.colorStatusGreen, R.drawable.oval_green),
+    PENDING(20, R.color.colorStatusYellow, R.drawable.oval_yellow),
+    NOT_VISITED(30, R.color.colorStatusRed, R.drawable.oval_red),
+    NOT_CLEANED(31, R.color.colorStatusRed, R.drawable.oval_red);
 
     companion object {
 
-        val map = values().associateBy(ContainerStatus::id)
+        private val map = values().associateBy(ContainerStatus::id)
 
-        fun fromId(value: Int?): ContainerStatus? = value?.let { map[value] }
+        fun fromId(value: Int) = map.getOrDefault(value, NO_TASK)
     }
 }
