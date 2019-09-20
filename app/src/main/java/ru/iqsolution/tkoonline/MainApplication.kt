@@ -32,6 +32,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.data.local.AppDatabase
 import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.data.models.ContainerStatus
+import ru.iqsolution.tkoonline.data.models.ContainerType
 import ru.iqsolution.tkoonline.data.remote.*
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
@@ -72,6 +73,8 @@ class MainApplication : Application(), KodeinAware {
                 .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
                 .registerTypeAdapter(ContainerStatus::class.java, ContainerStatusSerializer())
                 .registerTypeAdapter(ContainerStatus::class.java, ContainerStatusDeserializer())
+                .registerTypeAdapter(ContainerType::class.java, ContainerTypeSerializer())
+                .registerTypeAdapter(ContainerType::class.java, ContainerTypeDeserializer())
                 .create()
         }
 

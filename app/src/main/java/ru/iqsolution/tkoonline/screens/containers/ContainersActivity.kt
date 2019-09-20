@@ -105,7 +105,7 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
         containersAdapter.apply {
             items.clear()
             objects.clear()
-            data.sortedBy { it.status }.forEach {
+            data.forEach {
                 items.add(it)
                 objects.addPlacemark(Point(it.latitude, it.longitude)).apply {
                     setView(ViewProvider(ContainerView(applicationContext).apply {
