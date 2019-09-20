@@ -6,6 +6,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
@@ -48,9 +49,28 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
             objects = mapObjects.addCollection()
             objects.addPlacemark(Point(59.948, 30.323)).apply {
                 setView(ViewProvider(ContainerView(applicationContext).apply {
-                    init(R.color.colorStatusOrange, "нет проезда", bitmap)
+                    init(R.color.colorStatusOrange, null, bitmap)
                 }))
             }
+        }
+        containers_plus.onClick {
+            containers_map.map.apply {
+                move(
+                    CameraPosition(cameraPosition.target, cameraPosition.zoom + 1, 0.0f, 0.0f),
+                    Animation(Animation.Type.SMOOTH, 1f), null
+                )
+            }
+        }
+        containers_minus.onClick {
+            containers_map.map.apply {
+                move(
+                    CameraPosition(cameraPosition.target, cameraPosition.zoom - 1, 0.0f, 0.0f),
+                    Animation(Animation.Type.SMOOTH, 1f), null
+                )
+            }
+        }
+        containers_location.onClick {
+
         }
         containers_list.apply {
             addItemDecoration(DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL).apply {
@@ -65,10 +85,12 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
             startActivitySimply<LoginActivity>()
             finish()
         }
-        containers_photo.apply {
-            visibility = if (presenter.isAllowedPhotoKp) View.VISIBLE else View.GONE
-            onClick {
+        if (presenter.isAllowedPhotoKp) {
+            containers_photo.apply {
+                visibility = View.VISIBLE
+                onClick {
 
+                }
             }
         }
     }
