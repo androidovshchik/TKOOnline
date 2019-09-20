@@ -17,6 +17,8 @@ val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm:ssZZ")
 
 val PATTERN_DATETIME: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd'T'HHmmssZ")
 
+val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
+
 /**
  * Extras
  */

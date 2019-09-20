@@ -26,7 +26,7 @@ import ru.iqsolution.tkoonline.widgets.ContainerView
 
 class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContract.View {
 
-    private val containersAdapter = ContainersAdapter()
+    private lateinit var containersAdapter: ContainersAdapter
 
     private lateinit var objects: MapObjectCollection
 
@@ -78,6 +78,7 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
                     setDrawable(it)
                 }
             })
+            containersAdapter = ContainersAdapter(applicationContext)
             adapter = containersAdapter
         }
         containers_complete.onClick {
@@ -92,6 +93,9 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
 
                 }
             }
+        } else {
+            containers_complete.text = containers_complete.text.toString()
+                .replace("\n", " ")
         }
     }
 
