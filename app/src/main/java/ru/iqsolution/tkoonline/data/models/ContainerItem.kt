@@ -34,22 +34,22 @@ class ContainerItem : Container(), Comparable<ContainerItem> {
     var regOperatorPhone: String? = null
 
     /**
-     * It will not contain [containerCount] even if this has the same [containerType]
+     * It will not contain [containerCount] and may be match [containerVolume] even if this has the same [containerType]
      */
     val containerRegular = Container(ContainerType.REGULAR)
 
     /**
-     * It will not contain [containerCount] even if this has the same [containerType]
+     * It will not contain [containerCount] and may be match [containerVolume] even if this has the same [containerType]
      */
     val containerBunker = Container(ContainerType.BUNKER)
 
     /**
-     * It will not contain [containerCount] even if this has the same [containerType]
+     * It will not contain [containerCount] and may be match [containerVolume] even if this has the same [containerType]
      */
     val containerWithout = Container(ContainerType.WITHOUT)
 
     /**
-     * It will not contain [containerCount] even if this has the same [containerType]
+     * It will not contain [containerCount] and may be match [containerVolume] even if this has the same [containerType]
      */
     val containerSpecial = Container(ContainerType.SPECIAL)
 

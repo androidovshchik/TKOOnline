@@ -18,6 +18,6 @@ interface ContainersContract {
 
         fun onReceivedTypes(data: List<PhotoItem>)
 
-        fun onReceivedContainers(data: List<ContainerItem>, center: Point)
+        fun onReceivedContainers(first: List<ContainerItem>, other: List<ContainerItem>, center: Point?)
     }
 }

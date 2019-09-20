@@ -101,11 +101,20 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
 
     }
 
-    override fun onReceivedContainers(data: List<ContainerItem>, center: Point) {
+    override fun onReceivedContainers(first: List<ContainerItem>, other: List<ContainerItem>, center: Point?) {
         containersAdapter.apply {
+            firstItems.clear()
             items.clear()
             objects.clear()
-            data.forEach {
+            first.forEach {
+                items.add(it)
+                objects.addPlacemark(Point(it.latitude, it.longitude)).apply {
+                    setView(ViewProvider(ContainerView(applicationContext).apply {
+                        init(it.status.color, null, bitmap)
+                    }))
+                }
+            }
+            other.forEach {
                 items.add(it)
                 objects.addPlacemark(Point(it.latitude, it.longitude)).apply {
                     setView(ViewProvider(ContainerView(applicationContext).apply {
@@ -114,8 +123,10 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
                 }
             }
             notifyDataSetChanged()
+        }
+        center?.let {
             containers_map.map.move(
-                CameraPosition(center, 15.0f, 0.0f, 0.0f),
+                CameraPosition(it, 15.0f, 0.0f, 0.0f),
                 Animation(Animation.Type.SMOOTH, 1f), null
             )
         }

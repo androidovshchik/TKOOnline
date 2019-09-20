@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.data.models.Container
 import ru.iqsolution.tkoonline.data.models.ContainerItem
+import ru.iqsolution.tkoonline.data.models.ContainerStatus
 import ru.iqsolution.tkoonline.data.models.ContainerType
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.BasePresenter
@@ -21,12 +22,11 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
 
     override fun receiveData() {
         launch {
-            val items = arrayListOf<ContainerItem>()
+            val responseContainers = serverApi.getContainers(preferences.authHeader, preferences.serverDay)
             val regulars = SimpleArrayMap<Int, Container>()
             val bunkers = SimpleArrayMap<Int, Container>()
             val without = SimpleArrayMap<Int, Container>()
             val specials = SimpleArrayMap<Int, Container>()
-            val responseContainers = serverApi.getContainers(preferences.authHeader, preferences.serverDay)
             responseContainers.data.forEach {
                 if (it.isValid) {
                     if (it.linkedKpId != null) {
@@ -51,17 +51,24 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
                     Timber.w("Unknown container type for id ${it.kpId}")
                 }
             }
-            var minLat = 0.0
-            var maxLat = 0.0
-            var minLon = 0.0
-            var maxLon = 0.0
+            var minLat = Double.MAX_VALUE
+            var maxLat = Double.MIN_VALUE
+            var minLon = Double.MAX_VALUE
+            var maxLon = Double.MIN_VALUE
+            val firstItems = arrayListOf<ContainerItem>()
+            val otherItems = arrayListOf<ContainerItem>()
             responseContainers.data.forEach {
                 if (it.isValid) {
                     if (it.linkedKpId == null) {
-                        if (it.longitude > minLon) {
-
-                        } else if (it.longitude > minLon) {
-
+                        if (it.latitude < minLat) {
+                            minLat = it.latitude
+                        } else if (it.latitude > maxLat) {
+                            maxLat = it.latitude
+                        }
+                        if (it.longitude < minLon) {
+                            minLon = it.longitude
+                        } else if (it.longitude > maxLon) {
+                            maxLon = it.longitude
                         }
                         regulars.get(it.kpId)?.let { container ->
                             it.containerRegular.addFrom(container)
@@ -75,13 +82,19 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
                         specials.get(it.kpId)?.let { container ->
                             it.containerSpecial.addFrom(container)
                         }
-                        items.add(it)
+                        when (it.status) {
+                            ContainerStatus.PENDING, ContainerStatus.NOT_VISITED -> firstItems.add(it)
+                            else -> otherItems.add(it)
+                        }
                     }
                 }
             }
             viewRef.get()?.onReceivedContainers(
-                items.sortedBy { it },
-                Point((maxLat + minLat) / 2, (maxLon + minLon) / 2)
+                firstItems.sortedBy { it }, otherItems,
+                if (responseContainers.data.isNotEmpty()) Point(
+                    (maxLat + minLat) / 2,
+                    (maxLon + minLon) / 2
+                ) else null
             )
             val responseTypes = serverApi.getPhotoTypes(preferences.authHeader)
             viewRef.get()?.onReceivedTypes(responseTypes.data)

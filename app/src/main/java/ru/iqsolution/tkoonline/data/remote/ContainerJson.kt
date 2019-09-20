@@ -22,7 +22,7 @@ class ContainerStatusDeserializer : JsonDeserializer<ContainerStatus> {
 class ContainerTypeSerializer : JsonSerializer<ContainerType> {
 
     override fun serialize(src: ContainerType, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return JsonPrimitive(src.name)
+        return JsonPrimitive(src.id)
     }
 }
 

@@ -31,7 +31,7 @@ class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
     override fun onBindViewHolder(holder: BaseViewHolder<ContainerItem>, position: Int) {
         holder.onBindItem(
             position, when {
-                position <= firstItems.size -> firstItems[position]
+                position < firstItems.size -> firstItems[position]
                 else -> items[position - firstItems.size]
             }
         )
