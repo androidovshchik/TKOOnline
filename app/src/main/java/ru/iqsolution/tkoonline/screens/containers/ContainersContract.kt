@@ -8,6 +8,8 @@ interface ContainersContract {
 
     interface Presenter {
 
+        val isAllowedPhotoKp: Boolean
+
         fun receiveData()
     }
 

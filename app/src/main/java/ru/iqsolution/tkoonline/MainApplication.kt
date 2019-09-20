@@ -138,11 +138,13 @@ class MainApplication : Application(), KodeinAware {
             override fun onActivityStarted(activity: Activity) {
                 if (activity !is LockActivity && activity !is LoginActivity) {
                     if (!preferences.isLoggedIn) {
-                        if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
-                            startActivity(intentFor<LockActivity>().clearTask())
-                        } else {
-                            startActivity(intentFor<LockActivity>().clearTop())
-                        }
+                        startActivity(intentFor<LockActivity>().apply {
+                            if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
+                                clearTask()
+                            } else {
+                                clearTop()
+                            }
+                        })
                     }
                 }
             }

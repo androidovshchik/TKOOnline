@@ -7,8 +7,7 @@
     tools:ignore="MissingPrefix">
 
     <include
-        layout="@layout/status_bar"
-        android:elevation="4dp"/>
+        layout="@layout/status_bar"/>
 
     <com.yandex.mapkit.mapview.MapView
         android:id="@+id/containers_map"
@@ -18,6 +17,14 @@
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
         android:src="@mipmap/ic_launcher"
+        android:background="@android:color/white"
+        android:elevation="6dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="@dimen/status_bar_height"
+        android:background="@drawable/bottom_shadow"
         android:elevation="6dp"/>
 
     <androidx.recyclerview.widget.RecyclerView

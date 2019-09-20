@@ -11,6 +11,8 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
 
     val serverApi: ServerApi by instance()
 
+    override val isAllowedPhotoKp = preferences.allowPhotoRefKp
+
     override fun receiveData() {
         launch {
             try {

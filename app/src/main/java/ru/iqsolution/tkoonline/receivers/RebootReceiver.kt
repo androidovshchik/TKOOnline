@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2019. Vlad Kalyuzhnyu <vladkalyuzhnyu@gmail.com>
- */
-
 package ru.iqsolution.tkoonline.receivers
 
 import android.annotation.SuppressLint

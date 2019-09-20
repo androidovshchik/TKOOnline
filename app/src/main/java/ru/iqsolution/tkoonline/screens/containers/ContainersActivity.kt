@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.containers
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -63,6 +64,12 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
             presenter.clearAuthorization()
             startActivitySimply<LoginActivity>()
             finish()
+        }
+        containers_photo.apply {
+            visibility = if (presenter.isAllowedPhotoKp) View.VISIBLE else View.GONE
+            onClick {
+
+            }
         }
     }
 
