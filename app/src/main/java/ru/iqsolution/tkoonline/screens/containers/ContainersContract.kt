@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.containers
 
+import com.yandex.mapkit.geometry.Point
 import ru.iqsolution.tkoonline.data.models.ContainerItem
 import ru.iqsolution.tkoonline.data.models.PhotoItem
 import ru.iqsolution.tkoonline.screens.IBaseView
@@ -17,6 +18,6 @@ interface ContainersContract {
 
         fun onReceivedTypes(data: List<PhotoItem>)
 
-        fun onReceivedContainers(data: List<ContainerItem>)
+        fun onReceivedContainers(data: List<ContainerItem>, center: Point)
     }
 }

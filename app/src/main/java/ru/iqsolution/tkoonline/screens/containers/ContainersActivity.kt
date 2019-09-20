@@ -43,15 +43,7 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
         }
         bitmap = getVectorBitmap(R.drawable.ic_delete)
         containers_map.map.apply {
-            move(
-                CameraPosition(Point(59.952, 30.318), 15.0f, 0.0f, 0.0f)
-            )
             objects = mapObjects.addCollection()
-            objects.addPlacemark(Point(59.948, 30.323)).apply {
-                setView(ViewProvider(ContainerView(applicationContext).apply {
-                    init(R.color.colorStatusOrange, null, bitmap)
-                }))
-            }
         }
         containers_plus.onClick {
             containers_map.map.apply {
@@ -109,11 +101,23 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
 
     }
 
-    override fun onReceivedContainers(data: List<ContainerItem>) {
+    override fun onReceivedContainers(data: List<ContainerItem>, center: Point) {
         containersAdapter.apply {
             items.clear()
-            items.addAll(data)
+            objects.clear()
+            data.sortedBy { it.status }.forEach {
+                items.add(it)
+                objects.addPlacemark(Point(it.latitude, it.longitude)).apply {
+                    setView(ViewProvider(ContainerView(applicationContext).apply {
+                        init(it.status.color, null, bitmap)
+                    }))
+                }
+            }
             notifyDataSetChanged()
+            containers_map.map.move(
+                CameraPosition(center, 15.0f, 0.0f, 0.0f),
+                Animation(Animation.Type.SMOOTH, 1f), null
+            )
         }
     }
 

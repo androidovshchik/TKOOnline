@@ -63,13 +63,13 @@ class ContainerView : View {
         defStyleRes
     )
 
-    fun init(color: Int, caption: String?, bitmap: Bitmap?) {
+    fun init(color: Int, message: String?, bitmap: Bitmap?) {
         ringColor = ContextCompat.getColor(context, color)
-        text = caption
+        text = message
         icon = bitmap
         val height = circleOuterR.toInt() * 2
         var width = height
-        text?.also {
+        message?.also {
             paint.getTextBounds(it, 0, it.length, textBounds)
             width += 2 * (textMarginStart + textBounds.width() + textMarginEnd)
         }
@@ -96,9 +96,12 @@ class ContainerView : View {
                     text!!, cX + circleOuterR + textMarginStart, (h + textBounds.height() - textBounds.bottom) / 2, this
                 )
             }
-            // drawing circle
+            // drawing outer circle
             color = colorWhiteAlpha
             canvas.drawCircle(cX, cY, circleOuterR, this)
+            // drawing inner circle
+            color = Color.WHITE
+            canvas.drawCircle(cX, cY, ringInnerR, this)
             // drawing ring
             color = ringColor
             style = Paint.Style.STROKE

@@ -10,14 +10,14 @@ class Preferences(context: Context) : KotprefModel(context) {
     var accessToken by nullableStringPref(null, "0x00")
 
     /**
-     * UTC (format)
+     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
     var expiresToken by nullableStringPref(null, "0x01")
 
     var allowPhotoRefKp by booleanPref(false, "0x02")
 
     /**
-     * Server time UTC (format)
+     * Server time [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
     var serverTime by nullableStringPref(null, "0x03")
 
