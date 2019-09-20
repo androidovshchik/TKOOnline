@@ -110,14 +110,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="10dp"
+        android:gravity="center_horizontal"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/containers_complete"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginEnd="5dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
             android:textAllCaps="false"
             android:text="Завершить\nмаршрут"
             android:textColor="@android:color/white"
@@ -127,12 +129,20 @@
             android:foreground="?android:attr/selectableItemBackground"
             fontPath="fonts/Roboto-Medium.ttf"/>
 
+        <View
+            android:id="@+id/containers_placeholder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="invisible"/>
+
         <Button
             android:id="@+id/containers_photo"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginStart="5dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
             android:textAllCaps="false"
             android:text="Фото вне\nсправочника"
             android:textColor="@android:color/white"

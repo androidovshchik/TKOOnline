@@ -86,8 +86,7 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
                 }
             }
         } else {
-            containers_complete.text = containers_complete.text.toString()
-                .replace("\n", " ")
+            containers_placeholder.visibility = View.GONE
         }
     }
 
@@ -102,33 +101,33 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
     }
 
     override fun onReceivedContainers(first: List<ContainerItem>, other: List<ContainerItem>, center: Point?) {
+        objects.clear()
         containersAdapter.apply {
             firstItems.clear()
             items.clear()
-            objects.clear()
             first.forEach {
-                items.add(it)
-                objects.addPlacemark(Point(it.latitude, it.longitude)).apply {
-                    setView(ViewProvider(ContainerView(applicationContext).apply {
-                        init(it.status.color, null, bitmap)
-                    }))
-                }
+                firstItems.add(it)
+                addMark(it)
             }
             other.forEach {
                 items.add(it)
-                objects.addPlacemark(Point(it.latitude, it.longitude)).apply {
-                    setView(ViewProvider(ContainerView(applicationContext).apply {
-                        init(it.status.color, null, bitmap)
-                    }))
-                }
+                addMark(it)
             }
             notifyDataSetChanged()
         }
         center?.let {
             containers_map.map.move(
-                CameraPosition(it, 15.0f, 0.0f, 0.0f),
+                CameraPosition(it, 12.0f, 0.0f, 0.0f),
                 Animation(Animation.Type.SMOOTH, 1f), null
             )
+        }
+    }
+
+    private fun addMark(item: ContainerItem) {
+        objects.addPlacemark(Point(item.latitude, item.longitude)).apply {
+            setView(ViewProvider(ContainerView(applicationContext).apply {
+                init(item.status.color, null, bitmap)
+            }))
         }
     }
 

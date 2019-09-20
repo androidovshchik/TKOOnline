@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
 
-class ContainerItem : Container(), Comparable<ContainerItem> {
+class ContainerItem : Container() {
 
     @SerializedName("kp_id")
     var kpId = 0
@@ -70,25 +70,4 @@ class ContainerItem : Container(), Comparable<ContainerItem> {
 
     val isValid: Boolean
         get() = containerType != ContainerType.UNKNOWN && (BuildConfig.DEBUG || status != ContainerStatus.NO_TASK)
-
-    override fun compareTo(other: ContainerItem): Int {
-        if (status == other.status) {
-            return 0
-        }
-        return when (status) {
-            ContainerStatus.PENDING -> 1
-            ContainerStatus.NOT_VISITED -> {
-                when (other.status) {
-                    ContainerStatus.PENDING -> -1
-                    else -> 1
-                }
-            }
-            else -> {
-                when (other.status) {
-                    ContainerStatus.PENDING, ContainerStatus.NOT_VISITED -> -1
-                    else -> 0
-                }
-            }
-        }
-    }
 }

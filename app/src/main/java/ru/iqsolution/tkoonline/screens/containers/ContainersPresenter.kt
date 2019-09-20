@@ -90,7 +90,7 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
                 }
             }
             viewRef.get()?.onReceivedContainers(
-                firstItems.sortedBy { it }, otherItems,
+                firstItems, otherItems,
                 if (responseContainers.data.isNotEmpty()) Point(
                     (maxLat + minLat) / 2,
                     (maxLon + minLon) / 2
