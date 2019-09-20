@@ -29,6 +29,6 @@ class ContainerTypeSerializer : JsonSerializer<ContainerType> {
 class ContainerTypeDeserializer : JsonDeserializer<ContainerType> {
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ContainerType {
-        return ContainerType.fromId(json.asString)
+        return ContainerType.fromId(json.asString.toUpperCase())
     }
 }

@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.data.models
 
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.BuildConfig
 
 class ContainerItem : Container() {
 
@@ -54,4 +55,7 @@ class ContainerItem : Container() {
 
     @SerializedName("status")
     lateinit var status: ContainerStatus
+
+    val isValid: Boolean
+        get() = containerType != ContainerType.UNKNOWN && (BuildConfig.DEBUG || status != ContainerStatus.NO_TASK)
 }

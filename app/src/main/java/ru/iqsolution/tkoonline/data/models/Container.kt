@@ -18,4 +18,11 @@ open class Container {
     constructor(type: ContainerType) {
         containerType = type
     }
+
+    fun addFrom(container: Container) {
+        if (container.containerTypeVolume == 0f) {
+            containerTypeVolume = container.containerTypeVolume
+        }
+        containerCount += container.containerCount
+    }
 }

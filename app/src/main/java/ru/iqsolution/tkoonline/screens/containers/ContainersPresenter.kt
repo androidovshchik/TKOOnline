@@ -5,12 +5,12 @@ import androidx.collection.SimpleArrayMap
 import com.yandex.mapkit.geometry.Point
 import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.data.models.Container
 import ru.iqsolution.tkoonline.data.models.ContainerItem
-import ru.iqsolution.tkoonline.data.models.ContainerStatus
+import ru.iqsolution.tkoonline.data.models.ContainerType
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.BasePresenter
+import timber.log.Timber
 
 class ContainersPresenter(application: Application) : BasePresenter<ContainersContract.View>(application),
     ContainersContract.Presenter {
@@ -27,24 +27,38 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
             var maxLon = 0.0
             val regulars = SimpleArrayMap<Int, Container>()
             val bunkers = SimpleArrayMap<Int, Container>()
-            val withouts = SimpleArrayMap<Int, Container>()
+            val without = SimpleArrayMap<Int, Container>()
             val specials = SimpleArrayMap<Int, Container>()
             val containers = arrayListOf<ContainerItem>()
             val responseContainers = serverApi.getContainers(preferences.authHeader, preferences.serverDay)
             responseContainers.data.forEach {
-                if (BuildConfig.DEBUG || it.status != ContainerStatus.NO_TASK) {
+                if (it.isValid) {
                     if (it.longitude > minLon) {
 
                     } else if (it.longitude > minLon) {
 
                     }
                     it.linkedKpId?.let { id ->
-                        map.put(id, map.get(id, 0))
+                        when (it.containerType) {
+                            ContainerType.REGULAR -> {
+                            }
+                            ContainerType.BUNKER -> {
+                            }
+                            ContainerType.WITHOUT -> {
+                            }
+                            ContainerType.SPECIAL -> {
+                            }
+                            else -> Timber.e("")
+                        }
+                        regulars.put(id, map.get(id, 0))
+                        bunkers.put(id, map.get(id, 0))
+                        without.put(id, map.get(id, 0))
+                        specials.put(id, map.get(id, 0))
                     }
                 }
             }
             responseContainers.data.forEach {
-                if (BuildConfig.DEBUG || it.status != ContainerStatus.NO_TASK) {
+                if (it.isValid) {
                     if (it.linkedKpId == null) {
                         it.containerCount += map.get(it.kpId, 0)
                         containers.add(it)
