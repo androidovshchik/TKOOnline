@@ -29,7 +29,7 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
             val bunkers = SimpleArrayMap<Int, Container>()
             val without = SimpleArrayMap<Int, Container>()
             val specials = SimpleArrayMap<Int, Container>()
-            val containers = arrayListOf<ContainerItem>()
+            val items = arrayListOf<ContainerItem>()
             val responseContainers = serverApi.getContainers(preferences.authHeader, preferences.serverDay)
             responseContainers.data.forEach {
                 if (it.isValid) {
@@ -55,22 +55,41 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
                         without.put(id, map.get(id, 0))
                         specials.put(id, map.get(id, 0))
                     }
+                } else if (it.containerType == ContainerType.UNKNOWN) {
+                    Timber.w("Unknown container type for id ${it.kpId}")
                 }
             }
             responseContainers.data.forEach {
                 if (it.isValid) {
                     if (it.linkedKpId == null) {
-                        it.containerCount += map.get(it.kpId, 0)
-                        containers.add(it)
+                        regulars.get(it.kpId)?.let { container ->
+                            it.containerRegular.addFrom(container)
+                        }
+                        bunkers.get(it.kpId)?.let { container ->
+                            it.containerBunker.addFrom(container)
+                        }
+                        without.get(it.kpId)?.let { container ->
+                            it.containerWithout.addFrom(container)
+                        }
+                        specials.get(it.kpId)?.let { container ->
+                            it.containerSpecial.addFrom(container)
+                        }
+                        items.add(it)
                     }
                 }
             }
             viewRef.get()?.onReceivedContainers(
-                containers.sortedBy { it },
+                items.sortedBy { it },
                 Point((maxLat + minLat) / 2, (maxLon + minLon) / 2)
             )
             val responseTypes = serverApi.getPhotoTypes(preferences.authHeader)
             viewRef.get()?.onReceivedTypes(responseTypes.data)
+        }
+    }
+
+    private fun SimpleArrayMap<Int, Container>.sdsd() {
+        if (containsKey()) {
+
         }
     }
 }

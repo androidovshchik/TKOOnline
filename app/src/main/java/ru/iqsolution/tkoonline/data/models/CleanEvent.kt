@@ -16,6 +16,9 @@ class CleanEvent {
     @ColumnInfo(name = "access_token")
     var accessToken: String? = null
 
+    /**
+     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     */
     @ColumnInfo(name = "datetime")
     @SerializedName("time")
     lateinit var time: DateTime

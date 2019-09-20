@@ -12,7 +12,7 @@ enum class ContainerType(
 
     companion object {
 
-        private val map = values().associateBy(ContainerType::name)
+        private val map = values().associateBy(ContainerType::id)
 
         fun fromId(value: String) = map.getOrDefault(value, UNKNOWN)
     }

@@ -8,10 +8,13 @@ open class Container {
     lateinit var containerType: ContainerType
 
     @SerializedName("container_type_volume")
-    var containerTypeVolume = 0f
+    var containerVolume = 0f
 
     @SerializedName("container_count")
     var containerCount = 0
+
+    val isEmpty: Boolean
+        get() = containerVolume < 0.1f
 
     constructor()
 
@@ -20,8 +23,8 @@ open class Container {
     }
 
     fun addFrom(container: Container) {
-        if (container.containerTypeVolume == 0f) {
-            containerTypeVolume = container.containerTypeVolume
+        if (isEmpty) {
+            containerVolume = container.containerVolume
         }
         containerCount += container.containerCount
     }

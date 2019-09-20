@@ -33,22 +33,34 @@ class ContainerItem : Container() {
     @SerializedName("reg_operator_phone")
     var regOperatorPhone: String? = null
 
-    val containerReqular = Container(ContainerType.REGULAR)
+    /**
+     * It will not contain [containerCount] even if this has the same [containerType]
+     */
+    val containerRegular = Container(ContainerType.REGULAR)
 
+    /**
+     * It will not contain [containerCount] even if this has the same [containerType]
+     */
     val containerBunker = Container(ContainerType.BUNKER)
 
+    /**
+     * It will not contain [containerCount] even if this has the same [containerType]
+     */
     val containerWithout = Container(ContainerType.WITHOUT)
 
+    /**
+     * It will not contain [containerCount] even if this has the same [containerType]
+     */
     val containerSpecial = Container(ContainerType.SPECIAL)
 
     /**
-     * Represents time without date [ru.iqsolution.tkoonline.PATTERN_TIME]
+     * [ru.iqsolution.tkoonline.PATTERN_TIME]
      */
     @SerializedName("time_limit_from")
     lateinit var timeLimitFrom: DateTime
 
     /**
-     * Represents time without date [ru.iqsolution.tkoonline.PATTERN_TIME]
+     * [ru.iqsolution.tkoonline.PATTERN_TIME]
      */
     @SerializedName("time_limit_to")
     lateinit var timeLimitTo: DateTime

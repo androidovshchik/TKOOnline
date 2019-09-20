@@ -15,6 +15,9 @@ interface ServerApi {
     @POST("auth")
     suspend fun login(@Field("login") login: String, @Field("password") password: String, @Field("block_code") blockCode: Int?): ResponseAuth
 
+    /**
+     * @param date [ru.iqsolution.tkoonline.PATTERN_DATE]
+     */
     @Headers("Accept: application/json")
     @GET("container-sites/{date}")
     suspend fun getContainers(@Header("Authorization") token: String, @Path("date") date: String): ResponseContainers
@@ -27,6 +30,9 @@ interface ServerApi {
     @POST("container-sites/{kp_id}/events")
     suspend fun sendEvent(@Header("Authorization") token: String, @Path("kp_id") kpId: Int, @Body body: RequestEvent): ResponseEvent
 
+    /**
+     * @param time [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     */
     @Multipart
     @POST("container-sites/{kp_id}/photos")
     suspend fun sendPhoto(
