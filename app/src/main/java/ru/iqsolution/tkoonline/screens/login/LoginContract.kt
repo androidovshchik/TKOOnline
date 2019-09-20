@@ -6,11 +6,7 @@ interface LoginContract {
 
     interface Presenter {
 
-        fun clearAuthorization()
-
         fun login(data: String)
-
-        fun resetQrCode()
     }
 
     interface View : IBaseView {

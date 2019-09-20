@@ -22,10 +22,6 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
     private var loginJson: String? = null
 
     override fun login(data: String) {
-        if (loginJson == OMIT_FIRST_DATA) {
-            loginJson = null
-            return
-        }
         if (data == loginJson) {
             return
         }
@@ -48,17 +44,5 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
             }
             viewRef.get()?.onAuthorized()
         }
-    }
-
-    override fun resetQrCode() {
-        loginJson = OMIT_FIRST_DATA
-    }
-
-    companion object {
-
-        /**
-         * It's needed to prevent false positives
-         */
-        private const val OMIT_FIRST_DATA = "OMIT_FIRST_DATA"
     }
 }

@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.screens.login
 
 import android.app.ActivityManager
-import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
@@ -10,6 +9,7 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivitySimply
 import ru.iqsolution.tkoonline.screens.BaseActivity
 import ru.iqsolution.tkoonline.screens.LockActivity
+import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
 
 @Suppress("DEPRECATION")
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
@@ -66,25 +66,13 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
     }
 
     override fun onAuthorized() {
-        startActivitySimply<LoginActivity>(REQUEST_RESULT)
+        startActivitySimply<ContainersActivity>()
         finish()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_RESULT) {
-            presenter.resetQrCode()
-        }
     }
 
     override fun onBackPressed() {
         if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
             finishAffinity()
         }
-    }
-
-    companion object {
-
-        private const val REQUEST_RESULT = 200
     }
 }

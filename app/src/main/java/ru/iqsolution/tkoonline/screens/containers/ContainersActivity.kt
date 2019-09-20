@@ -17,7 +17,9 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.data.models.ContainerItem
 import ru.iqsolution.tkoonline.data.models.PhotoItem
 import ru.iqsolution.tkoonline.extensions.getVectorBitmap
+import ru.iqsolution.tkoonline.extensions.startActivitySimply
 import ru.iqsolution.tkoonline.screens.BaseActivity
+import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.widgets.ContainerView
 
 class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContract.View {
@@ -59,6 +61,7 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
         }
         containers_complete.onClick {
             presenter.clearAuthorization()
+            startActivitySimply<LoginActivity>()
             finish()
         }
     }
