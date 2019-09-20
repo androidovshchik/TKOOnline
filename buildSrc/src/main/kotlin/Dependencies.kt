@@ -13,4 +13,5 @@ object Versions {
     const val mapkit = "3.4.0"
     const val andresguard = "1.2.17"
     const val stetho = "1.5.1"
+    const val glide = "4.9.0"
 }

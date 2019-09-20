@@ -6,7 +6,6 @@ import android.app.Application
 import android.os.Bundle
 import androidx.room.Room
 import com.facebook.stetho.Stetho
-import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -15,10 +14,7 @@ import io.github.inflationx.viewpump.ViewPump
 import net.danlew.android.joda.JodaTimeAndroid
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.jetbrains.anko.activityManager
-import org.jetbrains.anko.clearTask
-import org.jetbrains.anko.clearTop
-import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.*
 import org.joda.time.DateTime
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -57,7 +53,6 @@ class MainApplication : Application(), KodeinAware {
                     }).apply {
                         level = HttpLoggingInterceptor.Level.BODY
                     })
-                    addNetworkInterceptor(StethoInterceptor())
                 }
             }.connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(0, TimeUnit.SECONDS)
@@ -147,7 +142,7 @@ class MainApplication : Application(), KodeinAware {
                             } else {
                                 clearTop()
                             }
-                        })
+                        }.newTask())
                     }
                 }
             }

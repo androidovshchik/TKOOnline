@@ -74,6 +74,8 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.2.0'
+    implementation "com.github.bumptech.glide:glide:${Versions.glide}"
+    kapt "com.github.bumptech.glide:compiler:${Versions.glide}"
     implementation 'com.rabbitmq:amqp-client:5.7.3'
     implementation "org.kodein.di:kodein-di-generic-jvm:${Versions.kodein}"
     implementation "org.kodein.di:kodein-di-framework-android-core:${Versions.kodein}"
@@ -84,7 +86,6 @@ dependencies {
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation "com.facebook.stetho:stetho:${Versions.stetho}"
-    implementation "com.facebook.stetho:stetho-okhttp3:${Versions.stetho}"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
