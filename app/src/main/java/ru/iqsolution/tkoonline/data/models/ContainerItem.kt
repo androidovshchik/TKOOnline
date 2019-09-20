@@ -3,7 +3,7 @@ package ru.iqsolution.tkoonline.data.models
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 
-class ContainerItem {
+class ContainerItem : Comparable<ContainerItem> {
 
     @SerializedName("kp_id")
     var kpId = 0
@@ -56,8 +56,24 @@ class ContainerItem {
     @SerializedName("status")
     lateinit var status: ContainerStatus
 
-    override fun toString(): String {
-        return "ContainerItem(kpId=$kpId, linkedKpId=$linkedKpId, address='$address', latitude=$latitude, longitude=$longitude, balKeeper=$balKeeper, balKeeperPhone=$balKeeperPhone, regOperator=$regOperator, regOperatorPhone=$regOperatorPhone, containerType='$containerType', containerTypeVolume=$containerTypeVolume, containerCount=$containerCount, timeLimitFrom=$timeLimitFrom, timeLimitTo=$timeLimitTo, status=$status)"
+    override fun compareTo(other: ContainerItem): Int {
+        if (status == other.status) {
+            return 0
+        }
+        return when (status) {
+            ContainerStatus.PENDING -> 1
+            ContainerStatus.NOT_VISITED -> {
+                when (other.status) {
+                    ContainerStatus.PENDING -> -1
+                    else -> 1
+                }
+            }
+            else -> {
+                when (other.status) {
+                    ContainerStatus.PENDING, ContainerStatus.NOT_VISITED -> -1
+                    else -> 0
+                }
+            }
+        }
     }
-
 }
