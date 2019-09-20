@@ -6,8 +6,7 @@ import org.joda.time.format.DateTimeFormatter
 
 val DANGER_PERMISSIONS = arrayOf(
     Manifest.permission.CAMERA,
-    Manifest.permission.ACCESS_FINE_LOCATION,
-    Manifest.permission.ACCESS_COARSE_LOCATION
+    Manifest.permission.ACCESS_FINE_LOCATION
 )
 
 const val MAPKIT_KEY = "9ef633b4-95b2-409a-a74f-e0a5c75321db"

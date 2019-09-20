@@ -1,12 +1,15 @@
 package ru.iqsolution.tkoonline.screens.login
 
+import android.app.ActivityManager
 import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login.*
+import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.BaseActivity
+import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
 
 @Suppress("DEPRECATION")
@@ -40,7 +43,6 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
                 }
             }
         }
-        onKioskMode(null)
     }
 
     override fun onSuccessPrompt() {
@@ -53,11 +55,11 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
         }
     }
 
-    override fun onKioskMode(enter: Boolean?) {
-        if (enter == true) {
+    override fun onKioskMode(enter: Boolean) {
+        if (enter) {
             hasPrompted = false
         }
-        presenter.setKioskMode(this, enter)
+        startActivity(intentFor<LockActivity>())
     }
 
     override fun onQrCode(value: String) {
@@ -66,12 +68,19 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
 
     override fun onAuthorized() {
         startActivityForResult(intentFor<ContainersActivity>(), REQUEST_RESULT)
+        finish()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_RESULT) {
             presenter.resetQrCode()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
+            finishAffinity()
         }
     }
 

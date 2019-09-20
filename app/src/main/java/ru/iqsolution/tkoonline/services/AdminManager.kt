@@ -1,15 +1,13 @@
 package ru.iqsolution.tkoonline.services
 
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.UserManager
-import org.jetbrains.anko.clearTop
 import org.jetbrains.anko.devicePolicyManager
-import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.receivers.AdminReceiver
+import ru.iqsolution.tkoonline.screens.LockActivity
 
 @Suppress("MemberVisibilityCanBePrivate")
 class AdminManager(context: Context) {
@@ -27,15 +25,15 @@ class AdminManager(context: Context) {
     val isDeviceOwner: Boolean
         get() = deviceManager.isDeviceOwnerApp(packageName)
 
-    fun setKioskMode(activity: Activity, enable: Boolean) {
+    fun setKioskMode(enable: Boolean): Boolean {
         if (isDeviceOwner) {
             setRestrictions(enable)
-            setAsHomeApp(activity, enable)
+            setAsHomeApp(enable)
             setKeyGuardEnabled(enable)
-            setLockTask(activity, enable)
-        } else {
-            activity.toast("Требуются права владельца устройства")
+            setLockTask(enable)
+            return true
         }
+        return false
     }
 
     /**
@@ -59,18 +57,23 @@ class AdminManager(context: Context) {
     /**
      * @throws SecurityException if {@code admin} is not a device or profile owner.
      */
-    private fun setAsHomeApp(activity: Activity, enable: Boolean) {
+    private fun setAsHomeApp(enable: Boolean) {
         if (enable) {
             val intentFilter = IntentFilter(Intent.ACTION_MAIN).apply {
                 addCategory(Intent.CATEGORY_HOME)
                 addCategory(Intent.CATEGORY_DEFAULT)
             }
-            deviceManager.addPersistentPreferredActivity(adminComponent, intentFilter, activity.componentName)
+            val activityComponent = ComponentName(packageName, LockActivity::class.java.name)
+            deviceManager.addPersistentPreferredActivity(adminComponent, intentFilter, activityComponent)
         } else {
             deviceManager.clearPackagePersistentPreferredActivities(adminComponent, packageName)
         }
     }
 
+    /**
+     * @throws SecurityException if {@code admin} is not the device owner, or a profile owner of
+     * secondary user that is affiliated with the device.
+     */
     private fun setKeyGuardEnabled(enable: Boolean) {
         deviceManager.setKeyguardDisabled(adminComponent, !enable)
     }
@@ -79,17 +82,11 @@ class AdminManager(context: Context) {
      * @throws SecurityException if {@code admin} is not the device owner, the profile owner of an
      * affiliated user or profile, or the profile owner when no device owner is set.
      */
-    private fun setLockTask(activity: Activity, enable: Boolean) = activity.run {
+    private fun setLockTask(enable: Boolean) {
         if (enable) {
-            devicePolicyManager.setLockTaskPackages(adminComponent, arrayOf(packageName))
-            startLockTask()
+            deviceManager.setLockTaskPackages(adminComponent, arrayOf(packageName))
         } else {
-            devicePolicyManager.setLockTaskPackages(adminComponent, arrayOf())
-            stopLockTask()
-            startActivity(
-                Intent(applicationContext, javaClass)
-                    .clearTop()
-            )
+            deviceManager.setLockTaskPackages(adminComponent, arrayOf())
         }
     }
 }

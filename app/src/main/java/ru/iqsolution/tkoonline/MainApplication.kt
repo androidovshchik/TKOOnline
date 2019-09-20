@@ -32,6 +32,7 @@ import ru.iqsolution.tkoonline.data.remote.DateTimeDeserializer
 import ru.iqsolution.tkoonline.data.remote.DateTimeSerializer
 import ru.iqsolution.tkoonline.data.remote.SerializedNameStrategy
 import ru.iqsolution.tkoonline.data.remote.ServerApi
+import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.AdminManager
 import timber.log.Timber
@@ -132,7 +133,7 @@ class MainApplication : Application(), KodeinAware {
             override fun onActivityResumed(activity: Activity) {}
 
             override fun onActivityStarted(activity: Activity) {
-                if (activity !is LoginActivity) {
+                if (activity !is LockActivity && activity !is LoginActivity) {
                     if (!preferences.isLoggedIn) {
                         startActivity(
                             intentFor<LoginActivity>()

@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.login
 
-import android.app.Activity
 import android.app.Application
 import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
@@ -11,7 +10,6 @@ import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.data.models.QrCode
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.BasePresenter
-import ru.iqsolution.tkoonline.services.AdminManager
 import timber.log.Timber
 
 class LoginPresenter(application: Application) : BasePresenter<LoginContract.View>(application),
@@ -21,17 +19,7 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
 
     val gson: Gson by instance()
 
-    val adminManager: AdminManager by instance()
-
     private var loginJson: String? = null
-
-    override fun setKioskMode(activity: Activity, enable: Boolean?) {
-        if (enable != null) {
-            adminManager.setKioskMode(activity, enable)
-        } else if (preferences.enableLock) {
-            adminManager.setKioskMode(activity, true)
-        }
-    }
 
     override fun login(data: String) {
         if (loginJson == OMIT_FIRST_DATA) {
@@ -68,6 +56,9 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
 
     companion object {
 
+        /**
+         * It's needed to prevent false positives
+         */
         private const val OMIT_FIRST_DATA = "OMIT_FIRST_DATA"
     }
 }
