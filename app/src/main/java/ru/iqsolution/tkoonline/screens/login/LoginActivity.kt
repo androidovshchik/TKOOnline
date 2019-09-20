@@ -5,12 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.startActivitySimply
 import ru.iqsolution.tkoonline.screens.BaseActivity
 import ru.iqsolution.tkoonline.screens.LockActivity
-import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
 
 @Suppress("DEPRECATION")
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
@@ -59,7 +58,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
         if (enter) {
             hasPrompted = false
         }
-        startActivity(intentFor<LockActivity>())
+        startActivitySimply<LockActivity>()
     }
 
     override fun onQrCode(value: String) {
@@ -67,7 +66,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
     }
 
     override fun onAuthorized() {
-        startActivityForResult(intentFor<ContainersActivity>(), REQUEST_RESULT)
+        startActivitySimply<LoginActivity>(REQUEST_RESULT)
         finish()
     }
 

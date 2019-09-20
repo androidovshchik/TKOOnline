@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.app.Application
 import android.os.Bundle
 import androidx.room.Room
@@ -14,7 +15,9 @@ import io.github.inflationx.viewpump.ViewPump
 import net.danlew.android.joda.JodaTimeAndroid
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.clearTop
 import org.jetbrains.anko.intentFor
 import org.joda.time.DateTime
 import org.kodein.di.Kodein
@@ -135,10 +138,11 @@ class MainApplication : Application(), KodeinAware {
             override fun onActivityStarted(activity: Activity) {
                 if (activity !is LockActivity && activity !is LoginActivity) {
                     if (!preferences.isLoggedIn) {
-                        startActivity(
-                            intentFor<LoginActivity>()
-                                .clearTask()
-                        )
+                        if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
+                            startActivity(intentFor<LockActivity>().clearTask())
+                        } else {
+                            startActivity(intentFor<LockActivity>().clearTop())
+                        }
                     }
                 }
             }
