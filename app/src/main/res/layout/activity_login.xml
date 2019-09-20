@@ -12,11 +12,17 @@
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginTop="@dimen/status_bar_height"
+        android:background="#735644ae"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
-        android:paddingTop="24dp"
+        android:paddingTop="@dimen/status_bar_height"
         android:orientation="vertical"
         android:background="#99000000">
 
@@ -26,8 +32,7 @@
             android:paddingTop="15dp"
             android:paddingBottom="20dp"
             android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:background="#735644ae">
+            android:gravity="center_horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
