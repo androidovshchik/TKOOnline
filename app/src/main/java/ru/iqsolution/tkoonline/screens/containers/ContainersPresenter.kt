@@ -21,47 +21,48 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
 
     override fun receiveData() {
         launch {
-            var minLat = 0.0
-            var maxLat = 0.0
-            var minLon = 0.0
-            var maxLon = 0.0
+            val items = arrayListOf<ContainerItem>()
             val regulars = SimpleArrayMap<Int, Container>()
             val bunkers = SimpleArrayMap<Int, Container>()
             val without = SimpleArrayMap<Int, Container>()
             val specials = SimpleArrayMap<Int, Container>()
-            val items = arrayListOf<ContainerItem>()
             val responseContainers = serverApi.getContainers(preferences.authHeader, preferences.serverDay)
             responseContainers.data.forEach {
                 if (it.isValid) {
-                    if (it.longitude > minLon) {
-
-                    } else if (it.longitude > minLon) {
-
-                    }
-                    it.linkedKpId?.let { id ->
+                    if (it.linkedKpId != null) {
                         when (it.containerType) {
                             ContainerType.REGULAR -> {
+                                regulars.putByLinkedId(it)
                             }
                             ContainerType.BUNKER -> {
+                                bunkers.putByLinkedId(it)
                             }
                             ContainerType.WITHOUT -> {
+                                without.putByLinkedId(it)
                             }
                             ContainerType.SPECIAL -> {
+                                specials.putByLinkedId(it)
                             }
-                            else -> Timber.e("")
+                            else -> {
+                            }
                         }
-                        regulars.put(id, map.get(id, 0))
-                        bunkers.put(id, map.get(id, 0))
-                        without.put(id, map.get(id, 0))
-                        specials.put(id, map.get(id, 0))
                     }
                 } else if (it.containerType == ContainerType.UNKNOWN) {
                     Timber.w("Unknown container type for id ${it.kpId}")
                 }
             }
+            var minLat = 0.0
+            var maxLat = 0.0
+            var minLon = 0.0
+            var maxLon = 0.0
             responseContainers.data.forEach {
                 if (it.isValid) {
                     if (it.linkedKpId == null) {
+                        if (it.longitude > minLon) {
+
+                        } else if (it.longitude > minLon) {
+
+                        }
                         regulars.get(it.kpId)?.let { container ->
                             it.containerRegular.addFrom(container)
                         }
@@ -87,9 +88,11 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
         }
     }
 
-    private fun SimpleArrayMap<Int, Container>.sdsd() {
-        if (containsKey()) {
-
+    private fun SimpleArrayMap<Int, Container>.putByLinkedId(item: ContainerItem) {
+        get(item.linkedKpId)?.addFrom(item) ?: run {
+            put(item.linkedKpId, Container(item.containerType).apply {
+                addFrom(item)
+            })
         }
     }
 }

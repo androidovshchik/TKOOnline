@@ -18,6 +18,8 @@ import ru.iqsolution.tkoonline.screens.BaseViewHolder
 
 class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
 
+    val firstItems = arrayListOf<ContainerItem>()
+
     private val minSize = context.dip(17)
 
     private val maxSize = context.dip(30)
@@ -25,6 +27,17 @@ class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(parent.inflate(R.layout.item_container))
     }
+
+    override fun onBindViewHolder(holder: BaseViewHolder<ContainerItem>, position: Int) {
+        holder.onBindItem(
+            position, when {
+                position <= firstItems.size -> firstItems[position]
+                else -> items[position - firstItems.size]
+            }
+        )
+    }
+
+    override fun getItemCount() = firstItems.size + items.size
 
     inner class ViewHolder(itemView: View) : BaseViewHolder<ContainerItem>(itemView) {
 
