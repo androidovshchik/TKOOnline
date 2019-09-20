@@ -3,7 +3,7 @@ package ru.iqsolution.tkoonline.data.models
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 
-class ContainerItem : Comparable<ContainerItem> {
+class ContainerItem : Container() {
 
     @SerializedName("kp_id")
     var kpId = 0
@@ -32,48 +32,26 @@ class ContainerItem : Comparable<ContainerItem> {
     @SerializedName("reg_operator_phone")
     var regOperatorPhone: String? = null
 
-    @SerializedName("container_type")
-    lateinit var containerType: String
+    val containerReqular = Container(ContainerType.REGULAR)
 
-    @SerializedName("container_type_volume")
-    var containerTypeVolume = 0f
+    val containerBunker = Container(ContainerType.BUNKER)
 
-    @SerializedName("container_count")
-    var containerCount = 0
+    val containerWithout = Container(ContainerType.WITHOUT)
+
+    val containerSpecial = Container(ContainerType.SPECIAL)
 
     /**
-     * Represents time without date
+     * Represents time without date [ru.iqsolution.tkoonline.PATTERN_TIME]
      */
     @SerializedName("time_limit_from")
     lateinit var timeLimitFrom: DateTime
 
     /**
-     * Represents time without date
+     * Represents time without date [ru.iqsolution.tkoonline.PATTERN_TIME]
      */
     @SerializedName("time_limit_to")
     lateinit var timeLimitTo: DateTime
 
     @SerializedName("status")
     lateinit var status: ContainerStatus
-
-    override fun compareTo(other: ContainerItem): Int {
-        if (status == other.status) {
-            return 0
-        }
-        return when (status) {
-            ContainerStatus.PENDING -> 1
-            ContainerStatus.NOT_VISITED -> {
-                when (other.status) {
-                    ContainerStatus.PENDING -> -1
-                    else -> 1
-                }
-            }
-            else -> {
-                when (other.status) {
-                    ContainerStatus.PENDING, ContainerStatus.NOT_VISITED -> -1
-                    else -> 0
-                }
-            }
-        }
-    }
 }

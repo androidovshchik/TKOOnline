@@ -1,11 +1,12 @@
 package ru.iqsolution.tkoonline.screens.containers
 
 import android.app.Application
-import android.util.SparseIntArray
+import androidx.collection.SimpleArrayMap
 import com.yandex.mapkit.geometry.Point
 import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
+import ru.iqsolution.tkoonline.data.models.Container
 import ru.iqsolution.tkoonline.data.models.ContainerItem
 import ru.iqsolution.tkoonline.data.models.ContainerStatus
 import ru.iqsolution.tkoonline.data.remote.ServerApi
@@ -24,7 +25,10 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
             var maxLat = 0.0
             var minLon = 0.0
             var maxLon = 0.0
-            val map = SparseIntArray()
+            val regulars = SimpleArrayMap<Int, Container>()
+            val bunkers = SimpleArrayMap<Int, Container>()
+            val withouts = SimpleArrayMap<Int, Container>()
+            val specials = SimpleArrayMap<Int, Container>()
             val containers = arrayListOf<ContainerItem>()
             val responseContainers = serverApi.getContainers(preferences.authHeader, preferences.serverDay)
             responseContainers.data.forEach {
