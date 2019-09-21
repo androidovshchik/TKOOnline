@@ -29,6 +29,8 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     var lockPassword by nullableStringPref(null, "0x07")
 
+    var vehicleNumber by nullableStringPref(null, "0x08")
+
     /**
      * Local time (milliseconds)
      */

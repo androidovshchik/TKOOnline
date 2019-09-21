@@ -19,7 +19,7 @@
         tools:text="А 111 АА 197"/>
 
     <TextView
-        android:id="@+id/status_datetime"
+        android:id="@+id/status_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -27,7 +27,7 @@
         android:textColor="@android:color/white"
         android:lineSpacingExtra="3sp"
         fontPath="fonts/Roboto-Regular.ttf"
-        tools:text="21.04.2019"/>
+        tools:text="12:42"/>
 
     <ImageView
         android:id="@+id/status_location"

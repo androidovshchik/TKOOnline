@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.status_bar.*
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.data.local.Preferences
 import timber.log.Timber
 
 class StatusBarFragment : BaseFragment() {
@@ -21,12 +22,17 @@ class StatusBarFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        activity?.registerReceiver(batteryReceiver, IntentFilter().apply {
+        val preferences = Preferences(context)
+        status_a.text = preferences.vehicleNumber ?: ""
+        activity?.registerReceiver(receiver, IntentFilter().apply {
+            // time
+            addAction(Intent.ACTION_TIME_TICK)
+            addAction(Intent.ACTION_TIME_CHANGED)
+            addAction(Intent.ACTION_TIMEZONE_CHANGED)
+            // battery
             addAction(Intent.ACTION_BATTERY_CHANGED)
             addAction(Intent.ACTION_BATTERY_LOW)
             addAction(Intent.ACTION_BATTERY_OKAY)
-            addAction(Intent.ACTION_POWER_CONNECTED)
-            addAction(Intent.ACTION_POWER_DISCONNECTED)
         })
     }
 
@@ -63,15 +69,19 @@ class StatusBarFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
-        activity?.unregisterReceiver(batteryReceiver)
+        activity?.unregisterReceiver(receiver)
         super.onDestroyView()
     }
 
-    private val batteryReceiver = object : BroadcastReceiver() {
+    private val receiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
+            Timber.d("Status bar action: ${intent.action}")
             when (intent.action) {
-                Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY, Intent.ACTION_POWER_CONNECTED, Intent.ACTION_POWER_DISCONNECTED -> {
+                Intent.ACTION_TIME_TICK, Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED -> {
+                    status_time.text = "00:00"
+                }
+                Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
                     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
                     val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
                     Timber.d("On battery changes: status $status, level $level")
