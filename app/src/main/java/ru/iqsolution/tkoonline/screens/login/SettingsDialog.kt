@@ -10,7 +10,6 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.screens.BaseDialogFragment
-import timber.log.Timber
 
 class SettingsDialog : BaseDialogFragment() {
 
@@ -51,7 +50,6 @@ class SettingsDialog : BaseDialogFragment() {
 
     private fun setLocked(enable: Boolean) {
         isEnabledLock = enable
-        Timber.d("isEnabledLock = $enable")
         dialog_unlock.text = if (enable) "Разблокировать" else "Заблокировать"
     }
 }
