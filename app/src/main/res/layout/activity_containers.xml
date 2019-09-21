@@ -35,6 +35,8 @@
         android:layout_height="300dp"
         android:layout_marginTop="@dimen/status_bar_height"
         android:layout_alignParentEnd="true"
+        android:paddingStart="16dp"
+        android:paddingEnd="0dp"
         android:orientation="vertical"
         android:gravity="center"
         android:elevation="6dp"
@@ -49,7 +51,7 @@
             android:orientation="vertical"
             android:gravity="center_horizontal"
             android:background="@drawable/control_rect"
-            android:elevation="24dp">
+            android:elevation="16dp">
 
             <ImageView
                 android:id="@+id/containers_plus"
@@ -85,7 +87,7 @@
             android:padding="5dp"
             android:src="@drawable/ic_direction"
             android:background="@drawable/control_oval"
-            android:elevation="24dp"/>
+            android:elevation="16dp"/>
 
     </LinearLayout>
 
@@ -134,7 +136,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:visibility="invisible"/>
+            android:visibility="gone"
+            tools:visibility="invisible"/>
 
         <Button
             android:id="@+id/containers_photo"

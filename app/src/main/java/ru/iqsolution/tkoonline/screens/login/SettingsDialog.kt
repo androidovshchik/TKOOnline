@@ -17,6 +17,7 @@ class SettingsDialog : BaseDialogFragment() {
     private var isEnabledLock = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
         return inflater.inflate(R.layout.dialog_login, container, false)
     }
 
