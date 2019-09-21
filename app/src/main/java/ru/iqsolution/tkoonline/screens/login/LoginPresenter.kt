@@ -4,6 +4,7 @@ import android.app.Application
 import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
@@ -36,16 +37,23 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
         loginJson = data
         baseJob.cancelChildren()
         launch {
-            val responseAuth = serverApi.login(qrCode.carId.toString(), qrCode.pass, preferences.lockPassword?.toInt())
-            preferences.bulk {
-                accessToken = responseAuth.accessKey
-                expiresToken = responseAuth.expire
-                allowPhotoRefKp = responseAuth.noKpPhoto == 1
-                serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
-                timeDifference = System.currentTimeMillis() - responseAuth.currentTime.millis
-                vehicleNumber = qrCode.regNum
+            try {
+                val responseAuth =
+                    serverApi.login(qrCode.carId.toString(), qrCode.pass, preferences.lockPassword?.toInt())
+                preferences.bulk {
+                    accessToken = responseAuth.accessKey
+                    expiresToken = responseAuth.expire
+                    allowPhotoRefKp = responseAuth.noKpPhoto == 1
+                    serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
+                    timeDifference = System.currentTimeMillis() - responseAuth.currentTime.millis
+                    vehicleNumber = qrCode.regNum
+                }
+                viewRef.get()?.onAuthorized()
+            } catch (e: CancellationException) {
+            } catch (e: Exception) {
+                Timber.e(e)
+                loginJson = null
             }
-            viewRef.get()?.onAuthorized()
         }
     }
 }

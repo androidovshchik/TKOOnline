@@ -12,18 +12,26 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.status_bar.*
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.SIMPLE_TIME
 import ru.iqsolution.tkoonline.data.local.Preferences
 import timber.log.Timber
 
 class StatusBarFragment : BaseFragment() {
+
+    private lateinit var preferences: Preferences
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        preferences = Preferences(context)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.status_bar, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        val preferences = Preferences(context)
         status_a.text = preferences.vehicleNumber ?: ""
+        updateTime()
         activity?.registerReceiver(receiver, IntentFilter().apply {
             // time
             addAction(Intent.ACTION_TIME_TICK)
@@ -34,6 +42,10 @@ class StatusBarFragment : BaseFragment() {
             addAction(Intent.ACTION_BATTERY_LOW)
             addAction(Intent.ACTION_BATTERY_OKAY)
         })
+    }
+
+    private fun updateTime() {
+        status_time.text = SIMPLE_TIME.format(System.currentTimeMillis() - preferences.timeDifference)
     }
 
     @SuppressLint("SetTextI18n")
@@ -80,7 +92,7 @@ class StatusBarFragment : BaseFragment() {
             Timber.d("Status bar action: ${intent.action}")
             when (intent.action) {
                 Intent.ACTION_TIME_TICK, Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED -> {
-                    status_time.text = "00:00"
+                    updateTime()
                 }
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
                     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)

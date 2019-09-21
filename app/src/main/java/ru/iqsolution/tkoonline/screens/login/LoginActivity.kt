@@ -2,9 +2,11 @@ package ru.iqsolution.tkoonline.screens.login
 
 import android.app.ActivityManager
 import android.os.Bundle
+import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.topPadding
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivitySimply
 import ru.iqsolution.tkoonline.screens.BaseActivity
@@ -20,6 +22,15 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
 
     private var hasPrompted = false
 
+    private val statusBarHeight: Int
+        get() {
+            val id = resources.getIdentifier("status_bar_height", "dimen", "android")
+            if (id > 0) {
+                return resources.getDimensionPixelSize(id)
+            }
+            return 0
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -27,6 +38,8 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
             it.attachView(this)
             it.clearAuthorization()
         }
+        (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = statusBarHeight
+        login_shadow.topPadding = statusBarHeight
         login_menu.onClick {
             fragmentManager.beginTransaction().apply {
                 fragmentManager.findFragmentByTag(settingsDialog.javaClass.simpleName)?.let {
