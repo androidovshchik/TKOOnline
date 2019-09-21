@@ -14,15 +14,27 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    buildTypes {
+    signingConfigs {
+        release {
+            storeFile file("keystore/release.jks")
+            storePassword "tkonline"
+            keyAlias "tkonline"
+            keyPassword "tkonline"
+            v1SigningEnabled true
+            v2SigningEnabled true
+            // countryCode 07
+        }
+    }
+    buildTypes {tkonline
         debug {
+            signingConfig signingConfigs.release
             buildConfigField("String", "BASE_URL", "\"https://msknt2.iqsolution.ru/mobile/v1/\"")
         }
         release {
             minifyEnabled true
             useProguard true
             shrinkResources true
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField("String", "BASE_URL", "\"https://msknt.iqsolution.ru/mobile/v1/\"")
         }
