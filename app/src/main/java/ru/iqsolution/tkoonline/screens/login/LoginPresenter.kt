@@ -7,6 +7,7 @@ import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.data.models.QrCode
 import ru.iqsolution.tkoonline.data.remote.ServerApi
 import ru.iqsolution.tkoonline.screens.BasePresenter
@@ -40,7 +41,9 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
                 accessToken = responseAuth.accessKey
                 expiresToken = responseAuth.expire
                 allowPhotoRefKp = responseAuth.noKpPhoto == 1
-                serverTime = responseAuth.currentTime
+                serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
+                timeDifference = System.currentTimeMillis() - responseAuth.currentTime.millis
+                vehicleNumber = qrCode.regNum
             }
             viewRef.get()?.onAuthorized()
         }

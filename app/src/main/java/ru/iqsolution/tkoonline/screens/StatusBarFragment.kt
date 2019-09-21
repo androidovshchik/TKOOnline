@@ -53,6 +53,7 @@ class StatusBarFragment : BaseFragment() {
                     tag = R.drawable.ic_battery_full
                 }
             }
+            // unknown
             else -> {
                 if (status_battery.tag == R.drawable.ic_battery_charging) {
                     return

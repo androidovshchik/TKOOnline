@@ -29,12 +29,21 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     var lockPassword by nullableStringPref(null, "0x07")
 
-    var vehicleNumber by nullableStringPref(null, "0x08")
-
     /**
      * Local time (milliseconds)
      */
     var blockTime by longPref(0L, "0x08")
+
+    var vehicleNumber by nullableStringPref(null, "0x09")
+
+    /**
+     * Local time minus server time (milliseconds)
+     */
+    var timeDifference by longPref(0L, "0x0a")
+
+    /**
+     * !!! Non properties below
+     */
 
     val isLoggedIn: Boolean
         get() = accessToken != null
