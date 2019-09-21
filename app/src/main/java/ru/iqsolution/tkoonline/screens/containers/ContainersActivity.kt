@@ -79,14 +79,13 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
             finish()
         }
         if (presenter.isAllowedPhotoKp) {
+            containers_placeholder.visibility = View.VISIBLE
             containers_photo.apply {
                 visibility = View.VISIBLE
                 onClick {
 
                 }
             }
-        } else {
-            containers_placeholder.visibility = View.GONE
         }
     }
 
