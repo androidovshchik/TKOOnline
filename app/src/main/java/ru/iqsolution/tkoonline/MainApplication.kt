@@ -11,14 +11,14 @@ import com.google.gson.GsonBuilder
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
-import net.danlew.android.joda.JodaTimeAndroid
+import net.danlew.android.joda.ResourceZoneInfoProvider
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.jetbrains.anko.*
 import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
-import org.kodein.di.KodeinTrigger
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
 import org.kodein.di.generic.provider
@@ -99,15 +99,12 @@ class MainApplication : Application(), KodeinAware {
 
     val preferences: Preferences by instance()
 
-    override val kodeinTrigger = KodeinTrigger()
-
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
-        kodeinTrigger.trigger()
-        JodaTimeAndroid.init(applicationContext)
+        DateTimeZone.setProvider(ResourceZoneInfoProvider(applicationContext))
         ViewPump.init(
             ViewPump.builder()
                 .addInterceptor(

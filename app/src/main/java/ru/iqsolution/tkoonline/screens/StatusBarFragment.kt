@@ -17,11 +17,13 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.status_bar.*
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.data.local.Preferences
 import timber.log.Timber
+import java.util.*
 
 class StatusBarFragment : BaseFragment() {
 
@@ -69,6 +71,7 @@ class StatusBarFragment : BaseFragment() {
 
     private fun updateTime() {
         status_time.text = serverTime.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
+            .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
             .toString(FORMAT_TIME)
     }
 
@@ -134,6 +137,15 @@ class StatusBarFragment : BaseFragment() {
             Timber.d("Status bar action: ${intent.action}")
             when (intent.action) {
                 Intent.ACTION_TIME_TICK, Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED -> {
+                    if (intent.action == Intent.ACTION_TIMEZONE_CHANGED) {
+                        try {
+                            val timeZone = TimeZone.getDefault()
+                            DateTimeZone.setDefault(DateTimeZone.forTimeZone(timeZone))
+                            Timber.d("Changed default timezone to ${timeZone.id}")
+                        } catch (e: Exception) {
+                            Timber.e(e)
+                        }
+                    }
                     updateTime()
                 }
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
