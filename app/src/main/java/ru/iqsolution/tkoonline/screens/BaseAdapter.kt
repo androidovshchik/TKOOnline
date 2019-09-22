@@ -5,8 +5,6 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import java.lang.ref.WeakReference
 
-private typealias Listener<T> = (position: Int, item: T, param: Any?) -> Unit
-
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 abstract class BaseAdapter<T> : RecyclerView.Adapter<BaseViewHolder<T>>() {
 
@@ -23,6 +21,11 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<BaseViewHolder<T>>() {
     }
 
     override fun getItemCount() = items.size
+
+    interface Listener<T> {
+
+        fun onAdapterEvent(position: Int, item: T, param: Any? = null)
+    }
 }
 
 @Suppress("UNUSED_PARAMETER", "unused")

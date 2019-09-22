@@ -19,7 +19,7 @@ import ru.iqsolution.tkoonline.screens.BaseViewHolder
 
 class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
 
-    val firstItems = arrayListOf<ContainerItem>()
+    val primaryItems = arrayListOf<ContainerItem>()
 
     private val minSize = context.dip(17)
 
@@ -31,13 +31,13 @@ class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
 
     override fun onBindViewHolder(holder: BaseViewHolder<ContainerItem>, position: Int) {
         val item = when {
-            position < firstItems.size -> firstItems[position]
-            else -> items[position - firstItems.size]
+            position < primaryItems.size -> primaryItems[position]
+            else -> items[position - primaryItems.size]
         }
         holder.onBindItem(position, item)
     }
 
-    override fun getItemCount() = firstItems.size + items.size
+    override fun getItemCount() = primaryItems.size + items.size
 
     inner class ViewHolder(itemView: View) : BaseViewHolder<ContainerItem>(itemView) {
 
@@ -50,10 +50,10 @@ class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
         init {
             itemView.onClick {
                 val item = when {
-                    adapterPosition < firstItems.size -> firstItems[adapterPosition]
-                    else -> items[adapterPosition - firstItems.size]
+                    adapterPosition < primaryItems.size -> primaryItems[adapterPosition]
+                    else -> items[adapterPosition - primaryItems.size]
                 }
-                listenerRef?.get()?.invoke(adapterPosition, item, null)
+                listenerRef?.get()?.onAdapterEvent(adapterPosition, item)
             }
         }
 

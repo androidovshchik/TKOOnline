@@ -60,19 +60,23 @@ class Containers {
 
     fun getPrimaryItems(): List<ContainerItem> {
         synchronized(lock) {
-            return primaryItems
+            return ArrayList(primaryItems)
         }
     }
 
     fun getSecondaryItems(): List<ContainerItem> {
         synchronized(lock) {
-            return secondaryItems
+            return ArrayList(secondaryItems)
         }
     }
 
     fun getItem(id: Int): ContainerItem? {
         synchronized(lock) {
-            return primaryItems.firstOrNull { it.kpId == id } ?: secondaryItems.firstOrNull { it.kpId == id }
+            val item = primaryItems.firstOrNull { it.kpId == id } ?: secondaryItems.firstOrNull { it.kpId == id }
+            if (item != null) {
+                return ContainerItem.copyFrom(item)
+            }
+            return null
         }
     }
 
