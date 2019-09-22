@@ -32,7 +32,7 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
             expiresToken = null
             allowPhotoRefKp = false
             serverTime = null
-            timeDifference = 0L
+            elapsedTime = 0L
             vehicleNumber = null
         }
     }

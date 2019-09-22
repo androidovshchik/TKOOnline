@@ -37,9 +37,9 @@ class Preferences(context: Context) : KotprefModel(context) {
     var vehicleNumber by nullableStringPref(null, "0x09")
 
     /**
-     * Local time minus server time (milliseconds)
+     * At the moment of server time (milliseconds)
      */
-    var timeDifference by longPref(0L, "0x0a")
+    var elapsedTime by longPref(0L, "0x0a")
 
     /**
      * !!! Non properties below

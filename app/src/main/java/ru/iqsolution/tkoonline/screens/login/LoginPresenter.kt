@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline.screens.login
 
 import android.app.Application
+import android.os.SystemClock
 import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -45,7 +46,7 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
                     expiresToken = responseAuth.expire
                     allowPhotoRefKp = responseAuth.noKpPhoto == 1
                     serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
-                    timeDifference = System.currentTimeMillis() - responseAuth.currentTime.millis
+                    elapsedTime = SystemClock.elapsedRealtime()
                     vehicleNumber = qrCode.regNum
                 }
                 viewRef.get()?.onAuthorized()

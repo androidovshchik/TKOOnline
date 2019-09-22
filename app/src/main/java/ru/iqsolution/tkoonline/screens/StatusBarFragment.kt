@@ -10,19 +10,24 @@ import android.net.Network
 import android.net.NetworkRequest
 import android.os.BatteryManager
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.status_bar.*
 import org.jetbrains.anko.connectivityManager
+import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.FORMAT_TIME
+import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.SIMPLE_TIME
 import ru.iqsolution.tkoonline.data.local.Preferences
 import timber.log.Timber
 
 class StatusBarFragment : BaseFragment() {
 
     private lateinit var preferences: Preferences
+
+    private lateinit var serverTime: DateTime
 
     @Volatile
     private var swapIcon = R.drawable.ic_swap_vert
@@ -34,6 +39,7 @@ class StatusBarFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preferences = Preferences(context)
+        serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -62,7 +68,8 @@ class StatusBarFragment : BaseFragment() {
     }
 
     private fun updateTime() {
-        status_time.text = SIMPLE_TIME.format(System.currentTimeMillis() - preferences.timeDifference)
+        status_time.text = serverTime.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
+            .toString(FORMAT_TIME)
     }
 
     @SuppressLint("SetTextI18n")
