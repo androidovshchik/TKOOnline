@@ -11,7 +11,7 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivitySimply
 import ru.iqsolution.tkoonline.screens.BaseActivity
 import ru.iqsolution.tkoonline.screens.LockActivity
-import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
+import ru.iqsolution.tkoonline.screens.container.ContainerActivity
 
 @Suppress("DEPRECATION")
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
@@ -79,7 +79,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
     }
 
     override fun onAuthorized() {
-        startActivitySimply<ContainersActivity>()
+        startActivitySimply<ContainerActivity>()
         finish()
     }
 

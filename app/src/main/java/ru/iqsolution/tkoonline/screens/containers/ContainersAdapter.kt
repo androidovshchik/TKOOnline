@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.item_container.view.*
 import org.jetbrains.anko.backgroundDrawable
 import org.jetbrains.anko.dip
+import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.data.models.ContainerItem
@@ -29,12 +30,11 @@ class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<ContainerItem>, position: Int) {
-        holder.onBindItem(
-            position, when {
-                position < firstItems.size -> firstItems[position]
-                else -> items[position - firstItems.size]
-            }
-        )
+        val item = when {
+            position < firstItems.size -> firstItems[position]
+            else -> items[position - firstItems.size]
+        }
+        holder.onBindItem(position, item)
     }
 
     override fun getItemCount() = firstItems.size + items.size
@@ -46,6 +46,16 @@ class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
         private val range: TextView = itemView.container_range
 
         private val oval: View = itemView.container_oval
+
+        init {
+            itemView.onClick {
+                val item = when {
+                    adapterPosition < firstItems.size -> firstItems[adapterPosition]
+                    else -> items[adapterPosition - firstItems.size]
+                }
+                listenerRef?.get()?.invoke(adapterPosition, item, null)
+            }
+        }
 
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: ContainerItem) {

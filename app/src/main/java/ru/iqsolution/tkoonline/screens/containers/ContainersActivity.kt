@@ -21,6 +21,7 @@ import ru.iqsolution.tkoonline.data.models.PhotoItem
 import ru.iqsolution.tkoonline.extensions.getVectorBitmap
 import ru.iqsolution.tkoonline.extensions.startActivitySimply
 import ru.iqsolution.tkoonline.screens.BaseActivity
+import ru.iqsolution.tkoonline.screens.container.ContainerActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.widgets.ContainerView
 
@@ -70,7 +71,12 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
                     setDrawable(it)
                 }
             })
-            containersAdapter = ContainersAdapter(applicationContext)
+            containersAdapter = ContainersAdapter(applicationContext).apply {
+                setAdapterListener { _, item, _ ->
+                    startActivitySimply<ContainerActivity>()
+                    finish()
+                }
+            }
             adapter = containersAdapter
         }
         containers_complete.onClick {
