@@ -70,4 +70,47 @@ class ContainerItem : Container() {
 
     val isValid: Boolean
         get() = containerType != ContainerType.UNKNOWN && (BuildConfig.DEBUG || status != ContainerStatus.NO_TASK)
+
+    companion object {
+
+        fun copyFrom(original: ContainerItem): ContainerItem {
+            return ContainerItem().apply {
+                kpId = original.kpId
+                linkedKpId = original.kpId
+                address = original.address
+                latitude = original.latitude
+                longitude = original.longitude
+                balKeeper = original.balKeeper
+                balKeeperPhone = original.balKeeperPhone
+                regOperator = original.regOperator
+                regOperatorPhone = original.regOperatorPhone
+                containerType = original.containerType
+                containerVolume = original.containerVolume
+                containerCount = original.containerCount
+                containerRegular.apply {
+                    containerType = original.containerRegular.containerType
+                    containerVolume = original.containerRegular.containerVolume
+                    containerCount = original.containerRegular.containerCount
+                }
+                containerBunker.apply {
+                    containerType = original.containerBunker.containerType
+                    containerVolume = original.containerBunker.containerVolume
+                    containerCount = original.containerBunker.containerCount
+                }
+                containerWithout.apply {
+                    containerType = original.containerWithout.containerType
+                    containerVolume = original.containerWithout.containerVolume
+                    containerCount = original.containerWithout.containerCount
+                }
+                containerSpecial.apply {
+                    containerType = original.containerSpecial.containerType
+                    containerVolume = original.containerSpecial.containerVolume
+                    containerCount = original.containerSpecial.containerCount
+                }
+                timeLimitTo = original.timeLimitTo
+                timeLimitFrom = original.timeLimitFrom
+                status = original.status
+            }
+        }
+    }
 }

@@ -35,16 +35,16 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
                     if (it.linkedKpId != null) {
                         when (it.containerType) {
                             ContainerType.REGULAR -> {
-                                regulars.putByLinkedId(it)
+                                regulars.putLinked(it)
                             }
                             ContainerType.BUNKER -> {
-                                bunkers.putByLinkedId(it)
+                                bunkers.putLinked(it)
                             }
                             ContainerType.WITHOUT -> {
-                                without.putByLinkedId(it)
+                                without.putLinked(it)
                             }
                             ContainerType.SPECIAL -> {
-                                specials.putByLinkedId(it)
+                                specials.putLinked(it)
                             }
                             else -> {
                             }
@@ -62,6 +62,7 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
             responseContainers.data.forEach {
                 if (it.isValid) {
                     if (it.linkedKpId == null) {
+                        // measuring center
                         if (it.latitude < minLat) {
                             minLat = it.latitude
                         } else if (it.latitude > maxLat) {
@@ -72,6 +73,7 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
                         } else if (it.longitude > maxLon) {
                             maxLon = it.longitude
                         }
+                        // container setup
                         regulars.get(it.kpId)?.let { container ->
                             it.containerRegular.addFrom(container)
                         }
@@ -103,7 +105,7 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
         }
     }
 
-    private fun SimpleArrayMap<Int, Container>.putByLinkedId(item: ContainerItem) {
+    private fun SimpleArrayMap<Int, Container>.putLinked(item: ContainerItem) {
         get(item.linkedKpId)?.addFrom(item) ?: run {
             put(item.linkedKpId, Container(item.containerType).apply {
                 addFrom(item)
