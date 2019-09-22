@@ -7,7 +7,7 @@
     tools:ignore="MissingPrefix">
 
     <TextView
-        android:id="@+id/status_a"
+        android:id="@+id/status_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"

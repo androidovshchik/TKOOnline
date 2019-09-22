@@ -5,12 +5,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
 import android.os.BatteryManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.status_bar.*
+import org.jetbrains.anko.connectivityManager
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.SIMPLE_TIME
 import ru.iqsolution.tkoonline.data.local.Preferences
@@ -19,6 +23,13 @@ import timber.log.Timber
 class StatusBarFragment : BaseFragment() {
 
     private lateinit var preferences: Preferences
+
+    @Volatile
+    private var swapIcon = R.drawable.ic_swap_vert
+
+    private val swapRunnable = Runnable {
+        status_connection.setImageResource(swapIcon)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,18 +41,24 @@ class StatusBarFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        status_a.text = preferences.vehicleNumber ?: ""
+        status_number.text = preferences.vehicleNumber ?: ""
         updateTime()
-        activity?.registerReceiver(receiver, IntentFilter().apply {
-            // time
-            addAction(Intent.ACTION_TIME_TICK)
-            addAction(Intent.ACTION_TIME_CHANGED)
-            addAction(Intent.ACTION_TIMEZONE_CHANGED)
-            // battery
-            addAction(Intent.ACTION_BATTERY_CHANGED)
-            addAction(Intent.ACTION_BATTERY_LOW)
-            addAction(Intent.ACTION_BATTERY_OKAY)
-        })
+        status_location.setImageResource(R.drawable.ic_gps_fixed)
+        status_connection.setImageResource(R.drawable.ic_swap_vert)
+        status_uploads.setImageResource(R.drawable.ic_cloud_upload)
+        activity?.apply {
+            connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
+            registerReceiver(receiver, IntentFilter().apply {
+                // time
+                addAction(Intent.ACTION_TIME_TICK)
+                addAction(Intent.ACTION_TIME_CHANGED)
+                addAction(Intent.ACTION_TIMEZONE_CHANGED)
+                // battery
+                addAction(Intent.ACTION_BATTERY_CHANGED)
+                addAction(Intent.ACTION_BATTERY_LOW)
+                addAction(Intent.ACTION_BATTERY_OKAY)
+            })
+        }
     }
 
     private fun updateTime() {
@@ -82,8 +99,26 @@ class StatusBarFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
-        activity?.unregisterReceiver(receiver)
+        activity?.apply {
+            connectivityManager.unregisterNetworkCallback(callback)
+            unregisterReceiver(receiver)
+        }
         super.onDestroyView()
+    }
+
+    private val callback = object : ConnectivityManager.NetworkCallback() {
+
+        override fun onAvailable(network: Network) {
+            Timber.d("Network on available")
+            swapIcon = R.drawable.ic_swap_vert_green
+            activity?.runOnUiThread(swapRunnable)
+        }
+
+        override fun onLost(network: Network) {
+            Timber.d("Network on lost")
+            swapIcon = R.drawable.ic_swap_vert
+            activity?.runOnUiThread(swapRunnable)
+        }
     }
 
     private val receiver = object : BroadcastReceiver() {
