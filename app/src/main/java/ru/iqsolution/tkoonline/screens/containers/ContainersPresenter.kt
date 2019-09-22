@@ -5,6 +5,7 @@ import androidx.collection.SimpleArrayMap
 import com.yandex.mapkit.geometry.Point
 import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.data.Containers
 import ru.iqsolution.tkoonline.data.models.Container
 import ru.iqsolution.tkoonline.data.models.ContainerItem
 import ru.iqsolution.tkoonline.data.models.ContainerStatus
@@ -17,6 +18,8 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
     ContainersContract.Presenter {
 
     val serverApi: ServerApi by instance()
+
+    val containers: Containers by instance()
 
     override val isAllowedPhotoKp = preferences.allowPhotoRefKp
 
@@ -55,8 +58,7 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
             var maxLat = Double.MIN_VALUE
             var minLon = Double.MAX_VALUE
             var maxLon = Double.MIN_VALUE
-            val firstItems = arrayListOf<ContainerItem>()
-            val otherItems = arrayListOf<ContainerItem>()
+            containers.clear()
             responseContainers.data.forEach {
                 if (it.isValid) {
                     if (it.linkedKpId == null) {
@@ -83,14 +85,14 @@ class ContainersPresenter(application: Application) : BasePresenter<ContainersCo
                             it.containerSpecial.addFrom(container)
                         }
                         when (it.status) {
-                            ContainerStatus.PENDING, ContainerStatus.NOT_VISITED -> firstItems.add(it)
-                            else -> otherItems.add(it)
+                            ContainerStatus.PENDING, ContainerStatus.NOT_VISITED -> containers.addPrimaryItem(it)
+                            else -> containers.addSecondaryItem(it)
                         }
                     }
                 }
             }
             viewRef.get()?.onReceivedContainers(
-                firstItems, otherItems,
+                containers.getPrimaryItems(), containers.getSecondaryItems(),
                 if (responseContainers.data.isNotEmpty()) Point(
                     (maxLat + minLat) / 2,
                     (maxLon + minLon) / 2

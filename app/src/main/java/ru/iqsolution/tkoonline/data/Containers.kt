@@ -5,45 +5,81 @@ import ru.iqsolution.tkoonline.data.models.ContainerItem
 @Suppress("unused")
 class Containers {
 
-    private val items = arrayListOf<ContainerItem>()
+    /**
+     * They all are with status [ru.iqsolution.tkoonline.data.models.ContainerStatus.PENDING]
+     * or [ru.iqsolution.tkoonline.data.models.ContainerStatus.NOT_VISITED]
+     */
+    private val primaryItems = arrayListOf<ContainerItem>()
+
+    private val secondaryItems = arrayListOf<ContainerItem>()
 
     private val lock = Any()
 
-    fun setItems(list: List<ContainerItem>) {
+    fun setItems(primary: List<ContainerItem>, secondary: List<ContainerItem>) {
         synchronized(lock) {
-            items.apply {
+            primaryItems.apply {
+                clear()
+                addAll(primary)
+            }
+            secondaryItems.apply {
+                clear()
+                addAll(secondary)
+            }
+        }
+    }
+
+    fun setPrimaryItems(list: List<ContainerItem>) {
+        synchronized(lock) {
+            primaryItems.apply {
                 clear()
                 addAll(list)
             }
         }
     }
 
-    fun setItem(item: ContainerItem) {
+    fun setSecondaryItems(list: List<ContainerItem>) {
         synchronized(lock) {
-            items.apply {
-                firstOrNull { it.kpId == item.kpId }?.let {
-                    remove(it)
-                }
-                add(item)
+            secondaryItems.apply {
+                clear()
+                addAll(list)
             }
         }
     }
 
-    fun getItems(): List<ContainerItem> {
+    fun addPrimaryItem(item: ContainerItem) {
         synchronized(lock) {
-            return items
+            primaryItems.add(item)
+        }
+    }
+
+    fun addSecondaryItem(item: ContainerItem) {
+        synchronized(lock) {
+            secondaryItems.add(item)
+        }
+    }
+
+    fun getPrimaryItems(): List<ContainerItem> {
+        synchronized(lock) {
+            return primaryItems
+        }
+    }
+
+    fun getSecondaryItems(): List<ContainerItem> {
+        synchronized(lock) {
+            return secondaryItems
         }
     }
 
     fun getItem(id: Int): ContainerItem? {
         synchronized(lock) {
-            return items.firstOrNull { it.kpId == id }
+            return primaryItems.firstOrNull { it.kpId == id } ?: secondaryItems.firstOrNull { it.kpId == id }
         }
     }
 
     fun clear() {
         synchronized(lock) {
-            items.clear()
+            primaryItems.clear()
+            secondaryItems.clear()
         }
     }
 }
