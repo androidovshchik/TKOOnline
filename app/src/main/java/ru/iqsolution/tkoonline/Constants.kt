@@ -22,3 +22,5 @@ val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 /**
  * Extras
  */
+
+const val EXTRA_ID = "extra_id"

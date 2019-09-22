@@ -25,6 +25,7 @@ import org.kodein.di.generic.provider
 import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.iqsolution.tkoonline.data.Containers
 import ru.iqsolution.tkoonline.data.local.AppDatabase
 import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.data.models.ContainerStatus
@@ -37,7 +38,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @Suppress("unused")
-class MainApplication : Application(), KodeinAware {
+class MainApp : Application(), KodeinAware {
 
     override val kodein by Kodein.lazy {
 
@@ -94,6 +95,10 @@ class MainApplication : Application(), KodeinAware {
 
         bind<AdminManager>() with provider {
             AdminManager(applicationContext)
+        }
+
+        bind<Containers>() with singleton {
+            Containers()
         }
     }
 
