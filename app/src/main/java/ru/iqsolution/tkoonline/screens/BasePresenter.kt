@@ -5,7 +5,7 @@ import com.chibatching.kotpref.bulk
 import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.MainApplication
+import ru.iqsolution.tkoonline.MainApp
 import ru.iqsolution.tkoonline.data.local.Preferences
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -42,7 +42,7 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
         viewRef.clear()
     }
 
-    override val kodein = (application as MainApplication).kodein
+    override val kodein = (application as MainApp).kodein
 
     override val coroutineContext = Dispatchers.Main + baseJob + CoroutineExceptionHandler { _, e ->
         Timber.e(e)

@@ -14,6 +14,7 @@ import com.yandex.mapkit.map.MapObjectCollection
 import com.yandex.runtime.ui_view.ViewProvider
 import kotlinx.android.synthetic.main.activity_containers.*
 import org.jetbrains.anko.sdk23.listeners.onClick
+import ru.iqsolution.tkoonline.EXTRA_ID
 import ru.iqsolution.tkoonline.MAPKIT_KEY
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.data.models.ContainerItem
@@ -73,8 +74,10 @@ class ContainersActivity : BaseActivity<ContainersPresenter>(), ContainersContra
             })
             containersAdapter = ContainersAdapter(applicationContext).apply {
                 setAdapterListener { _, item, _ ->
-                    startActivitySimply<ContainerActivity>()
-                    finish()
+                    startActivitySimply<ContainerActivity>(
+                        null,
+                        EXTRA_ID to item.kpId
+                    )
                 }
             }
             adapter = containersAdapter
