@@ -8,6 +8,8 @@
     <color name="colorTextGrayLight">#8C8A96</color>
     <color name="colorTextBlack87">#de000000</color>
 
+    <color name="colorDivider">#CFCFCF</color>
+
     <color name="colorStatusGray">#c4c4c4</color>
     <color name="colorStatusGreen">#56B60B</color>
     <color name="colorStatusOrange">#FF8A00</color>
