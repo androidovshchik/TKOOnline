@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:paddingStart="40dp"
+    android:paddingEnd="40dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/container_id"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:textSize="16sp"
+        android:textColor="@color/colorTextGrayLight"
+        android:lineSpacingExtra="3sp"
+        tools:text="ID: 1 234 567 890"/>
+
+    <TextView
+        android:id="@+id/container_range"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:textSize="16sp"
+        android:textColor="@color/colorTextGrayLight"
+        android:lineSpacingExtra="3sp"
+        tools:text="с 07:00 до 23:00"/>
+
+</LinearLayout>
