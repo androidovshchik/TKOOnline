@@ -17,17 +17,13 @@ import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
-import org.kodein.di.generic.singleton
+import org.kodein.di.generic.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.iqsolution.tkoonline.data.Containers
 import ru.iqsolution.tkoonline.data.local.AppDatabase
 import ru.iqsolution.tkoonline.data.local.Preferences
-import ru.iqsolution.tkoonline.data.models.ContainerStatus
 import ru.iqsolution.tkoonline.data.models.ContainerType
+import ru.iqsolution.tkoonline.data.models.PlatformStatus
 import ru.iqsolution.tkoonline.data.remote.*
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.screens.LockActivity
@@ -66,11 +62,19 @@ class MainApp : Application(), KodeinAware {
                 .setExclusionStrategies(SerializedNameStrategy())
                 .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
                 .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
-                .registerTypeAdapter(ContainerStatus::class.java, ContainerStatusSerializer())
-                .registerTypeAdapter(ContainerStatus::class.java, ContainerStatusDeserializer())
                 .registerTypeAdapter(ContainerType::class.java, ContainerTypeSerializer())
                 .registerTypeAdapter(ContainerType::class.java, ContainerTypeDeserializer())
+                .registerTypeAdapter(PlatformStatus::class.java, PlatformStatusSerializer())
+                .registerTypeAdapter(PlatformStatus::class.java, PlatformStatusDeserializer())
                 .create()
+        }
+
+        bind<Preferences>() with provider {
+            Preferences(applicationContext)
+        }
+
+        bind<AdminManager>() with provider {
+            AdminManager(applicationContext)
         }
 
         bind<ServerApi>() with singleton {
@@ -82,22 +86,10 @@ class MainApp : Application(), KodeinAware {
                 .create(ServerApi::class.java)
         }
 
-        bind<AppDatabase>() with singleton {
+        bind<AppDatabase>() with eagerSingleton {
             Room.databaseBuilder(applicationContext, AppDatabase::class.java, "app.db")
                 .fallbackToDestructiveMigration()
                 .build()
-        }
-
-        bind<Preferences>() with provider {
-            Preferences(applicationContext)
-        }
-
-        bind<AdminManager>() with provider {
-            AdminManager(applicationContext)
-        }
-
-        bind<Containers>() with singleton {
-            Containers()
         }
     }
 
@@ -107,7 +99,13 @@ class MainApp : Application(), KodeinAware {
         super.onCreate()
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+            Stetho.initialize(
+                Stetho.newInitializerBuilder(applicationContext)
+                    .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(applicationContext))
+                    .build()
+            )
         }
+        DateTimeZone.setProvider(ResourceZoneInfoProvider(applicationContext))
         if (isOreoPlus()) {
             notificationManager.createNotificationChannel(
                 NotificationChannel(CHANNEL_DEFAULT, CHANNEL_DEFAULT, NotificationManager.IMPORTANCE_LOW).also {
@@ -115,7 +113,6 @@ class MainApp : Application(), KodeinAware {
                 }
             )
         }
-        DateTimeZone.setProvider(ResourceZoneInfoProvider(applicationContext))
         ViewPump.init(
             ViewPump.builder()
                 .addInterceptor(
@@ -128,13 +125,6 @@ class MainApp : Application(), KodeinAware {
                 )
                 .build()
         )
-        if (BuildConfig.DEBUG) {
-            Stetho.initialize(
-                Stetho.newInitializerBuilder(applicationContext)
-                    .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(applicationContext))
-                    .build()
-            )
-        }
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
 
             override fun onActivityPaused(activity: Activity) {}

@@ -20,7 +20,7 @@ interface ServerApi {
      */
     @Headers("Accept: application/json")
     @GET("container-sites/{date}")
-    suspend fun getContainers(@Header("Authorization") token: String, @Path("date") date: String): ResponseContainers
+    suspend fun getPlatforms(@Header("Authorization") token: String, @Path("date") date: String): ResponsePlatforms
 
     @Headers("Accept: application/json")
     @GET("photo-types")

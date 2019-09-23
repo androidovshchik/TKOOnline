@@ -3,7 +3,7 @@ package ru.iqsolution.tkoonline.data.models
 import ru.iqsolution.tkoonline.R
 
 @Suppress("unused")
-enum class ContainerStatus(
+enum class PlatformStatus(
     val id: Int,
     val color: Int,
     val drawable: Int
@@ -17,7 +17,7 @@ enum class ContainerStatus(
 
     companion object {
 
-        private val map = values().associateBy(ContainerStatus::id)
+        private val map = values().associateBy(PlatformStatus::id)
 
         fun fromId(value: Int) = map.getOrDefault(value, NO_TASK)
     }
