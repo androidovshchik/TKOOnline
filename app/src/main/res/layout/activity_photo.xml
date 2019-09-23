@@ -5,17 +5,20 @@
     android:layout_height="match_parent"
     tools:ignore="MissingPrefix">
 
-    <include
-        android:id="@+id/photo_status_bar"
-        layout="@layout/status_bar"/>
+    <fragment
+        android:id="@+id/status_bar_fragment"
+        android:name="ru.iqsolution.tkoonline.screens.StatusBarFragment"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_height"/>
 
     <include
         android:id="@+id/photo_toolbar"
         layout="@layout/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:layout_below="@+id/photo_status_bar"
-        android:elevation="8dp"/>
+        android:layout_below="@+id/status_bar_fragment"
+        android:background="@color/colorPrimary"
+        android:elevation="6dp"/>
 
     <ImageView
         android:id="@+id/photo_preview"

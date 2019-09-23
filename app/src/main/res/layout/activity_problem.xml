@@ -22,41 +22,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp"
-                android:paddingStart="45dp"
-                android:paddingEnd="45dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/problem_id"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorTextGrayLight"
-                    android:lineSpacingExtra="3sp"
-                    tools:text="ID: 1 234 567 890"/>
-
-                <TextView
-                    android:id="@+id/problem_time"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorTextGrayLight"
-                    android:lineSpacingExtra="3sp"
-                    tools:text="с 07:00 до 23:00"/>
-
-            </LinearLayout>
+            <include
+                layout="@layout/container_info"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#CFCFCF"/>
+                android:background="@color/colorDivider"/>
 
             <TextView
                 android:layout_width="match_parent"

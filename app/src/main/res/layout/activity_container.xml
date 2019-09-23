@@ -48,6 +48,80 @@
                 tools:background="@android:color/darker_gray"
                 tools:elevation="0dp"/>
 
+            <include
+                layout="@layout/container_info"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"/>
+
+            <Button
+                android:id="@+id/container_report"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="32dp"
+                android:layout_marginTop="39dp"
+                android:textAllCaps="false"
+                android:text="Сообщить о проблеме"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:lineSpacingExtra="3sp"
+                android:background="@drawable/button_gray"
+                android:foreground="?android:attr/selectableItemBackground"
+                fontPath="fonts/Roboto-Medium.ttf"/>
+
+            <LinearLayout
+                android:id="@+id/containers_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/container_not_cleaned"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:textAllCaps="false"
+                    android:text="КП не убрана"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="3sp"
+                    android:background="@drawable/button_red"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    fontPath="fonts/Roboto-Medium.ttf"/>
+
+                <View
+                    android:id="@+id/container_placeholder"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:visibility="invisible"/>
+
+                <Button
+                    android:id="@+id/container_cleaned"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:textAllCaps="false"
+                    android:text="КП убрана"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="3sp"
+                    android:background="@drawable/button_green"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    fontPath="fonts/Roboto-Medium.ttf"/>
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>
