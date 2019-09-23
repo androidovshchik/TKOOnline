@@ -4,7 +4,6 @@ package ru.iqsolution.tkoonline.data.remote
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.http.*
 import ru.iqsolution.tkoonline.data.models.*
 
@@ -12,31 +11,60 @@ interface ServerApi {
 
     @FormUrlEncoded
     @Headers("Accept: application/json")
-    @POST("auth")
-    suspend fun login(@Field("login") login: String, @Field("password") password: String, @Field("block_code") blockCode: Int?): ResponseAuth
+    @POST
+    suspend fun login(
+        baseUrl: String,
+        @Field("login") login: String,
+        @Field("password") password: String,
+        @Field("block_code") blockCode: Int?,
+        @Url url: String = "$baseUrl/auth"
+    ): ResponseAuth
 
     /**
      * @param date [ru.iqsolution.tkoonline.PATTERN_DATE]
      */
     @Headers("Accept: application/json")
-    @GET("container-sites/{date}")
-    suspend fun getPlatforms(@Header("Authorization") token: String, @Path("date") date: String): ResponsePlatforms
+    @GET
+    suspend fun getPlatforms(
+        baseUrl: String,
+        date: String,
+        @Header("Authorization") token: String,
+        @Url url: String = "$baseUrl/container-sites/$date"
+    ): ResponsePlatforms
 
     @Headers("Accept: application/json")
-    @GET("photo-types")
-    suspend fun getPhotoTypes(@Header("Authorization") token: String): ResponseTypes
+    @GET
+    suspend fun getPhotoTypes(
+        baseUrl: String,
+        @Header("Authorization") token: String,
+        @Url url: String = "$baseUrl/photo-types"
+    ): ResponseTypes
 
     @Headers("Accept: application/json")
-    @POST("container-sites/{kp_id}/events")
-    suspend fun sendEvent(@Header("Authorization") token: String, @Path("kp_id") kpId: Int, @Body body: RequestEvent): ResponseEvent
+    @POST
+    suspend fun sendEvent(
+        baseUrl: String,
+        kpId: Int,
+        @Header("Authorization") token: String,
+        @Body body: RequestClean,
+        @Url url: String = "$baseUrl/container-sites/$kpId/events"
+    ): ResponseClean
 
     /**
      * @param time [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
     @Multipart
-    @POST("container-sites/{kp_id}/photos")
+    @Headers("Accept: application/json")
+    @POST
     suspend fun sendPhoto(
-        @Header("Authorization") token: String, @Path("kp_id") kpId: Int, @Part("time") time: RequestBody,
-        @Part("type") type: RequestBody, @Part photo: MultipartBody.Part
-    ): ResponseBody
+        baseUrl: String,
+        @Header("Authorization") token: String,
+        @Part("kpId") kpId: RequestBody,
+        @Part("type") type: RequestBody,
+        @Part("time") time: RequestBody,
+        @Part("latitude") latitude: RequestBody,
+        @Part("longitude") longitude: RequestBody,
+        @Part photo: MultipartBody.Part,
+        @Url url: String = "$baseUrl/container-sites/photos"
+    ): ResponseUpload
 }
