@@ -5,7 +5,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import java.lang.ref.WeakReference
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseAdapter<T> : RecyclerView.Adapter<BaseViewHolder<T>>() {
 
     val items = arrayListOf<T>()

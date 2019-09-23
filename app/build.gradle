@@ -83,6 +83,7 @@ dependencies {
     implementation "androidx.room:room-runtime:${Versions.room}"
     kapt "androidx.room:room-compiler:${Versions.room}"
     implementation 'com.google.android.gms:play-services-vision:18.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.2.0'
