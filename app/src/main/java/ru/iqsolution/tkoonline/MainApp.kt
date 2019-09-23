@@ -1,8 +1,6 @@
 package ru.iqsolution.tkoonline
 
-import android.app.Activity
-import android.app.ActivityManager
-import android.app.Application
+import android.app.*
 import android.os.Bundle
 import androidx.room.Room
 import com.facebook.stetho.Stetho
@@ -31,6 +29,7 @@ import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.data.models.ContainerStatus
 import ru.iqsolution.tkoonline.data.models.ContainerType
 import ru.iqsolution.tkoonline.data.remote.*
+import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.AdminManager
@@ -108,6 +107,13 @@ class MainApp : Application(), KodeinAware {
         super.onCreate()
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+        }
+        if (isOreoPlus()) {
+            notificationManager.createNotificationChannel(
+                NotificationChannel(CHANNEL_DEFAULT, CHANNEL_DEFAULT, NotificationManager.IMPORTANCE_LOW).also {
+                    it.lockscreenVisibility = Notification.VISIBILITY_SECRET
+                }
+            )
         }
         DateTimeZone.setProvider(ResourceZoneInfoProvider(applicationContext))
         ViewPump.init(
