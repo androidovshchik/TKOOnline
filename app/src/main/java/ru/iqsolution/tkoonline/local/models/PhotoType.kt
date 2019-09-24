@@ -1,19 +1,45 @@
 package ru.iqsolution.tkoonline.local.models
 
+import androidx.room.*
 import com.google.gson.annotations.SerializedName
 
-@Suppress("unused")
+@Entity(
+    tableName = "photo_types",
+    foreignKeys = [
+        ForeignKey(
+            entity = Token::class,
+            parentColumns = ["id"],
+            childColumns = ["token_id"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 class PhotoType {
 
-    @SerializedName("id")
-    var id = 0
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    var id: Long? = null
 
+    @ColumnInfo(name = "token_id", index = true)
+    var tokenId = 0L
+
+    @ColumnInfo(name = "type_id")
+    @SerializedName("id")
+    var typeId = 0
+
+    @ColumnInfo(name = "description")
     @SerializedName("description")
     lateinit var description: String
 
+    @ColumnInfo(name = "is_error")
     @SerializedName("is_error")
     var isError = 0
 
+    @Embedded
+    var token: Token? = null
+
+    @Suppress("unused")
     enum class Default(
         val id: Int,
         val description: String,

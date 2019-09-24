@@ -1,19 +1,19 @@
 package ru.iqsolution.tkoonline.local.dao
 
 import androidx.room.*
-import ru.iqsolution.tkoonline.local.models.CleanEvent
+import ru.iqsolution.tkoonline.local.models.Platform
 
 @Dao
 interface PlatformDao {
 
+    @Query("SELECT * FROM tokens")
+    fun getAllTokens(): List<Platform>
+
     @Transaction
     @Insert
-    fun insert(vararg items: CleanEvent)
+    fun insert(vararg items: Platform)
 
     @Transaction
     @Delete
-    fun delete(vararg items: CleanEvent)
-
-    @Query("SELECT * FROM events ORDER BY id DESC")
-    fun getAllEvents(): List<CleanEvent>
+    fun delete(vararg items: Platform)
 }
