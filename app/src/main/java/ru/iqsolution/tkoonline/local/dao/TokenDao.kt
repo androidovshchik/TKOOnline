@@ -1,6 +1,9 @@
 package ru.iqsolution.tkoonline.local.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
 import ru.iqsolution.tkoonline.local.models.Token
 
 @Dao
@@ -9,11 +12,9 @@ interface TokenDao {
     @Query("SELECT * FROM tokens")
     fun getAllTokens(): List<Token>
 
-    @Transaction
     @Insert
-    fun insert(vararg items: Token)
+    fun insert(item: Token)
 
-    @Transaction
     @Delete
     fun delete(vararg items: Token)
 }

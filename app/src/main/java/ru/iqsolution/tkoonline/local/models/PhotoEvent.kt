@@ -1,40 +1,50 @@
 package ru.iqsolution.tkoonline.local.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
+import androidx.room.*
 import org.joda.time.DateTime
 
-@Entity(tableName = "cleanup")
+@Entity(
+    tableName = "photo_events",
+    foreignKeys = [
+        ForeignKey(
+            entity = Token::class,
+            parentColumns = ["t_id"],
+            childColumns = ["p_token_id"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 class PhotoEvent {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
+    @ColumnInfo(name = "p_id")
     var id: Long? = null
 
-    @ColumnInfo(name = "kp_id")
-    var kpId = 0
+    @ColumnInfo(name = "p_token_id", index = true)
+    var tokenId = 0L
 
-    @ColumnInfo(name = "access_token")
-    var accessToken: String? = null
+    @ColumnInfo(name = "p_kp_id")
+    var kpId: Int? = null
+
+    @ColumnInfo(name = "p_type_id")
+    var typeId = 0
+
+    @ColumnInfo(name = "p_path")
+    lateinit var path: String
+
+    @ColumnInfo(name = "p_latitude")
+    var latitude = 0.0
+
+    @ColumnInfo(name = "p_longitude")
+    var longitude = 0.0
 
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
-    @ColumnInfo(name = "datetime")
-    @SerializedName("time")
-    lateinit var datetime: DateTime
+    @ColumnInfo(name = "p_time")
+    lateinit var time: DateTime
 
-    @ColumnInfo(name = "container_type")
-    @SerializedName("container_type_fact")
-    lateinit var containerType: String
-
-    @ColumnInfo(name = "container_volume")
-    @SerializedName("container_type_volume_fact")
-    var containerVolume = 0f
-
-    @ColumnInfo(name = "container_count")
-    @SerializedName("container_count_fact")
-    var containerCount = 0
+    @Embedded
+    var token: Token? = null
 }

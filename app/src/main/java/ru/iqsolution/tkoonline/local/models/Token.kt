@@ -9,18 +9,18 @@ import org.joda.time.DateTime
 class Token {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
+    @ColumnInfo(name = "t_id")
     var id: Long? = null
 
-    @ColumnInfo(name = "access_token")
-    lateinit var token: String
+    @ColumnInfo(name = "t_value")
+    lateinit var value: String
 
-    @ColumnInfo(name = "que_name")
+    @ColumnInfo(name = "t_que_name")
     lateinit var queName: String
 
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
-    @ColumnInfo(name = "expires")
+    @ColumnInfo(name = "t_expires")
     lateinit var expires: DateTime
 }

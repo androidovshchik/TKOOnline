@@ -11,7 +11,7 @@ import ru.iqsolution.tkoonline.local.models.*
         Token::class,
         Platform::class,
         PhotoType::class,
-        Photo::class,
+        PhotoEvent::class,
         CleanEvent::class,
         LocationEvent::class
     ],

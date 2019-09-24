@@ -1,6 +1,9 @@
 package ru.iqsolution.tkoonline.local.models
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 @Entity(
@@ -8,8 +11,8 @@ import com.google.gson.annotations.SerializedName
     foreignKeys = [
         ForeignKey(
             entity = Token::class,
-            parentColumns = ["id"],
-            childColumns = ["token_id"],
+            parentColumns = ["t_id"],
+            childColumns = ["pt_token_id"],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
         )
@@ -18,26 +21,23 @@ import com.google.gson.annotations.SerializedName
 class PhotoType {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
+    @ColumnInfo(name = "pt_id")
     var id: Long? = null
 
-    @ColumnInfo(name = "token_id", index = true)
+    @ColumnInfo(name = "pt_token_id", index = true)
     var tokenId = 0L
 
-    @ColumnInfo(name = "type_id")
+    @ColumnInfo(name = "pt_type_id")
     @SerializedName("id")
     var typeId = 0
 
-    @ColumnInfo(name = "description")
+    @ColumnInfo(name = "pt_description")
     @SerializedName("description")
     lateinit var description: String
 
-    @ColumnInfo(name = "is_error")
+    @ColumnInfo(name = "pt_is_error")
     @SerializedName("is_error")
     var isError = 0
-
-    @Embedded
-    var token: Token? = null
 
     @Suppress("unused")
     enum class Default(
