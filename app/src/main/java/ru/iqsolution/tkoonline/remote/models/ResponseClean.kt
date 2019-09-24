@@ -1,8 +1,8 @@
-package ru.iqsolution.tkoonline.data.models
+package ru.iqsolution.tkoonline.remote.models
 
 import com.google.gson.annotations.SerializedName
 
-class ResponseEvent : RequestEvent() {
+class ResponseClean : RequestClean() {
 
     @SerializedName("id")
     lateinit var id: String

@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.data.models
+package ru.iqsolution.tkoonline.remote.models
 
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
@@ -16,4 +16,7 @@ class ResponseAuth {
 
     @SerializedName("no_kp_photo")
     var noKpPhoto = 0
+
+    @SerializedName("que_name")
+    lateinit var queName: String
 }

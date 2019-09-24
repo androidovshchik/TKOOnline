@@ -1,11 +1,11 @@
 @file:Suppress("unused")
 
-package ru.iqsolution.tkoonline.data.remote
+package ru.iqsolution.tkoonline.remote
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
-import ru.iqsolution.tkoonline.data.models.*
+import ru.iqsolution.tkoonline.remote.models.*
 
 interface ServerApi {
 
@@ -66,5 +66,12 @@ interface ServerApi {
         @Part("longitude") longitude: RequestBody,
         @Part photo: MultipartBody.Part,
         @Url url: String = "$baseUrl/container-sites/photos"
-    ): ResponseUpload
+    ): ResponsePhoto
+
+    @POST
+    suspend fun logout(
+        baseUrl: String,
+        @Header("Authorization") token: String,
+        @Url url: String = "$baseUrl/auth/close"
+    ): ResponseClean
 }
