@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.data.models
+package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.data.models
+package ru.iqsolution.tkoonline.models
 
 @Suppress("unused")
 enum class PhotoType(
@@ -21,6 +21,6 @@ enum class PhotoType(
 
         private val map = values().associateBy(PhotoType::id)
 
-        fun fromId(value: Int?): PhotoType? = value?.let { map[value] }
+        fun fromId(value: Int): PhotoType? = map[value]
     }
 }

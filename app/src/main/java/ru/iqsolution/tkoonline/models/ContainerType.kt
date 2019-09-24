@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.local
+package ru.iqsolution.tkoonline.models
 
 import ru.iqsolution.tkoonline.R
 
@@ -7,7 +7,7 @@ enum class ContainerType(
     // NOTICE it is uppercase
     val id: String?,
     val icon: Int,
-    val isCountable: Boolean,
+    val isEditable: Boolean,
     val shortName: String = id.toString()
 ) {
     UNKNOWN(null, 0, false),
