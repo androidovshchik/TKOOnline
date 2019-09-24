@@ -65,4 +65,18 @@ class FileManager(context: Context) {
     fun deleteFile(path: String) {
         File(path).delete()
     }
+
+    fun deleteOldFiles() {
+        val now = System.currentTimeMillis()
+        photosDir.listFiles().forEach {
+            if (now - it.lastModified() >= LIFETIME) {
+                it.delete()
+            }
+        }
+    }
+
+    companion object {
+
+        private const val LIFETIME = 4 * 24 * 60 * 60 * 1000L
+    }
 }
