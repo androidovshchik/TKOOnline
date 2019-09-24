@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.data.local
+package ru.iqsolution.tkoonline.local
 
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel

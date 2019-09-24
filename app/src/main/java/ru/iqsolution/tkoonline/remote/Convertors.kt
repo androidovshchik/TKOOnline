@@ -1,11 +1,11 @@
-package ru.iqsolution.tkoonline.data.remote
+package ru.iqsolution.tkoonline.remote
 
 import com.google.gson.*
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.PATTERN_TIME
-import ru.iqsolution.tkoonline.data.models.ContainerType
-import ru.iqsolution.tkoonline.data.models.PlatformStatus
+import ru.iqsolution.tkoonline.local.ContainerType
+import ru.iqsolution.tkoonline.local.PlatformStatus
 import java.lang.reflect.Type
 
 class DateTimeSerializer : JsonSerializer<DateTime> {
