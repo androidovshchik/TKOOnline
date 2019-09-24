@@ -82,7 +82,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}"
     implementation "androidx.room:room-runtime:${Versions.room}"
     kapt "androidx.room:room-compiler:${Versions.room}"
-    implementation 'androidx.exifinterface:exifinterface:1.1.0-beta01'
     implementation 'com.google.android.gms:play-services-vision:18.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
