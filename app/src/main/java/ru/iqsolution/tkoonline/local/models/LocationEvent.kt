@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.data.models
+package ru.iqsolution.tkoonline.local.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

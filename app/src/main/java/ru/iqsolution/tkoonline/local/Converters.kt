@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.data.local
+package ru.iqsolution.tkoonline.local
 
 import androidx.room.TypeConverter
 import org.joda.time.DateTime

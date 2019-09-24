@@ -1,7 +1,7 @@
 package ru.iqsolution.tkoonline.local.dao
 
 import androidx.room.*
-import ru.iqsolution.tkoonline.local.CleanEvent
+import ru.iqsolution.tkoonline.local.models.CleanEvent
 
 @Dao
 interface PlatformDao {

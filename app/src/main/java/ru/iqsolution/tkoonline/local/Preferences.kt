@@ -41,6 +41,8 @@ class Preferences(context: Context) : KotprefModel(context) {
      */
     var elapsedTime by longPref(0L, "0x0a")
 
+    var queName by nullableStringPref(null, "0x0b")
+
     /**
      * !!! Non properties below
      */
