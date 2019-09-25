@@ -9,7 +9,11 @@ import ru.iqsolution.tkoonline.local.entities.AccessToken
 @Dao
 interface TokenDao {
 
-    @Query("SELECT * FROM tokens")
+    @Query(
+        """
+        SELECT * FROM tokens
+    """
+    )
     fun getAllTokens(): List<AccessToken>
 
     @Insert

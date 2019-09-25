@@ -43,6 +43,8 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     var queName by nullableStringPref(null, "0x0b")
 
+    var carId by intPref(0, "0x0c")
+
     /**
      * !!! Non properties below
      */
