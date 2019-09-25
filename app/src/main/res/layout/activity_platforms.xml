@@ -19,7 +19,6 @@
         android:layout_below="@+id/status_bar_fragment"
         android:background="@android:color/white"
         android:elevation="6dp"
-        tools:background="@android:color/darker_gray"
         tools:elevation="0dp"/>
 
     <View

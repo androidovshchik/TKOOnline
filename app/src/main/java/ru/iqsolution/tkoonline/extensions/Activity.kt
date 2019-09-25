@@ -5,7 +5,7 @@ package ru.iqsolution.tkoonline.extensions
 import android.app.Activity
 import org.jetbrains.anko.intentFor
 
-inline fun <reified T : Activity> Activity.startActivitySimply(
+inline fun <reified T : Activity> Activity.startActivityNoop(
     requestCode: Int? = null,
     vararg params: Pair<String, Any?>
 ) {

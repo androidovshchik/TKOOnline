@@ -25,9 +25,9 @@
         android:textSize="30sp"
         android:textColor="@color/colorTextGrayDark"
         android:lineSpacingExtra="5sp"
-        fontPath="fonts/Roboto-Bold.ttf"
         tools:text="ТБО"
-        tools:textStyle="bold"/>
+        tools:textStyle="bold"
+        fontPath="fonts/Roboto-Bold.ttf"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -55,7 +55,8 @@
             android:textSize="30sp"
             android:textColor="@color/colorTextGrayLight"
             android:lineSpacingExtra="5sp"
-            tools:text="0,8м3"/>
+            tools:text="0,8м3"
+            fontPath="fonts/Roboto-Regular.ttf"/>
 
         <ImageView
             android:id="@+id/arrow_down_volume"
@@ -95,7 +96,8 @@
             android:textSize="30sp"
             android:textColor="@color/colorTextGrayLight"
             android:lineSpacingExtra="5sp"
-            tools:text="5шт"/>
+            tools:text="5шт"
+            fontPath="fonts/Roboto-Regular.ttf"/>
 
         <ImageView
             android:id="@+id/arrow_down_count"
