@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="10dp"
+    android:paddingEnd="0dp"
+    tools:ignore="MissingPrefix">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="2dp"
+        android:text="Настройки"
+        android:textSize="20sp"
+        android:textColor="@color/colorTextBlack87"
+        android:lineSpacingExtra="3sp"
+        tools:textStyle="bold"
+        fontPath="fonts/Roboto-Bold.ttf"/>
+
+    <TextView
+        android:id="@+id/dialog_caption1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_title"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="2dp"
+        android:text="все данные и фотографии сделанные ранее не будут отправлены"
+        android:textSize="16sp"
+        android:textColor="#89000000"
+        android:lineSpacingExtra="8sp"
+        fontPath="fonts/Roboto-Bold.ttf"/>
+
+    <Button
+        android:id="@+id/dialog_unlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/dialog_telemetry_server"
+        android:textSize="14sp"
+        android:textColor="@color/colorAccent"
+        android:lineSpacingExtra="2sp"
+        android:background="?android:attr/selectableItemBackground"
+        tools:text="Разблокировать"/>
+
+    <Button
+        android:id="@+id/dialog_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_alignParentEnd="true"
+        android:text="Сохранить"
+        android:textSize="14sp"
+        android:textColor="@color/colorAccent"
+        android:lineSpacingExtra="2sp"
+        android:background="?android:attr/selectableItemBackground"/>
+
+</RelativeLayout>

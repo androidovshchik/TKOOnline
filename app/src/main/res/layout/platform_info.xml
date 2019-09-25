@@ -10,7 +10,7 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/container_id"
+        android:id="@+id/platform_id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="4"
@@ -20,7 +20,7 @@
         tools:text="ID: 1 234 567 890"/>
 
     <TextView
-        android:id="@+id/container_range"
+        android:id="@+id/platform_range"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"

@@ -30,7 +30,7 @@ android {
             // countryCode 07
         }
     }
-    buildTypes {tkonline
+    buildTypes {
         debug {
             signingConfig signingConfigs.release
             buildConfigField("String", "BASE_URL", "\"https://msknt2.iqsolution.ru/mobile/v1/\"")
