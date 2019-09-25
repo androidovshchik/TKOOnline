@@ -1,9 +1,6 @@
 package ru.iqsolution.tkoonline.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.local.entities.PlatformContainersPhoto
 import ru.iqsolution.tkoonline.local.entities.PlatformContainersPhotoClean
@@ -36,6 +33,6 @@ interface PlatformDao {
     )
     fun getPlatformById(id: Long): PlatformContainersPhotoClean
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(items: List<Platform>)
 }

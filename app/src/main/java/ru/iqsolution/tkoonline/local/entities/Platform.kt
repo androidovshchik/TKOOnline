@@ -19,6 +19,7 @@ import ru.iqsolution.tkoonline.models.PlatformStatus
         )
     ],
     indices = [
+        Index(value = ["p_kp_id"], unique = true),
         Index(value = ["p_token_id"])
     ]
 )

@@ -15,7 +15,7 @@ class ResponseAuth {
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
     @SerializedName("current_time")
-    lateinit var currentTime: DateTime
+    lateinit var datetime: DateTime
 
     @SerializedName("no_kp_photo")
     var noKpPhoto = 0

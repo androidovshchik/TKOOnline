@@ -45,8 +45,8 @@ class PhotoEvent {
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
-    @ColumnInfo(name = "pe_time")
-    lateinit var time: DateTime
+    @ColumnInfo(name = "pe_datetime")
+    lateinit var datetime: DateTime
 
     @ColumnInfo(name = "pe_sent")
     var sent = false

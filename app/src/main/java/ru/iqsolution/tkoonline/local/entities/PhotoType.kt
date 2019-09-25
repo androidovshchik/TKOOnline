@@ -15,6 +15,7 @@ import com.google.gson.annotations.SerializedName
         )
     ],
     indices = [
+        Index(value = ["pt_type"], unique = true),
         Index(value = ["pt_token_id"])
     ]
 )
