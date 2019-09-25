@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.widgets
+package ru.iqsolution.tkoonline.screens
 
 import android.app.Activity
 import android.app.Dialog

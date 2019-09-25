@@ -48,12 +48,12 @@
             android:theme="@style/AppTheme">
         </activity>
         <activity
-            android:name=".screens.containers.ContainersActivity"
+            android:name=".screens.platforms.PlatformsActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="sensorPortrait">
         </activity>
         <activity
-            android:name=".screens.container.ContainerActivity"
+            android:name=".screens.platform.PlatformActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="sensorPortrait">
         </activity>
