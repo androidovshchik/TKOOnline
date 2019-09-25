@@ -21,7 +21,7 @@ import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.data.local.Preferences
+import ru.iqsolution.tkoonline.local.Preferences
 import timber.log.Timber
 import java.util.*
 

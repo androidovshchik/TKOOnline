@@ -6,14 +6,18 @@ import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.MainApp
-import ru.iqsolution.tkoonline.data.local.Preferences
+import ru.iqsolution.tkoonline.local.FileManager
+import ru.iqsolution.tkoonline.local.Preferences
 import timber.log.Timber
+import java.io.File
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class BasePresenter<V : IBaseView>(application: Application) : IBasePresenter<V>, KodeinAware, CoroutineScope {
 
     val preferences: Preferences by instance()
+
+    val fileManager: FileManager by instance()
 
     protected lateinit var viewRef: WeakReference<V>
 
@@ -26,14 +30,30 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
         viewRef = WeakReference(view)
     }
 
+    override fun createPhoto(): File {
+        return fileManager.createFile()
+    }
+
+    override fun movePhoto(path: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            fileManager.moveFile(path)
+        }
+    }
+
+    override fun deletePhoto(path: String) {
+        fileManager.deleteFile(path)
+    }
+
     override fun clearAuthorization() {
         preferences.bulk {
             accessToken = null
-            expiresToken = null
+            expiresWhen = null
             allowPhotoRefKp = false
             serverTime = null
             elapsedTime = 0L
             vehicleNumber = null
+            queName = null
+            carId = 0
         }
     }
 
