@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEventTypeToken
@@ -25,20 +26,17 @@ interface PhotoDao {
     )
     fun getTypesByToken(token: String): List<PhotoType>
 
-    /**
-     * For send
-     */
     @Query(
         """
         SELECT photo_events.*, photo_types.*, tokens.* FROM photo_events 
         INNER JOIN photo_types ON photo_events.pe_type_id = photo_types.pt_id 
         INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id 
-        WHERE photo_events.pe_sent = 0 AND tokens.t_token = :token
+        WHERE photo_events.pe_sent = 0
     """
     )
-    fun getEventsByToken(token: String): List<PhotoEventTypeToken>
+    fun getEventsForSend(): List<PhotoEventTypeToken>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTypes(items: List<PhotoType>)
 
     @Insert
