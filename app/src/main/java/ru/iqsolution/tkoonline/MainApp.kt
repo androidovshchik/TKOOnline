@@ -30,7 +30,6 @@ import ru.iqsolution.tkoonline.local.AppDatabase
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
-import ru.iqsolution.tkoonline.models.ContainerType
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.screens.LockActivity
@@ -69,8 +68,6 @@ class MainApp : Application(), KodeinAware {
                 .setExclusionStrategies(SerializedNameStrategy())
                 .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
                 .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
-                .registerTypeAdapter(ContainerType::class.java, ContainerTypeSerializer())
-                .registerTypeAdapter(ContainerType::class.java, ContainerTypeDeserializer())
                 .registerTypeAdapter(PlatformStatus::class.java, PlatformStatusSerializer())
                 .registerTypeAdapter(PlatformStatus::class.java, PlatformStatusDeserializer())
                 .create()
