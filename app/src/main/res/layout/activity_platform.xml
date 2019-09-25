@@ -12,44 +12,30 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"/>
 
-    <include
-        android:id="@+id/container_toolbar"
-        layout="@layout/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:layout_below="@+id/status_bar_fragment"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:layout_below="@+id/status_bar_fragment"
-        android:background="@drawable/bottom_shadow"/>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/container_toolbar">
+        android:layout_below="@+id/platform_toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.yandex.mapkit.mapview.MapView
-                android:id="@+id/containers_map"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/ic_launcher"
-                android:background="@android:color/white"
-                android:elevation="6dp"
-                tools:background="@android:color/darker_gray"
-                tools:elevation="0dp"/>
+                android:layout_height="@dimen/map_height">
+
+                <WebView
+                    android:id="@+id/containers_map"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </FrameLayout>
 
             <include
-                layout="@layout/container_info"/>
+                layout="@layout/platform_info"/>
 
             <View
                 android:layout_width="match_parent"
@@ -57,42 +43,70 @@
                 android:background="@color/colorDivider"/>
 
             <include
-                layout="@layout/container_type"/>
+                android:id="@+id/platform_regular"
+                layout="@layout/container_type"
+                android:visibility="gone"
+                tools:visibility="visible"/>
 
             <View
+                android:id="@+id/platform_regular_div1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginBottom="9dp"
                 android:background="@color/colorDivider"/>
 
             <View
+                android:id="@+id/platform_regular_div2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/colorDivider"/>
 
             <include
-                layout="@layout/container_type"/>
+                android:id="@+id/platform_bunker"
+                layout="@layout/container_type"
+                android:visibility="gone"
+                tools:visibility="visible"/>
 
             <View
+                android:id="@+id/platform_bunker_div1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginBottom="9dp"
                 android:background="@color/colorDivider"/>
 
             <View
+                android:id="@+id/platform_bunker_div2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/colorDivider"/>
 
             <include
-                layout="@layout/container_type"/>
+                android:id="@+id/platform_bulk"
+                layout="@layout/container_type"
+                android:visibility="gone"
+                tools:visibility="visible"/>
 
             <View
+                android:id="@+id/platform_bulk_div1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="9dp"
+                android:background="@color/colorDivider"/>
+
+            <View
+                android:id="@+id/platform_bulk_div2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/colorDivider"/>
 
+            <include
+                android:id="@+id/platform_special"
+                layout="@layout/container_type"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+
             <View
+                android:id="@+id/platform_special_div"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/colorDivider"/>
@@ -111,12 +125,13 @@
                 fontPath="fonts/Roboto-Bold.ttf"/>
 
             <include
-                android:id="@+id/container_before"
-                layout="@layout/container_gallery"/>
+                android:id="@+id/photos_before"
+                layout="@layout/platform_gallery"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:layout_marginTop="26dp"
                 android:background="@color/colorDivider"/>
 
             <TextView
@@ -133,16 +148,17 @@
                 fontPath="fonts/Roboto-Bold.ttf"/>
 
             <include
-                android:id="@+id/container_after"
-                layout="@layout/container_gallery"/>
+                android:id="@+id/photos_after"
+                layout="@layout/platform_gallery"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:layout_marginTop="26dp"
                 android:background="@color/colorDivider"/>
 
             <Button
-                android:id="@+id/container_report"
+                android:id="@+id/platform_report"
                 android:layout_width="match_parent"
                 android:layout_height="53dp"
                 android:layout_marginStart="10dp"
@@ -167,7 +183,7 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/container_not_cleaned"
+                    android:id="@+id/platform_not_cleaned"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
@@ -183,14 +199,13 @@
                     fontPath="fonts/Roboto-Medium.ttf"/>
 
                 <View
-                    android:id="@+id/container_placeholder"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:visibility="invisible"/>
 
                 <Button
-                    android:id="@+id/container_cleaned"
+                    android:id="@+id/platform_cleaned"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
@@ -210,5 +225,14 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <include
+        android:id="@+id/platform_toolbar"
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:layout_below="@+id/status_bar_fragment"
+        android:background="@color/colorPrimary"
+        android:elevation="6dp"/>
 
 </RelativeLayout>

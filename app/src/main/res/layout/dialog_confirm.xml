@@ -14,7 +14,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="12dp"
         android:layout_marginStart="2dp"
-        android:text="Настройки"
+        android:text="Вы уверены?"
         android:textSize="20sp"
         android:textColor="@color/colorTextBlack87"
         android:lineSpacingExtra="3sp"
@@ -22,40 +22,44 @@
         fontPath="fonts/Roboto-Bold.ttf"/>
 
     <TextView
-        android:id="@+id/dialog_caption1"
+        android:id="@+id/dialog_caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_title"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="2dp"
-        android:text="все данные и фотографии сделанные ранее не будут отправлены"
+        android:layout_marginEnd="15dp"
+        android:text="Все данные и фотографии сделанные ранее не будут отправлены"
         android:textSize="16sp"
         android:textColor="#89000000"
         android:lineSpacingExtra="8sp"
         fontPath="fonts/Roboto-Bold.ttf"/>
 
     <Button
-        android:id="@+id/dialog_unlock"
+        android:id="@+id/dialog_exit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
         android:layout_marginBottom="10dp"
-        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_toStartOf="@+id/dialog_continue"
+        android:layout_below="@+id/dialog_caption"
         android:textSize="14sp"
         android:textColor="@color/colorAccent"
         android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"
-        tools:text="Разблокировать"/>
+        android:text="Выйти"/>
 
     <Button
-        android:id="@+id/dialog_save"
+        android:id="@+id/dialog_continue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="10dp"
-        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_below="@+id/dialog_caption"
         android:layout_alignParentEnd="true"
-        android:text="Сохранить"
+        android:paddingStart="15dp"
+        android:paddingEnd="0dp"
+        android:text="Продолжить"
         android:textSize="14sp"
         android:textColor="@color/colorAccent"
         android:lineSpacingExtra="2sp"

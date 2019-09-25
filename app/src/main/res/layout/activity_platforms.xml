@@ -15,11 +15,8 @@
     <WebView
         android:id="@+id/platforms_map"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="@dimen/map_height"
         android:layout_below="@+id/status_bar_fragment"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/ic_launcher"
         android:background="@android:color/white"
         android:elevation="6dp"
         tools:background="@android:color/darker_gray"
