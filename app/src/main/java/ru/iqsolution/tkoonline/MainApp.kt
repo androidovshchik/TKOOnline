@@ -88,7 +88,7 @@ class MainApp : Application(), KodeinAware {
         bind<ServerApi>() with singleton {
             Retrofit.Builder()
                 .client(instance())
-                .baseUrl("https://example.com")
+                .baseUrl("https://example.com/")
                 .addConverterFactory(GsonConverterFactory.create(instance()))
                 .build()
                 .create(ServerApi::class.java)

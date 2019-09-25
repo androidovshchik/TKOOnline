@@ -12,15 +12,13 @@ class LocationHandler(service: TelemetryService) : LocationCallback() {
 
     override fun onLocationAvailability(availability: LocationAvailability) {
         Timber.d("onLocationAvailability $availability")
-        if (!availability.isLocationAvailable) {
-            reference.get()?.onLocationUnavailable() ?: Timber.w("Activity reference is null")
-        }
+        reference.get()?.onLocationAvailability(availability.isLocationAvailable) ?: Timber.w("Reference is null")
     }
 
     override fun onLocationResult(result: LocationResult?) {
         Timber.d("onLocationResult $result")
         result?.lastLocation?.let {
-            reference.get()?.onLocationChange(it) ?: Timber.w("Activity reference is null")
+            reference.get()?.onLocationResult(it) ?: Timber.w("Reference is null")
         } ?: Timber.w("Last location is null")
     }
 }
