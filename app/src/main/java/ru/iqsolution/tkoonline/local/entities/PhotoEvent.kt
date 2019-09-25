@@ -10,7 +10,7 @@ import org.joda.time.DateTime
     tableName = "photo_events",
     foreignKeys = [
         ForeignKey(
-            entity = Token::class,
+            entity = AccessToken::class,
             parentColumns = ["t_id"],
             childColumns = ["pe_token_id"],
             onUpdate = ForeignKey.CASCADE,

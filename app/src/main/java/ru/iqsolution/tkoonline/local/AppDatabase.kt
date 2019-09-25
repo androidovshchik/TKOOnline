@@ -8,7 +8,7 @@ import ru.iqsolution.tkoonline.local.entities.*
 
 @Database(
     entities = [
-        Token::class,
+        AccessToken::class,
         Platform::class,
         PhotoType::class,
         PhotoEvent::class,

@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName
     tableName = "photo_types",
     foreignKeys = [
         ForeignKey(
-            entity = Token::class,
+            entity = AccessToken::class,
             parentColumns = ["t_id"],
             childColumns = ["pt_token_id"],
             onUpdate = ForeignKey.CASCADE,
