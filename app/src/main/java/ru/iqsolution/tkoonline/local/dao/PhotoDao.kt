@@ -14,7 +14,7 @@ import ru.iqsolution.tkoonline.local.entities.PhotoType
 interface PhotoDao {
 
     /**
-     * For problem screen
+     * For map and problem screen
      */
     @Query(
         """
