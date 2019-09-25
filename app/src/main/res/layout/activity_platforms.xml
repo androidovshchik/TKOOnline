@@ -13,7 +13,7 @@
         android:layout_height="@dimen/status_bar_height"/>
 
     <WebView
-        android:id="@+id/containers_map"
+        android:id="@+id/platforms_map"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_below="@+id/status_bar_fragment"
@@ -55,7 +55,7 @@
             android:elevation="16dp">
 
             <ImageView
-                android:id="@+id/containers_plus"
+                android:id="@+id/platforms_plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
@@ -66,7 +66,7 @@
                 android:src="@drawable/ic_plus"/>
 
             <ImageView
-                android:id="@+id/containers_minus"
+                android:id="@+id/platforms_minus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
@@ -79,7 +79,7 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/containers_location"
+            android:id="@+id/platforms_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -93,22 +93,22 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/containers_list"
+        android:id="@+id/platforms_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/containers_map"
-        android:layout_above="@+id/containers_buttons"
+        android:layout_below="@+id/platforms_map"
+        android:layout_above="@+id/platforms_buttons"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_platform"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:layout_above="@+id/containers_buttons"
+        android:layout_above="@+id/platforms_buttons"
         android:background="@drawable/top_shadow"/>
 
     <LinearLayout
-        android:id="@+id/containers_buttons"
+        android:id="@+id/platforms_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -117,7 +117,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/containers_complete"
+            android:id="@+id/platforms_complete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
@@ -133,7 +133,7 @@
             fontPath="fonts/Roboto-Medium.ttf"/>
 
         <View
-            android:id="@+id/containers_placeholder"
+            android:id="@+id/platforms_placeholder"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -141,7 +141,7 @@
             tools:visibility="invisible"/>
 
         <Button
-            android:id="@+id/containers_photo"
+            android:id="@+id/platforms_photo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"

@@ -23,7 +23,7 @@
             android:orientation="vertical">
 
             <include
-                layout="@layout/container_info"/>
+                layout="@layout/platform_info"/>
 
             <View
                 android:layout_width="match_parent"

@@ -129,16 +129,18 @@
 
     </LinearLayout>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/login_menu"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="17dp"
-        android:layout_marginStart="17dp"
+        android:paddingStart="17dp"
+        android:paddingEnd="8dp"
         android:paddingTop="24dp"
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_menu_dots"/>
+        android:src="@drawable/ic_menu_dots"
+        android:background="?android:attr/selectableItemBackground"/>
 
 </RelativeLayout>

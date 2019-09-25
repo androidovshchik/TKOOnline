@@ -6,4 +6,5 @@
     <dimen name="barcode_container_padding">18dp</dimen>
     <!-- 250dp + 18dp + 18dp-->
     <dimen name="barcode_container_size">286dp</dimen>
+    <dimen name="gallery_height">78dp</dimen>
 </resources>
