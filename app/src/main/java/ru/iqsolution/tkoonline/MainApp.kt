@@ -3,6 +3,8 @@ package ru.iqsolution.tkoonline
 import android.app.*
 import android.os.Bundle
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.facebook.stetho.Stetho
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -17,15 +19,20 @@ import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
-import org.kodein.di.generic.*
+import org.kodein.di.generic.bind
+import org.kodein.di.generic.instance
+import org.kodein.di.generic.provider
+import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.iqsolution.tkoonline.data.local.AppDatabase
-import ru.iqsolution.tkoonline.data.local.Preferences
-import ru.iqsolution.tkoonline.data.models.ContainerType
-import ru.iqsolution.tkoonline.data.models.PlatformStatus
-import ru.iqsolution.tkoonline.data.remote.*
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
+import ru.iqsolution.tkoonline.local.AppDatabase
+import ru.iqsolution.tkoonline.local.FileManager
+import ru.iqsolution.tkoonline.local.PopulateTask
+import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.models.ContainerType
+import ru.iqsolution.tkoonline.models.PlatformStatus
+import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.AdminManager
@@ -77,6 +84,10 @@ class MainApp : Application(), KodeinAware {
             AdminManager(applicationContext)
         }
 
+        bind<FileManager>() with provider {
+            FileManager(applicationContext)
+        }
+
         bind<ServerApi>() with singleton {
             Retrofit.Builder()
                 .client(instance())
@@ -86,12 +97,20 @@ class MainApp : Application(), KodeinAware {
                 .create(ServerApi::class.java)
         }
 
-        bind<AppDatabase>() with eagerSingleton {
+        bind<AppDatabase>() with singleton {
             Room.databaseBuilder(applicationContext, AppDatabase::class.java, "app.db")
                 .fallbackToDestructiveMigration()
+                .addCallback(object : RoomDatabase.Callback() {
+
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        PopulateTask().execute(appDb)
+                    }
+                })
                 .build()
         }
     }
+
+    val appDb: AppDatabase by instance()
 
     val preferences: Preferences by instance()
 

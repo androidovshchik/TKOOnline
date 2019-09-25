@@ -11,6 +11,9 @@ class ResponseAuth {
     @SerializedName("expire")
     lateinit var expire: String
 
+    /**
+     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     */
     @SerializedName("current_time")
     lateinit var currentTime: DateTime
 
