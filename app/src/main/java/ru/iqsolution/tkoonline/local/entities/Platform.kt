@@ -1,6 +1,9 @@
 package ru.iqsolution.tkoonline.local.entities
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
@@ -93,12 +96,6 @@ class Platform : Container {
     @ColumnInfo(name = "pf_status")
     @SerializedName("status")
     lateinit var status: PlatformStatus
-
-    /**
-     * Should be separated by comma
-     */
-    @Ignore
-    var errors: String? = null
 
     val isValid: Boolean
         get() = BuildConfig.DEBUG || status != PlatformStatus.NO_TASK

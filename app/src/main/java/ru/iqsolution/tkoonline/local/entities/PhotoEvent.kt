@@ -1,9 +1,6 @@
 package ru.iqsolution.tkoonline.local.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import org.joda.time.DateTime
 
 @Entity(
@@ -50,4 +47,10 @@ class PhotoEvent {
 
     @ColumnInfo(name = "pe_sent")
     var sent = false
+
+    /**
+     * It's needed only for platform errors
+     */
+    @Ignore
+    var error: String? = null
 }
