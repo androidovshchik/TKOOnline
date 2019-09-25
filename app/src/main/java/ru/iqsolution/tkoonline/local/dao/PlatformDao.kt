@@ -2,7 +2,6 @@ package ru.iqsolution.tkoonline.local.dao
 
 import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.Platform
-import ru.iqsolution.tkoonline.local.entities.PlatformContainersPhoto
 import ru.iqsolution.tkoonline.local.entities.PlatformContainersPhotoClean
 
 @Dao
@@ -19,7 +18,7 @@ interface PlatformDao {
         WHERE platforms.p_linked_id IS NULL AND tokens.t_token = :token
     """
     )
-    fun getPlatformsByToken(token: String): List<PlatformContainersPhoto>
+    fun getPlatformsByToken(token: String): List<PlatformContainersPhotoClean>
 
     /**
      * For platform screen

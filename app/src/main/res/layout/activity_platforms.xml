@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"/>
 
-    <com.yandex.mapkit.mapview.MapView
+    <WebView
         android:id="@+id/containers_map"
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -99,7 +99,7 @@
         android:layout_below="@+id/containers_map"
         android:layout_above="@+id/containers_buttons"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_container"/>
+        tools:listitem="@layout/item_platform"/>
 
     <View
         android:layout_width="match_parent"
