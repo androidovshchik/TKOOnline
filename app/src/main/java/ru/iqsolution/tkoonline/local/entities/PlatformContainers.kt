@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.local.models
+package ru.iqsolution.tkoonline.local.entities
 
 import androidx.room.Embedded
 import androidx.room.Relation

@@ -1,13 +1,14 @@
-package ru.iqsolution.tkoonline.local.models
+package ru.iqsolution.tkoonline.local.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.models.Container
 
 @Entity(tableName = "cleanup")
-class CleanEvent {
+class CleanEvent : Container {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")

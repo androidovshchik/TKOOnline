@@ -20,7 +20,7 @@ import org.jetbrains.anko.alarmManager
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startService
 
-fun Context.getVectorBitmap(id: Int, scale: Float = 1f): Bitmap? {
+fun Context.rasterizeVector(id: Int, scale: Float = 1f): Bitmap? {
     return ContextCompat.getDrawable(applicationContext, id)?.let {
         val bitmap = Bitmap.createBitmap(
             (it.intrinsicWidth * scale).toInt(),
