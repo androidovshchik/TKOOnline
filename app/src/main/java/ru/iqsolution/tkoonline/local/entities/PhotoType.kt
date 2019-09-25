@@ -25,7 +25,7 @@ class PhotoType {
     @ColumnInfo(name = "pt_id")
     var id: Long? = null
 
-    @ColumnInfo(name = "pt_token_id", index = true)
+    @ColumnInfo(name = "pt_token_id")
     var tokenId = 0L
 
     @ColumnInfo(name = "pt_type")

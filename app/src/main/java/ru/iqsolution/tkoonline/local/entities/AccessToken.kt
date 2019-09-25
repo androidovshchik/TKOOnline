@@ -24,6 +24,9 @@ class AccessToken {
     @ColumnInfo(name = "t_que_name")
     lateinit var queName: String
 
+    @ColumnInfo(name = "t_car_id")
+    var cardId = 0
+
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */

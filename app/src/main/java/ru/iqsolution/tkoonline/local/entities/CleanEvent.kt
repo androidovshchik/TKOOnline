@@ -1,41 +1,56 @@
 package ru.iqsolution.tkoonline.local.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.models.Container
 
-@Entity(tableName = "cleanup")
+@Entity(
+    tableName = "clean_events",
+    foreignKeys = [
+        ForeignKey(
+            entity = AccessToken::class,
+            parentColumns = ["t_id"],
+            childColumns = ["ce_token_id"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(value = ["ce_token_id"])
+    ]
+)
 class CleanEvent : Container {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
+    @ColumnInfo(name = "ce_id")
     var id: Long? = null
 
-    @ColumnInfo(name = "kp_id")
-    var kpId = 0
+    @ColumnInfo(name = "ce_token_id")
+    var tokenId = 0L
 
-    @ColumnInfo(name = "access_token")
-    var accessToken: String? = null
+    @ColumnInfo(name = "ce_kp_id")
+    var kpId = 0
 
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
-    @ColumnInfo(name = "datetime")
+    @ColumnInfo(name = "ce_datetime")
     @SerializedName("time")
     lateinit var datetime: DateTime
 
-    @ColumnInfo(name = "container_type")
+    @ColumnInfo(name = "ce_container_type")
     @SerializedName("container_type_fact")
-    lateinit var containerType: String
+    override lateinit var containerType: String
 
-    @ColumnInfo(name = "container_volume")
+    @ColumnInfo(name = "ce_container_volume")
     @SerializedName("container_type_volume_fact")
-    var containerVolume = 0f
+    override var containerVolume = 0f
 
-    @ColumnInfo(name = "container_count")
+    @ColumnInfo(name = "ce_container_count")
     @SerializedName("container_count_fact")
-    var containerCount = 0
+    override var containerCount = 0
+
+    @ColumnInfo(name = "ce_sent")
+    var sent = false
 }
