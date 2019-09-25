@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import ru.iqsolution.tkoonline.local.models.CleanEvent
+import ru.iqsolution.tkoonline.local.entities.CleanEvent
 
 @Dao
 interface CleanDao {

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import ru.iqsolution.tkoonline.local.models.Token
+import ru.iqsolution.tkoonline.local.entities.Token
 
 @Dao
 interface TokenDao {

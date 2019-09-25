@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import ru.iqsolution.tkoonline.local.dao.*
-import ru.iqsolution.tkoonline.local.models.*
+import ru.iqsolution.tkoonline.local.entities.*
 
 @Database(
     entities = [
