@@ -1,9 +1,6 @@
 package ru.iqsolution.tkoonline.local.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.google.gson.annotations.SerializedName
 
 @Entity(
@@ -16,6 +13,9 @@ import com.google.gson.annotations.SerializedName
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index(value = ["pt_token_id"])
     ]
 )
 class PhotoType {

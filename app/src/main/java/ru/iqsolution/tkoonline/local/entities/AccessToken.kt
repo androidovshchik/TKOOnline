@@ -2,10 +2,16 @@ package ru.iqsolution.tkoonline.local.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import org.joda.time.DateTime
 
-@Entity(tableName = "tokens")
+@Entity(
+    tableName = "tokens",
+    indices = [
+        Index(value = ["token"], unique = true)
+    ]
+)
 class AccessToken {
 
     @PrimaryKey(autoGenerate = true)

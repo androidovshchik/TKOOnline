@@ -1,9 +1,6 @@
 package ru.iqsolution.tkoonline.local.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.AccessToken
 
 @Dao
@@ -16,7 +13,7 @@ interface TokenDao {
     )
     fun getAllTokens(): List<AccessToken>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(item: AccessToken)
 
     @Delete

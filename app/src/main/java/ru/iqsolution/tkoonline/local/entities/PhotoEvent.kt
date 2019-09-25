@@ -13,6 +13,9 @@ import org.joda.time.DateTime
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index(value = ["pe_token_id"])
     ]
 )
 class PhotoEvent {
@@ -21,7 +24,7 @@ class PhotoEvent {
     @ColumnInfo(name = "pe_id")
     var id: Long? = null
 
-    @ColumnInfo(name = "pe_token_id", index = true)
+    @ColumnInfo(name = "pe_token_id")
     var tokenId = 0L
 
     @ColumnInfo(name = "pe_type_id")
