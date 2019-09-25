@@ -16,5 +16,5 @@ interface TokenDao {
     fun insert(item: AccessToken)
 
     @Delete
-    fun delete(vararg items: AccessToken)
+    fun delete(items: List<AccessToken>)
 }

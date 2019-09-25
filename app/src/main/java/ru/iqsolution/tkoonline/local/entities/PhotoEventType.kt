@@ -9,7 +9,4 @@ class PhotoEventType {
 
     @Embedded
     lateinit var type: PhotoType
-
-    @Embedded
-    lateinit var token: AccessToken
 }
