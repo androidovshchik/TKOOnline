@@ -2,8 +2,11 @@
   "name": "map",
   "version": "1.0.0",
   "scripts": {
-    "serve": "webpack-dev-server --mode development --open",
+    "serve": "webpack-dev-server --mode development",
     "build": "webpack-cli --mode production"
+  },
+  "dependencies": {
+    "@types/yandex-maps": "^2.1.8"
   },
   "devDependencies": {
     "ts-loader": "^6.1.2",

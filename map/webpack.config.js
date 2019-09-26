@@ -1,43 +1,26 @@
 const path = require("path");
 const webpack = require("webpack");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-    devtool: "source-map",
     devServer: {
-        contentBase: path.resolve(__dirname, "public"),
-        publicPath: "/build"
+        contentBase: path.resolve(__dirname, "../app/src/main/assets")
     },
-    entry: ["./src/app.ts"],
+    entry: [
+        "./src/main.ts"
+    ],
     output: {
-        path: path.resolve(__dirname, "build"),
-        filename: "app.js",
-        publicPath: "/build/"
+        path: path.resolve(__dirname, "../app/src/main/assets"),
+        filename: "map.js"
     },
     module: {
-        rules: [
-            {
-                test: /\.ts$/,
-                include: path.resolve(__dirname, "src"),
-                use: [
-                    {
-                        loader: "ts-loader"
-                    }
-                ]
-            },
-            {
-                test: /\.scss$/,
-                include: path.resolve(__dirname, "src"),
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    "css-loader",
-                    "sass-loader"
-                ]
-            }
-        ]
+        rules: [{
+            test: /\.ts$/,
+            use: 'ts-loader',
+            exclude: /node_modules/
+        }]
     },
     resolve: {
-        extensions: [".ts", ".tsx", ".js"]
+        extensions: ['.ts', '.js']
     },
-    plugins: [new MiniCssExtractPlugin({filename: "styles.css"})]
-}
+    plugins: []
+};
