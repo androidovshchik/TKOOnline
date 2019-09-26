@@ -3,14 +3,20 @@ script.src = "https://api-maps.yandex.ru/2.1/?apikey=a92bd5d3-176f-40b5-8213-844
 script.type = "text/javascript";
 script.async = false;
 script.onload = function () {
-    console.log('Done');
+    ymaps.ready(init);
 };
 document.getElementsByTagName('head')[0].appendChild(script);
 
-window.onload = function () {
-    console.log('onload');
-};
-
+function init() {
+    const map = new ymaps.Map("map", {
+        center: [55.45, 37.36],
+        zoom: 8,
+        controls: []
+    }, {
+        autoFitToViewport: "always",
+        suppressMapOpenBlock: true
+    });
+}
 /*const defaultBehavior = ["drag", "scrollZoom", "dblClickZoom", "multiTouch", "rightMouseButtonMagnifier"];
 const element: HTMLDivElement = document.createElement("div");
 const map = new ymaps.Map(
