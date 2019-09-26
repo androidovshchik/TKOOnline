@@ -47,8 +47,7 @@ module.exports = (env, argv) => {
                 stringArray: true,
                 stringArrayEncoding: 'rc4',
                 stringArrayThreshold: 1,
-                transformObjectKeys: true,
-                selfDefending: true
+                transformObjectKeys: true
             }, [])
         );
     }
