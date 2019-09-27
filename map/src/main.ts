@@ -1,4 +1,5 @@
 import {Platform} from "./platform.interface";
+import {getColor} from "./status.enum";
 
 declare const ymaps;
 
@@ -18,9 +19,24 @@ function init() {
         .add(markersCollection)
         .add(locationCollection);
     // @ts-ignore
-    mapSetMarkers();
+    mapSetLocation(55, 37, 1000);
     // @ts-ignore
-    mapSetLocation(55, 37, 10000);
+    mapSetMarkers(JSON.stringify([{
+        latitude: 55.1,
+        longitude: 37.1,
+        status: 10,
+        p_errors: null
+    }, {
+        latitude: 55.2,
+        longitude: 37.2,
+        status: 20,
+        p_errors: ''
+    }, {
+        latitude: 55.3,
+        longitude: 37.3,
+        status: 30,
+        p_errors: 'Нет проезда'
+    }]));
 }
 
 const script = document.createElement('script');
@@ -78,12 +94,10 @@ window.mapSetMarkers = function (json: string) {
     markersCollection.removeAll();
     const platforms: Platform[] = JSON.parse(json);
     platforms.forEach(p => {
-        //var color: Color = Color[green];
         const layout = ymaps.templateLayoutFactory.createClass(`
             <div class="placemark">
-                <div class="trash_circle"></div>
                 <span class="trash_text" ${!p.p_errors ? 'style="display: none"' : ''}>${p.p_errors}</span>
-                <div class="trash_ring" style="border-color: green"></div>
+                <div class="trash_ring" style="border-color: ${getColor(p.status)}"></div>
                 <img class="trash_icon" src="icons/ic_delete.svg">
             </div>`
         );
@@ -120,6 +134,7 @@ window.mapSetLocation = function (latitude: number, longitude: number, radius: n
         .add(new ymaps.Placemark([latitude, longitude], {}, {
             iconLayout: 'default#imageWithContent',
             iconImageSize: [0, 0],
-            iconContentLayout: layout
+            iconContentLayout: layout,
+            zIndex: 999999
         } as any))
 };

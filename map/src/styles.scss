@@ -40,16 +40,6 @@ html, body, #map {
   position: relative;
 }
 
-.trash_circle {
-  position: absolute;
-  width: $trashMaxHeight;
-  height: $trashMaxHeight;
-  border-radius: 50%;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  background: $colorWhiteAlpha;
-}
-
 .trash_ring {
   position: absolute;
   left: #{($trashMaxHeight - $ringOuterD) / 2};
@@ -61,6 +51,7 @@ html, body, #map {
   -webkit-border-radius: 50%;
   border-style: solid;
   border-width: #{($ringOuterD - $ringInnerD) / 2};
+  box-shadow: 0 0 0 3px white;
   background: white;
 }
 
