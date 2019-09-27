@@ -15,7 +15,7 @@ import org.jetbrains.anko.surfaceView
 import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
-import ru.iqsolution.tkoonline.screens.BaseFragment
+import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import timber.log.Timber
 
 @Suppress("DEPRECATION")

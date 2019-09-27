@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens.containers
+package ru.iqsolution.tkoonline.screens.platforms
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,30 +6,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.item_container.view.*
+import kotlinx.android.synthetic.main.item_platform.view.*
 import org.jetbrains.anko.backgroundDrawable
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.data.models.ContainerItem
 import ru.iqsolution.tkoonline.extensions.inflate
-import ru.iqsolution.tkoonline.screens.BaseAdapter
-import ru.iqsolution.tkoonline.screens.BaseViewHolder
+import ru.iqsolution.tkoonline.local.entities.Platform
+import ru.iqsolution.tkoonline.screens.base.BaseAdapter
+import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
 
-class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
+class PlatformsAdapter(context: Context) : BaseAdapter<Platform>() {
 
-    val primaryItems = arrayListOf<ContainerItem>()
+    val primaryItems = arrayListOf<Platform>()
 
     private val minSize = context.dip(17)
 
     private val maxSize = context.dip(30)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(parent.inflate(R.layout.item_container))
+        return ViewHolder(parent.inflate(R.layout.item_platform))
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<ContainerItem>, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewHolder<Platform>, position: Int) {
         val item = when {
             position < primaryItems.size -> primaryItems[position]
             else -> items[position - primaryItems.size]
@@ -39,7 +39,7 @@ class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
 
     override fun getItemCount() = primaryItems.size + items.size
 
-    inner class ViewHolder(itemView: View) : BaseViewHolder<ContainerItem>(itemView) {
+    inner class ViewHolder(itemView: View) : BaseViewHolder<Platform>(itemView) {
 
         private val address: TextView = itemView.container_address
 
@@ -58,7 +58,7 @@ class ContainersAdapter(context: Context) : BaseAdapter<ContainerItem>() {
         }
 
         @SuppressLint("SetTextI18n")
-        override fun onBindItem(position: Int, item: ContainerItem) {
+        override fun onBindItem(position: Int, item: Platform) {
             address.text = item.address
             range.text = appContext.getString(
                 R.string.container_range, item.timeLimitFrom.toString(FORMAT_TIME),
