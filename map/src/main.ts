@@ -87,12 +87,16 @@ window.mapClearMarkers = function () {
 };
 
 // @ts-ignore
-window.mapSetMarkers = function (json: string) {
+window.mapSetMarkers = function (first: string, second: string = "[]") {
     if (map == null) {
         return
     }
     markersCollection.removeAll();
-    const platforms: Platform[] = JSON.parse(json);
+    addPlatforms(JSON.parse(first));
+    addPlatforms(JSON.parse(second));
+};
+
+function addPlatforms(platforms: Platform[]) {
     platforms.forEach(p => {
         const layout = ymaps.templateLayoutFactory.createClass(`
             <div class="placemark">
@@ -105,10 +109,13 @@ window.mapSetMarkers = function (json: string) {
             .add(new ymaps.Placemark([p.latitude, p.longitude], {}, {
                 iconLayout: 'default#imageWithContent',
                 iconImageSize: [0, 0],
+                iconImageOffset: [0, 0],
+                // NOTICE magic -23
+                iconContentOffset: [-23, -24],
                 iconContentLayout: layout
             } as any))
     });
-};
+}
 
 /**
  * @param radius in meters
@@ -134,6 +141,9 @@ window.mapSetLocation = function (latitude: number, longitude: number, radius: n
         .add(new ymaps.Placemark([latitude, longitude], {}, {
             iconLayout: 'default#imageWithContent',
             iconImageSize: [0, 0],
+            iconImageOffset: [0, 0],
+            // NOTICE magic -21
+            iconContentOffset: [-21, -16],
             iconContentLayout: layout,
             zIndex: 999999
         } as any))
