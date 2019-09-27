@@ -1,18 +1,20 @@
 $colorWhiteAlpha: rgba(255, 255, 255, 0.9);
 
-$maxHeight: 48px;
+$trashMaxHeight: 48px;
 
 $ringInnerD: 32px;
 $ringOuterD: 42px;
-
-$trashIconWidth: 16px;
-$trashIconHeight: 20px;
 
 $textBoxHeight: 32px;
 $textMarginStart: 3px;
 $textMarginEnd: 12px;
 $textMarginVert: 8px;
 $textBoxR: 5px;
+
+$trashIconWidth: 16px;
+$trashIconHeight: 21px;
+
+$locationIconWidth: 33px;
 
 //noinspection ALL
 @font-face {
@@ -40,8 +42,8 @@ html, body, #map {
 
 .trash_circle {
   position: absolute;
-  width: $maxHeight;
-  height: $maxHeight;
+  width: $trashMaxHeight;
+  height: $trashMaxHeight;
   border-radius: 50%;
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
@@ -50,32 +52,44 @@ html, body, #map {
 
 .trash_ring {
   position: absolute;
-  left: #{($maxHeight - $ringOuterD) / 2};
-  top: #{($maxHeight - $ringOuterD) / 2};
+  left: #{($trashMaxHeight - $ringOuterD) / 2};
+  top: #{($trashMaxHeight - $ringOuterD) / 2};
   width: $ringInnerD;
   height: $ringInnerD;
   border-radius: 50%;
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
-  border: #{($ringOuterD - $ringInnerD) / 2} solid red;
+  border-style: solid;
+  border-width: #{($ringOuterD - $ringInnerD) / 2};
   background: white;
 }
 
 .trash_icon {
   position: absolute;
-  left: #{($maxHeight - $trashIconWidth) / 2};
-  top: #{($maxHeight - $trashIconHeight) / 2};
+  left: #{($trashMaxHeight - $trashIconWidth) / 2};
+  top: #{($trashMaxHeight - $trashIconHeight) / 2};
   width: $trashIconWidth;
 }
 
 .trash_text {
   position: absolute;
-  left: #{$maxHeight / 2};
-  top: #{($maxHeight - $textBoxHeight) / 2};
-  padding: $textMarginVert $textMarginEnd $textMarginVert #{$maxHeight / 2 + $textMarginStart};
+  left: #{$trashMaxHeight / 2};
+  top: #{($trashMaxHeight - $textBoxHeight) / 2};
+  padding: $textMarginVert $textMarginEnd $textMarginVert #{$trashMaxHeight / 2 + $textMarginStart};
   white-space: nowrap;
   border-radius: $textBoxR;
   -moz-border-radius: $textBoxR;
   -webkit-border-radius: $textBoxR;
   background: $colorWhiteAlpha;
+}
+
+.location_icon {
+  position: absolute;
+  width: $locationIconWidth;
+  border-radius: 50%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
 }

@@ -65,27 +65,30 @@ window.mapSetMarkers = function () {
         return
     }
     const MyIconContentLayout = ymaps.templateLayoutFactory.createClass(
-        '<div class="placemark_container">\n' +
-        '        <div class="trash_circle"></div>\n' +
-        '        <div class="trash_ring"></div>\n' +
-        '        <img class="trash_icon" src="icons/ic_delete.svg">\n' +
-        '        <div class="trash_text">Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text\n' +
-        '            Text Text Text Text\n' +
-        '        </div>\n' +
-        '    </div>'
+        `<div class="placemark_container">
+        <div class="trash_circle"></div>
+        <span class="trash_text">Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text
+            Text Text Text Text
+        </span>
+        <div class="trash_ring" style="border-color: green"></div>
+        <img class="trash_icon" src="icons/ic_delete.svg">
+    </div>`
     );
     map.geoObjects
         .add(new ymaps.Placemark([55.45, 37.36], {
-            iconCaption: 'Нет проезда'
         }, {
 // @ts-ignore
             iconLayout: 'default#imageWithContent',
-            // Своё изображение иконки метки.
-            iconImageHref: 'icons/ic_delete.svg',
-            // Размеры метки.
-            iconImageSize: [24, 24],
-            // Макет содержимого.
-            iconContentLayout: MyIconContentLayout
+            iconImageSize: [0, 0],
+            iconContentLayout: MyIconContentLayout,
+            iconShape: {
+                type: 'Rectangle',
+                // Прямоугольник описывается в виде двух точек - верхней левой и нижней правой.
+                // @ts-ignore
+                coordinates: [
+                    [-250, -250], [250, 250]
+                ]
+            }
         }))
 };
 
