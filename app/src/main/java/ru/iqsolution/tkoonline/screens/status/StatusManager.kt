@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.BatteryManager
+import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.R
 import timber.log.Timber
@@ -16,7 +17,7 @@ import java.lang.ref.WeakReference
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
-class StatusManager(context: Context, listener: StatusListener) {
+class StatusManager(listener: StatusListener) {
 
     private val reference = WeakReference(listener)
 
@@ -24,7 +25,7 @@ class StatusManager(context: Context, listener: StatusListener) {
     private var swapIcon = R.drawable.ic_swap_vert
 
     private val swapRunnable = Runnable {
-
+        reference.get()?.updateConnection(swapIcon)
     }
 
     private val callback = object : ConnectivityManager.NetworkCallback() {
@@ -32,13 +33,13 @@ class StatusManager(context: Context, listener: StatusListener) {
         override fun onAvailable(network: Network) {
             Timber.d("Network on available")
             swapIcon = R.drawable.ic_swap_vert_green
-            activity?.runOnUiThread(swapRunnable)
+            reference.get()?.getActivity()?.runOnUiThread(swapRunnable)
         }
 
         override fun onLost(network: Network) {
             Timber.d("Network on lost")
             swapIcon = R.drawable.ic_swap_vert
-            activity?.runOnUiThread(swapRunnable)
+            reference.get()?.getActivity()?.runOnUiThread(swapRunnable)
         }
     }
 
@@ -57,21 +58,21 @@ class StatusManager(context: Context, listener: StatusListener) {
                             Timber.e(e)
                         }
                     }
-                    updateTime()
+                    reference.get()?.updateTime()
                 }
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
                     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
                     val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
                     Timber.d("On battery changes: status $status, level $level")
-                    updateBattery(status, level)
+                    reference.get()?.updateBattery(status, level)
                 }
             }
         }
     }
 
     @SuppressLint("MissingPermission")
-    fun requestUpdates(context: Context) {
-        activity?.apply {
+    fun init() {
+        reference.get()?.getActivity()?.apply {
             connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
             registerReceiver(receiver, IntentFilter().apply {
                 // time
@@ -87,7 +88,7 @@ class StatusManager(context: Context, listener: StatusListener) {
     }
 
     fun release() {
-        activity?.apply {
+        reference.get()?.getActivity()?.apply {
             connectivityManager.unregisterNetworkCallback(callback)
             unregisterReceiver(receiver)
         }

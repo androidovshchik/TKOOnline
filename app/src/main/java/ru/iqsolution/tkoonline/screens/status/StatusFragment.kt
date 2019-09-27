@@ -19,7 +19,7 @@ import java.util.*
 
 class StatusFragment : BaseFragment(), StatusListener {
 
-    private lateinit var statusManager: StatusManager
+    private val statusManager = StatusManager(this)
 
     private lateinit var preferences: Preferences
 
@@ -39,8 +39,9 @@ class StatusFragment : BaseFragment(), StatusListener {
         status_number.text = preferences.vehicleNumber ?: ""
         updateTime()
         status_location.setImageResource(R.drawable.ic_gps_fixed)
-        status_connection.setImageResource(R.drawable.ic_swap_vert)
+        updateConnection(R.drawable.ic_swap_vert)
         status_uploads.setImageResource(R.drawable.ic_cloud_upload)
+        statusManager.init()
     }
 
     override fun updateTime() {

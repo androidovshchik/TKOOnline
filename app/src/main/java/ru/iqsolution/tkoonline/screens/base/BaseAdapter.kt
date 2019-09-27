@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens
+package ru.iqsolution.tkoonline.screens.base
 
 import android.content.Context
 import android.view.View
