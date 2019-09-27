@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.webkit.WebView
+import ru.iqsolution.tkoonline.BuildConfig
 
 class MapView : WebView {
 
@@ -73,4 +74,11 @@ class MapView : WebView {
     }
 
     override fun hasOverlappingRendering() = false
+
+    companion object {
+
+        init {
+            setWebContentsDebuggingEnabled(!BuildConfig.DEBUG)
+        }
+    }
 }

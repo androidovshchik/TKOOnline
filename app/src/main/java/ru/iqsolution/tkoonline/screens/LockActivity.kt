@@ -18,14 +18,15 @@ class LockActivity : Activity(), KodeinAware {
 
     override val kodein by kodein()
 
-    val adminManager: AdminManager by instance()
-
     val preferences: Preferences by instance()
+
+    private lateinit var adminManager: AdminManager
 
     private lateinit var content: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        adminManager = AdminManager(applicationContext)
         content = findViewById<View>(android.R.id.content)
     }
 

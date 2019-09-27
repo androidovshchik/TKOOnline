@@ -45,17 +45,26 @@ class StatusFragment : BaseFragment(), StatusListener {
     }
 
     override fun updateTime() {
+        if (view == null) {
+            return
+        }
         status_time.text = serverTime.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
             .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
             .toString(FORMAT_TIME)
     }
 
     override fun updateConnection(icon: Int) {
+        if (view == null) {
+            return
+        }
         status_connection.setImageResource(icon)
     }
 
     @SuppressLint("SetTextI18n")
     override fun updateBattery(status: Int, level: Int) {
+        if (view == null) {
+            return
+        }
         when (status) {
             BatteryManager.BATTERY_STATUS_CHARGING -> {
                 status_battery.apply {

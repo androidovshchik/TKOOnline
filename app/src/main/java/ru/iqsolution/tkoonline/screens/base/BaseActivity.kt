@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens
+package ru.iqsolution.tkoonline.screens.base
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -15,6 +15,8 @@ import androidx.core.content.FileProvider
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
+import ru.iqsolution.tkoonline.local.FileManager
+import ru.iqsolution.tkoonline.screens.WaitDialog
 import ru.iqsolution.tkoonline.services.TelemetryService
 
 @SuppressLint("Registered")
@@ -26,6 +28,8 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
 
     protected var telemetryService: TelemetryService? = null
 
+    protected lateinit var fileManager: FileManager
+
     private var waitDialog: WaitDialog? = null
 
     private var photoPath: String? = null
@@ -33,6 +37,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        fileManager = FileManager(applicationContext)
     }
 
     override fun onStart() {
@@ -43,7 +48,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
     }
 
     private fun bindTasksService() {
-        if (TasksService.launch(preferences)) {
+        if (TelemetryService.start(applicationContext)) {
             if (telemetryService == null) {
                 bindService(intentFor<TelemetryService>(), telemetryConnection, Context.BIND_AUTO_CREATE)
             }
@@ -81,7 +86,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
     protected fun takePhoto() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(packageManager) != null) {
-            val file = presenter.createPhoto()
+            val file = fileManager.createFile()
             photoPath = file.path
             val uri = FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", file)
             startActivityForResult(intent.apply {
@@ -95,11 +100,11 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_PHOTO) {
-            photoPath?.let {
+            photoPath?.also {
                 if (resultCode == RESULT_OK) {
-                    presenter.movePhoto(it)
+                    fileManager.moveFile(it)
                 } else {
-                    presenter.deletePhoto(it)
+                    fileManager.deleteFile(it)
                 }
             }
         }
