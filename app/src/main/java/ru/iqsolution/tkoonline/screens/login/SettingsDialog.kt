@@ -8,8 +8,8 @@ import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_login.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.data.local.Preferences
-import ru.iqsolution.tkoonline.screens.BaseDialogFragment
+import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.screens.base.BaseDialogFragment
 
 class SettingsDialog : BaseDialogFragment() {
 

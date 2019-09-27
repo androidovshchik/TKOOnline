@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.dialog_password.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.data.local.Preferences
 import ru.iqsolution.tkoonline.extensions.setMaxLength
 import ru.iqsolution.tkoonline.extensions.setOnlyNumbers
-import ru.iqsolution.tkoonline.screens.BaseDialogFragment
+import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.screens.base.BaseDialogFragment
 
 class PasswordDialog : BaseDialogFragment() {
 

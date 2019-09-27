@@ -10,9 +10,9 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
-import ru.iqsolution.tkoonline.data.models.QrCode
-import ru.iqsolution.tkoonline.data.remote.ServerApi
-import ru.iqsolution.tkoonline.screens.BasePresenter
+import ru.iqsolution.tkoonline.models.QrCode
+import ru.iqsolution.tkoonline.remote.ServerApi
+import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import timber.log.Timber
 
 class LoginPresenter(application: Application) : BasePresenter<LoginContract.View>(application),
@@ -39,15 +39,21 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
         baseJob.cancelChildren()
         launch {
             try {
-                val responseAuth =
-                    serverApi.login(qrCode.carId.toString(), qrCode.pass, preferences.lockPassword?.toInt())
+                val responseAuth = serverApi.login(
+                    preferences.mainServerAddress,
+                    qrCode.carId.toString(),
+                    qrCode.pass,
+                    preferences.lockPassword?.toInt()
+                )
                 preferences.bulk {
                     accessToken = responseAuth.accessKey
-                    expiresToken = responseAuth.expire
+                    expiresWhen = responseAuth.expire
                     allowPhotoRefKp = responseAuth.noKpPhoto == 1
-                    serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
+                    serverTime = responseAuth.datetime.toString(PATTERN_DATETIME)
                     elapsedTime = SystemClock.elapsedRealtime()
                     vehicleNumber = qrCode.regNum
+                    queName = responseAuth.queName
+                    carId = qrCode.carId
                 }
                 viewRef.get()?.onAuthorized()
             } catch (e: CancellationException) {
