@@ -3,12 +3,17 @@ import {getColor} from "./status.enum";
 
 declare const ymaps;
 
-let map, markersCollection, locationCollection;
+let id, map, markersCollection, locationCollection;
 
 function init() {
+    // @ts-ignore
+    id = document.getElementById('main').src.split("?")[1];
+    const latitude = localStorage.getItem(`${id}_latitude`);
+    const longitude = localStorage.getItem(`${id}_longitude`);
+    const zoom = localStorage.getItem(`${id}_zoom`);
     map = new ymaps.Map("map", {
-        center: [55.75222, 37.61556],
-        zoom: 8,
+        center: [latitude ? Number(latitude) : 55.75222, longitude ? Number(longitude) : 37.61556],
+        zoom: zoom ? Number(zoom) : 8,
         controls: []
     }, {
         suppressMapOpenBlock: true
@@ -67,16 +72,6 @@ window.mapClearMarkers = function () {
     markersCollection.removeAll();
 };
 
-// @ts-ignore
-window.mapSetMarkers = function (first: string, second: string = "[]") {
-    if (map == null) {
-        return
-    }
-    markersCollection.removeAll();
-    addPlatforms(JSON.parse(first));
-    addPlatforms(JSON.parse(second));
-};
-
 function addPlatforms(platforms: Platform[]) {
     platforms.forEach(p => {
         const layout = ymaps.templateLayoutFactory.createClass(`
@@ -97,6 +92,16 @@ function addPlatforms(platforms: Platform[]) {
             } as any))
     });
 }
+
+// @ts-ignore
+window.mapSetMarkers = function (first: string, second: string = "[]") {
+    if (map == null) {
+        return
+    }
+    markersCollection.removeAll();
+    addPlatforms(JSON.parse(first));
+    addPlatforms(JSON.parse(second));
+};
 
 // @ts-ignore
 window.mapClearLocation = function () {
@@ -136,4 +141,15 @@ window.mapSetLocation = function (latitude: number, longitude: number, radius: n
             iconContentLayout: layout,
             zIndex: 999999
         } as any))
+};
+
+// @ts-ignore
+window.mapSaveState = function () {
+    if (map == null) {
+        return
+    }
+    const center = map.getCenter();
+    localStorage.setItem(`${id}_latitude`, center[0]);
+    localStorage.setItem(`${id}_longitude`, center[1]);
+    localStorage.setItem(`${id}_zoom`, map.getZoom());
 };
