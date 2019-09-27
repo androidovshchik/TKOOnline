@@ -1,12 +1,23 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" style="background: white">
 <head>
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link href="map.css" rel="stylesheet"/>
     <script src="map.js" type="text/javascript"></script>
 </head>
-<body style="margin: 0; background: white">
-<div id="map" style="width: 100vw; height: 100vh"></div>
+<body>
+<div id="map"></div>
+<div style="position: absolute; top: 0; left: 0; display: block">
+    <div class="placemark_container">
+        <div class="trash_circle"></div>
+        <div class="trash_ring"></div>
+        <img class="trash_icon" src="icons/ic_delete.svg">
+        <div class="trash_text">Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text
+            Text Text Text Text
+        </div>
+    </div>
+</div>
 </body>
 </html>

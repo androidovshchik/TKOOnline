@@ -45,8 +45,7 @@ module.exports = (env, argv) => {
             new JavaScriptObfuscator({
                 identifierNamesGenerator: 'hexadecimal',
                 stringArray: true,
-                stringArrayEncoding: 'rc4',
-                stringArrayThreshold: 1,
+                stringArrayEncoding: 'base64',
                 transformObjectKeys: true
             }, [])
         );
