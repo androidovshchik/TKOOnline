@@ -29,37 +29,48 @@ class MapView : WebView {
         settings.apply {
             @SuppressLint("SetJavaScriptEnabled")
             javaScriptEnabled = true
+            domStorageEnabled = true
         }
     }
 
-    fun mapZoomIn(duration: Int = 500) {
+    fun zoomIn(duration: Int = 500) {
         loadUrl("javascript:mapZoomIn($duration)")
     }
 
-    fun mapZoomOut(duration: Int = 500) {
+    fun zoomOut(duration: Int = 500) {
         loadUrl("javascript:mapZoomOut($duration)")
     }
 
-    fun mapMoveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
+    fun moveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
         loadUrl("javascript:mapMoveTo($latitude, $longitude, $zoom, $duration)")
     }
 
-    fun mapClearMarkers() {
+    fun clearMarkers() {
         loadUrl("javascript:mapClearMarkers()")
     }
 
-    fun mapSetMarkers(first: String, second: String = "[]") {
+    fun setMarkers(first: String, second: String = "[]") {
         loadUrl("javascript:mapSetMarkers($first, $second)")
     }
 
-    fun mapClearLocation() {
+    fun clearLocation() {
         loadUrl("javascript:mapClearLocation()")
     }
 
     /**
      * @param radius in meters
      */
-    fun mapSetLocation(latitude: Double, longitude: Double, radius: Int = 0) {
+    fun setLocation(latitude: Double, longitude: Double, radius: Int = 0) {
         loadUrl("javascript:mapSetLocation($latitude, $longitude, $radius)")
     }
+
+    fun clearState() {
+        loadUrl("javascript:mapClearState()")
+    }
+
+    fun saveState() {
+        loadUrl("javascript:mapSaveState()")
+    }
+
+    override fun hasOverlappingRendering() = false
 }

@@ -31,6 +31,7 @@ class LocationManager(context: Context, listener: LocationListener) {
         override fun onLocationResult(result: LocationResult?) {
             Timber.d("onLocationResult $result")
             result?.lastLocation?.let {
+                Timber.i("Last location is $it")
                 reference.get()?.onLocationResult(it)
             } ?: run {
                 Timber.w("Last location is null")

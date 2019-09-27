@@ -1,6 +1,6 @@
 package ru.iqsolution.tkoonline.screens.problem
 
-import ru.iqsolution.tkoonline.screens.IBaseView
+import ru.iqsolution.tkoonline.screens.base.IBaseView
 
 interface ProblemContract {
 

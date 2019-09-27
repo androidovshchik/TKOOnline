@@ -4,9 +4,11 @@ import android.os.Bundle
 import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.screens.BaseActivity
+import ru.iqsolution.tkoonline.screens.base.BaseActivity
 
 class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
+
+    override val attachService = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
