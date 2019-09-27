@@ -71,7 +71,7 @@ class StatusManager(listener: StatusListener) {
     }
 
     @SuppressLint("MissingPermission")
-    fun init() {
+    fun register() {
         reference.get()?.getActivity()?.apply {
             connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
             registerReceiver(receiver, IntentFilter().apply {
@@ -87,7 +87,7 @@ class StatusManager(listener: StatusListener) {
         }
     }
 
-    fun release() {
+    fun unregister() {
         reference.get()?.getActivity()?.apply {
             connectivityManager.unregisterNetworkCallback(callback)
             unregisterReceiver(receiver)

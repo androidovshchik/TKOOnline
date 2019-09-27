@@ -41,7 +41,7 @@ class StatusFragment : BaseFragment(), StatusListener {
         status_location.setImageResource(R.drawable.ic_gps_fixed)
         updateConnection(R.drawable.ic_swap_vert)
         status_uploads.setImageResource(R.drawable.ic_cloud_upload)
-        statusManager.init()
+        statusManager.register()
     }
 
     override fun updateTime() {
@@ -97,7 +97,7 @@ class StatusFragment : BaseFragment(), StatusListener {
     }
 
     override fun onDestroyView() {
-        statusManager.release()
+        statusManager.unregister()
         super.onDestroyView()
     }
 }

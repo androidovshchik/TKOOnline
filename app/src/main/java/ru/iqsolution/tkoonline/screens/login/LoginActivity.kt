@@ -8,10 +8,10 @@ import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.topPadding
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.startActivitySimply
-import ru.iqsolution.tkoonline.screens.BaseActivity
+import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.screens.LockActivity
-import ru.iqsolution.tkoonline.screens.containers.ContainersActivity
+import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 
 @Suppress("DEPRECATION")
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
@@ -71,7 +71,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
         if (enter) {
             hasPrompted = false
         }
-        startActivitySimply<LockActivity>()
+        startActivityNoop<LockActivity>()
     }
 
     override fun onQrCode(value: String) {
@@ -79,7 +79,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
     }
 
     override fun onAuthorized() {
-        startActivitySimply<ContainersActivity>()
+        startActivityNoop<PlatformsActivity>()
         finish()
     }
 
