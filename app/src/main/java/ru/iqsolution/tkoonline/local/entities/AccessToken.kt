@@ -9,7 +9,7 @@ import org.joda.time.DateTime
 @Entity(
     tableName = "tokens",
     indices = [
-        Index(value = ["token"], unique = true)
+        Index(value = ["t_token"], unique = true)
     ]
 )
 class AccessToken {

@@ -42,5 +42,5 @@ class PhotoType {
 
     @ColumnInfo(name = "pt_is_error")
     @SerializedName("is_error")
-    var isError = 0
+    var _isError = 0
 }

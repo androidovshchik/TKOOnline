@@ -38,8 +38,10 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
             it.attachView(this)
             it.clearAuthorization()
         }
-        (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = statusBarHeight
-        login_shadow.topPadding = statusBarHeight
+        statusBarHeight.let {
+            (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = it
+            login_shadow.topPadding = it
+        }
         login_menu.onClick {
             fragmentManager.beginTransaction().apply {
                 fragmentManager.findFragmentByTag(settingsDialog.javaClass.simpleName)?.let {
