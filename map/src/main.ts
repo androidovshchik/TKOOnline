@@ -7,7 +7,7 @@ let id, map, markersCollection, locationCollection;
 
 function init() {
     // @ts-ignore
-    id = document.getElementById('main').src.split("?")[1];
+    id = `${document.getElementById('main').src}?`.split("?")[1];
     const latitude = localStorage.getItem(`${id}_latitude`);
     const longitude = localStorage.getItem(`${id}_longitude`);
     const zoom = localStorage.getItem(`${id}_zoom`);
@@ -141,6 +141,16 @@ window.mapSetLocation = function (latitude: number, longitude: number, radius: n
             iconContentLayout: layout,
             zIndex: 999999
         } as any))
+};
+
+// @ts-ignore
+window.mapClearState = function () {
+    if (map == null) {
+        return
+    }
+    localStorage.removeItem(`${id}_latitude`);
+    localStorage.removeItem(`${id}_longitude`);
+    localStorage.removeItem(`${id}_zoom`);
 };
 
 // @ts-ignore
