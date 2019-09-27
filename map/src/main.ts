@@ -1,4 +1,4 @@
-let map;
+let map, markersCollection, locationCollection;
 
 function init() {
     map = new ymaps.Map("map", {
@@ -8,8 +8,15 @@ function init() {
     }, {
         suppressMapOpenBlock: true
     });
+    markersCollection = new ymaps.GeoObjectCollection();
+    locationCollection = new ymaps.GeoObjectCollection();
+    map.geoObjects
+        .add(markersCollection)
+        .add(locationCollection);
     // @ts-ignore
     mapSetMarkers();
+    // @ts-ignore
+    mapSetLocation();
 }
 
 const script = document.createElement('script');
@@ -74,7 +81,7 @@ window.mapSetMarkers = function () {
         <img class="trash_icon" src="icons/ic_delete.svg">
     </div>`
     );
-    map.geoObjects
+    markersCollection
         .add(new ymaps.Placemark([55.45, 37.36], {
         }, {
 // @ts-ignore
@@ -97,4 +104,18 @@ window.mapSetLocation = function () {
     if (map == null) {
         return
     }
+
+    // Создаем круг.
+    var myCircle = new ymaps.Circle([
+        // Координаты центра круга.
+        [55.76, 37.60],
+        // Радиус круга в метрах.
+        10000
+    ], {}, {
+        fillColor: "#70b06e99",
+        strokeWidth: 0
+    });
+
+    // Добавляем круг на карту.
+    locationCollection.add(myCircle);
 };
