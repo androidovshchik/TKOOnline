@@ -27,14 +27,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.local.AppDatabase
-import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import ru.iqsolution.tkoonline.services.AdminManager
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -75,14 +73,6 @@ class MainApp : Application(), KodeinAware {
 
         bind<Preferences>() with provider {
             Preferences(applicationContext)
-        }
-
-        bind<AdminManager>() with provider {
-            AdminManager(applicationContext)
-        }
-
-        bind<FileManager>() with provider {
-            FileManager(applicationContext)
         }
 
         bind<ServerApi>() with singleton {

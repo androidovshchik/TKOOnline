@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens
+package ru.iqsolution.tkoonline.screens.base
 
 import android.app.Application
 import com.chibatching.kotpref.bulk
@@ -6,18 +6,14 @@ import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.MainApp
-import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import timber.log.Timber
-import java.io.File
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class BasePresenter<V : IBaseView>(application: Application) : IBasePresenter<V>, KodeinAware, CoroutineScope {
 
     val preferences: Preferences by instance()
-
-    val fileManager: FileManager by instance()
 
     protected lateinit var viewRef: WeakReference<V>
 
@@ -28,20 +24,6 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
 
     override fun attachView(view: V) {
         viewRef = WeakReference(view)
-    }
-
-    override fun createPhoto(): File {
-        return fileManager.createFile()
-    }
-
-    override fun movePhoto(path: String) {
-        GlobalScope.launch(Dispatchers.IO) {
-            fileManager.moveFile(path)
-        }
-    }
-
-    override fun deletePhoto(path: String) {
-        fileManager.deleteFile(path)
     }
 
     override fun clearAuthorization() {
