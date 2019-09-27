@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.local
 
 import android.content.Context
 import android.os.Environment
+import androidx.annotation.WorkerThread
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -34,6 +35,7 @@ class FileManager(context: Context) {
     /**
      * @return new path of file
      */
+    @WorkerThread
     fun moveFile(file: File): String {
         val dist = File(photosDir, file.name)
         try {
@@ -53,6 +55,7 @@ class FileManager(context: Context) {
         return readFile(File(path))
     }
 
+    @WorkerThread
     fun readFile(file: File): MultipartBody.Part? {
         return if (file.exists()) {
             MultipartBody.Part.createFormData(
@@ -66,6 +69,7 @@ class FileManager(context: Context) {
         File(path).delete()
     }
 
+    @WorkerThread
     fun deleteOldFiles() {
         val now = System.currentTimeMillis()
         photosDir.listFiles().forEach {
