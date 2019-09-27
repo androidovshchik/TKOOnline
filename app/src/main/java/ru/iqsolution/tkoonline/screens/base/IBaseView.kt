@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens
+package ru.iqsolution.tkoonline.screens.base
 
 interface IBaseView {
 

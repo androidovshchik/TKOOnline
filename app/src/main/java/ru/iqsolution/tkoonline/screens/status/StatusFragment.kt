@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens
+package ru.iqsolution.tkoonline.screens.status
 
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
@@ -26,7 +26,7 @@ import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import timber.log.Timber
 import java.util.*
 
-class StatusBarFragment : BaseFragment() {
+class StatusFragment : BaseFragment() {
 
     private lateinit var preferences: Preferences
 

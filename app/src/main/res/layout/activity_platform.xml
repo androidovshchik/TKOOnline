@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/status_bar_fragment"
-        android:name="ru.iqsolution.tkoonline.screens.StatusBarFragment"
+        android:name="ru.iqsolution.tkoonline.screens.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"/>
 

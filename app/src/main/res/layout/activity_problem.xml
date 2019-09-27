@@ -6,8 +6,11 @@
     android:orientation="vertical"
     tools:ignore="MissingPrefix">
 
-    <include
-        layout="@layout/status_bar"/>
+    <fragment
+        android:id="@+id/status_bar_fragment"
+        android:name="ru.iqsolution.tkoonline.screens.status.StatusFragment"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_height"/>
 
     <include
         layout="@layout/toolbar"/>
