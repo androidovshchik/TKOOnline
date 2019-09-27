@@ -69,6 +69,9 @@ window.mapSetMarkers = function () {
         '        <div class="trash_circle"></div>\n' +
         '        <div class="trash_ring"></div>\n' +
         '        <img class="trash_icon" src="icons/ic_delete.svg">\n' +
+        '        <div class="trash_text">Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text\n' +
+        '            Text Text Text Text\n' +
+        '        </div>\n' +
         '    </div>'
     );
     map.geoObjects
