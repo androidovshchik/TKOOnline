@@ -1,8 +1,8 @@
-package ru.iqsolution.tkoonline.screens.photo
+package ru.iqsolution.tkoonline.screens.platform
 
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 
-interface PhotoContract {
+interface PlatformContract {
 
     interface Presenter
 

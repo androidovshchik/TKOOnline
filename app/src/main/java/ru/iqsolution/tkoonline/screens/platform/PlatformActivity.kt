@@ -1,18 +1,24 @@
-package ru.iqsolution.tkoonline.screens.photo
+package ru.iqsolution.tkoonline.screens.platform
 
 import android.os.Bundle
 import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 
-class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
+class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View {
+
+    override val attachService = true
+
+    private var platform: Platform? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_photo)
-        presenter = PhotoPresenter(application).also {
+        setContentView(R.layout.activity_platform)
+        presenter = PlatformPresenter(application).also {
             it.attachView(this)
+            //platform = it.getContainer(intent.getIntExtra(EXTRA_ID, -1))
         }
         toolbar_back.onClick {
             finish()
