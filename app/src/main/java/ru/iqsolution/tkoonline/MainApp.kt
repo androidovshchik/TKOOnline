@@ -100,6 +100,7 @@ class MainApp : Application(), KodeinAware {
                 .addCallback(object : RoomDatabase.Callback() {
 
                     override fun onCreate(db: SupportSQLiteDatabase) {
+                        // may be put initial data here etc.
                         PopulateTask().execute(appDb)
                     }
                 })

@@ -1,52 +1,95 @@
 package ru.iqsolution.tkoonline.screens.status
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
-import com.google.android.gms.location.*
-import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
-import ru.iqsolution.tkoonline.extensions.areGranted
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
+import android.os.BatteryManager
+import org.joda.time.DateTimeZone
+import ru.iqsolution.tkoonline.R
 import timber.log.Timber
 import java.lang.ref.WeakReference
+import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
 class StatusManager(context: Context, listener: StatusListener) {
 
     private val reference = WeakReference(listener)
 
-    private val locationClient = LocationServices.getFusedLocationProviderClient(context)
+    @Volatile
+    private var swapIcon = R.drawable.ic_swap_vert
 
-    private val locationRequest = LocationRequest.create().apply {
-        interval = 15_000L
-        fastestInterval = 15_000L
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    private val swapRunnable = Runnable {
+
     }
 
-    private val locationCallback = object : LocationCallback() {
+    private val callback = object : ConnectivityManager.NetworkCallback() {
 
-        override fun onLocationAvailability(availability: LocationAvailability) {
-            Timber.d("onLocationAvailability $availability")
-            reference.get()?.onLocationAvailability(availability.isLocationAvailable)
+        override fun onAvailable(network: Network) {
+            Timber.d("Network on available")
+            swapIcon = R.drawable.ic_swap_vert_green
+            activity?.runOnUiThread(swapRunnable)
         }
 
-        override fun onLocationResult(result: LocationResult?) {
-            Timber.d("onLocationResult $result")
-            result?.lastLocation?.let {
-                Timber.i("Last location is $it")
-                reference.get()?.onLocationResult(it)
-            } ?: run {
-                Timber.w("Last location is null")
+        override fun onLost(network: Network) {
+            Timber.d("Network on lost")
+            swapIcon = R.drawable.ic_swap_vert
+            activity?.runOnUiThread(swapRunnable)
+        }
+    }
+
+    private val receiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {
+            Timber.d("Status bar action: ${intent.action}")
+            when (intent.action) {
+                Intent.ACTION_TIME_TICK, Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED -> {
+                    if (intent.action == Intent.ACTION_TIMEZONE_CHANGED) {
+                        try {
+                            val timeZone = TimeZone.getDefault()
+                            DateTimeZone.setDefault(DateTimeZone.forTimeZone(timeZone))
+                            Timber.d("Changed default timezone to ${timeZone.id}")
+                        } catch (e: Exception) {
+                            Timber.e(e)
+                        }
+                    }
+                    updateTime()
+                }
+                Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
+                    val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+                    val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+                    Timber.d("On battery changes: status $status, level $level")
+                    updateBattery(status, level)
+                }
             }
         }
     }
 
     @SuppressLint("MissingPermission")
     fun requestUpdates(context: Context) {
-        if (context.areGranted(*DANGER_PERMISSIONS)) {
-            locationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        activity?.apply {
+            connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
+            registerReceiver(receiver, IntentFilter().apply {
+                // time
+                addAction(Intent.ACTION_TIME_TICK)
+                addAction(Intent.ACTION_TIME_CHANGED)
+                addAction(Intent.ACTION_TIMEZONE_CHANGED)
+                // battery
+                addAction(Intent.ACTION_BATTERY_CHANGED)
+                addAction(Intent.ACTION_BATTERY_LOW)
+                addAction(Intent.ACTION_BATTERY_OKAY)
+            })
         }
     }
 
     fun release() {
-        locationClient.removeLocationUpdates(locationCallback)
+        activity?.apply {
+            connectivityManager.unregisterNetworkCallback(callback)
+            unregisterReceiver(receiver)
+        }
     }
 }

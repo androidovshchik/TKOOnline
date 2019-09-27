@@ -1,10 +1,14 @@
 package ru.iqsolution.tkoonline.screens.status
 
-import android.location.Location
+import android.app.Activity
 
 interface StatusListener {
 
-    fun onLocationResult(location: Location)
+    fun getActivity(): Activity?
 
-    fun onLocationAvailability(available: Boolean)
+    fun updateTime()
+
+    fun updateConnection(icon: Int)
+
+    fun updateBattery(status: Int, level: Int)
 }

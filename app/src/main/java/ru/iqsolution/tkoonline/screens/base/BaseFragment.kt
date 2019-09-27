@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package ru.iqsolution.tkoonline.screens
+package ru.iqsolution.tkoonline.screens.base
 
 import android.app.Fragment
 import android.os.Bundle
