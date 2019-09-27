@@ -2,7 +2,7 @@ let map, markersCollection, locationCollection;
 
 function init() {
     map = new ymaps.Map("map", {
-        center: [55.45, 37.36],
+        center: [55.75222, 37.61556],
         zoom: 8,
         controls: []
     }, {
@@ -71,51 +71,49 @@ window.mapSetMarkers = function () {
     if (map == null) {
         return
     }
-    const MyIconContentLayout = ymaps.templateLayoutFactory.createClass(
-        `<div class="placemark_container">
-        <div class="trash_circle"></div>
-        <span class="trash_text">Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text
-            Text Text Text Text
-        </span>
-        <div class="trash_ring" style="border-color: green"></div>
-        <img class="trash_icon" src="icons/ic_delete.svg">
-    </div>`
+    const layout = ymaps.templateLayoutFactory.createClass(`
+        <div class="placemark">
+            <div class="trash_circle"></div>
+            <span class="trash_text">${1}</span>
+            <div class="trash_ring" style="border-color: green"></div>
+            <img class="trash_icon" src="icons/ic_delete.svg">
+        </div>`
     );
-    markersCollection
-        .add(new ymaps.Placemark([55.45, 37.36], {
-        }, {
-// @ts-ignore
+    locationCollection
+        .add(new ymaps.Placemark([0, 0], {}, {
+            // @ts-ignore
             iconLayout: 'default#imageWithContent',
             iconImageSize: [0, 0],
-            iconContentLayout: MyIconContentLayout,
-            iconShape: {
-                type: 'Rectangle',
-                // Прямоугольник описывается в виде двух точек - верхней левой и нижней правой.
-                // @ts-ignore
-                coordinates: [
-                    [-250, -250], [250, 250]
-                ]
-            }
+            iconContentLayout: layout
         }))
 };
 
+/**
+ * @param radius in meters
+ */
 // @ts-ignore
-window.mapSetLocation = function () {
+window.mapSetLocation = function (latitude, longitude, radius = 0) {
     if (map == null) {
         return
     }
-
-    // Создаем круг.
-    var myCircle = new ymaps.Circle([
-        // Координаты центра круга.
-        [55.76, 37.60],
-        // Радиус круга в метрах.
-        10000
-    ], {}, {
-        fillColor: "#70b06e99",
-        strokeWidth: 0
-    });
-
-    // Добавляем круг на карту.
-    locationCollection.add(myCircle);
+    locationCollection.removeAll();
+    if (radius > 0) {
+        const circle = new ymaps.Circle([[latitude, longitude], radius], {}, {
+            fillColor: "#70b06e99",
+            strokeWidth: 0
+        });
+        locationCollection.add(circle);
+    }
+    const layout = ymaps.templateLayoutFactory.createClass(`
+        <div class="placemark">
+            <img class="location_icon" src="icons/ic_location.svg">
+        </div>`
+    );
+    locationCollection
+        .add(new ymaps.Placemark([latitude, longitude], {}, {
+            // @ts-ignore
+            iconLayout: 'default#imageWithContent',
+            iconImageSize: [0, 0],
+            iconContentLayout: layout
+        }))
 };
