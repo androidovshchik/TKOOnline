@@ -12,7 +12,7 @@ class Preferences(context: Context) : KotprefModel(context) {
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
-    var expiresToken by nullableStringPref(null, "0x01")
+    var expiresWhen by nullableStringPref(null, "0x01")
 
     var allowPhotoRefKp by booleanPref(false, "0x02")
 

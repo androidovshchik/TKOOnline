@@ -50,10 +50,4 @@ class PhotoEvent {
 
     @ColumnInfo(name = "pe_sent")
     var sent = false
-
-    /**
-     * It's needed only for platform errors
-     */
-    @Ignore
-    var error: String? = null
 }

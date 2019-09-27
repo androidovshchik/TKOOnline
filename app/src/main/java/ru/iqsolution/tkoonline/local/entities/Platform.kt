@@ -98,6 +98,13 @@ class Platform : Container {
     @SerializedName("status")
     lateinit var status: PlatformStatus
 
+    /**
+     * It's needed only for map
+     */
+    @Ignore
+    @SerializedName("p_errors")
+    var errors: String? = null
+
     val isValid: Boolean
         get() = BuildConfig.DEBUG || status != PlatformStatus.NO_TASK
 }

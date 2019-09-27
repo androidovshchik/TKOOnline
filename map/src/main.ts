@@ -18,25 +18,6 @@ function init() {
     map.geoObjects
         .add(markersCollection)
         .add(locationCollection);
-    // @ts-ignore
-    mapSetLocation(55, 37, 1000);
-    // @ts-ignore
-    mapSetMarkers(JSON.stringify([{
-        latitude: 55.1,
-        longitude: 37.1,
-        status: 10,
-        p_errors: null
-    }, {
-        latitude: 55.2,
-        longitude: 37.2,
-        status: 20,
-        p_errors: ''
-    }, {
-        latitude: 55.3,
-        longitude: 37.3,
-        status: 30,
-        p_errors: 'Нет проезда'
-    }]));
 }
 
 const script = document.createElement('script');
@@ -116,6 +97,14 @@ function addPlatforms(platforms: Platform[]) {
             } as any))
     });
 }
+
+// @ts-ignore
+window.mapClearLocation = function () {
+    if (map == null) {
+        return
+    }
+    locationCollection.removeAll();
+};
 
 /**
  * @param radius in meters
