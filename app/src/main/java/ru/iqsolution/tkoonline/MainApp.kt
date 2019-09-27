@@ -54,6 +54,7 @@ class MainApp : Application(), KodeinAware {
                         level = HttpLoggingInterceptor.Level.BODY
                     })
                 }
+                addInterceptor(DomainInterceptor(applicationContext))
             }.connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(0, TimeUnit.SECONDS)
                 .readTimeout(0, TimeUnit.SECONDS)
@@ -78,7 +79,7 @@ class MainApp : Application(), KodeinAware {
         bind<ServerApi>() with singleton {
             Retrofit.Builder()
                 .client(instance())
-                .baseUrl("https://example.com/")
+                .baseUrl("https://DOMAIN/")
                 .addConverterFactory(GsonConverterFactory.create(instance()))
                 .build()
                 .create(ServerApi::class.java)

@@ -11,43 +11,35 @@ interface ServerApi {
 
     @FormUrlEncoded
     @Headers("Accept: application/json")
-    @POST
+    @POST("auth")
     suspend fun login(
-        baseUrl: String,
         @Field("login") login: String,
         @Field("password") password: String,
-        @Field("block_code") blockCode: Int?,
-        @Url url: String = "$baseUrl/auth"
+        @Field("block_code") blockCode: Int?
     ): ResponseAuth
 
     /**
      * @param date [ru.iqsolution.tkoonline.PATTERN_DATE]
      */
     @Headers("Accept: application/json")
-    @GET
+    @GET("container-sites/{date}")
     suspend fun getPlatforms(
-        baseUrl: String,
-        date: String,
         @Header("Authorization") token: String,
-        @Url url: String = "$baseUrl/container-sites/$date"
+        @Path("date") date: String
     ): ResponsePlatforms
 
     @Headers("Accept: application/json")
-    @GET
+    @GET("photo-types")
     suspend fun getPhotoTypes(
-        baseUrl: String,
-        @Header("Authorization") token: String,
-        @Url url: String = "$baseUrl/photo-types"
+        @Header("Authorization") token: String
     ): ResponseTypes
 
     @Headers("Accept: application/json")
-    @POST
+    @POST("container-sites/{kp_id}/events")
     suspend fun sendEvent(
-        baseUrl: String,
-        kpId: Int,
         @Header("Authorization") token: String,
-        @Body body: RequestClean,
-        @Url url: String = "$baseUrl/container-sites/$kpId/events"
+        @Path("kp_id") kpId: Int,
+        @Body body: RequestClean
     ): ResponseClean
 
     /**
@@ -55,23 +47,19 @@ interface ServerApi {
      */
     @Multipart
     @Headers("Accept: application/json")
-    @POST
+    @POST("container-sites/photos")
     suspend fun sendPhoto(
-        baseUrl: String,
         @Header("Authorization") token: String,
         @Part("kpId") kpId: RequestBody,
         @Part("type") type: RequestBody,
         @Part("time") time: RequestBody,
         @Part("latitude") latitude: RequestBody,
         @Part("longitude") longitude: RequestBody,
-        @Part photo: MultipartBody.Part,
-        @Url url: String = "$baseUrl/container-sites/photos"
+        @Part photo: MultipartBody.Part
     ): ResponsePhoto
 
-    @POST
+    @POST("auth/close")
     suspend fun logout(
-        baseUrl: String,
-        @Header("Authorization") token: String,
-        @Url url: String = "$baseUrl/auth/close"
+        @Header("Authorization") token: String
     ): ResponseClean
 }
