@@ -22,6 +22,7 @@ import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import timber.log.Timber
 import java.util.*
 

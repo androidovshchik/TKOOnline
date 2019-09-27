@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/map_height">
 
-                <WebView
+                <ru.iqsolution.tkoonline.screens.MapView
                     android:id="@+id/containers_map"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>

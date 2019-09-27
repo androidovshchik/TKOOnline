@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"/>
 
-    <WebView
+    <ru.iqsolution.tkoonline.screens.MapView
         android:id="@+id/platforms_map"
         android:layout_width="match_parent"
         android:layout_height="@dimen/map_height"
