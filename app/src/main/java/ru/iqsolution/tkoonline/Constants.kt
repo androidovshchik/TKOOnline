@@ -11,6 +11,8 @@ val DANGER_PERMISSIONS = arrayOf(
 
 const val CHANNEL_DEFAULT = "default_channel"
 
+const val ACTION_LOCATION = "action_location"
+
 val PATTERN_DATE: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd")
 
 val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm:ssZZ").withOffsetParsed()
@@ -24,3 +26,5 @@ val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
  */
 
 const val EXTRA_ID = "extra_id"
+
+const val EXTRA_RESULT = "extra_result"

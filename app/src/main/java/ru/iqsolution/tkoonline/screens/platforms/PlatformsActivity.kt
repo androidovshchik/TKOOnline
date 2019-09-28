@@ -29,15 +29,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             it.attachView(this)
         }
         platforms_map.loadUrl("file:///android_asset/platforms.html")
-        platforms_plus.onClick {
-
-        }
-        platforms_minus.onClick {
-            
-        }
-        platforms_location.onClick {
-
-        }
         platforms_list.apply {
             addItemDecoration(DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL).apply {
                 ContextCompat.getDrawable(applicationContext, R.drawable.divider)?.let {

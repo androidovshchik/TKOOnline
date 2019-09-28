@@ -11,6 +11,8 @@ import android.net.NetworkRequest
 import android.os.BatteryManager
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
+import ru.iqsolution.tkoonline.ACTION_LOCATION
+import ru.iqsolution.tkoonline.EXTRA_RESULT
 import ru.iqsolution.tkoonline.R
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -22,24 +24,26 @@ class StatusManager(listener: StatusListener) {
     private val reference = WeakReference(listener)
 
     @Volatile
-    private var swapIcon = R.drawable.ic_swap_vert
+    private var connectionIcon = R.drawable.ic_swap_vert
 
-    private val swapRunnable = Runnable {
-        reference.get()?.updateConnection(swapIcon)
+    private val connectionRunnable = Runnable {
+        reference.get()?.updateConnection(connectionIcon)
     }
 
     private val callback = object : ConnectivityManager.NetworkCallback() {
 
         override fun onAvailable(network: Network) {
             Timber.d("Network on available")
-            swapIcon = R.drawable.ic_swap_vert_green
-            reference.get()?.getActivity()?.runOnUiThread(swapRunnable)
+            connectionIcon = R.drawable.ic_swap_vert_green
+            reference.get()?.getActivity()
+                ?.runOnUiThread(connectionRunnable)
         }
 
         override fun onLost(network: Network) {
             Timber.d("Network on lost")
-            swapIcon = R.drawable.ic_swap_vert
-            reference.get()?.getActivity()?.runOnUiThread(swapRunnable)
+            connectionIcon = R.drawable.ic_swap_vert
+            reference.get()?.getActivity()
+                ?.runOnUiThread(connectionRunnable)
         }
     }
 
@@ -60,6 +64,10 @@ class StatusManager(listener: StatusListener) {
                     }
                     reference.get()?.updateTime()
                 }
+                ACTION_LOCATION -> {
+                    val available = intent.getBooleanExtra(EXTRA_RESULT, false)
+                    reference.get()?.updateLocation(available)
+                }
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
                     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
                     val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
@@ -79,6 +87,8 @@ class StatusManager(listener: StatusListener) {
                 addAction(Intent.ACTION_TIME_TICK)
                 addAction(Intent.ACTION_TIME_CHANGED)
                 addAction(Intent.ACTION_TIMEZONE_CHANGED)
+                // location
+                addAction(ACTION_LOCATION)
                 // battery
                 addAction(Intent.ACTION_BATTERY_CHANGED)
                 addAction(Intent.ACTION_BATTERY_LOW)

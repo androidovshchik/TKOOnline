@@ -16,9 +16,9 @@ import ru.iqsolution.tkoonline.R
 @Suppress("MemberVisibilityCanBePrivate")
 class MapView : FrameLayout {
 
-    var latitude: Double? = null
+    private var latitude: Double? = null
 
-    var longitude: Double? = null
+    private var longitude: Double? = null
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -61,45 +61,55 @@ class MapView : FrameLayout {
         }
     }
 
+    fun loadUrl(url: String) {
+        map.loadUrl(url)
+    }
+
     private fun zoomIn(duration: Int = 500) {
-        map.loadUrl("javascript:mapZoomIn($duration)")
+        loadUrl("javascript:mapZoomIn($duration)")
     }
 
     private fun zoomOut(duration: Int = 500) {
-        map.loadUrl("javascript:mapZoomOut($duration)")
+        loadUrl("javascript:mapZoomOut($duration)")
     }
 
+    /**
+     * Only current view can move to user location
+     */
     private fun moveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
-        map.loadUrl("javascript:mapMoveTo($latitude, $longitude, $zoom, $duration)")
+        loadUrl("javascript:mapMoveTo($latitude, $longitude, $zoom, $duration)")
     }
 
     fun clearMarkers() {
-        map.loadUrl("javascript:mapClearMarkers()")
+        loadUrl("javascript:mapClearMarkers()")
     }
 
     fun setMarkers(first: String, second: String = "[]") {
-        map.loadUrl("javascript:mapSetMarkers($first, $second)")
+        loadUrl("javascript:mapSetMarkers($first, $second)")
     }
 
     fun clearLocation() {
         latitude = null
         longitude = null
-        map.loadUrl("javascript:mapClearLocation()")
+        loadUrl("javascript:mapClearLocation()")
     }
 
     /**
+     * Should be called regularly from outside
      * @param radius in meters
      */
     fun setLocation(latitude: Double, longitude: Double, radius: Int = 0) {
-        map.loadUrl("javascript:mapSetLocation($latitude, $longitude, $radius)")
+        this.latitude = latitude
+        this.longitude = longitude
+        loadUrl("javascript:mapSetLocation($latitude, $longitude, $radius)")
     }
 
     fun clearState() {
-        map.loadUrl("javascript:mapClearState()")
+        loadUrl("javascript:mapClearState()")
     }
 
     fun saveState() {
-        map.loadUrl("javascript:mapSaveState()")
+        loadUrl("javascript:mapSaveState()")
     }
 
     override fun hasOverlappingRendering() = false

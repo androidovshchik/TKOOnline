@@ -8,6 +8,8 @@ interface StatusListener {
 
     fun updateTime()
 
+    fun updateLocation(available: Boolean)
+
     fun updateConnection(icon: Int)
 
     fun updateBattery(status: Int, level: Int)

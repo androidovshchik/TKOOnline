@@ -24,6 +24,9 @@ class FileManager(context: Context) {
         mkdirs()
     }
 
+    val hasPhotos: Boolean
+        get() = photosDir.list().isNotEmpty()
+
     fun createFile(): File {
         return File.createTempFile("photo", ".jpeg", picturesDir)
     }
