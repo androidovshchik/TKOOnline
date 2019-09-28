@@ -10,8 +10,6 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 
 class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View {
 
-    override val attachService = true
-
     private var platform: Platform? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

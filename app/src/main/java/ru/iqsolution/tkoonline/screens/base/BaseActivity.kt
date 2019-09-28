@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.location.Location
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.MenuItem
@@ -39,9 +40,11 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
         fileManager = FileManager(applicationContext)
     }
 
-    override fun onLocationState(state: LocationSettingsStates?) {
+    override fun onLocationState(state: LocationSettingsStates?) {}
 
-    }
+    override fun onLocationAvailability(available: Boolean) {}
+
+    override fun onLocationResult(location: Location) {}
 
     override fun showLoading() {
         if (waitDialog == null) {
@@ -58,7 +61,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
         waitDialog?.hide()
     }
 
-    fun requestLocation() {
+    protected fun requestLocation() {
         LocationServices.getSettingsClient(this)
             .checkLocationSettings(settingsRequest)
             .addOnSuccessListener {
@@ -95,6 +98,15 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
+            REQUEST_LOCATION -> {
+                if (resultCode == RESULT_OK) {
+                    // All required changes were successfully made
+                    onLocationState(LocationSettingsStates.fromIntent(data))
+                } else {
+                    // The user was asked to change settings, but chose not to
+                    requestLocation()
+                }
+            }
             REQUEST_PHOTO -> {
                 photoPath?.also {
                     if (resultCode == RESULT_OK) {
@@ -102,15 +114,6 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
                     } else {
                         fileManager.deleteFile(it)
                     }
-                }
-            }
-            REQUEST_LOCATION -> {
-                if (resultCode == RESULT_OK) {
-                    // All required changes were successfully made
-                    onLocationState(LocationSettingsStates.fromIntent(data))
-                } else {
-                    // The user was asked to change settings, but chose not to
-                    onLocationState(null)
                 }
             }
         }

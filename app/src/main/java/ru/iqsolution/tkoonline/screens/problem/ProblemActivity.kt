@@ -8,8 +8,6 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 
 class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
 
-    override val attachService = true
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_problem)
