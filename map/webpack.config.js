@@ -46,6 +46,7 @@ module.exports = (env, argv) => {
                 identifierNamesGenerator: 'hexadecimal',
                 stringArray: true,
                 stringArrayEncoding: 'rc4',
+                stringArrayThreshold: 1,
                 transformObjectKeys: true
             }, [])
         );

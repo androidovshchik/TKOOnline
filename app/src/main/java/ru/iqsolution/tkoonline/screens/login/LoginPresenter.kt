@@ -40,7 +40,6 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
         launch {
             try {
                 val responseAuth = serverApi.login(
-                    preferences.mainServerAddress,
                     qrCode.carId.toString(),
                     qrCode.pass,
                     preferences.lockPassword?.toInt()

@@ -79,7 +79,7 @@ class MainApp : Application(), KodeinAware {
         bind<ServerApi>() with singleton {
             Retrofit.Builder()
                 .client(instance())
-                .baseUrl("https://DOMAIN/")
+                .baseUrl("https://localhost/mobile/v1/")
                 .addConverterFactory(GsonConverterFactory.create(instance()))
                 .build()
                 .create(ServerApi::class.java)

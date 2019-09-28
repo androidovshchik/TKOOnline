@@ -17,8 +17,8 @@ class DomainInterceptor(context: Context) : Interceptor {
             request.newBuilder()
                 .url(
                     request.url.toString()
-                        .replace("DOMAIN", preferences.mainServerAddress)
-                        .toHttpUrlOrNull()!!
+                        .replace("localhost", preferences.mainServerAddress)
+                        .toHttpUrlOrNull() ?: request.url
                 )
                 .build()
         )
