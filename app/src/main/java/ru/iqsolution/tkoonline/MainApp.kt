@@ -33,6 +33,7 @@ import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
+import ru.iqsolution.tkoonline.services.TelemetryService
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -159,7 +160,13 @@ class MainApp : Application(), KodeinAware {
 
             override fun onActivityStopped(activity: Activity) {}
 
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                if (activity !is LockActivity && activity !is LoginActivity) {
+                    TelemetryService.start(applicationContext)
+                } else {
+                    TelemetryService.stop(applicationContext)
+                }
+            }
         })
     }
 }

@@ -31,7 +31,8 @@ class QrCodeFragment : BaseFragment() {
 
     private var maxSize = 0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         context?.resources?.getDimensionPixelSize(R.dimen.barcode_max_size)?.let {
             maxSize = it
         }
@@ -60,6 +61,9 @@ class QrCodeFragment : BaseFragment() {
             .setRequestedPreviewSize(640, 480) // 4:3
             .setAutoFocusEnabled(true)
             .build()
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return UI {
             frameLayout {
                 layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
@@ -95,15 +99,16 @@ class QrCodeFragment : BaseFragment() {
     @SuppressLint("MissingPermission")
     private fun startPreview() {
         try {
-            if (context?.areGranted(*DANGER_PERMISSIONS) == true) {
-                cameraView.apply {
-                    cameraSource.start(holder)
-                    if (maxSize > 0) {
-                        // NOTICE supported only the portrait orientation
-                        val size = cameraSource.previewSize
-                        layoutParams = FrameLayout.LayoutParams(maxSize * size.height / size.width, maxSize).apply {
-                            gravity = Gravity.CENTER
-                        }
+            if (context?.areGranted(*DANGER_PERMISSIONS) != true) {
+                return
+            }
+            cameraView.apply {
+                cameraSource.start(holder)
+                if (maxSize > 0) {
+                    // NOTICE supported only the portrait orientation
+                    val size = cameraSource.previewSize
+                    layoutParams = FrameLayout.LayoutParams(maxSize * size.height / size.width, maxSize).apply {
+                        gravity = Gravity.CENTER
                     }
                 }
             }
