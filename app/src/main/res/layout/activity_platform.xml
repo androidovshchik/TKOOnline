@@ -23,16 +23,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <FrameLayout
+            <ru.iqsolution.tkoonline.screens.MapView
+                android:id="@+id/platform_map"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/map_height">
-
-                <ru.iqsolution.tkoonline.screens.MapView
-                    android:id="@+id/platform_map"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
-            </FrameLayout>
+                android:layout_height="@dimen/map_height"
+                tools:background="@android:color/darker_gray"/>
 
             <include
                 layout="@layout/platform_info"/>

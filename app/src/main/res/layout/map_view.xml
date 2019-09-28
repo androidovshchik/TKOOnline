@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:layout_width="match_parent"
+    tools:layout_height="@dimen/map_height"
+    tools:parentTag="FrameLayout">
+
+    <WebView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:gravity="center_vertical|end"
+        android:orientation="vertical"
+        android:elevation="6dp"
+        tools:elevation="0dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="9dp"
+            android:layout_marginBottom="15dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@drawable/control_rect"
+            android:elevation="16dp">
+
+            <ImageView
+                android:id="@+id/map_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:paddingTop="8dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="8dp"
+                android:src="@drawable/ic_plus"/>
+
+            <ImageView
+                android:id="@+id/map_minus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:paddingTop="8dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="10dp"
+                android:src="@drawable/ic_minus"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/map_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="9dp"
+            android:adjustViewBounds="true"
+            android:padding="5dp"
+            android:src="@drawable/ic_direction"
+            android:background="@drawable/control_oval"
+            android:elevation="16dp"/>
+
+    </LinearLayout>
+
+</merge>
