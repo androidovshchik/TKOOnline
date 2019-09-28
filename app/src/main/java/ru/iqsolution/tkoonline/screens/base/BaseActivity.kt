@@ -2,31 +2,30 @@ package ru.iqsolution.tkoonline.screens.base
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
+import android.content.IntentSender
 import android.os.Bundle
-import android.os.IBinder
 import android.provider.MediaStore
 import android.view.MenuItem
 import android.view.WindowManager
 import androidx.core.content.FileProvider
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsStates
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.screens.WaitDialog
-import ru.iqsolution.tkoonline.services.TelemetryService
+import ru.iqsolution.tkoonline.services.LocationManager
+import timber.log.Timber
 
 @SuppressLint("Registered")
+@Suppress("MemberVisibilityCanBePrivate")
 open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
 
-    open val attachService = false
-
     protected lateinit var presenter: T
-
-    protected var telemetryService: TelemetryService? = null
 
     protected lateinit var fileManager: FileManager
 
@@ -40,23 +39,8 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
         fileManager = FileManager(applicationContext)
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (attachService) {
-            bindTasksService()
-        }
-    }
+    override fun onLocationState(state: LocationSettingsStates?) {
 
-    private fun bindTasksService() {
-        if (TelemetryService.start(applicationContext)) {
-            if (telemetryService == null) {
-                bindService(intentFor<TelemetryService>(), telemetryConnection, Context.BIND_AUTO_CREATE)
-            }
-        }
-    }
-
-    override fun attachBaseContext(context: Context) {
-        super.attachBaseContext(ViewPumpContextWrapper.wrap(context))
     }
 
     override fun showLoading() {
@@ -74,13 +58,24 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
         waitDialog?.hide()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                finish()
+    fun requestLocation() {
+        LocationServices.getSettingsClient(this)
+            .checkLocationSettings(settingsRequest)
+            .addOnSuccessListener {
+                onLocationState(it.locationSettingsStates)
             }
-        }
-        return super.onOptionsItemSelected(item)
+            .addOnFailureListener {
+                onLocationState(null)
+                if (it is ResolvableApiException) {
+                    try {
+                        it.startResolutionForResult(this, REQUEST_LOCATION)
+                    } catch (e: IntentSender.SendIntentException) {
+                        Timber.e(e)
+                    }
+                } else {
+                    Timber.e(it)
+                }
+            }
     }
 
     protected fun takePhoto() {
@@ -99,40 +94,39 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_PHOTO) {
-            photoPath?.also {
+        when (requestCode) {
+            REQUEST_PHOTO -> {
+                photoPath?.also {
+                    if (resultCode == RESULT_OK) {
+                        fileManager.moveFile(it)
+                    } else {
+                        fileManager.deleteFile(it)
+                    }
+                }
+            }
+            REQUEST_LOCATION -> {
                 if (resultCode == RESULT_OK) {
-                    fileManager.moveFile(it)
+                    // All required changes were successfully made
+                    onLocationState(LocationSettingsStates.fromIntent(data))
                 } else {
-                    fileManager.deleteFile(it)
+                    // The user was asked to change settings, but chose not to
+                    onLocationState(null)
                 }
             }
         }
     }
 
-    private fun unbindTasksService() {
-        if (telemetryService != null) {
-            unbindService(telemetryConnection)
-            telemetryService = null
-        }
+    override fun attachBaseContext(context: Context) {
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(context))
     }
 
-    override fun onStop() {
-        if (attachService) {
-            unbindTasksService()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
         }
-        super.onStop()
-    }
-
-    private val telemetryConnection = object : ServiceConnection {
-
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            telemetryService = (binder as TelemetryService.Binder).service
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            telemetryService = null
-        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {
@@ -143,6 +137,18 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
 
     companion object {
 
+        private val settingsRequest = LocationSettingsRequest.Builder()
+            .addLocationRequest(LocationManager.locationRequest)
+            /**
+             * Whether or not location is required by the calling app in order to continue.
+             * Set this to true if location is required to continue and false if having location provides better results,
+             * but is not required. This changes the wording/appearance of the dialog accordingly.
+             */
+            .setAlwaysShow(true)
+            .build()
+
         private const val REQUEST_PHOTO = 500
+
+        private const val REQUEST_LOCATION = 600
     }
 }

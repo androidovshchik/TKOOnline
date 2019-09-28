@@ -15,12 +15,6 @@ class LocationManager(context: Context, listener: LocationListener) {
 
     private val locationClient = LocationServices.getFusedLocationProviderClient(context)
 
-    private val locationRequest = LocationRequest.create().apply {
-        interval = 15_000L
-        fastestInterval = 15_000L
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
-
     @SuppressLint("MissingPermission")
     fun requestUpdates(context: Context) {
         if (context.areGranted(*DANGER_PERMISSIONS)) {
@@ -47,6 +41,15 @@ class LocationManager(context: Context, listener: LocationListener) {
             } ?: run {
                 Timber.w("Last location is null")
             }
+        }
+    }
+
+    companion object {
+
+        val locationRequest: LocationRequest = LocationRequest.create().apply {
+            interval = 15_000L
+            fastestInterval = 15_000L
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
     }
 }
