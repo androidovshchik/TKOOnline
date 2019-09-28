@@ -6,12 +6,15 @@ import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.MainApp
+import ru.iqsolution.tkoonline.local.AppDatabase
 import ru.iqsolution.tkoonline.local.Preferences
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class BasePresenter<V : IBaseView>(application: Application) : IBasePresenter<V>, KodeinAware, CoroutineScope {
+
+    val appDb: AppDatabase by instance()
 
     val preferences: Preferences by instance()
 

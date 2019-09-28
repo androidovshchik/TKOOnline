@@ -10,7 +10,7 @@ import ru.iqsolution.tkoonline.services.BaseWorker
 
 class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, params) {
 
-    val db: AppDatabase by instance()
+    val appDb: AppDatabase by instance()
 
     val fileManager: FileManager by instance()
 

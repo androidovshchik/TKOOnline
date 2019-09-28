@@ -4,7 +4,7 @@ import android.os.AsyncTask
 
 class PopulateTask : AsyncTask<AppDatabase, Void, Void>() {
 
-    override fun doInBackground(vararg db: AppDatabase): Void? {
+    override fun doInBackground(vararg appDb: AppDatabase): Void? {
         return null
     }
 }
