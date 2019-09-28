@@ -41,6 +41,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             adapter = platformsAdapter
         }
         platforms_complete.onClick {
+            platforms_map.clearState(true)
             presenter.clearAuthorization()
             startActivityNoop<LoginActivity>()
             finish()

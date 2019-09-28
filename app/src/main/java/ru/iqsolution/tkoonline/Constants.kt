@@ -27,4 +27,6 @@ val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
 const val EXTRA_ID = "extra_id"
 
-const val EXTRA_RESULT = "extra_result"
+const val EXTRA_LOCATION = "extra_location"
+
+const val EXTRA_AVAILABLE = "extra_available"

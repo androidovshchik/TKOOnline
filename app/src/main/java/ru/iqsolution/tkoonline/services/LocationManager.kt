@@ -21,6 +21,17 @@ class LocationManager(context: Context, listener: LocationListener) {
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
+    @SuppressLint("MissingPermission")
+    fun requestUpdates(context: Context) {
+        if (context.areGranted(*DANGER_PERMISSIONS)) {
+            locationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        }
+    }
+
+    fun release() {
+        locationClient.removeLocationUpdates(locationCallback)
+    }
+
     private val locationCallback = object : LocationCallback() {
 
         override fun onLocationAvailability(availability: LocationAvailability) {
@@ -37,16 +48,5 @@ class LocationManager(context: Context, listener: LocationListener) {
                 Timber.w("Last location is null")
             }
         }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun requestUpdates(context: Context) {
-        if (context.areGranted(*DANGER_PERMISSIONS)) {
-            locationClient.requestLocationUpdates(locationRequest, locationCallback, null)
-        }
-    }
-
-    fun release() {
-        locationClient.removeLocationUpdates(locationCallback)
     }
 }

@@ -104,8 +104,8 @@ class MapView : FrameLayout {
         loadUrl("javascript:mapSetLocation($latitude, $longitude, $radius)")
     }
 
-    fun clearState() {
-        loadUrl("javascript:mapClearState()")
+    fun clearState(all: Boolean = false) {
+        loadUrl("javascript:mapClearState($all)")
     }
 
     fun saveState() {

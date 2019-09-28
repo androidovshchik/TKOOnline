@@ -7,28 +7,22 @@ import android.location.Location
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.stopService
-import ru.iqsolution.tkoonline.CHANNEL_DEFAULT
-import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startForegroundService
 
 class TelemetryService : BaseService(), LocationListener {
-
-    private val binder = Binder()
 
     private lateinit var locationManager: LocationManager
 
     private var wakeLock: PowerManager.WakeLock? = null
 
     override fun onBind(intent: Intent): IBinder? {
-        return binder
-    }
-
-    override fun onUnbind(intent: Intent): Boolean {
-        return true
+        return null
     }
 
     @SuppressLint("MissingPermission")
@@ -61,11 +55,17 @@ class TelemetryService : BaseService(), LocationListener {
     }
 
     override fun onLocationResult(location: Location) {
-
+        LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(Intent(ACTION_LOCATION).apply {
+                putExtra(EXTRA_LOCATION, location)
+            })
     }
 
     override fun onLocationAvailability(available: Boolean) {
-
+        LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(Intent(ACTION_LOCATION).apply {
+                putExtra(EXTRA_AVAILABLE, available)
+            })
     }
 
     private fun releaseWakeLock() {
@@ -79,13 +79,6 @@ class TelemetryService : BaseService(), LocationListener {
         locationManager.release()
         releaseWakeLock()
         super.onDestroy()
-    }
-
-    @Suppress("unused")
-    inner class Binder : android.os.Binder() {
-
-        val service: TelemetryService
-            get() = this@TelemetryService
     }
 
     companion object {

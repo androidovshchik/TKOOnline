@@ -76,7 +76,7 @@ function addPlatforms(platforms: Platform[]) {
     platforms.forEach(p => {
         const layout = ymaps.templateLayoutFactory.createClass(`
             <div class="placemark">
-                <span class="trash_text" ${!p.p_errors ? 'style="display: none"' : ''}>${p.p_errors}</span>
+                ${p.p_errors ? `<span class="trash_text">${p.p_errors}</span>` : ''}
                 <div class="trash_ring" style="border-color: ${getColor(p.status)}"></div>
                 <img class="trash_icon" src="icons/ic_delete.svg">
             </div>`
@@ -144,13 +144,17 @@ window.mapSetLocation = function (latitude: number, longitude: number, radius: n
 };
 
 // @ts-ignore
-window.mapClearState = function () {
+window.mapClearState = function (all: boolean = false) {
     if (map == null) {
         return
     }
-    localStorage.removeItem(`${id}_latitude`);
-    localStorage.removeItem(`${id}_longitude`);
-    localStorage.removeItem(`${id}_zoom`);
+    if (all) {
+        localStorage.clear()
+    } else {
+        localStorage.removeItem(`${id}_latitude`);
+        localStorage.removeItem(`${id}_longitude`);
+        localStorage.removeItem(`${id}_zoom`);
+    }
 };
 
 // @ts-ignore
