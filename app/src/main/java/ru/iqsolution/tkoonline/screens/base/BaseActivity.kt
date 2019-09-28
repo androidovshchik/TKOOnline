@@ -46,7 +46,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
     /**
      * Should be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */
-    override fun requestLocation() {
+    override fun checkLocation() {
         LocationServices.getSettingsClient(this)
             .checkLocationSettings(
                 LocationSettingsRequest.Builder()
@@ -136,7 +136,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
                     onLocationState(LocationSettingsStates.fromIntent(data))
                 } else {
                     // The user was asked to change settings, but chose not to
-                    requestLocation()
+                    checkLocation()
                 }
             }
             REQUEST_PHOTO -> {

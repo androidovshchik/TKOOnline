@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
+import android.location.Location
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -15,6 +16,7 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
+import ru.iqsolution.tkoonline.services.TelemetryService
 
 class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View, BaseAdapter.Listener<Platform> {
 
@@ -40,6 +42,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
         platforms_complete.onClick {
             platforms_map.clearState(true)
+            TelemetryService.stop(applicationContext)
             presenter.clearAuthorization()
             startActivityNoop<LoginActivity>()
             finish()
@@ -53,6 +56,10 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 }
             }
         }
+    }
+
+    override fun onLocationResult(location: Location) {
+        platforms_map.setLocation(location.latitude, location.longitude)
     }
 
     override fun onAdapterEvent(position: Int, item: Platform, param: Any?) {

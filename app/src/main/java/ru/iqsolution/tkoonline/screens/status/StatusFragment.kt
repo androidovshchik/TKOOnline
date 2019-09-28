@@ -22,7 +22,7 @@ import timber.log.Timber
 import java.util.*
 
 /**
- * Should have id [R.id.status_bar_fragment]
+ * NOTICE should have an id [R.id.status_bar_fragment]
  */
 class StatusFragment : BaseFragment(), SyncListener {
 
@@ -61,8 +61,12 @@ class StatusFragment : BaseFragment(), SyncListener {
         updateLocation(false)
         updateConnection(R.drawable.ic_swap_vert)
         status_uploads.setImageResource(R.drawable.ic_cloud_upload)
+        baseActivity?.checkLocation()
+    }
+
+    override fun onStart() {
+        super.onStart()
         syncManager.register(context)
-        baseActivity?.requestLocation()
     }
 
     /**
@@ -147,8 +151,8 @@ class StatusFragment : BaseFragment(), SyncListener {
             return null
         }
 
-    override fun onDestroyView() {
+    override fun onStop() {
         syncManager.unregister(context)
-        super.onDestroyView()
+        super.onStop()
     }
 }

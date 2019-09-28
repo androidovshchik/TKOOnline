@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platform
 
+import android.location.Location
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -23,6 +24,10 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             finish()
         }
         platform_map.loadUrl("file:///android_asset/platform.html")
+    }
+
+    override fun onLocationResult(location: Location) {
+        platform_map.setLocation(location.latitude, location.longitude)
     }
 
     override fun onBackPressed() {}

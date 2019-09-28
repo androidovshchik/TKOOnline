@@ -4,7 +4,7 @@ import com.google.android.gms.location.LocationSettingsStates
 
 interface LocationHandler {
 
-    fun requestLocation()
+    fun checkLocation()
 
     /**
      * @param state null if location settings are not satisfied
