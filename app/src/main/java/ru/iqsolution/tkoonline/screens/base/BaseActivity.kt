@@ -21,12 +21,13 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.screens.WaitDialog
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
+import ru.iqsolution.tkoonline.services.LocationListener
 import ru.iqsolution.tkoonline.services.LocationManager
 import timber.log.Timber
 
 @SuppressLint("Registered")
 @Suppress("MemberVisibilityCanBePrivate")
-open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
+open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationListener, LocationHandler {
 
     protected lateinit var presenter: T
 
@@ -40,6 +41,39 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         fileManager = FileManager(applicationContext)
+    }
+
+    /**
+     * Should be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
+     */
+    override fun requestLocation() {
+        LocationServices.getSettingsClient(this)
+            .checkLocationSettings(
+                LocationSettingsRequest.Builder()
+                    .addLocationRequest(LocationManager.locationRequest)
+                    /**
+                     * Whether or not location is required by the calling app in order to continue.
+                     * Set this to true if location is required to continue and false if having location provides better results,
+                     * but is not required. This changes the wording/appearance of the dialog accordingly.
+                     */
+                    .setAlwaysShow(true)
+                    .build()
+            )
+            .addOnSuccessListener {
+                onLocationState(it.locationSettingsStates)
+            }
+            .addOnFailureListener {
+                onLocationState(null)
+                if (it is ResolvableApiException) {
+                    try {
+                        it.startResolutionForResult(this, REQUEST_LOCATION)
+                    } catch (e: IntentSender.SendIntentException) {
+                        Timber.e(e)
+                    }
+                } else {
+                    Timber.e(it)
+                }
+            }
     }
 
     @Suppress("DEPRECATION")
@@ -74,29 +108,6 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
 
     override fun hideLoading() {
         waitDialog?.hide()
-    }
-
-    /**
-     * Should be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
-     */
-    fun requestLocation() {
-        LocationServices.getSettingsClient(this)
-            .checkLocationSettings(settingsRequest)
-            .addOnSuccessListener {
-                onLocationState(it.locationSettingsStates)
-            }
-            .addOnFailureListener {
-                onLocationState(null)
-                if (it is ResolvableApiException) {
-                    try {
-                        it.startResolutionForResult(this, REQUEST_LOCATION)
-                    } catch (e: IntentSender.SendIntentException) {
-                        Timber.e(e)
-                    }
-                } else {
-                    Timber.e(it)
-                }
-            }
     }
 
     protected fun takePhoto() {
@@ -161,16 +172,6 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
     }
 
     companion object {
-
-        private val settingsRequest = LocationSettingsRequest.Builder()
-            .addLocationRequest(LocationManager.locationRequest)
-            /**
-             * Whether or not location is required by the calling app in order to continue.
-             * Set this to true if location is required to continue and false if having location provides better results,
-             * but is not required. This changes the wording/appearance of the dialog accordingly.
-             */
-            .setAlwaysShow(true)
-            .build()
 
         private const val REQUEST_PHOTO = 500
 

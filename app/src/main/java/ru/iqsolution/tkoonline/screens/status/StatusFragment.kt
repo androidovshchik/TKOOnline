@@ -1,8 +1,10 @@
 package ru.iqsolution.tkoonline.screens.status
 
 import android.annotation.SuppressLint
+import android.location.Location
 import android.os.BatteryManager
 import android.os.Bundle
+import android.os.Looper
 import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +31,15 @@ class StatusFragment : BaseFragment(), SyncListener {
 
     private lateinit var serverTime: DateTime
 
+    @Volatile
+    private var connectionIcon = R.drawable.ic_swap_vert
+
+    private val connectionRunnable = Runnable {
+        if (view != null) {
+            status_connection.setImageResource(connectionIcon)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preferences = Preferences(context)
@@ -45,15 +56,9 @@ class StatusFragment : BaseFragment(), SyncListener {
         updateLocation(false)
         updateConnection(R.drawable.ic_swap_vert)
         status_uploads.setImageResource(R.drawable.ic_cloud_upload)
-        syncManager.register()
+        syncManager.register(context)
+        baseActivity?.requestLocation()
     }
-
-    override val baseActivity: BaseActivity<*>?
-        get() = (activity as BaseActivity<*>?)?.also {
-            if (it.isFinishing) {
-                return null
-            }
-        }
 
     /**
      * Updates every minute
@@ -75,10 +80,12 @@ class StatusFragment : BaseFragment(), SyncListener {
     }
 
     override fun updateConnection(icon: Int) {
-        if (view == null) {
-            return
+        connectionIcon = icon
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            connectionRunnable.run()
+        } else {
+            activity?.runOnUiThread(connectionRunnable)
         }
-        status_connection.setImageResource(icon)
     }
 
     @SuppressLint("SetTextI18n")
@@ -117,8 +124,23 @@ class StatusFragment : BaseFragment(), SyncListener {
         }
     }
 
+    override fun onLocationResult(location: Location) {
+        baseActivity?.onLocationResult(location)
+    }
+
+    override fun onLocationAvailability(available: Boolean) {
+        baseActivity?.onLocationAvailability(available)
+    }
+
+    private val baseActivity: BaseActivity<*>?
+        get() = (activity as BaseActivity<*>?)?.also {
+            if (it.isFinishing) {
+                return null
+            }
+        }
+
     override fun onDestroyView() {
-        syncManager.unregister()
+        syncManager.unregister(context)
         super.onDestroyView()
     }
 }

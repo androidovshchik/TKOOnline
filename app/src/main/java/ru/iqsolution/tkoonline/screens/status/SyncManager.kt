@@ -9,41 +9,55 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.BatteryManager
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.ACTION_LOCATION
-import ru.iqsolution.tkoonline.EXTRA_RESULT
+import ru.iqsolution.tkoonline.EXTRA_AVAILABLE
 import ru.iqsolution.tkoonline.R
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
-class StatusManager(listener: StatusListener) {
+class SyncManager(listener: SyncListener) {
 
     private val reference = WeakReference(listener)
 
-    @Volatile
-    private var connectionIcon = R.drawable.ic_swap_vert
+    @SuppressLint("MissingPermission")
+    fun register(context: Context) = context.run {
+        connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
+        registerReceiver(receiver, IntentFilter().apply {
+            // time
+            addAction(Intent.ACTION_TIME_TICK)
+            addAction(Intent.ACTION_TIME_CHANGED)
+            addAction(Intent.ACTION_TIMEZONE_CHANGED)
+            // battery
+            addAction(Intent.ACTION_BATTERY_CHANGED)
+            addAction(Intent.ACTION_BATTERY_LOW)
+            addAction(Intent.ACTION_BATTERY_OKAY)
+        })
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(receiver, IntentFilter(ACTION_LOCATION))
+    }
 
-    private val connectionRunnable = Runnable {
-        reference.get()?.updateConnection(connectionIcon)
+    fun unregister(context: Context) = context.run {
+        connectivityManager.unregisterNetworkCallback(callback)
+        unregisterReceiver(receiver)
+        LocalBroadcastManager.getInstance(this)
+            .unregisterReceiver(receiver)
     }
 
     private val callback = object : ConnectivityManager.NetworkCallback() {
 
         override fun onAvailable(network: Network) {
             Timber.d("Network on available")
-            connectionIcon = R.drawable.ic_swap_vert_green
-            reference.get()?.getActivity()
-                ?.runOnUiThread(connectionRunnable)
+            reference.get()?.updateConnection(R.drawable.ic_swap_vert_green)
         }
 
         override fun onLost(network: Network) {
             Timber.d("Network on lost")
-            connectionIcon = R.drawable.ic_swap_vert
-            reference.get()?.getActivity()
-                ?.runOnUiThread(connectionRunnable)
+            reference.get()?.updateConnection(R.drawable.ic_swap_vert)
         }
     }
 
@@ -65,7 +79,7 @@ class StatusManager(listener: StatusListener) {
                     reference.get()?.updateTime()
                 }
                 ACTION_LOCATION -> {
-                    val available = intent.getBooleanExtra(EXTRA_RESULT, false)
+                    val available = intent.getBooleanExtra(EXTRA_AVAILABLE, false)
                     reference.get()?.updateLocation(available)
                 }
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
@@ -75,32 +89,6 @@ class StatusManager(listener: StatusListener) {
                     reference.get()?.updateBattery(status, level)
                 }
             }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun register() {
-        reference.get()?.getActivity()?.apply {
-            connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
-            registerReceiver(receiver, IntentFilter().apply {
-                // time
-                addAction(Intent.ACTION_TIME_TICK)
-                addAction(Intent.ACTION_TIME_CHANGED)
-                addAction(Intent.ACTION_TIMEZONE_CHANGED)
-                // location
-                addAction(ACTION_LOCATION)
-                // battery
-                addAction(Intent.ACTION_BATTERY_CHANGED)
-                addAction(Intent.ACTION_BATTERY_LOW)
-                addAction(Intent.ACTION_BATTERY_OKAY)
-            })
-        }
-    }
-
-    fun unregister() {
-        reference.get()?.getActivity()?.apply {
-            connectivityManager.unregisterNetworkCallback(callback)
-            unregisterReceiver(receiver)
         }
     }
 }
