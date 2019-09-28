@@ -8,6 +8,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.gms.location.LocationSettingsStates
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.stopService
@@ -54,17 +55,19 @@ class TelemetryService : BaseService(), LocationListener {
         return START_STICKY
     }
 
-    override fun onLocationResult(location: Location) {
-        LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(Intent(ACTION_LOCATION).apply {
-                putExtra(EXTRA_LOCATION, location)
-            })
-    }
+    override fun onLocationState(state: LocationSettingsStates?) {}
 
     override fun onLocationAvailability(available: Boolean) {
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(Intent(ACTION_LOCATION).apply {
                 putExtra(EXTRA_AVAILABLE, available)
+            })
+    }
+
+    override fun onLocationResult(location: Location) {
+        LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(Intent(ACTION_LOCATION).apply {
+                putExtra(EXTRA_LOCATION, location)
             })
     }
 

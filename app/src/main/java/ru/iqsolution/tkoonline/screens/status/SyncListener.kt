@@ -4,11 +4,7 @@ import ru.iqsolution.tkoonline.services.LocationListener
 
 interface SyncListener : LocationListener {
 
-    fun updateTime()
+    fun onTimeChanged()
 
-    fun updateLocation(available: Boolean)
-
-    fun updateConnection(icon: Int)
-
-    fun updateBattery(status: Int, level: Int)
+    fun onBatteryChanged(status: Int, level: Int)
 }
