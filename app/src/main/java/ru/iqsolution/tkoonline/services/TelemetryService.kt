@@ -60,7 +60,7 @@ class TelemetryService : BaseService(), LocationListener {
     override fun onLocationAvailability(available: Boolean) {
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(Intent(ACTION_LOCATION).apply {
-                putExtra(EXTRA_AVAILABLE, available)
+                putExtra(EXTRA_AVAILABILITY, available)
             })
     }
 

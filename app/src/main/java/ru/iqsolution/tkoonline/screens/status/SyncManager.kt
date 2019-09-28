@@ -14,9 +14,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.ACTION_LOCATION
-import ru.iqsolution.tkoonline.EXTRA_AVAILABLE
+import ru.iqsolution.tkoonline.EXTRA_AVAILABILITY
 import ru.iqsolution.tkoonline.EXTRA_LOCATION
-import ru.iqsolution.tkoonline.R
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.*
@@ -54,12 +53,12 @@ class SyncManager(listener: SyncListener) {
 
         override fun onAvailable(network: Network) {
             Timber.d("Network on available")
-            reference.get()?.updateConnection(R.drawable.ic_swap_vert_green)
+            reference.get()?.onLocationAvailability(true)
         }
 
         override fun onLost(network: Network) {
             Timber.d("Network on lost")
-            reference.get()?.updateConnection(R.drawable.ic_swap_vert)
+            reference.get()?.onLocationAvailability(false)
         }
     }
 
@@ -78,26 +77,23 @@ class SyncManager(listener: SyncListener) {
                             Timber.e(e)
                         }
                     }
-                    reference.get()?.updateTime()
+                    reference.get()?.onTimeChanged()
                 }
                 ACTION_LOCATION -> {
                     if (intent.hasExtra(EXTRA_LOCATION)) {
                         val location = intent.getParcelableExtra<Location>(EXTRA_LOCATION)
                         reference.get()?.onLocationResult(location)
                     }
-                    if (intent.hasExtra(EXTRA_AVAILABLE)) {
-                        val available = intent.getBooleanExtra(EXTRA_AVAILABLE, false)
-                        reference.get()?.apply {
-                            updateLocation(available)
-                            onLocationAvailability(available)
-                        }
+                    if (intent.hasExtra(EXTRA_AVAILABILITY)) {
+                        val available = intent.getBooleanExtra(EXTRA_AVAILABILITY, false)
+                        reference.get()?.onLocationAvailability(available)
                     }
                 }
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
                     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
                     val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
                     Timber.d("On battery changes: status $status, level $level")
-                    reference.get()?.updateBattery(status, level)
+                    reference.get()?.onBatteryChanged(status, level)
                 }
             }
         }
