@@ -1,10 +1,10 @@
 package ru.iqsolution.tkoonline.screens.status
 
-import android.app.Activity
+import ru.iqsolution.tkoonline.screens.base.BaseActivity
 
-interface StatusListener {
+interface SyncListener {
 
-    fun getActivity(): Activity?
+    val baseActivity: BaseActivity<*>?
 
     fun updateTime()
 

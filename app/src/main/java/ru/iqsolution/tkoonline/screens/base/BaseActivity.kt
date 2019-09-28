@@ -17,8 +17,10 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStates
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import org.jetbrains.anko.toast
+import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.screens.WaitDialog
+import ru.iqsolution.tkoonline.screens.status.StatusFragment
 import ru.iqsolution.tkoonline.services.LocationManager
 import timber.log.Timber
 
@@ -40,10 +42,23 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
         fileManager = FileManager(applicationContext)
     }
 
-    override fun onLocationState(state: LocationSettingsStates?) {}
+    @Suppress("DEPRECATION")
+    override fun onLocationState(state: LocationSettingsStates?) {
+        fragmentManager.findFragmentById(R.id.status_bar_fragment)?.let {
+            if (it is StatusFragment) {
+                it.updateLocation(state?.isLocationUsable ?: false)
+            }
+        }
+    }
 
+    /**
+     * Will be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
+     */
     override fun onLocationAvailability(available: Boolean) {}
 
+    /**
+     * Will be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
+     */
     override fun onLocationResult(location: Location) {}
 
     override fun showLoading() {
@@ -61,7 +76,10 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
         waitDialog?.hide()
     }
 
-    protected fun requestLocation() {
+    /**
+     * Should be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
+     */
+    fun requestLocation() {
         LocationServices.getSettingsClient(this)
             .checkLocationSettings(settingsRequest)
             .addOnSuccessListener {
@@ -82,6 +100,9 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
     }
 
     protected fun takePhoto() {
+        if (photoPath != null) {
+            return
+        }
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(packageManager) != null) {
             val file = fileManager.createFile()
@@ -114,6 +135,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
                     } else {
                         fileManager.deleteFile(it)
                     }
+                    photoPath = null
                 }
             }
         }

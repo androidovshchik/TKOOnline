@@ -14,12 +14,16 @@ import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import java.util.*
 
-class StatusFragment : BaseFragment(), StatusListener {
+/**
+ * Should have id [R.id.status_bar_fragment]
+ */
+class StatusFragment : BaseFragment(), SyncListener {
 
-    private val statusManager = StatusManager(this)
+    private val syncManager = SyncManager(this)
 
     private lateinit var preferences: Preferences
 
@@ -38,12 +42,22 @@ class StatusFragment : BaseFragment(), StatusListener {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         status_number.text = preferences.vehicleNumber ?: ""
         updateTime()
-        status_location.setImageResource(R.drawable.ic_gps_fixed)
+        updateLocation(false)
         updateConnection(R.drawable.ic_swap_vert)
         status_uploads.setImageResource(R.drawable.ic_cloud_upload)
-        statusManager.register()
+        syncManager.register()
     }
 
+    override val baseActivity: BaseActivity<*>?
+        get() = (activity as BaseActivity<*>?)?.also {
+            if (it.isFinishing) {
+                return null
+            }
+        }
+
+    /**
+     * Updates every minute
+     */
     override fun updateTime() {
         if (view == null) {
             return
@@ -51,6 +65,13 @@ class StatusFragment : BaseFragment(), StatusListener {
         status_time.text = serverTime.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
             .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
             .toString(FORMAT_TIME)
+    }
+
+    override fun updateLocation(available: Boolean) {
+        if (view == null) {
+            return
+        }
+        status_location.setImageResource(if (available) R.drawable.ic_gps_fixed_green else R.drawable.ic_gps_fixed)
     }
 
     override fun updateConnection(icon: Int) {
@@ -97,7 +118,7 @@ class StatusFragment : BaseFragment(), StatusListener {
     }
 
     override fun onDestroyView() {
-        statusManager.unregister()
+        syncManager.unregister()
         super.onDestroyView()
     }
 }
