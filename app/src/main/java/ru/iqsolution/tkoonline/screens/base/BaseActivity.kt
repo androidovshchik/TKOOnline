@@ -146,8 +146,8 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
                     } else {
                         fileManager.deleteFile(it)
                     }
-                    photoPath = null
                 }
+                photoPath = null
             }
         }
     }

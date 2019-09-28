@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.location.Location
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
@@ -14,6 +15,7 @@ import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.ACTION_LOCATION
 import ru.iqsolution.tkoonline.EXTRA_AVAILABLE
+import ru.iqsolution.tkoonline.EXTRA_LOCATION
 import ru.iqsolution.tkoonline.R
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -79,8 +81,17 @@ class SyncManager(listener: SyncListener) {
                     reference.get()?.updateTime()
                 }
                 ACTION_LOCATION -> {
-                    val available = intent.getBooleanExtra(EXTRA_AVAILABLE, false)
-                    reference.get()?.updateLocation(available)
+                    if (intent.hasExtra(EXTRA_LOCATION)) {
+                        val location = intent.getParcelableExtra<Location>(EXTRA_LOCATION)
+                        reference.get()?.onLocationResult(location)
+                    }
+                    if (intent.hasExtra(EXTRA_AVAILABLE)) {
+                        val available = intent.getBooleanExtra(EXTRA_AVAILABLE, false)
+                        reference.get()?.apply {
+                            updateLocation(available)
+                            onLocationAvailability(available)
+                        }
+                    }
                 }
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
                     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)

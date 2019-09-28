@@ -18,6 +18,7 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
+import timber.log.Timber
 import java.util.*
 
 /**
@@ -29,7 +30,7 @@ class StatusFragment : BaseFragment(), SyncListener {
 
     private lateinit var preferences: Preferences
 
-    private lateinit var serverTime: DateTime
+    private var serverTime: DateTime? = null
 
     @Volatile
     private var connectionIcon = R.drawable.ic_swap_vert
@@ -43,7 +44,11 @@ class StatusFragment : BaseFragment(), SyncListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preferences = Preferences(context)
-        serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME)
+        try {
+            serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME)
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -67,9 +72,11 @@ class StatusFragment : BaseFragment(), SyncListener {
         if (view == null) {
             return
         }
-        status_time.text = serverTime.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
-            .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
-            .toString(FORMAT_TIME)
+        serverTime?.let {
+            status_time.text = it.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
+                .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
+                .toString(FORMAT_TIME)
+        }
     }
 
     override fun updateLocation(available: Boolean) {
@@ -133,10 +140,11 @@ class StatusFragment : BaseFragment(), SyncListener {
     }
 
     private val baseActivity: BaseActivity<*>?
-        get() = (activity as BaseActivity<*>?)?.also {
-            if (it.isFinishing) {
-                return null
+        get() = activity?.let {
+            if (it is BaseActivity<*> && !it.isFinishing) {
+                return it
             }
+            return null
         }
 
     override fun onDestroyView() {
