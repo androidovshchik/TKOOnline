@@ -4,10 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import android.widget.FrameLayout
-import com.google.android.gms.vision.CameraSource
-import com.google.android.gms.vision.Detector
-import com.google.android.gms.vision.barcode.Barcode
-import com.google.android.gms.vision.barcode.BarcodeDetector
 import org.jetbrains.anko.UI
 import org.jetbrains.anko.frameLayout
 import org.jetbrains.anko.matchParent
@@ -17,51 +13,30 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import timber.log.Timber
 
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {
 
-    private lateinit var barcodeDetector: BarcodeDetector
-
-    private lateinit var cameraSource: CameraSource
+    private var qrCodeManager: QrCodeManager? = null
 
     private lateinit var cameraView: SurfaceView
 
-    private var isActive = false
-
     private var maxSize = 0
+
+    private var isActive = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         context?.resources?.getDimensionPixelSize(R.dimen.barcode_max_size)?.let {
             maxSize = it
         }
-        barcodeDetector = BarcodeDetector.Builder(context)
-            .setBarcodeFormats(Barcode.QR_CODE)
-            .build()
-        barcodeDetector.setProcessor(object : Detector.Processor<Barcode> {
-
-            override fun receiveDetections(detections: Detector.Detections<Barcode>) {
-                detections.apply {
-                    if (detectorIsOperational()) {
-                        if (detectedItems.size() > 0) {
-                            activity?.let {
-                                if (it is LoginActivity) {
-                                    it.onQrCode(detectedItems.valueAt(0).rawValue ?: "")
-                                }
-                            }
-                        }
-                    }
+        activity?.let {
+            if (it is LoginActivity) {
+                qrCodeManager = QrCodeManager(it).apply {
+                    init(context)
                 }
             }
-
-            override fun release() {}
-        })
-        cameraSource = CameraSource.Builder(context, barcodeDetector)
-            .setRequestedPreviewSize(640, 480) // 4:3
-            .setAutoFocusEnabled(true)
-            .build()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -78,7 +53,7 @@ class QrCodeFragment : BaseFragment() {
                         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
 
                         override fun surfaceDestroyed(holder: SurfaceHolder) {
-                            cameraSource.stop()
+                            qrCodeManager?.stop()
                         }
                     })
                 }.lparams()
@@ -99,22 +74,18 @@ class QrCodeFragment : BaseFragment() {
 
     @SuppressLint("MissingPermission")
     private fun startPreview() {
-        try {
-            if (context?.areGranted(*DANGER_PERMISSIONS) != true) {
-                return
-            }
-            cameraView.apply {
-                cameraSource.start(holder)
+        if (context?.areGranted(*DANGER_PERMISSIONS) != true) {
+            return
+        }
+        cameraView.apply {
+            qrCodeManager?.start(holder)?.let {
                 if (maxSize > 0) {
                     // NOTICE supported only the portrait orientation
-                    val size = cameraSource.previewSize
-                    layoutParams = FrameLayout.LayoutParams(maxSize * size.height / size.width, maxSize).apply {
+                    layoutParams = FrameLayout.LayoutParams(maxSize * it.height / it.width, maxSize).apply {
                         gravity = Gravity.CENTER
                     }
                 }
             }
-        } catch (e: Exception) {
-            Timber.e(e)
         }
     }
 
@@ -133,8 +104,7 @@ class QrCodeFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
-        barcodeDetector.release()
-        cameraSource.release()
+        qrCodeManager?.release()
         super.onDestroyView()
     }
 
