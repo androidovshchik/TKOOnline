@@ -1,18 +1,17 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
-import ru.iqsolution.tkoonline.local.entities.PlatformContainersPhotoClean
-import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.models.PhotoType
 
 interface PlatformsContract {
 
     interface Presenter {
 
-        val isAllowedPhotoKp: Boolean
-
         fun loadPlatforms()
     }
 
-    interface View : IBaseView {
+    interface View {
+
+        fun onReceivedTypes(data: List<PhotoType>)
 
         fun updateListMarkers(
             primary: List<PlatformContainersPhotoClean>,

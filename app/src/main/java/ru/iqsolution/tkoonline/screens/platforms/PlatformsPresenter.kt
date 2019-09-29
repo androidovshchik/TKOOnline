@@ -71,21 +71,11 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                 }
             }
             platforms.forEach {
-                regulars.get(it.kpId)?.let { container ->
-                    it.regular.addContainer(container)
-                }
-                bunkers.get(it.kpId)?.let { container ->
-                    it.bunker.addContainer(container)
-                }
-                bunks.get(it.kpId)?.let { container ->
-                    it.bunk.addContainer(container)
-                }
-                specials.get(it.kpId)?.let { container ->
-                    it.special.addContainer(container)
-                }
-                unknown.get(it.kpId)?.let { container ->
-                    it.unknown.addContainer(container)
-                }
+                it.addContainer(regulars.get(it.kpId))
+                it.addContainer(bunkers.get(it.kpId))
+                it.addContainer(bunks.get(it.kpId))
+                it.addContainer(specials.get(it.kpId))
+                it.addContainer(unknown.get(it.kpId))
             }
         }
     }

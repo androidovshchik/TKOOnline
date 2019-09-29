@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName
  * Special class for non-linked platforms
  * NOTICE the subcontainers include the original [containerVolume] and [containerCount] values
  */
+@Suppress("MemberVisibilityCanBePrivate")
 class PlatformContainers() : Platform() {
 
     @SerializedName("_r")
@@ -45,12 +46,39 @@ class PlatformContainers() : Platform() {
         timeLimitTo = platform.timeLimitTo
         timeLimitFrom = platform.timeLimitFrom
         status = platform.status
+        addContainer(platform)
     }
 
     /**
-     * NOTICE
+     * It may be important to keep the original [containerVolume] and [containerCount] values
      */
     override fun addContainer(container: Container?) {
+        if (container is Platform?) {
+            addContainer(container)
+        } else {
+            throw IllegalAccessException("Should not be called as is")
+        }
+    }
 
+    fun addContainer(platform: Platform?) {
+        platform?.let {
+            when (it.toContainerType()) {
+                ContainerType.REGULAR -> {
+                    regular.addContainer(it)
+                }
+                ContainerType.BUNKER -> {
+                    bunker.addContainer(it)
+                }
+                ContainerType.BULK1, ContainerType.BULK2 -> {
+                    bunk.addContainer(it)
+                }
+                ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> {
+                    special.addContainer(it)
+                }
+                else -> {
+                    unknown.addContainer(it)
+                }
+            }
+        }
     }
 }

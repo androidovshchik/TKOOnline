@@ -55,6 +55,6 @@ class CleanEvent : Container, SendEvent {
     override var sent = false
 
     override fun addContainer(container: Container?) {
-        throw IllegalAccessException("Should not be called")
+        throw IllegalAccessException("Should not be called at all")
     }
 }
