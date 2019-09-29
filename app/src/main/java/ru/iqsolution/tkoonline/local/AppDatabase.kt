@@ -19,7 +19,7 @@ import ru.iqsolution.tkoonline.local.entities.PhotoEvent
         CleanEvent::class,
         LocationEvent::class
     ],
-    version = 2
+    version = 3
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

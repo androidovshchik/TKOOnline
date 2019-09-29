@@ -32,9 +32,7 @@ class QrCodeFragment : BaseFragment() {
         }
         activity?.apply {
             if (this is LoginActivity) {
-                qrCodeManager = QrCodeManager(this).apply {
-                    init(applicationContext)
-                }
+                qrCodeManager = QrCodeManager(applicationContext, this)
             }
         }
     }

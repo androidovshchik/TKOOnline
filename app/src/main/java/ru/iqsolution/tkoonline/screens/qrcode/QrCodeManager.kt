@@ -12,24 +12,20 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
-class QrCodeManager(listener: QrCodeListener) {
+class QrCodeManager(context: Context, listener: QrCodeListener) {
 
     private val reference = WeakReference(listener)
 
-    private lateinit var barcodeDetector: BarcodeDetector
+    private val barcodeDetector = BarcodeDetector.Builder(context)
+        .setBarcodeFormats(Barcode.QR_CODE)
+        .build().apply {
+            setProcessor(processor)
+        }
 
-    private lateinit var cameraSource: CameraSource
-
-    fun init(context: Context) {
-        barcodeDetector = BarcodeDetector.Builder(context)
-            .setBarcodeFormats(Barcode.QR_CODE)
-            .build()
-        barcodeDetector.setProcessor(processor)
-        cameraSource = CameraSource.Builder(context, barcodeDetector)
-            .setRequestedPreviewSize(640, 480) // 4:3
-            .setAutoFocusEnabled(true)
-            .build()
-    }
+    private val cameraSource = CameraSource.Builder(context, barcodeDetector)
+        .setRequestedPreviewSize(640, 480) // 4:3
+        .setAutoFocusEnabled(true)
+        .build()
 
     @SuppressLint("MissingPermission")
     fun start(holder: SurfaceHolder): Size? {

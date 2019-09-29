@@ -7,7 +7,7 @@ interface SyncListener : LocationListener {
     fun onTimeChanged()
 
     /**
-     * NOTICE may be called from background thread
+     * NOTICE may be called on background thread
      */
     fun onNetworkChanged(available: Boolean)
 
