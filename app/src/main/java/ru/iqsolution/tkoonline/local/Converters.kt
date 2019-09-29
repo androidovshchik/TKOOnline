@@ -4,7 +4,6 @@ import androidx.room.TypeConverter
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.PATTERN_TIME
-import ru.iqsolution.tkoonline.PlatformStatus
 
 @Suppress("unused")
 object Converters {
@@ -29,20 +28,6 @@ object Converters {
                 it.contains("T") -> DateTime.parse(it, PATTERN_DATETIME)
                 else -> DateTime.parse(it, PATTERN_TIME)
             }
-        }
-    }
-
-    @TypeConverter
-    @JvmStatic
-    fun fromPlatformStatus(value: PlatformStatus?): Int? {
-        return value?.id
-    }
-
-    @TypeConverter
-    @JvmStatic
-    fun toPlatformStatus(value: Int?): PlatformStatus? {
-        return value?.let {
-            return PlatformStatus.fromId(it)
         }
     }
 }

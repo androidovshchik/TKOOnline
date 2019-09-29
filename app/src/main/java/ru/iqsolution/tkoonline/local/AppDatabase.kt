@@ -3,14 +3,18 @@ package ru.iqsolution.tkoonline.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import ru.iqsolution.tkoonline.local.dao.*
-import ru.iqsolution.tkoonline.local.entities.*
+import ru.iqsolution.tkoonline.local.dao.CleanDao
+import ru.iqsolution.tkoonline.local.dao.LocationDao
+import ru.iqsolution.tkoonline.local.dao.PhotoDao
+import ru.iqsolution.tkoonline.local.dao.TokenDao
+import ru.iqsolution.tkoonline.local.entities.AccessToken
+import ru.iqsolution.tkoonline.local.entities.CleanEvent
+import ru.iqsolution.tkoonline.local.entities.LocationEvent
+import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 
 @Database(
     entities = [
         AccessToken::class,
-        Platform::class,
-        PhotoType::class,
         PhotoEvent::class,
         CleanEvent::class,
         LocationEvent::class
@@ -21,8 +25,6 @@ import ru.iqsolution.tkoonline.local.entities.*
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun tokenDao(): TokenDao
-
-    abstract fun platformDao(): PlatformDao
 
     abstract fun photoDao(): PhotoDao
 

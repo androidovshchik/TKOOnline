@@ -29,6 +29,7 @@ import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.local.AppDatabase
 import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
@@ -76,13 +77,13 @@ class MainApp : Application(), KodeinAware {
             Preferences(applicationContext)
         }
 
-        bind<ServerApi>() with singleton {
+        bind<Server>() with singleton {
             Retrofit.Builder()
                 .client(instance())
                 .baseUrl("https://localhost/mobile/v1/")
                 .addConverterFactory(GsonConverterFactory.create(instance()))
                 .build()
-                .create(ServerApi::class.java)
+                .create(Server::class.java)
         }
 
         bind<AppDatabase>() with singleton {

@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.local
+package ru.iqsolution.tkoonline.models
 
 interface Container {
 

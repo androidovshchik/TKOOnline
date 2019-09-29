@@ -30,3 +30,5 @@ const val EXTRA_ID = "extra_id"
 const val EXTRA_LOCATION = "extra_location"
 
 const val EXTRA_AVAILABILITY = "extra_availability"
+
+const val EXTRA_PLATFORM = "extra_platform"

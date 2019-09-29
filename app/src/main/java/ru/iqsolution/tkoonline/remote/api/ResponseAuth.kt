@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.remote.models
+package ru.iqsolution.tkoonline.remote.api
 
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime

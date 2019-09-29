@@ -3,7 +3,7 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
-import ru.iqsolution.tkoonline.local.Container
+import ru.iqsolution.tkoonline.models.Container
 
 @Entity(
     tableName = "clean_events",

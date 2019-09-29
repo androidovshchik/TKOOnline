@@ -5,9 +5,9 @@ package ru.iqsolution.tkoonline.remote
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
-import ru.iqsolution.tkoonline.remote.models.*
+import ru.iqsolution.tkoonline.remote.api.*
 
-interface ServerApi {
+interface Server {
 
     @FormUrlEncoded
     @Headers("Accept: application/json")
