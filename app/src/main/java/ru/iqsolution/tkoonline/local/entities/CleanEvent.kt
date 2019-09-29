@@ -20,7 +20,7 @@ import ru.iqsolution.tkoonline.models.Container
         Index(value = ["ce_token_id"])
     ]
 )
-class CleanEvent : Container {
+class CleanEvent : Container, SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ce_id")
@@ -52,5 +52,5 @@ class CleanEvent : Container {
     override var containerCount = 0
 
     @ColumnInfo(name = "ce_sent")
-    var sent = false
+    override var sent = false
 }

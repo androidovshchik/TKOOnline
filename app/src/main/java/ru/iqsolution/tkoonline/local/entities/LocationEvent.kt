@@ -18,7 +18,7 @@ import org.joda.time.DateTime
         Index(value = ["le_token_id"])
     ]
 )
-class LocationEvent {
+class LocationEvent : SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "le_id")
@@ -61,5 +61,5 @@ class LocationEvent {
     var mileage = 0
 
     @ColumnInfo(name = "le_sent")
-    var sent = false
+    override var sent = false
 }

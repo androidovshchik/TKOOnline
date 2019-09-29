@@ -45,8 +45,14 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     var carId by intPref(0, "0x0c")
 
+    /**
+     * Last known value
+     */
     var latitude by floatPref(Float.MAX_VALUE, "0x0d")
 
+    /**
+     * Last known value
+     */
     var longitude by floatPref(Float.MAX_VALUE, "0x0e")
 
     /**

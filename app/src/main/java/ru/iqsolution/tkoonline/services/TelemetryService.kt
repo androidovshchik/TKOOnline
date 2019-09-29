@@ -8,15 +8,20 @@ import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.stopService
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startForegroundService
+import ru.iqsolution.tkoonline.local.Preferences
 
 class TelemetryService : BaseService(), LocationListener {
+
+    val preferences: Preferences by instance()
 
     private lateinit var locationManager: LocationManager
 
@@ -65,6 +70,10 @@ class TelemetryService : BaseService(), LocationListener {
     }
 
     override fun onLocationResult(location: Location) {
+        preferences.bulk {
+            latitude = location.latitude.toFloat()
+            longitude = location.longitude.toFloat()
+        }
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(Intent(ACTION_LOCATION).apply {
                 putExtra(EXTRA_LOCATION, location)

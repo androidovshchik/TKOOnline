@@ -11,7 +11,6 @@ import android.provider.MediaStore
 import android.view.MenuItem
 import android.view.WindowManager
 import androidx.core.content.FileProvider
-import com.chibatching.kotpref.bulk
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
@@ -22,11 +21,10 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.WaitDialog
-import ru.iqsolution.tkoonline.screens.status.SyncListener
+import ru.iqsolution.tkoonline.screens.status.StatusFragment
 import ru.iqsolution.tkoonline.services.LocationListener
 import ru.iqsolution.tkoonline.services.LocationManager
 import timber.log.Timber
-import javax.annotation.OverridingMethodsMustInvokeSuper
 
 @SuppressLint("Registered")
 @Suppress("MemberVisibilityCanBePrivate")
@@ -106,7 +104,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
     @Suppress("DEPRECATION")
     override fun onLocationState(state: LocationSettingsStates?) {
         fragmentManager.findFragmentById(R.id.status_bar_fragment)?.let {
-            if (it is SyncListener) {
+            if (it is StatusFragment) {
                 it.onLocationState(state)
             }
         }
@@ -120,13 +118,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
     /**
      * Will be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */
-    @OverridingMethodsMustInvokeSuper
-    override fun onLocationResult(location: Location) {
-        preferences.bulk {
-            latitude = location.latitude.toFloat()
-            longitude = location.longitude.toFloat()
-        }
-    }
+    override fun onLocationResult(location: Location) {}
 
     protected fun takePhoto() {
         if (photoPath != null) {

@@ -1,5 +1,7 @@
 package ru.iqsolution.tkoonline.screens.login
 
+import ru.iqsolution.tkoonline.screens.base.IBaseView
+
 interface LoginContract {
 
     interface Presenter {
@@ -7,17 +9,7 @@ interface LoginContract {
         fun login(data: String)
     }
 
-    interface View {
-
-        /**
-         * Called from [PasswordDialog]
-         */
-        fun onPrompted()
-
-        /**
-         * Called from [SettingsDialog]
-         */
-        fun onKioskMode(enter: Boolean)
+    interface View : IBaseView {
 
         fun onAuthorized()
     }

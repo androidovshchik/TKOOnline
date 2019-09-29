@@ -18,7 +18,7 @@ import org.joda.time.DateTime
         Index(value = ["pe_token_id"])
     ]
 )
-class PhotoEvent {
+class PhotoEvent : SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pe_id")
@@ -49,5 +49,5 @@ class PhotoEvent {
     lateinit var datetime: DateTime
 
     @ColumnInfo(name = "pe_sent")
-    var sent = false
+    override var sent = false
 }
