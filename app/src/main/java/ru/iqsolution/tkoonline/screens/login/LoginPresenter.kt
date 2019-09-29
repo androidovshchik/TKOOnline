@@ -57,8 +57,8 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
                 viewRef.get()?.onAuthorized()
             } catch (e: CancellationException) {
             } catch (e: Exception) {
-                Timber.e(e)
                 loginJson = null
+                throw e
             }
         }
     }

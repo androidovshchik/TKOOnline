@@ -8,18 +8,18 @@ interface PlatformsContract {
 
     interface Presenter {
 
-        fun loadPlatformsTypes()
+        fun loadPlatformsTypes(refresh: Boolean)
 
-        fun sortPlatforms(secondary: List<PlatformContainers>)
+        fun formatPlatform(platform: PlatformContainers): String
     }
 
     interface View : IBaseView {
 
         fun onReceivedTypes(data: List<PhotoType>)
 
-        fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>)
-
         fun changeMapPosition(latitude: Double, longitude: Double)
+
+        fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>)
 
         fun updateMapMarkers(primary: String, secondary: String)
     }

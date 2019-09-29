@@ -11,7 +11,7 @@ interface TokenDao {
         SELECT * FROM tokens
     """
     )
-    fun getAllTokens(): List<AccessToken>
+    fun getTokens(): List<AccessToken>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(item: AccessToken)
