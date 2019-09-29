@@ -1,22 +1,21 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
 import ru.iqsolution.tkoonline.models.PhotoType
+import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.screens.base.IBaseView
 
 interface PlatformsContract {
 
     interface Presenter {
 
-        fun loadPlatforms()
+        fun loadPlatformsTypes()
     }
 
-    interface View {
+    interface View : IBaseView {
 
         fun onReceivedTypes(data: List<PhotoType>)
 
-        fun updateListMarkers(
-            primary: List<PlatformContainersPhotoClean>,
-            secondary: List<PlatformContainersPhotoClean>
-        )
+        fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>)
 
         fun updateMapMarkers(primary: String, secondary: String)
 

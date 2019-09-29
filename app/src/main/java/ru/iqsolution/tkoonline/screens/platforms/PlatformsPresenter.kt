@@ -17,7 +17,7 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
 
     val gson: Gson by instance()
 
-    override fun loadPlatforms() {
+    override fun loadPlatformsTypes() {
         baseJob.cancelChildren()
         launch {
             val responseTypes = serverApi.getPhotoTypes(preferences.authHeader)
@@ -62,20 +62,28 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                     }
                 }
             }
+            if (responsePlatforms.data.isNotEmpty()) {
+                viewRef.get()?.changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
+            }
             primary.forEach {
-                it.addContainer(regulars.get(it.kpId))
-                it.addContainer(bunkers.get(it.kpId))
-                it.addContainer(bunks.get(it.kpId))
-                it.addContainer(specials.get(it.kpId))
-                it.addContainer(unknown.get(it.kpId))
+                it.apply {
+                    addContainer(regulars.get(it.kpId))
+                    addContainer(bunkers.get(it.kpId))
+                    addContainer(bunks.get(it.kpId))
+                    addContainer(specials.get(it.kpId))
+                    addContainer(unknown.get(it.kpId))
+                }
             }
             secondary.forEach {
-                it.addContainer(regulars.get(it.kpId))
-                it.addContainer(bunkers.get(it.kpId))
-                it.addContainer(bunks.get(it.kpId))
-                it.addContainer(specials.get(it.kpId))
-                it.addContainer(unknown.get(it.kpId))
+                it.apply {
+                    addContainer(regulars.get(it.kpId))
+                    addContainer(bunkers.get(it.kpId))
+                    addContainer(bunks.get(it.kpId))
+                    addContainer(specials.get(it.kpId))
+                    addContainer(unknown.get(it.kpId))
+                }
             }
+            viewRef.get()?.onReceivedPlatforms(primary, secondary)
         }
     }
 
