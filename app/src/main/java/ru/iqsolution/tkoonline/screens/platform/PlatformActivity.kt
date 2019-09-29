@@ -8,9 +8,10 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.EXTRA_PLATFORM
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.models.Platform
+import ru.iqsolution.tkoonline.screens.MapView
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 
-class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View {
+class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View, MapView.Listener {
 
     private lateinit var platform: Platform
 
@@ -24,7 +25,13 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         toolbar_back.onClick {
             finish()
         }
-        platform_map.loadUrl("file:///android_asset/platform.html")
+        platform_map.loadUrl(URL)
+    }
+
+    override fun onPageFinished(url: String) {
+        if (url == URL) {
+
+        }
     }
 
     override fun onLocationResult(location: Location) {
@@ -32,4 +39,14 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     }
 
     override fun onBackPressed() {}
+
+    override fun onDestroy() {
+        platform_map.release()
+        super.onDestroy()
+    }
+
+    companion object {
+
+        private const val URL = "file:///android_asset/platform.html"
+    }
 }

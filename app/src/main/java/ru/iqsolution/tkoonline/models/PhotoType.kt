@@ -1,8 +1,9 @@
 package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class PhotoType {
+class PhotoType : Serializable {
 
     @SerializedName("id")
     var type = 0

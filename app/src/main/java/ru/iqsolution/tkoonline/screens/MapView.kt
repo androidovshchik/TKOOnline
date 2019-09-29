@@ -6,12 +6,15 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.map_view.view.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.activity
 
 @Suppress("MemberVisibilityCanBePrivate")
 class MapView : FrameLayout {
@@ -38,13 +41,16 @@ class MapView : FrameLayout {
 
     init {
         View.inflate(context, R.layout.map_view, this)
-        map.settings.apply {
-            @SuppressLint("SetJavaScriptEnabled")
-            javaScriptEnabled = true
-            domStorageEnabled = true
-            databaseEnabled = true
-            setAppCacheEnabled(true)
-            setAppCachePath(context.cacheDir.path)
+        map.apply {
+            webViewClient = Client()
+            settings.apply {
+                @SuppressLint("SetJavaScriptEnabled")
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                databaseEnabled = true
+                setAppCacheEnabled(true)
+                setAppCachePath(context.cacheDir.path)
+            }
         }
         map_plus.onClick {
             zoomIn()
@@ -109,7 +115,35 @@ class MapView : FrameLayout {
         loadUrl("javascript:mapSaveState()")
     }
 
+    fun release() {
+        try {
+            (parent as ViewGroup?)?.removeView(this)
+        } catch (e: Exception) {
+        }
+        try {
+            removeAllViews()
+        } catch (e: Exception) {
+        }
+        map.destroy()
+    }
+
     override fun hasOverlappingRendering() = false
+
+    interface Listener {
+
+        fun onPageFinished(url: String)
+    }
+
+    inner class Client : WebViewClient() {
+
+        override fun onPageFinished(view: WebView, url: String) {
+            context.activity()?.let {
+                if (it is Listener) {
+                    it.onPageFinished(url)
+                }
+            }
+        }
+    }
 
     companion object {
 
