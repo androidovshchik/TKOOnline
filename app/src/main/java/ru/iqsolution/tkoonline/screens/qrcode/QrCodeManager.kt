@@ -20,7 +20,7 @@ class QrCodeManager(listener: QrCodeListener) {
 
     private lateinit var cameraSource: CameraSource
 
-    fun init(context: Context?) {
+    fun init(context: Context) {
         barcodeDetector = BarcodeDetector.Builder(context)
             .setBarcodeFormats(Barcode.QR_CODE)
             .build()

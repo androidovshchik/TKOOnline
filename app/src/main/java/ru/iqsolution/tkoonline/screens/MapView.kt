@@ -73,10 +73,7 @@ class MapView : FrameLayout {
         loadUrl("javascript:mapZoomOut($duration)")
     }
 
-    /**
-     * Only current view can move to user location
-     */
-    private fun moveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
+    fun moveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
         loadUrl("javascript:mapMoveTo($latitude, $longitude, $zoom, $duration)")
     }
 

@@ -12,6 +12,7 @@ import ru.iqsolution.tkoonline.EXTRA_ID
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.Platform
+import ru.iqsolution.tkoonline.local.entities.PlatformContainersPhotoClean
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
@@ -29,6 +30,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             it.attachView(this)
         }
         platforms_map.loadUrl("file:///android_asset/platforms.html")
+        platforms_refresh.setOnRefreshListener {
+            presenter.loadPlatforms()
+        }
         platforms_list.apply {
             addItemDecoration(DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL).apply {
                 ContextCompat.getDrawable(applicationContext, R.drawable.divider)?.let {
@@ -41,11 +45,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             adapter = platformsAdapter
         }
         platforms_complete.onClick {
-            platforms_map.clearState(true)
-            TelemetryService.stop(applicationContext)
-            presenter.clearAuthorization()
-            startActivityNoop<LoginActivity>()
-            finish()
+            logout()
         }
         if (presenter.isAllowedPhotoKp) {
             platforms_placeholder.visibility = View.VISIBLE
@@ -58,6 +58,37 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
     }
 
+    override fun updateListMarkers(
+        primary: List<PlatformContainersPhotoClean>,
+        secondary: List<PlatformContainersPhotoClean>
+    ) {
+        platformsAdapter.apply {
+            primaryItems.clear()
+            items.clear()
+            primary.forEach {
+                primaryItems.add(it)
+                addMark(it)
+            }
+            secondary.forEach {
+                items.add(it)
+                addMark(it)
+            }
+            notifyDataSetChanged()
+        }
+        platforms_refresh.isRefreshing = false
+    }
+
+    /**
+     * Primary platforms will overlay secondary
+     */
+    override fun updateMapMarkers(primary: String, secondary: String) {
+        platforms_map.setMarkers(secondary, primary)
+    }
+
+    override fun changeMapPosition(latitude: Double, longitude: Double) {
+        platforms_map.moveTo(latitude, longitude)
+    }
+
     override fun onLocationResult(location: Location) {
         platforms_map.setLocation(location.latitude, location.longitude)
     }
@@ -67,6 +98,14 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             null,
             EXTRA_ID to item.kpId
         )
+    }
+
+    private fun logout() {
+        platforms_map.clearState(true)
+        TelemetryService.stop(applicationContext)
+        presenter.clearAuthorization()
+        startActivityNoop<LoginActivity>()
+        finish()
     }
 
     override fun onBackPressed() {}

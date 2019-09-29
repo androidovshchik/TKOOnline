@@ -30,10 +30,10 @@ class QrCodeFragment : BaseFragment() {
         context?.resources?.getDimensionPixelSize(R.dimen.barcode_max_size)?.let {
             maxSize = it
         }
-        activity?.let {
-            if (it is LoginActivity) {
-                qrCodeManager = QrCodeManager(it).apply {
-                    init(context)
+        activity?.apply {
+            if (this is LoginActivity) {
+                qrCodeManager = QrCodeManager(this).apply {
+                    init(applicationContext)
                 }
             }
         }
