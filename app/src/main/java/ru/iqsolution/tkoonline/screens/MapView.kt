@@ -138,7 +138,7 @@ class MapView : FrameLayout {
 
         override fun onPageFinished(view: WebView, url: String) {
             context.activity()?.let {
-                if (it is Listener) {
+                if (it is Listener && !it.isFinishing) {
                     it.onPageFinished(url)
                 }
             }

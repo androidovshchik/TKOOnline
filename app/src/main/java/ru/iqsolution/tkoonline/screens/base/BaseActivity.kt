@@ -20,7 +20,7 @@ import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.screens.WaitDialog
-import ru.iqsolution.tkoonline.screens.status.StatusFragment
+import ru.iqsolution.tkoonline.screens.status.SyncListener
 import ru.iqsolution.tkoonline.services.LocationListener
 import ru.iqsolution.tkoonline.services.LocationManager
 import timber.log.Timber
@@ -94,7 +94,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
     @Suppress("DEPRECATION")
     override fun onLocationState(state: LocationSettingsStates?) {
         fragmentManager.findFragmentById(R.id.status_bar_fragment)?.let {
-            if (it is StatusFragment) {
+            if (it is SyncListener) {
                 it.onLocationState(state)
             }
         }

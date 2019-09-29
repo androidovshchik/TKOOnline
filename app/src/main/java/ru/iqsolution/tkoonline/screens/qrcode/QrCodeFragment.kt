@@ -12,7 +12,6 @@ import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
-import ru.iqsolution.tkoonline.screens.login.LoginActivity
 
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {
@@ -31,7 +30,7 @@ class QrCodeFragment : BaseFragment() {
             maxSize = it
         }
         activity?.apply {
-            if (this is LoginActivity) {
+            if (this is QrCodeListener) {
                 qrCodeManager = QrCodeManager(applicationContext, this)
             }
         }

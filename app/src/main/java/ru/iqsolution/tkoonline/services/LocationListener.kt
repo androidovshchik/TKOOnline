@@ -6,6 +6,7 @@ import com.google.android.gms.location.LocationSettingsStates
 interface LocationListener {
 
     /**
+     * May be called only from activity
      * @param state null if location settings are not satisfied
      */
     fun onLocationState(state: LocationSettingsStates?)
