@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.view.MenuItem
 import android.view.WindowManager
 import androidx.core.content.FileProvider
+import com.chibatching.kotpref.bulk
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
@@ -19,11 +20,13 @@ import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.FileManager
+import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.WaitDialog
 import ru.iqsolution.tkoonline.screens.status.SyncListener
 import ru.iqsolution.tkoonline.services.LocationListener
 import ru.iqsolution.tkoonline.services.LocationManager
 import timber.log.Timber
+import javax.annotation.OverridingMethodsMustInvokeSuper
 
 @SuppressLint("Registered")
 @Suppress("MemberVisibilityCanBePrivate")
@@ -33,6 +36,8 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
 
     protected lateinit var fileManager: FileManager
 
+    protected lateinit var preferences: Preferences
+
     private var waitDialog: WaitDialog? = null
 
     private var photoPath: String? = null
@@ -41,6 +46,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         fileManager = FileManager(applicationContext)
+        preferences = Preferences(applicationContext)
     }
 
     override fun showLoading() {
@@ -108,7 +114,13 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
     /**
      * Will be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */
-    override fun onLocationResult(location: Location) {}
+    @OverridingMethodsMustInvokeSuper
+    override fun onLocationResult(location: Location) {
+        preferences.bulk {
+            latitude = location.latitude.toFloat()
+            longitude = location.longitude.toFloat()
+        }
+    }
 
     protected fun takePhoto() {
         if (photoPath != null) {

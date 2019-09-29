@@ -13,7 +13,7 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.inflate
-import ru.iqsolution.tkoonline.local.entities.Platform
+import ru.iqsolution.tkoonline.models.Platform
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
 

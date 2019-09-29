@@ -15,6 +15,7 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.activity
+import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
 class MapView : FrameLayout {
@@ -137,6 +138,7 @@ class MapView : FrameLayout {
     inner class Client : WebViewClient() {
 
         override fun onPageFinished(view: WebView, url: String) {
+            Timber.d(url)
             context.activity()?.let {
                 if (it is Listener && !it.isFinishing) {
                     it.onPageFinished(url)
