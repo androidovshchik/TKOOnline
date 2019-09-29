@@ -13,13 +13,13 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.inflate
-import ru.iqsolution.tkoonline.models.Platform
+import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
 
-class PlatformsAdapter(context: Context) : BaseAdapter<Platform>() {
+class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
 
-    val primaryItems = arrayListOf<Platform>()
+    val primaryItems = arrayListOf<PlatformContainers>()
 
     private val minSize = context.dip(17)
 
@@ -29,7 +29,7 @@ class PlatformsAdapter(context: Context) : BaseAdapter<Platform>() {
         return ViewHolder(parent.inflate(R.layout.item_platform))
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<Platform>, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewHolder<PlatformContainers>, position: Int) {
         val item = when {
             position < primaryItems.size -> primaryItems[position]
             else -> items[position - primaryItems.size]
@@ -39,7 +39,7 @@ class PlatformsAdapter(context: Context) : BaseAdapter<Platform>() {
 
     override fun getItemCount() = primaryItems.size + items.size
 
-    inner class ViewHolder(itemView: View) : BaseViewHolder<Platform>(itemView) {
+    inner class ViewHolder(itemView: View) : BaseViewHolder<PlatformContainers>(itemView) {
 
         private val address: TextView = itemView.container_address
 
@@ -58,7 +58,7 @@ class PlatformsAdapter(context: Context) : BaseAdapter<Platform>() {
         }
 
         @SuppressLint("SetTextI18n")
-        override fun onBindItem(position: Int, item: Platform) {
+        override fun onBindItem(position: Int, item: PlatformContainers) {
             address.text = item.address
             range.text = appContext.getString(
                 R.string.container_range,

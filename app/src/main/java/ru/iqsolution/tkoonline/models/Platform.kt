@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
 
-class Platform : Container {
+open class Platform : Container {
 
     @SerializedName("kp_id")
     var kpId = 0
@@ -56,12 +56,6 @@ class Platform : Container {
 
     @SerializedName("status")
     lateinit var status: PlatformStatus
-
-    /**
-     * It's needed only for map
-     */
-    @SerializedName("p_errors")
-    var errors: String? = null
 
     val isValid: Boolean
         get() = BuildConfig.DEBUG || status != PlatformStatus.NO_TASK
