@@ -1,63 +1,109 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
 import android.app.Application
+import androidx.collection.SimpleArrayMap
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.PlatformStatus
-import ru.iqsolution.tkoonline.local.entities.PlatformContainersPhotoClean
+import ru.iqsolution.tkoonline.models.ContainerType
+import ru.iqsolution.tkoonline.models.Platform
+import ru.iqsolution.tkoonline.models.PlatformStatus
+import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
 class PlatformsPresenter(application: Application) : BasePresenter<PlatformsContract.View>(application),
     PlatformsContract.Presenter {
 
+    val serverApi: Server by instance()
+
     val gson: Gson by instance()
 
-    override val isAllowedPhotoKp
-        get() = preferences.allowPhotoRefKp
-
     override fun loadPlatforms() {
+        baseJob.cancelChildren()
         launch {
+            val responseTypes = serverApi.getPhotoTypes(preferences.authHeader)
+            viewRef.get()?.onReceivedTypes(responseTypes.data)
+            val responsePlatforms = serverApi.getPlatforms(preferences.authHeader, preferences.serverDay)
+            val regulars = SimpleArrayMap<Int, Platform>()
+            val bunkers = SimpleArrayMap<Int, Platform>()
+            val bunks = SimpleArrayMap<Int, Platform>()
+            val specials = SimpleArrayMap<Int, Platform>()
+            responsePlatforms.data.forEach {
+                if (it.isValid) {
+                    if (it.linkedKpId != null) {
+                        when (ContainerType.fromId(it.containerType)) {
+                            ContainerType.REGULAR -> {
+                                regulars.putLinked(it)
+                            }
+                            ContainerType.BUNKER -> {
+                                bunkers.putLinked(it)
+                            }
+                            ContainerType.BULK1, ContainerType.BULK2 -> {
+                                bunks.putLinked(it)
+                            }
+                            ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> {
+                                specials.putLinked(it)
+                            }
+                            else -> {
+                            }
+                        }
+                    }
+                }
+            }
             var minLat = Double.MAX_VALUE
             var maxLat = Double.MIN_VALUE
             var minLon = Double.MAX_VALUE
             var maxLon = Double.MIN_VALUE
-            val primaryList = arrayListOf<PlatformContainersPhotoClean>()
-            val secondaryList = arrayListOf<PlatformContainersPhotoClean>()
-            withContext(Dispatchers.IO) {
-                val allList = appDb.platformDao().getPlatformsByToken(preferences.accessToken.toString())
-                allList.forEach {
-                    it.platform.apply {
-                        if (latitude < minLat) {
-                            minLat = latitude
-                        } else if (latitude > maxLat) {
-                            maxLat = latitude
+            responsePlatforms.data.forEach {
+                if (it.isValid) {
+                    if (it.linkedKpId == null) {
+                        // measuring center
+                        if (it.latitude < minLat) {
+                            minLat = it.latitude
+                        } else if (it.latitude > maxLat) {
+                            maxLat = it.latitude
                         }
-                        if (longitude < minLon) {
-                            minLon = longitude
-                        } else if (longitude > maxLon) {
-                            maxLon = longitude
+                        if (it.longitude < minLon) {
+                            minLon = it.longitude
+                        } else if (it.longitude > maxLon) {
+                            maxLon = it.longitude
                         }
-                        when (status) {
-                            PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> primaryList.add(it)
-                            else -> secondaryList.add(it)
+                        // platform_info setup
+                        regulars.get(it.kpId)?.let { container ->
+                            it.containerRegular.addFrom(container)
+                        }
+                        bunkers.get(it.kpId)?.let { container ->
+                            it.containerBunker.addFrom(container)
+                        }
+                        bunks.get(it.kpId)?.let { container ->
+                            it.containerWithout.addFrom(container)
+                        }
+                        specials.get(it.kpId)?.let { container ->
+                            it.containerSpecial.addFrom(container)
+                        }
+                        when (it.status) {
+                            PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> containers.addPrimaryItem(it)
+                            else -> containers.addSecondaryItem(it)
                         }
                     }
                 }
-                val primaryJson = gson.toJson(primaryList)
-                val primaryJson = gson.toJson(primaryList)
-                viewRef.get()?.onPlatformLists(
-                    primaryList, secondaryList, if (allList.isNotEmpty()) Point(
-                        (maxLat + minLat) / 2,
-                        (maxLon + minLon) / 2
-                    ) else null
-                )
             }
-            if (primaryList.isNotEmpty() && secondaryList.isNotEmpty()) {
-                viewRef.get()?.changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
-            }
+            viewRef.get()?.onReceivedContainers(
+                containers.getPrimaryItems(), containers.getSecondaryItems(),
+                if (responsePlatforms.data.isNotEmpty()) Point(
+                    (maxLat + minLat) / 2,
+                    (maxLon + minLon) / 2
+                ) else null
+            )
+        }
+    }
+
+    private fun SimpleArrayMap<Int, Platform>.putLinked(item: Platform) {
+        get(item.linkedKpId)?.addContainer(item) ?: run {
+            put(item.linkedKpId, Platform(item.containerType).apply {
+                addContainer(item)
+            })
         }
     }
 }
