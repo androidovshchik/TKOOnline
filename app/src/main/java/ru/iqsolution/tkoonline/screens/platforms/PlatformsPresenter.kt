@@ -6,10 +6,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.models.Container
-import ru.iqsolution.tkoonline.models.ContainerType
-import ru.iqsolution.tkoonline.models.Platform
-import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.models.*
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
@@ -30,12 +27,13 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
             var maxLat = Double.MIN_VALUE
             var minLon = Double.MAX_VALUE
             var maxLon = Double.MIN_VALUE
-            val platforms = arrayListOf<PlatformContainers>()
             val regulars = SimpleArrayMap<Int, Container>()
             val bunkers = SimpleArrayMap<Int, Container>()
             val bunks = SimpleArrayMap<Int, Container>()
             val specials = SimpleArrayMap<Int, Container>()
             val unknown = SimpleArrayMap<Int, Container>()
+            val primary = arrayListOf<PlatformContainers>()
+            val secondary = arrayListOf<PlatformContainers>()
             responsePlatforms.data.forEach {
                 if (it.isValid) {
                     if (it.linkedKpId == null) {
@@ -49,28 +47,29 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                         } else if (it.longitude > maxLon) {
                             maxLon = it.longitude
                         }
-                        platforms.add(PlatformContainers(it))
+                        when (it.status) {
+                            PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> primary.add(PlatformContainers(it))
+                            else -> secondary.add(PlatformContainers(it))
+                        }
                     } else {
-                        when (ContainerType.fromId(it.containerType)) {
-                            ContainerType.REGULAR -> {
-                                regulars.putLinked(it)
-                            }
-                            ContainerType.BUNKER -> {
-                                bunkers.putLinked(it)
-                            }
-                            ContainerType.BULK1, ContainerType.BULK2 -> {
-                                bunks.putLinked(it)
-                            }
-                            ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> {
-                                specials.putLinked(it)
-                            }
-                            else -> {
-                            }
+                        when (it.toContainerType()) {
+                            ContainerType.REGULAR -> regulars.putLinked(it)
+                            ContainerType.BUNKER -> bunkers.putLinked(it)
+                            ContainerType.BULK1, ContainerType.BULK2 -> bunks.putLinked(it)
+                            ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> specials.putLinked(it)
+                            else -> unknown.putLinked(it)
                         }
                     }
                 }
             }
-            platforms.forEach {
+            primary.forEach {
+                it.addContainer(regulars.get(it.kpId))
+                it.addContainer(bunkers.get(it.kpId))
+                it.addContainer(bunks.get(it.kpId))
+                it.addContainer(specials.get(it.kpId))
+                it.addContainer(unknown.get(it.kpId))
+            }
+            secondary.forEach {
                 it.addContainer(regulars.get(it.kpId))
                 it.addContainer(bunkers.get(it.kpId))
                 it.addContainer(bunks.get(it.kpId))
@@ -80,11 +79,9 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
         }
     }
 
-    private fun SimpleArrayMap<Int, Platform>.putLinked(item: Platform) {
+    private fun SimpleArrayMap<Int, Container>.putLinked(item: Platform) {
         get(item.linkedKpId)?.addContainer(item) ?: run {
-            put(item.linkedKpId, Platform(item.containerType).apply {
-                addContainer(item)
-            })
+            put(item.linkedKpId, item)
         }
     }
 }

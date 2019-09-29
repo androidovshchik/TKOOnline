@@ -63,21 +63,11 @@ class PlatformContainers() : Platform() {
     fun addContainer(platform: Platform?) {
         platform?.let {
             when (it.toContainerType()) {
-                ContainerType.REGULAR -> {
-                    regular.addContainer(it)
-                }
-                ContainerType.BUNKER -> {
-                    bunker.addContainer(it)
-                }
-                ContainerType.BULK1, ContainerType.BULK2 -> {
-                    bunk.addContainer(it)
-                }
-                ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> {
-                    special.addContainer(it)
-                }
-                else -> {
-                    unknown.addContainer(it)
-                }
+                ContainerType.REGULAR -> regular.addContainer(it)
+                ContainerType.BUNKER -> bunker.addContainer(it)
+                ContainerType.BULK1, ContainerType.BULK2 -> bunk.addContainer(it)
+                ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> special.addContainer(it)
+                else -> unknown.addContainer(it)
             }
         }
     }
