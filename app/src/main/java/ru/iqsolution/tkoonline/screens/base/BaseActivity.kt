@@ -64,6 +64,12 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
         waitDialog?.hide()
     }
 
+    override fun showError(message: CharSequence?) {
+        message?.let {
+            toast(it)
+        }
+    }
+
     /**
      * Should be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */

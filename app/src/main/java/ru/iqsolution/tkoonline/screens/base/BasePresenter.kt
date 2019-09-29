@@ -5,6 +5,7 @@ import com.chibatching.kotpref.bulk
 import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.MainApp
 import ru.iqsolution.tkoonline.local.Preferences
 import timber.log.Timber
@@ -48,5 +49,12 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
 
     override val coroutineContext = Dispatchers.Main + baseJob + CoroutineExceptionHandler { _, e ->
         Timber.e(e)
+        viewRef.get()?.showError(
+            if (BuildConfig.DEBUG) {
+                e.toString()
+            } else {
+                e.localizedMessage
+            }
+        )
     }
 }

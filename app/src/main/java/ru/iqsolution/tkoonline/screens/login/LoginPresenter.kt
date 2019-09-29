@@ -11,14 +11,14 @@ import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.models.QrCode
-import ru.iqsolution.tkoonline.remote.ServerApi
+import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import timber.log.Timber
 
 class LoginPresenter(application: Application) : BasePresenter<LoginContract.View>(application),
     LoginContract.Presenter {
 
-    val serverApi: ServerApi by instance()
+    val server: Server by instance()
 
     val gson: Gson by instance()
 
@@ -39,7 +39,7 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
         baseJob.cancelChildren()
         launch {
             try {
-                val responseAuth = serverApi.login(
+                val responseAuth = server.login(
                     qrCode.carId.toString(),
                     qrCode.pass,
                     preferences.lockPassword?.toInt()

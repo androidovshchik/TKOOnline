@@ -26,15 +26,25 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             finish()
         }
         platform_map.loadUrl(URL)
+        platform_not_cleaned.onClick {
+            finish()
+        }
+        platform_cleaned.onClick {
+            finish()
+        }
     }
 
     override fun onPageFinished(url: String) {
         if (url == URL) {
-
+            platform_map.apply {
+                setLocation(preferences.latitude.toDouble(), preferences.longitude.toDouble())
+                moveTo(platform.latitude, platform.longitude)
+            }
         }
     }
 
     override fun onLocationResult(location: Location) {
+        super.onLocationResult(location)
         platform_map.setLocation(location.latitude, location.longitude)
     }
 
