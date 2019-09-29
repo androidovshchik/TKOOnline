@@ -4,8 +4,8 @@ import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
-import ru.iqsolution.tkoonline.models.Container
-import ru.iqsolution.tkoonline.models.PlatformStatus
+import ru.iqsolution.tkoonline.PlatformStatus
+import ru.iqsolution.tkoonline.local.Container
 
 @Entity(
     tableName = "platforms",

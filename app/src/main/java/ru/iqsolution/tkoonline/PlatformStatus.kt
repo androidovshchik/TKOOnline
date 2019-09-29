@@ -1,6 +1,4 @@
-package ru.iqsolution.tkoonline.models
-
-import ru.iqsolution.tkoonline.R
+package ru.iqsolution.tkoonline
 
 @Suppress("unused")
 enum class PlatformStatus(

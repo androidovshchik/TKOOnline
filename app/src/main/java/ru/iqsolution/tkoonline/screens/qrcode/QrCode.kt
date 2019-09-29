@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.models
+package ru.iqsolution.tkoonline.screens.qrcode
 
 import com.google.gson.annotations.SerializedName
 

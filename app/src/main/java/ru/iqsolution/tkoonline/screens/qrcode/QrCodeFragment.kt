@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens.login
+package ru.iqsolution.tkoonline.screens.qrcode
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -16,6 +16,7 @@ import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
+import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import timber.log.Timber
 
 @Suppress("DEPRECATION")

@@ -4,7 +4,7 @@ import androidx.room.TypeConverter
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.PATTERN_TIME
-import ru.iqsolution.tkoonline.models.PlatformStatus
+import ru.iqsolution.tkoonline.PlatformStatus
 
 @Suppress("unused")
 object Converters {

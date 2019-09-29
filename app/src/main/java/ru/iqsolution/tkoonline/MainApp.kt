@@ -29,7 +29,6 @@ import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.local.AppDatabase
 import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
-import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
@@ -140,8 +139,8 @@ class MainApp : Application(), KodeinAware {
 
             override fun onActivityResumed(activity: Activity) {}
 
-            override fun onActivityStarted(activity: Activity) {
-                if (activity !is LockActivity && activity !is LoginActivity) {
+            override fun onActivityStarted(activity: Activity): Unit = activity.run {
+                if (this !is LockActivity && this !is LoginActivity) {
                     if (!preferences.isLoggedIn) {
                         startActivity(intentFor<LockActivity>().apply {
                             if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
@@ -149,7 +148,7 @@ class MainApp : Application(), KodeinAware {
                             } else {
                                 clearTop()
                             }
-                        }.newTask())
+                        })
                     }
                 }
             }
@@ -160,8 +159,8 @@ class MainApp : Application(), KodeinAware {
 
             override fun onActivityStopped(activity: Activity) {}
 
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                if (activity !is LockActivity && activity !is LoginActivity) {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?): Unit = activity.run {
+                if (this !is LockActivity && this !is LoginActivity) {
                     TelemetryService.start(applicationContext)
                 } else {
                     TelemetryService.stop(applicationContext)

@@ -16,9 +16,9 @@ import ru.iqsolution.tkoonline.R
 @Suppress("MemberVisibilityCanBePrivate")
 class MapView : FrameLayout {
 
-    private var latitude: Double? = null
+    private var lat: Double? = null
 
-    private var longitude: Double? = null
+    private var lon: Double? = null
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -53,9 +53,9 @@ class MapView : FrameLayout {
             zoomOut()
         }
         map_location.onClick {
-            latitude?.let { lat ->
-                longitude?.let { lon ->
-                    moveTo(lat, lon)
+            lat?.let { latitude ->
+                lon?.let { longitude ->
+                    moveTo(latitude, longitude)
                 }
             }
         }
@@ -89,8 +89,8 @@ class MapView : FrameLayout {
     }
 
     fun clearLocation() {
-        latitude = null
-        longitude = null
+        lat = null
+        lon = null
         loadUrl("javascript:mapClearLocation()")
     }
 
@@ -99,8 +99,8 @@ class MapView : FrameLayout {
      * @param radius in meters
      */
     fun setLocation(latitude: Double, longitude: Double, radius: Int = 0) {
-        this.latitude = latitude
-        this.longitude = longitude
+        lat = latitude
+        lon = longitude
         loadUrl("javascript:mapSetLocation($latitude, $longitude, $radius)")
     }
 

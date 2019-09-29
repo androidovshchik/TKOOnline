@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.models
+package ru.iqsolution.tkoonline.local
 
 import ru.iqsolution.tkoonline.R
 
