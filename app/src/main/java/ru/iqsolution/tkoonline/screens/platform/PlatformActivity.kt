@@ -7,13 +7,13 @@ import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.EXTRA_PLATFORM
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.models.Platform
+import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.MapView
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 
 class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View, MapView.Listener {
 
-    private lateinit var platform: Platform
+    private lateinit var platform: PlatformContainers
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
