@@ -26,7 +26,7 @@ import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
-import ru.iqsolution.tkoonline.local.AppDatabase
+import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.PlatformStatus
@@ -86,21 +86,21 @@ class MainApp : Application(), KodeinAware {
                 .create(Server::class.java)
         }
 
-        bind<AppDatabase>() with singleton {
-            Room.databaseBuilder(applicationContext, AppDatabase::class.java, "app.db")
+        bind<Database>() with singleton {
+            Room.databaseBuilder(applicationContext, Database::class.java, "app.db")
                 .fallbackToDestructiveMigration()
                 .addCallback(object : RoomDatabase.Callback() {
 
-                    override fun onCreate(db: SupportSQLiteDatabase) {
+                    override fun onCreate(sqliteDatabase: SupportSQLiteDatabase) {
                         // may be put initial data here etc.
-                        PopulateTask().execute(appDb)
+                        PopulateTask().execute(db)
                     }
                 })
                 .build()
         }
     }
 
-    val appDb: AppDatabase by instance()
+    val db: Database by instance()
 
     val preferences: Preferences by instance()
 

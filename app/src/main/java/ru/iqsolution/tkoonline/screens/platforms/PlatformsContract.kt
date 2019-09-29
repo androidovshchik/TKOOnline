@@ -9,6 +9,8 @@ interface PlatformsContract {
     interface Presenter {
 
         fun loadPlatformsTypes()
+
+        fun sortPlatforms(secondary: List<PlatformContainers>)
     }
 
     interface View : IBaseView {
@@ -17,8 +19,8 @@ interface PlatformsContract {
 
         fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>)
 
-        fun updateMapMarkers(primary: String, secondary: String)
-
         fun changeMapPosition(latitude: Double, longitude: Double)
+
+        fun updateMapMarkers(primary: String, secondary: String)
     }
 }

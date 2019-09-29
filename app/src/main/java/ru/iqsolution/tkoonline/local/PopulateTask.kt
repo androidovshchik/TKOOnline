@@ -2,9 +2,9 @@ package ru.iqsolution.tkoonline.local
 
 import android.os.AsyncTask
 
-class PopulateTask : AsyncTask<AppDatabase, Void, Void>() {
+class PopulateTask : AsyncTask<Database, Void, Void>() {
 
-    override fun doInBackground(vararg appDb: AppDatabase): Void? {
+    override fun doInBackground(vararg db: Database): Void? {
         return null
     }
 }

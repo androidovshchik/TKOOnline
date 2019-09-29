@@ -22,7 +22,7 @@ import ru.iqsolution.tkoonline.local.entities.PhotoEvent
     version = 3
 )
 @TypeConverters(Converters::class)
-abstract class AppDatabase : RoomDatabase() {
+abstract class Database : RoomDatabase() {
 
     abstract fun tokenDao(): TokenDao
 

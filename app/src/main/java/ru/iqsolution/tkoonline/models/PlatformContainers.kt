@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * Special class for non-linked platforms
- * NOTICE the subcontainers include the original [containerVolume] and [containerCount] values
+ * NOTICE the subcontainers also include the primary [containerVolume] and [containerCount] values
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class PlatformContainers() : Platform() {

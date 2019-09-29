@@ -4,13 +4,13 @@ import android.app.Application
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.coroutineScope
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.local.AppDatabase
+import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.services.BaseWorker
 
 class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, params) {
 
-    val appDb: AppDatabase by instance()
+    val db: Database by instance()
 
     val fileManager: FileManager by instance()
 

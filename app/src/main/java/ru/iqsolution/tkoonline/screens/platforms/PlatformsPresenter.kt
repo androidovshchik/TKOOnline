@@ -5,7 +5,9 @@ import androidx.collection.SimpleArrayMap
 import com.google.gson.Gson
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.models.*
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
@@ -13,16 +15,18 @@ import ru.iqsolution.tkoonline.screens.base.BasePresenter
 class PlatformsPresenter(application: Application) : BasePresenter<PlatformsContract.View>(application),
     PlatformsContract.Presenter {
 
-    val serverApi: Server by instance()
+    val server: Server by instance()
 
     val gson: Gson by instance()
+
+    val db: Database by instance()
 
     override fun loadPlatformsTypes() {
         baseJob.cancelChildren()
         launch {
-            val responseTypes = serverApi.getPhotoTypes(preferences.authHeader)
+            val responseTypes = server.getPhotoTypes(preferences.authHeader)
             viewRef.get()?.onReceivedTypes(responseTypes.data)
-            val responsePlatforms = serverApi.getPlatforms(preferences.authHeader, preferences.serverDay)
+            val responsePlatforms = server.getPlatforms(preferences.authHeader, preferences.serverDay)
             var minLat = Double.MAX_VALUE
             var maxLat = Double.MIN_VALUE
             var minLon = Double.MAX_VALUE
@@ -84,6 +88,14 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                 }
             }
             viewRef.get()?.onReceivedPlatforms(primary, secondary)
+        }
+    }
+
+    override fun sortPlatforms(secondary: List<PlatformContainers>) {
+        launch {
+            withContext() {
+
+            }
         }
     }
 
