@@ -30,14 +30,21 @@
         android:elevation="6dp"
         tools:elevation="0dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/platforms_list"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/platforms_refresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/platforms_map"
-        android:layout_above="@+id/platforms_buttons"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_platform"/>
+        android:layout_above="@+id/platforms_buttons">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/platforms_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_platform"/>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <View
         android:layout_width="match_parent"

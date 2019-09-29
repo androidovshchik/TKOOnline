@@ -53,12 +53,12 @@ class SyncManager(listener: SyncListener) {
 
         override fun onAvailable(network: Network) {
             Timber.d("Network on available")
-            reference.get()?.onLocationAvailability(true)
+            reference.get()?.onNetworkChanged(true)
         }
 
         override fun onLost(network: Network) {
             Timber.d("Network on lost")
-            reference.get()?.onLocationAvailability(false)
+            reference.get()?.onNetworkChanged(false)
         }
     }
 

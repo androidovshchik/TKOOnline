@@ -9,6 +9,7 @@ import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.status_bar.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -57,9 +58,9 @@ class StatusFragment : BaseFragment(), SyncListener {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         status_number.text = preferences.vehicleNumber ?: ""
-        updateTime()
-        updateLocation(false)
-        updateConnection(R.drawable.ic_swap_vert)
+        onTimeChanged()
+        onLocationChanged(false)
+        onNetworkChanged(false)
         status_uploads.setImageResource(R.drawable.ic_cloud_upload)
         baseActivity?.checkLocation()
     }
@@ -72,7 +73,7 @@ class StatusFragment : BaseFragment(), SyncListener {
     /**
      * Updates every minute
      */
-    override fun updateTime() {
+    override fun onTimeChanged() {
         if (view == null) {
             return
         }
@@ -83,15 +84,15 @@ class StatusFragment : BaseFragment(), SyncListener {
         }
     }
 
-    override fun updateLocation(available: Boolean) {
+    private fun onLocationChanged(available: Boolean) {
         if (view == null) {
             return
         }
         status_location.setImageResource(if (available) R.drawable.ic_gps_fixed_green else R.drawable.ic_gps_fixed)
     }
 
-    override fun updateConnection(icon: Int) {
-        connectionIcon = icon
+    override fun onNetworkChanged(available: Boolean) {
+        connectionIcon = if (available) R.drawable.ic_swap_vert_green else R.drawable.ic_swap_vert
         if (Looper.myLooper() == Looper.getMainLooper()) {
             connectionRunnable.run()
         } else {
@@ -100,7 +101,7 @@ class StatusFragment : BaseFragment(), SyncListener {
     }
 
     @SuppressLint("SetTextI18n")
-    override fun updateBattery(status: Int, level: Int) {
+    override fun onBatteryChanged(status: Int, level: Int) {
         if (view == null) {
             return
         }
@@ -135,11 +136,19 @@ class StatusFragment : BaseFragment(), SyncListener {
         }
     }
 
+    /**
+     * Will be called only from [ru.iqsolution.tkoonline.screens.base.BaseActivity]
+     */
+    override fun onLocationState(state: LocationSettingsStates?) {
+        onLocationChanged(state?.isLocationUsable == true)
+    }
+
     override fun onLocationResult(location: Location) {
         baseActivity?.onLocationResult(location)
     }
 
     override fun onLocationAvailability(available: Boolean) {
+        onLocationChanged(available)
         baseActivity?.onLocationAvailability(available)
     }
 

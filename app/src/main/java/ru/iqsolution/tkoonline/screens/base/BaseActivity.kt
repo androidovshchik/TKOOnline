@@ -27,7 +27,7 @@ import timber.log.Timber
 
 @SuppressLint("Registered")
 @Suppress("MemberVisibilityCanBePrivate")
-open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationListener, LocationHandler {
+open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationListener {
 
     protected lateinit var presenter: T
 
@@ -43,10 +43,25 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
         fileManager = FileManager(applicationContext)
     }
 
+    override fun showLoading() {
+        if (waitDialog == null) {
+            waitDialog = WaitDialog(this)
+        }
+        waitDialog?.let {
+            if (!it.isShowing) {
+                it.show()
+            }
+        }
+    }
+
+    override fun hideLoading() {
+        waitDialog?.hide()
+    }
+
     /**
      * Should be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */
-    override fun checkLocation() {
+    fun checkLocation() {
         LocationServices.getSettingsClient(this)
             .checkLocationSettings(
                 LocationSettingsRequest.Builder()
@@ -80,7 +95,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
     override fun onLocationState(state: LocationSettingsStates?) {
         fragmentManager.findFragmentById(R.id.status_bar_fragment)?.let {
             if (it is StatusFragment) {
-                it.updateLocation(state?.isLocationUsable ?: false)
+                it.onLocationState(state)
             }
         }
     }
@@ -94,21 +109,6 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
      * Will be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */
     override fun onLocationResult(location: Location) {}
-
-    override fun showLoading() {
-        if (waitDialog == null) {
-            waitDialog = WaitDialog(this)
-        }
-        waitDialog?.let {
-            if (!it.isShowing) {
-                it.show()
-            }
-        }
-    }
-
-    override fun hideLoading() {
-        waitDialog?.hide()
-    }
 
     protected fun takePhoto() {
         if (photoPath != null) {
