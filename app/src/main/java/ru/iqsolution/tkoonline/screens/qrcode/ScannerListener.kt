@@ -1,6 +1,6 @@
 package ru.iqsolution.tkoonline.screens.qrcode
 
-interface QrCodeListener {
+interface ScannerListener {
 
     fun onQrCode(value: String)
 }

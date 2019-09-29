@@ -12,7 +12,7 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
-class QrCodeManager(context: Context, listener: QrCodeListener) {
+class ScannerManager(context: Context, listener: ScannerListener) {
 
     private val reference = WeakReference(listener)
 

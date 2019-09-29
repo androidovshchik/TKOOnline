@@ -11,21 +11,6 @@ interface LoginContract {
 
     interface View : IBaseView {
 
-        /**
-         * Called from [QrCodeFragment]
-         */
-        fun onQrCode(value: String)
-
-        /**
-         * Called from [PasswordDialog]
-         */
-        fun onSuccessPrompt()
-
-        /**
-         * Called from [SettingsDialog]
-         */
-        fun onKioskMode(enter: Boolean)
-
         fun onAuthorized()
     }
 }

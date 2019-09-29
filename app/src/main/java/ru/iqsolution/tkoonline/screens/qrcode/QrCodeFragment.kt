@@ -16,7 +16,7 @@ import ru.iqsolution.tkoonline.screens.base.BaseFragment
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {
 
-    private var qrCodeManager: QrCodeManager? = null
+    private var scannerManager: ScannerManager? = null
 
     private lateinit var cameraView: SurfaceView
 
@@ -30,8 +30,8 @@ class QrCodeFragment : BaseFragment() {
             maxSize = it
         }
         activity?.apply {
-            if (this is QrCodeListener) {
-                qrCodeManager = QrCodeManager(applicationContext, this)
+            if (this is ScannerListener) {
+                scannerManager = ScannerManager(applicationContext, this)
             }
         }
     }
@@ -50,7 +50,7 @@ class QrCodeFragment : BaseFragment() {
                         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
 
                         override fun surfaceDestroyed(holder: SurfaceHolder) {
-                            qrCodeManager?.stop()
+                            scannerManager?.stop()
                         }
                     })
                 }.lparams()
@@ -75,7 +75,7 @@ class QrCodeFragment : BaseFragment() {
             return
         }
         cameraView.apply {
-            qrCodeManager?.start(holder)?.let {
+            scannerManager?.start(holder)?.let {
                 if (maxSize > 0) {
                     // NOTICE supported only the portrait orientation
                     layoutParams = FrameLayout.LayoutParams(maxSize * it.height / it.width, maxSize).apply {
@@ -101,7 +101,7 @@ class QrCodeFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
-        qrCodeManager?.release()
+        scannerManager?.release()
         super.onDestroyView()
     }
 
