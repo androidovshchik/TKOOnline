@@ -11,6 +11,16 @@ interface LoginContract {
 
     interface View : IBaseView {
 
+        /**
+         * Called from [PasswordDialog]
+         */
+        fun onPrompted()
+
+        /**
+         * Called from [SettingsDialog]
+         */
+        fun onKioskMode(enter: Boolean)
+
         fun onAuthorized()
     }
 }
