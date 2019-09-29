@@ -6,9 +6,10 @@ import com.google.gson.Gson
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
 import ru.iqsolution.tkoonline.models.Platform
-import ru.iqsolution.tkoonline.models.PlatformStatus
+import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
@@ -25,13 +26,31 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
             val responseTypes = serverApi.getPhotoTypes(preferences.authHeader)
             viewRef.get()?.onReceivedTypes(responseTypes.data)
             val responsePlatforms = serverApi.getPlatforms(preferences.authHeader, preferences.serverDay)
-            val regulars = SimpleArrayMap<Int, Platform>()
-            val bunkers = SimpleArrayMap<Int, Platform>()
-            val bunks = SimpleArrayMap<Int, Platform>()
-            val specials = SimpleArrayMap<Int, Platform>()
+            var minLat = Double.MAX_VALUE
+            var maxLat = Double.MIN_VALUE
+            var minLon = Double.MAX_VALUE
+            var maxLon = Double.MIN_VALUE
+            val platforms = arrayListOf<PlatformContainers>()
+            val regulars = SimpleArrayMap<Int, Container>()
+            val bunkers = SimpleArrayMap<Int, Container>()
+            val bunks = SimpleArrayMap<Int, Container>()
+            val specials = SimpleArrayMap<Int, Container>()
+            val unknown = SimpleArrayMap<Int, Container>()
             responsePlatforms.data.forEach {
                 if (it.isValid) {
-                    if (it.linkedKpId != null) {
+                    if (it.linkedKpId == null) {
+                        if (it.latitude < minLat) {
+                            minLat = it.latitude
+                        } else if (it.latitude > maxLat) {
+                            maxLat = it.latitude
+                        }
+                        if (it.longitude < minLon) {
+                            minLon = it.longitude
+                        } else if (it.longitude > maxLon) {
+                            maxLon = it.longitude
+                        }
+                        platforms.add(PlatformContainers(it))
+                    } else {
                         when (ContainerType.fromId(it.containerType)) {
                             ContainerType.REGULAR -> {
                                 regulars.putLinked(it)
@@ -51,51 +70,23 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                     }
                 }
             }
-            var minLat = Double.MAX_VALUE
-            var maxLat = Double.MIN_VALUE
-            var minLon = Double.MAX_VALUE
-            var maxLon = Double.MIN_VALUE
-            responsePlatforms.data.forEach {
-                if (it.isValid) {
-                    if (it.linkedKpId == null) {
-                        // measuring center
-                        if (it.latitude < minLat) {
-                            minLat = it.latitude
-                        } else if (it.latitude > maxLat) {
-                            maxLat = it.latitude
-                        }
-                        if (it.longitude < minLon) {
-                            minLon = it.longitude
-                        } else if (it.longitude > maxLon) {
-                            maxLon = it.longitude
-                        }
-                        // platform_info setup
-                        regulars.get(it.kpId)?.let { container ->
-                            it.containerRegular.addFrom(container)
-                        }
-                        bunkers.get(it.kpId)?.let { container ->
-                            it.containerBunker.addFrom(container)
-                        }
-                        bunks.get(it.kpId)?.let { container ->
-                            it.containerWithout.addFrom(container)
-                        }
-                        specials.get(it.kpId)?.let { container ->
-                            it.containerSpecial.addFrom(container)
-                        }
-                        when (it.status) {
-                            PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> containers.addPrimaryItem(it)
-                            else -> containers.addSecondaryItem(it)
-                        }
-                    }
+            platforms.forEach {
+                regulars.get(it.kpId)?.let { container ->
+                    it.regular.addContainer(container)
+                }
+                bunkers.get(it.kpId)?.let { container ->
+                    it.bunker.addContainer(container)
+                }
+                bunks.get(it.kpId)?.let { container ->
+                    it.bunk.addContainer(container)
+                }
+                specials.get(it.kpId)?.let { container ->
+                    it.special.addContainer(container)
+                }
+                unknown.get(it.kpId)?.let { container ->
+                    it.unknown.addContainer(container)
                 }
             }
-            viewRef.get()?.onReceivedContainers(
-                containers.getPrimaryItems(), containers.getSecondaryItems(),
-                if (responsePlatforms.data.isNotEmpty()) Point(
-                    (maxLat + minLat) / 2,
-                    (maxLon + minLon) / 2
-                ) else null
-            )
         }
     }
 

@@ -33,6 +33,9 @@ open class Platform : Container {
     @SerializedName("reg_operator_phone")
     var regOperatorPhone: String? = null
 
+    /**
+     * This value may be unknown for [ContainerType] but it's important to present the original value
+     */
     @SerializedName("container_type")
     override lateinit var containerType: String
 
@@ -59,4 +62,6 @@ open class Platform : Container {
 
     val isValid: Boolean
         get() = BuildConfig.DEBUG || status != PlatformStatus.NO_TASK
+
+    fun toContainerType() = ContainerType.fromId(containerType)
 }

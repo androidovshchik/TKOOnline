@@ -53,4 +53,8 @@ class CleanEvent : Container, SendEvent {
 
     @ColumnInfo(name = "ce_sent")
     override var sent = false
+
+    override fun addContainer(container: Container?) {
+        throw IllegalAccessException("Should not be called")
+    }
 }
