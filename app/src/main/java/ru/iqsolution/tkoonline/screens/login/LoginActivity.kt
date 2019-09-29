@@ -35,7 +35,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             login_shadow.topPadding = it
         }
         login_menu.onClick {
-            dialogManager.open()
+            dialogManager.open(preferences)
         }
     }
 

@@ -1,9 +1,14 @@
+@file:Suppress("DEPRECATION")
+
 package ru.iqsolution.tkoonline.screens.login
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.FragmentManager
+import ru.iqsolution.tkoonline.local.Preferences
 
-@Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
-class DialogManager(activity: Activity) {
+@Suppress("MemberVisibilityCanBePrivate")
+class DialogManager(activity: Activity) : LoginContract.View {
 
     private val fragmentManager = activity.fragmentManager
 
@@ -13,29 +18,31 @@ class DialogManager(activity: Activity) {
 
     private var hasPrompted = false
 
-    fun sssfsf() {
-        fragmentManager.beginTransaction().apply {
-            fragmentManager.findFragmentByTag(settingsDialog.javaClass.simpleName)?.let {
-                remove(it)
-            }
-            fragmentManager.findFragmentByTag(passwordDialog.javaClass.simpleName)?.let {
-                remove(it)
-            }
-            if (hasPrompted) {
-                settingsDialog.show(this, settingsDialog.javaClass.simpleName)
-            } else {
-                passwordDialog.show(this, passwordDialog.javaClass.simpleName)
-            }
+    fun open(preferences: Preferences) {
+
+    }
+
+    override fun onPrompted() {
+
+    }
+
+    override fun onKioskMode(enter: Boolean) {
+        if (enter) {
+            hasPrompted = false
         }
     }
 
-    fun onSuccessPrompt() {
-        hasPrompted = true
-        fragmentManager.beginTransaction().apply {
-            fragmentManager.findFragmentByTag(passwordDialog.javaClass.simpleName)?.let {
-                remove(it)
+    override fun onAuthorized() {}
+
+    @SuppressLint("CommitTransaction")
+    private inline fun transact(commit: Boolean = false, action: FragmentManager.() -> Unit) {
+        fragmentManager.apply {
+            beginTransaction().apply {
+                action()
+                if (commit) {
+                    commit()
+                }
             }
-            settingsDialog.show(this, settingsDialog.javaClass.simpleName)
         }
     }
 }
