@@ -32,9 +32,12 @@ class CleanEvent : Container, SendEvent {
     @ColumnInfo(name = "ce_kp_id")
     var kpId = 0
 
+    /**
+     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     */
     @ColumnInfo(name = "ce_when_time")
     @SerializedName("time")
-    override lateinit var whenTime: DateTime
+    lateinit var whenTime: DateTime
 
     @ColumnInfo(name = "ce_container_type")
     @SerializedName("container_type_fact")

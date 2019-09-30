@@ -42,8 +42,11 @@ class PhotoEvent : SendEvent {
     @ColumnInfo(name = "pe_longitude")
     var longitude = 0.0
 
+    /**
+     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     */
     @ColumnInfo(name = "pe_when_time")
-    override lateinit var whenTime: DateTime
+    lateinit var whenTime: DateTime
 
     @ColumnInfo(name = "pe_sent")
     override var sent = false
