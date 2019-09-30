@@ -30,7 +30,7 @@ class QrCodeFragment : BaseFragment() {
             maxSize = it
         }
         activity?.apply {
-            if (this is ScannerListener) {
+            if (this is ScannerListener && !this.isFinishing) {
                 scannerManager = ScannerManager(applicationContext, this)
             }
         }

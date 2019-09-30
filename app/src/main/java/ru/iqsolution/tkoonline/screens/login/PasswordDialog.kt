@@ -34,30 +34,29 @@ class PasswordDialog : BaseDialogFragment() {
             }
         }
         if (System.currentTimeMillis() - time < WAIT_TIME) {
-            disableInput()
+            retryLater()
         }
         dialog_accept.onClick {
             val input = dialog_password.text.toString()
             dialog_error.text = ""
             when {
-                System.currentTimeMillis() - time < WAIT_TIME -> disableInput()
+                System.currentTimeMillis() - time < WAIT_TIME -> retryLater()
                 input.length == 4 -> when (password) {
                     null -> {
                         preferences.lockPassword = input
-                        onPrompted()
+                        onPrompted(true)
                     }
-                    input -> onPrompted()
+                    input -> onPrompted(false)
                     else -> {
                         attemptsCount++
                         if (attemptsCount < MAX_ATTEMPTS) {
                             val count = MAX_ATTEMPTS - attemptsCount
-                            dialog_password.isEnabled = true
                             dialog_error.text = resources.getQuantityString(R.plurals.attempts, count, count)
                         } else {
                             attemptsCount = 0
                             time = System.currentTimeMillis()
                             preferences.blockTime = time
-                            disableInput()
+                            retryLater()
                         }
                     }
                 }
@@ -69,20 +68,20 @@ class PasswordDialog : BaseDialogFragment() {
         }
     }
 
-    private fun disableInput() {
-        dialog_password.apply {
-            setText("")
-            isEnabled = false
-        }
+    private fun retryLater() {
+        dialog_password.setText("")
         dialog_error.text = "Попробуйте позже"
     }
 
-    private fun onPrompted() {
+    private fun onPrompted(setup: Boolean) {
         dialog_password.setText("")
         activity?.let {
             if (it is DialogCallback && !it.isFinishing) {
-                it.enterKioskMode()
-                dismiss()
+                if (setup) {
+                    it.enterKioskMode()
+                } else {
+                    it.openSettingsDialog()
+                }
             }
         }
     }

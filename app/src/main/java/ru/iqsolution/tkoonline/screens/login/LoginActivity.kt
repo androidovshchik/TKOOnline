@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.iqsolution.tkoonline.screens.login
 
 import android.annotation.SuppressLint
@@ -20,7 +22,6 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 import ru.iqsolution.tkoonline.screens.qrcode.ScannerListener
 
-@Suppress("DEPRECATION")
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, DialogCallback {
 
     private val settingsDialog = SettingsDialog()
@@ -63,11 +64,13 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
                     return
                 }
             }
+            hasPrompted = true
             settingsDialog.show(this, settingsDialog.javaClass.simpleName)
         }
     }
 
     override fun openSettingsDialog() {
+        hasPrompted = true
         transact {
             remove(passwordDialog)
             remove(settingsDialog)
@@ -84,6 +87,10 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
 
     override fun enterKioskMode() {
         hasPrompted = false
+        transact {
+            remove(passwordDialog)
+            commit()
+        }
         startActivityNoop<LockActivity>()
     }
 
