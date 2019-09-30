@@ -72,6 +72,7 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                 withContext(Dispatchers.IO) {
                     val photoEvents = db.photoDao().getEvents()
                     val cleanEvents = db.cleanDao().getEvents()
+
                 }
                 primary.forEach {
                     it.apply {

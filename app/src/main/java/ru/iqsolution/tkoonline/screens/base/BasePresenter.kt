@@ -37,8 +37,7 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
             vehicleNumber = null
             queName = null
             carId = 0
-            latitude = Float.MAX_VALUE
-            longitude = Float.MAX_VALUE
+            lastTime = null
         }
     }
 

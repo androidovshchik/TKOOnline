@@ -8,20 +8,24 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_platforms.*
 import org.jetbrains.anko.sdk23.listeners.onClick
-import ru.iqsolution.tkoonline.EXTRA_ID
+import ru.iqsolution.tkoonline.EXTRA_PLATFORM
+import ru.iqsolution.tkoonline.EXTRA_TYPES
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
-import ru.iqsolution.tkoonline.local.entities.Platform
-import ru.iqsolution.tkoonline.local.entities.PlatformContainersPhotoClean
+import ru.iqsolution.tkoonline.models.PhotoType
+import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 import ru.iqsolution.tkoonline.services.TelemetryService
 
-class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View, BaseAdapter.Listener<Platform> {
+class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View,
+    BaseAdapter.Listener<PlatformContainers> {
 
     private lateinit var platformsAdapter: PlatformsAdapter
+
+    private val photoTypes = arrayListOf<PhotoType>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,9 +33,16 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         presenter = PlatformsPresenter(application).also {
             it.attachView(this)
         }
-        platforms_map.loadUrl("file:///android_asset/platforms.html")
+        platforms_map.apply {
+            loadUrl(URL)
+            preferences.apply {
+                lastTime?.let {
+                    setLocation(lastLat.toDouble(), lastLon.toDouble())
+                }
+            }
+        }
         platforms_refresh.setOnRefreshListener {
-            presenter.loadPlatforms()
+            presenter.loadPlatformsTypes(true)
         }
         platforms_list.apply {
             addItemDecoration(DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL).apply {
@@ -45,9 +56,16 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             adapter = platformsAdapter
         }
         platforms_complete.onClick {
-            logout()
+            platforms_map.clearState(true)
+            TelemetryService.stop(applicationContext)
+            presenter.apply {
+                clearAuthorization()
+                detachView()
+            }
+            startActivityNoop<LoginActivity>()
+            finish()
         }
-        if (presenter.isAllowedPhotoKp) {
+        if (preferences.allowPhotoRefKp) {
             platforms_placeholder.visibility = View.VISIBLE
             platforms_photo.apply {
                 visibility = View.VISIBLE
@@ -58,20 +76,29 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
     }
 
-    override fun updateListMarkers(
-        primary: List<PlatformContainersPhotoClean>,
-        secondary: List<PlatformContainersPhotoClean>
-    ) {
+    override fun onReceivedTypes(data: List<PhotoType>) {
+        photoTypes.apply {
+            clear()
+            addAll(data)
+        }
+    }
+
+    override fun changeMapPosition(latitude: Double, longitude: Double) {
+        platforms_map.moveTo(latitude, longitude)
+    }
+
+    override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
         platformsAdapter.apply {
-            primaryItems.clear()
+            primaryItems.apply {
+                clear()
+                addAll()
+            }
             items.clear()
             primary.forEach {
                 primaryItems.add(it)
-                addMark(it)
             }
             secondary.forEach {
                 items.add(it)
-                addMark(it)
             }
             notifyDataSetChanged()
         }
@@ -85,28 +112,28 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platforms_map.setMarkers(secondary, primary)
     }
 
-    override fun changeMapPosition(latitude: Double, longitude: Double) {
-        platforms_map.moveTo(latitude, longitude)
-    }
-
     override fun onLocationResult(location: Location) {
         platforms_map.setLocation(location.latitude, location.longitude)
+        // todo sort primary
     }
 
-    override fun onAdapterEvent(position: Int, item: Platform, param: Any?) {
+    override fun onAdapterEvent(position: Int, item: PlatformContainers, param: Any?) {
         startActivityNoop<PlatformActivity>(
             null,
-            EXTRA_ID to item.kpId
+            EXTRA_TYPES to photoTypes,
+            EXTRA_PLATFORM to presenter.formatPlatform(item)
         )
     }
 
-    private fun logout() {
-        platforms_map.clearState(true)
-        TelemetryService.stop(applicationContext)
-        presenter.clearAuthorization()
-        startActivityNoop<LoginActivity>()
-        finish()
+    override fun onBackPressed() {}
+
+    override fun onDestroy() {
+        platforms_map.release()
+        super.onDestroy()
     }
 
-    override fun onBackPressed() {}
+    companion object {
+
+        private const val URL = "file:///android_asset/platforms.html"
+    }
 }
