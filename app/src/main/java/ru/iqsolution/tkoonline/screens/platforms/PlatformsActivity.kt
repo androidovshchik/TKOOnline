@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_platforms.*
 import org.jetbrains.anko.sdk23.listeners.onClick
+import ru.iqsolution.tkoonline.EXTRA_ID
 import ru.iqsolution.tkoonline.EXTRA_PLATFORM
 import ru.iqsolution.tkoonline.EXTRA_TYPES
 import ru.iqsolution.tkoonline.R
@@ -33,11 +34,12 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platforms)
-        presenter = PlatformsPresenter(application).also {
-            it.attachView(this)
-        }
         platformsAdapter = PlatformsAdapter(applicationContext).apply {
             setAdapterListener(this@PlatformsActivity)
+        }
+        presenter = PlatformsPresenter(application).also {
+            it.attachView(this)
+            it.loadPlatformsTypes(false)
         }
         platforms_map.apply {
             loadUrl(URL)
@@ -144,7 +146,18 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_PLATFORM) {
-
+            if (resultCode == RESULT_OK) {
+                platformsAdapter.apply {
+                    primaryItems.apply {
+                        val id = data?.getIntExtra(EXTRA_ID, -1) ?: -1
+                        firstOrNull { it.kpId == id }?.let {
+                            remove(it)
+                            add(0, it)
+                            notifyDataSetChanged()
+                        }
+                    }
+                }
+            }
         }
     }
 

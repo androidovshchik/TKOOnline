@@ -142,10 +142,8 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
         when (requestCode) {
             REQUEST_LOCATION -> {
                 if (resultCode == RESULT_OK) {
-                    // All required changes were successfully made
                     onLocationState(LocationSettingsStates.fromIntent(data))
                 } else {
-                    // The user was asked to change settings, but chose not to
                     checkLocation()
                 }
             }
