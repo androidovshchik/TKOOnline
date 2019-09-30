@@ -33,16 +33,15 @@ class PasswordDialog : BaseDialogFragment() {
                 inputType = inputType or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             }
         }
-        if (shouldBlock(time)) {
+        if (System.currentTimeMillis() - time < WAIT_TIME) {
             disableInput()
         }
         dialog_accept.onClick {
-            dialog_error.text = ""
             val input = dialog_password.text.toString()
-            if (shouldBlock(time)) {
-                disableInput()
-            } else if (checkPassword(input)) {
-                when (password) {
+            dialog_error.text = ""
+            when {
+                System.currentTimeMillis() - time < WAIT_TIME -> disableInput()
+                input.length == 4 -> when (password) {
                     null -> {
                         preferences.lockPassword = input
                         onPrompted()
@@ -62,22 +61,13 @@ class PasswordDialog : BaseDialogFragment() {
                         }
                     }
                 }
+                else -> dialog_error.text = "Введите 4 цифры"
             }
         }
         dialog_close.onClick {
             dismiss()
         }
     }
-
-    private fun checkPassword(input: CharSequence): Boolean {
-        if (input.length != 4) {
-            dialog_error.text = "Введите 4 цифры"
-            return false
-        }
-        return true
-    }
-
-    private fun shouldBlock(time: Long) = System.currentTimeMillis() - time < WAIT_TIME
 
     private fun disableInput() {
         dialog_password.apply {
@@ -90,8 +80,9 @@ class PasswordDialog : BaseDialogFragment() {
     private fun onPrompted() {
         dialog_password.setText("")
         activity?.let {
-            if (it is LoginActivity) {
-                it.onSuccessPrompt()
+            if (it is DialogCallback && !it.isFinishing) {
+                it.enterKioskMode()
+                dismiss()
             }
         }
     }

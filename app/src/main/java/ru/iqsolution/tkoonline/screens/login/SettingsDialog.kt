@@ -24,17 +24,10 @@ class SettingsDialog : BaseDialogFragment() {
         val preferences = Preferences(context).apply {
             dialog_main_server.setText(mainServerAddress)
             dialog_telemetry_server.setText(mainTelemetryAddress)
-            setLocked(enableLock)
+            setLocked(enableLock, null)
         }
         dialog_unlock.onClick {
-            val enable = !isEnabledLock
-            setLocked(enable)
-            preferences.enableLock = enable
-            activity?.let {
-                if (it is LoginActivity) {
-                    it.onKioskMode(enable)
-                }
-            }
+            setLocked(!isEnabledLock, preferences)
         }
         dialog_save.onClick {
             preferences.bulk {
@@ -48,8 +41,20 @@ class SettingsDialog : BaseDialogFragment() {
         }
     }
 
-    private fun setLocked(enable: Boolean) {
+    private fun setLocked(enable: Boolean, preferences: Preferences?) {
         isEnabledLock = enable
         dialog_unlock.text = if (enable) "Разблокировать" else "Заблокировать"
+        preferences?.apply {
+            enableLock = enable
+            activity?.let {
+                if (it is DialogCallback && !it.isFinishing) {
+                    if (enable) {
+                        it.setupPassword()
+                    } else {
+                        it.exitKioskMode()
+                    }
+                }
+            }
+        }
     }
 }

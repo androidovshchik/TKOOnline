@@ -4,12 +4,11 @@ package ru.iqsolution.tkoonline.screens.login
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.DialogFragment
 import android.app.FragmentTransaction
 import ru.iqsolution.tkoonline.local.Preferences
 
 @Suppress("MemberVisibilityCanBePrivate")
-class DialogManager(activity: Activity) : DialogListener {
+class DialogManager(activity: Activity) : DialogCallback {
 
     private val fragmentManager = activity.fragmentManager
 
@@ -19,42 +18,35 @@ class DialogManager(activity: Activity) : DialogListener {
 
     private var hasPrompted = false
 
-    fun open(preferences: Preferences) {
+    override fun openSettings(preferences: Preferences) {
         transact {
-            remove<SettingsDialog>()
-            remove<PasswordDialog>()
+            remove(passwordDialog)
+            remove(settingsDialog)
             if (preferences.enableLock) {
                 if (!hasPrompted) {
-                    passwordDialog.show(this)
+                    passwordDialog.show(this, passwordDialog.javaClass.simpleName)
                     return
                 }
             }
-            settingsDialog.show(this)
+            settingsDialog.show(this, settingsDialog.javaClass.simpleName)
         }
     }
 
-    override fun onPrompted() {
-
-    }
-
-    override fun onKioskMode(enter: Boolean) {
-        if (enter) {
-            hasPrompted = false
+    override fun setupPassword() {
+        transact {
+            remove(passwordDialog)
+            passwordDialog.show(this, passwordDialog.javaClass.simpleName)
         }
     }
+
+    override fun enterKioskMode() {
+        hasPrompted = false
+    }
+
+    override fun exitKioskMode() {}
 
     @SuppressLint("CommitTransaction")
     private inline fun transact(action: FragmentTransaction.() -> Unit) {
         fragmentManager.beginTransaction().apply(action)
-    }
-
-    private inline fun <reified T> FragmentTransaction.remove() {
-        fragmentManager.findFragmentByTag(T::class.java.simpleName)?.let {
-            remove(it)
-        }
-    }
-
-    private fun DialogFragment.show(transaction: FragmentTransaction) {
-        show(transaction, dialog.javaClass.simpleName)
     }
 }
