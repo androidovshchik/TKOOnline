@@ -164,12 +164,14 @@ class MapView : FrameLayout {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             Timber.d("onPageStarted: $url")
             isReady = false
+            map_tools.visibility = GONE
             runCall(null)
         }
 
         override fun onPageFinished(view: WebView, url: String) {
             Timber.d("onPageFinished: $url")
             isReady = true
+            map_tools.visibility = VISIBLE
             runCall(null)
         }
     }

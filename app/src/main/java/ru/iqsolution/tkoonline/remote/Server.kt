@@ -4,6 +4,7 @@ package ru.iqsolution.tkoonline.remote
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Call
 import retrofit2.http.*
 import ru.iqsolution.tkoonline.remote.api.*
 
@@ -36,11 +37,11 @@ interface Server {
 
     @Headers("Accept: application/json")
     @POST("container-sites/{kp_id}/events")
-    suspend fun sendEvent(
+    fun sendClean(
         @Header("Authorization") token: String,
         @Path("kp_id") kpId: Int,
         @Body body: RequestClean
-    ): ResponseClean
+    ): Call<ResponseClean>
 
     /**
      * @param time [ru.iqsolution.tkoonline.PATTERN_DATETIME]
@@ -48,7 +49,7 @@ interface Server {
     @Multipart
     @Headers("Accept: application/json")
     @POST("container-sites/photos")
-    suspend fun sendPhoto(
+    fun sendPhoto(
         @Header("Authorization") token: String,
         @Part("kpId") kpId: RequestBody,
         @Part("type") type: RequestBody,
@@ -56,7 +57,7 @@ interface Server {
         @Part("latitude") latitude: RequestBody,
         @Part("longitude") longitude: RequestBody,
         @Part photo: MultipartBody.Part
-    ): ResponsePhoto
+    ): Call<ResponsePhoto>
 
     @POST("auth/close")
     suspend fun logout(
