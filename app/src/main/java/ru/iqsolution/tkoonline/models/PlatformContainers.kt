@@ -30,6 +30,11 @@ class PlatformContainers() : Platform() {
     @SerializedName("_e")
     var errors: String? = null
 
+    /**
+     * It's needed for sorting secondary items in list
+     */
+    var timestamp = 0L
+
     constructor(platform: Platform) : this() {
         kpId = platform.kpId
         linkedKpId = platform.kpId

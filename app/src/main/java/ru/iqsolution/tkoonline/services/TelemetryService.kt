@@ -13,6 +13,7 @@ import com.google.android.gms.location.LocationSettingsStates
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.stopService
+import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.isRunning
@@ -71,8 +72,9 @@ class TelemetryService : BaseService(), LocationListener {
 
     override fun onLocationResult(location: Location) {
         preferences.bulk {
-            latitude = location.latitude.toFloat()
-            longitude = location.longitude.toFloat()
+            lastLat = location.latitude.toFloat()
+            lastLon = location.longitude.toFloat()
+            lastTime = DateTime.now().toString(PATTERN_DATETIME)
         }
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(Intent(ACTION_LOCATION).apply {

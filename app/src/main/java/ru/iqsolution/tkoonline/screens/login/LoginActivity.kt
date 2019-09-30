@@ -12,13 +12,14 @@ import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 import ru.iqsolution.tkoonline.screens.qrcode.ScannerListener
 
 @Suppress("DEPRECATION")
-class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener {
+class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, DialogCallback {
 
     private lateinit var dialogManager: DialogManager
 
@@ -35,7 +36,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             login_shadow.topPadding = it
         }
         login_menu.onClick {
-            dialogManager.open(preferences)
+            openSettings(preferences)
         }
     }
 
@@ -47,12 +48,21 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
         }
     }
 
-    override fun onPrompted() {
-        dialogManager.onPrompted()
+    override fun openSettings(preferences: Preferences) {
+        dialogManager.openSettings(preferences)
     }
 
-    override fun onKioskMode(enter: Boolean) {
-        dialogManager.onKioskMode(enter)
+    override fun setupPassword() {
+        dialogManager.setupPassword()
+    }
+
+    override fun enterKioskMode() {
+        dialogManager.enterKioskMode()
+        startActivityNoop<LockActivity>()
+    }
+
+    override fun exitKioskMode() {
+        dialogManager.exitKioskMode()
         startActivityNoop<LockActivity>()
     }
 
