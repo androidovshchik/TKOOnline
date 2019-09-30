@@ -78,29 +78,29 @@ class MapView : FrameLayout {
     }
 
     private fun zoomIn(duration: Int = 500) {
-        runCommand("mapZoomIn1($duration)")
+        runCall("mapZoomIn_1($duration)")
     }
 
     private fun zoomOut(duration: Int = 500) {
-        runCommand("mapZoomOut1($duration)")
+        runCall("mapZoomOut_1($duration)")
     }
 
     fun moveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
-        runCommand("mapMoveTo2($latitude, $longitude, $zoom, $duration)")
+        runCall("mapMoveTo_2($latitude, $longitude, $zoom, $duration)")
     }
 
     fun clearMarkers() {
-        runCommand("mapClearMarkers3()")
+        runCall("mapClearMarkers_3()")
     }
 
     fun setMarkers(first: String, second: String = "[]") {
-        runCommand("mapSetMarkers3($first, $second)")
+        runCall("mapSetMarkers_3($first, $second)")
     }
 
     fun clearLocation() {
         lat = null
         lon = null
-        runCommand("mapClearLocation4()")
+        runCall("mapClearLocation_4()")
     }
 
     /**
@@ -110,25 +110,31 @@ class MapView : FrameLayout {
     fun setLocation(latitude: Double, longitude: Double, radius: Int = 0) {
         lat = latitude
         lon = longitude
-        runCommand("mapSetLocation4($latitude, $longitude, $radius)")
+        runCall("mapSetLocation_4($latitude, $longitude, $radius)")
     }
 
     fun clearState(all: Boolean = false) {
-        runCommand("mapClearState5($all)")
+        runCall("mapClearState_5($all)")
     }
 
     fun saveState() {
-        runCommand("mapSaveState5()")
+        runCall("mapSaveState_5()")
     }
 
     @Synchronized
-    private fun runCommand(call: String?) {
+    private fun runCall(call: String?) {
+        if (call != null) {
+            try {
+                val n = call.split("_")[1]
+                calls.removeAll { it.endsWith("_$n") }
+                calls.add(call)
+            } catch (e: Exception) {
+            }
+        }
         if (isReady) {
             val task = TextUtils.join(";", calls)
             calls.clear()
             loadUrl("javascript:")
-        } else {
-            calls.add(call)
         }
     }
 
@@ -155,7 +161,7 @@ class MapView : FrameLayout {
         override fun onPageFinished(view: WebView, url: String) {
             Timber.d(url)
             isReady = true
-            runCommand(null)
+            runCall(null)
         }
     }
 
