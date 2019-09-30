@@ -60,12 +60,17 @@ class FileManager(context: Context) {
 
     @WorkerThread
     fun readFile(file: File): MultipartBody.Part? {
-        return if (file.exists()) {
-            MultipartBody.Part.createFormData(
-                "file", file.name,
-                file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            )
-        } else null
+        try {
+            if (file.exists()) {
+                return MultipartBody.Part.createFormData(
+                    "file", file.name,
+                    file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                )
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+        return null
     }
 
     fun deleteFile(path: String) {
