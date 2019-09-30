@@ -14,7 +14,7 @@ interface TokenDao {
     fun getTokens(): List<AccessToken>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(item: AccessToken)
+    fun insert(item: AccessToken): Long
 
     @Delete
     fun delete(items: List<AccessToken>)

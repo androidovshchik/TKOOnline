@@ -74,15 +74,23 @@ class FileManager(context: Context) {
     }
 
     fun deleteFile(path: String) {
-        File(path).delete()
+        try {
+            File(path).delete()
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
     }
 
     @WorkerThread
     fun deleteOldFiles() {
         val now = System.currentTimeMillis()
         photosDir.listFiles().forEach {
-            if (now - it.lastModified() >= LIFETIME) {
-                it.delete()
+            try {
+                if (now - it.lastModified() >= LIFETIME) {
+                    it.delete()
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
             }
         }
     }

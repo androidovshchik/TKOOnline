@@ -62,12 +62,12 @@ class StatusFragment : BaseFragment(), SyncListener {
         onLocationChanged(false)
         onNetworkChanged(false)
         status_uploads.setImageResource(R.drawable.ic_cloud_upload)
-        baseActivity?.checkLocation()
     }
 
     override fun onStart() {
         super.onStart()
         syncManager.register(context)
+        baseActivity?.checkLocation()
     }
 
     /**

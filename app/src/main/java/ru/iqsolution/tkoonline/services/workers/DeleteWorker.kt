@@ -43,8 +43,8 @@ class DeleteWorker(app: Application, params: WorkerParameters) : BaseWorker(app,
         fun launch(context: Context) {
             val request = OneTimeWorkRequestBuilder<SendWorker>()
                 .setBackoffCriteria(
-                    BackoffPolicy.LINEAR,
-                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    BackoffPolicy.EXPONENTIAL,
+                    OneTimeWorkRequest.MAX_BACKOFF_MILLIS + 1,
                     TimeUnit.MILLISECONDS
                 )
                 .build()

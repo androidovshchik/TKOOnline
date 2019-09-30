@@ -60,6 +60,8 @@ class Preferences(context: Context) : KotprefModel(context) {
      */
     var lastTime by nullableStringPref(null, "0x0f")
 
+    var tokenId by longPref(0L, "0x10")
+
     val isLoggedIn: Boolean
         get() = accessToken != null
 
