@@ -22,10 +22,10 @@ class PhotoEvent : SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pe_id")
-    var id: Long? = null
+    override var id: Long? = null
 
     @ColumnInfo(name = "pe_token_id")
-    var tokenId = 0L
+    override var tokenId = 0L
 
     @ColumnInfo(name = "pe_type_id")
     var typeId = 0
@@ -42,11 +42,8 @@ class PhotoEvent : SendEvent {
     @ColumnInfo(name = "pe_longitude")
     var longitude = 0.0
 
-    /**
-     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
-     */
-    @ColumnInfo(name = "pe_datetime")
-    lateinit var datetime: DateTime
+    @ColumnInfo(name = "pe_when_time")
+    override lateinit var whenTime: DateTime
 
     @ColumnInfo(name = "pe_sent")
     override var sent = false

@@ -24,20 +24,17 @@ class CleanEvent : Container, SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ce_id")
-    var id: Long? = null
+    override var id: Long? = null
 
     @ColumnInfo(name = "ce_token_id")
-    var tokenId = 0L
+    override var tokenId = 0L
 
     @ColumnInfo(name = "ce_kp_id")
     var kpId = 0
 
-    /**
-     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
-     */
-    @ColumnInfo(name = "ce_datetime")
+    @ColumnInfo(name = "ce_when_time")
     @SerializedName("time")
-    lateinit var datetime: DateTime
+    override lateinit var whenTime: DateTime
 
     @ColumnInfo(name = "ce_container_type")
     @SerializedName("container_type_fact")

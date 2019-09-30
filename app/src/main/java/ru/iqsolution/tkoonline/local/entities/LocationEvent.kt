@@ -22,16 +22,16 @@ class LocationEvent : SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "le_id")
-    var id: Long? = null
+    override var id: Long? = null
 
     @ColumnInfo(name = "le_token_id")
-    var tokenId = 0L
+    override var tokenId = 0L
 
     @ColumnInfo(name = "le_package_id")
     var packageId = 0
 
-    @ColumnInfo(name = "le_event_time")
-    lateinit var eventTime: DateTime
+    @ColumnInfo(name = "le_when_time")
+    override lateinit var whenTime: DateTime
 
     @ColumnInfo(name = "le_latitude")
     var latitude = 0.0
@@ -42,6 +42,9 @@ class LocationEvent : SendEvent {
     @ColumnInfo(name = "le_height")
     var height = 0
 
+    /**
+     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     */
     @ColumnInfo(name = "le_coords_time")
     lateinit var coordsTime: DateTime
 

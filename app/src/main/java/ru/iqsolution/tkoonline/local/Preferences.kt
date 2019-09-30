@@ -37,7 +37,7 @@ class Preferences(context: Context) : KotprefModel(context) {
     var vehicleNumber by nullableStringPref(null, "0x09")
 
     /**
-     * At the moment of server time (milliseconds)
+     * Boot time at the moment of server time (milliseconds)
      */
     var elapsedTime by longPref(0L, "0x0a")
 
@@ -46,14 +46,19 @@ class Preferences(context: Context) : KotprefModel(context) {
     var carId by intPref(0, "0x0c")
 
     /**
-     * Last known value
+     * Last known latitude
      */
-    var latitude by floatPref(Float.MAX_VALUE, "0x0d")
+    var lastLat by floatPref(0f, "0x0d")
 
     /**
-     * Last known value
+     * Last known longitude
      */
-    var longitude by floatPref(Float.MAX_VALUE, "0x0e")
+    var lastLon by floatPref(0f, "0x0e")
+
+    /**
+     * Time of last known location [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     */
+    var lastTime by nullableStringPref(null, "0x0f")
 
     /**
      * !!! Non properties below
