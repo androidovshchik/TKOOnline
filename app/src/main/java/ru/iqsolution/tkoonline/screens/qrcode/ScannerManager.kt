@@ -18,14 +18,32 @@ class ScannerManager(context: Context, listener: ScannerListener) {
 
     private val barcodeDetector = BarcodeDetector.Builder(context)
         .setBarcodeFormats(Barcode.QR_CODE)
-        .build().apply {
-            setProcessor(processor)
+        .build()
+
+    private val processor = object : Detector.Processor<Barcode> {
+
+        override fun receiveDetections(detections: Detector.Detections<Barcode>) {
+            detections.apply {
+                if (detectorIsOperational()) {
+                    if (detectedItems.size() > 0) {
+                        reference.get()?.onQrCode(detectedItems.valueAt(0).rawValue ?: "")
+                    }
+                }
+            }
         }
 
-    private val cameraSource = CameraSource.Builder(context, barcodeDetector)
-        .setRequestedPreviewSize(640, 480) // 4:3
-        .setAutoFocusEnabled(true)
-        .build()
+        override fun release() {}
+    }
+
+    private val cameraSource: CameraSource
+
+    init {
+        barcodeDetector.setProcessor(processor)
+        cameraSource = CameraSource.Builder(context, barcodeDetector)
+            .setRequestedPreviewSize(640, 480) // 4:3
+            .setAutoFocusEnabled(true)
+            .build()
+    }
 
     @SuppressLint("MissingPermission")
     fun start(holder: SurfaceHolder): Size? {
@@ -45,20 +63,5 @@ class ScannerManager(context: Context, listener: ScannerListener) {
     fun release() {
         barcodeDetector.release()
         cameraSource.release()
-    }
-
-    private val processor = object : Detector.Processor<Barcode> {
-
-        override fun receiveDetections(detections: Detector.Detections<Barcode>) {
-            detections.apply {
-                if (detectorIsOperational()) {
-                    if (detectedItems.size() > 0) {
-                        reference.get()?.onQrCode(detectedItems.valueAt(0).rawValue ?: "")
-                    }
-                }
-            }
-        }
-
-        override fun release() {}
     }
 }
