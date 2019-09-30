@@ -13,6 +13,7 @@ interface PhotoDao {
         """
         SELECT photo_events.*, tokens.* FROM photo_events 
         INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
+        ORDER BY photo_events.pe_id DESC
     """
     )
     fun getEvents(): List<PhotoEventToken>

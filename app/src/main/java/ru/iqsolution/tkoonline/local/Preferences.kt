@@ -60,10 +60,6 @@ class Preferences(context: Context) : KotprefModel(context) {
      */
     var lastTime by nullableStringPref(null, "0x0f")
 
-    /**
-     * !!! Non properties below
-     */
-
     val isLoggedIn: Boolean
         get() = accessToken != null
 

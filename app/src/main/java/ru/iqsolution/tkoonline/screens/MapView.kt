@@ -3,7 +3,9 @@ package ru.iqsolution.tkoonline.screens
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Build
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +16,6 @@ import kotlinx.android.synthetic.main.map_view.view.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.activity
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -23,6 +24,10 @@ class MapView : FrameLayout {
     private var lat: Double? = null
 
     private var lon: Double? = null
+
+    private var isReady = false
+
+    private val calls = arrayListOf<String>()
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -73,29 +78,29 @@ class MapView : FrameLayout {
     }
 
     private fun zoomIn(duration: Int = 500) {
-        loadUrl("javascript:mapZoomIn($duration)")
+        runCommand("mapZoomIn1($duration)")
     }
 
     private fun zoomOut(duration: Int = 500) {
-        loadUrl("javascript:mapZoomOut($duration)")
+        runCommand("mapZoomOut1($duration)")
     }
 
     fun moveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
-        loadUrl("javascript:mapMoveTo($latitude, $longitude, $zoom, $duration)")
+        runCommand("mapMoveTo2($latitude, $longitude, $zoom, $duration)")
     }
 
     fun clearMarkers() {
-        loadUrl("javascript:mapClearMarkers()")
+        runCommand("mapClearMarkers3()")
     }
 
     fun setMarkers(first: String, second: String = "[]") {
-        loadUrl("javascript:mapSetMarkers($first, $second)")
+        runCommand("mapSetMarkers3($first, $second)")
     }
 
     fun clearLocation() {
         lat = null
         lon = null
-        loadUrl("javascript:mapClearLocation()")
+        runCommand("mapClearLocation4()")
     }
 
     /**
@@ -105,15 +110,26 @@ class MapView : FrameLayout {
     fun setLocation(latitude: Double, longitude: Double, radius: Int = 0) {
         lat = latitude
         lon = longitude
-        loadUrl("javascript:mapSetLocation($latitude, $longitude, $radius)")
+        runCommand("mapSetLocation4($latitude, $longitude, $radius)")
     }
 
     fun clearState(all: Boolean = false) {
-        loadUrl("javascript:mapClearState($all)")
+        runCommand("mapClearState5($all)")
     }
 
     fun saveState() {
-        loadUrl("javascript:mapSaveState()")
+        runCommand("mapSaveState5()")
+    }
+
+    @Synchronized
+    private fun runCommand(call: String?) {
+        if (isReady) {
+            val task = TextUtils.join(";", calls)
+            calls.clear()
+            loadUrl("javascript:")
+        } else {
+            calls.add(call)
+        }
     }
 
     fun release() {
@@ -130,20 +146,16 @@ class MapView : FrameLayout {
 
     override fun hasOverlappingRendering() = false
 
-    interface Listener {
-
-        fun onPageFinished(url: String)
-    }
-
     inner class Client : WebViewClient() {
+
+        override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+            isReady = false
+        }
 
         override fun onPageFinished(view: WebView, url: String) {
             Timber.d(url)
-            context.activity()?.let {
-                if (it is Listener && !it.isFinishing) {
-                    it.onPageFinished(url)
-                }
-            }
+            isReady = true
+            runCommand(null)
         }
     }
 

@@ -13,6 +13,7 @@ interface CleanDao {
         """
         SELECT clean_events.*, tokens.* FROM clean_events 
         INNER JOIN tokens ON clean_events.ce_token_id = tokens.t_id
+        ORDER BY clean_events.ce_id DESC
     """
     )
     fun getEvents(): List<CleanEventToken>

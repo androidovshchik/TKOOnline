@@ -34,8 +34,12 @@ script.onload = function () {
 };
 document.getElementsByTagName('head')[0].appendChild(script);
 
+/**
+ * NOTICE the number at window functions is needed for similarity
+ */
+
 // @ts-ignore
-window.mapZoomIn = function (duration: number = 500) {
+window.mapZoomIn1 = function (duration: number = 500) {
     if (map == null) {
         return
     }
@@ -45,7 +49,7 @@ window.mapZoomIn = function (duration: number = 500) {
 };
 
 // @ts-ignore
-window.mapZoomOut = function (duration: number = 500) {
+window.mapZoomOut1 = function (duration: number = 500) {
     if (map == null) {
         return
     }
@@ -55,7 +59,7 @@ window.mapZoomOut = function (duration: number = 500) {
 };
 
 // @ts-ignore
-window.mapMoveTo = function (latitude: number, longitude: number, zoom: number = 12, duration: number = 800) {
+window.mapMoveTo2 = function (latitude: number, longitude: number, zoom: number = 12, duration: number = 800) {
     if (map == null) {
         return
     }
@@ -65,7 +69,7 @@ window.mapMoveTo = function (latitude: number, longitude: number, zoom: number =
 };
 
 // @ts-ignore
-window.mapClearMarkers = function () {
+window.mapClearMarkers3 = function () {
     if (map == null) {
         return
     }
@@ -94,7 +98,7 @@ function addPlatforms(platforms: Platform[]) {
 }
 
 // @ts-ignore
-window.mapSetMarkers = function (first: string, second: string = "[]") {
+window.mapSetMarkers3 = function (first: string, second: string = "[]") {
     if (map == null) {
         return
     }
@@ -104,7 +108,7 @@ window.mapSetMarkers = function (first: string, second: string = "[]") {
 };
 
 // @ts-ignore
-window.mapClearLocation = function () {
+window.mapClearLocation4 = function () {
     if (map == null) {
         return
     }
@@ -115,7 +119,7 @@ window.mapClearLocation = function () {
  * @param radius in meters
  */
 // @ts-ignore
-window.mapSetLocation = function (latitude: number, longitude: number, radius: number = 0) {
+window.mapSetLocation4 = function (latitude: number, longitude: number, radius: number = 0) {
     if (map == null) {
         return
     }
@@ -144,7 +148,7 @@ window.mapSetLocation = function (latitude: number, longitude: number, radius: n
 };
 
 // @ts-ignore
-window.mapClearState = function (all: boolean = false) {
+window.mapClearState5 = function (all: boolean = false) {
     if (map == null) {
         return
     }
@@ -158,7 +162,7 @@ window.mapClearState = function (all: boolean = false) {
 };
 
 // @ts-ignore
-window.mapSaveState = function () {
+window.mapSaveState5 = function () {
     if (map == null) {
         return
     }
