@@ -11,7 +11,7 @@ class PlatformPresenter(application: Application) : BasePresenter<PlatformContra
 
     val gson: Gson by instance()
 
-    override fun parsePlatform(json: String): PlatformContainers {
+    override fun platformFromJson(json: String): PlatformContainers {
         return gson.fromJson(json, PlatformContainers::class.java)
     }
 }

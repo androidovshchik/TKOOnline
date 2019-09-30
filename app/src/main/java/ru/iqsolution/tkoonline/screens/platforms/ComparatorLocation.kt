@@ -5,9 +5,14 @@ import kotlin.math.absoluteValue
 
 class ComparatorLocation : Comparator<PlatformContainers> {
 
-    var lat = 0.0
+    private var lat = 0.0
 
-    var lon = 0.0
+    private var lon = 0.0
+
+    fun updateLocation(latitude: Double, longitude: Double) {
+        lat = latitude
+        lon = longitude
+    }
 
     override fun compare(a: PlatformContainers, b: PlatformContainers): Int {
         val diffA = (lat - a.latitude).absoluteValue + (lon - a.longitude).absoluteValue

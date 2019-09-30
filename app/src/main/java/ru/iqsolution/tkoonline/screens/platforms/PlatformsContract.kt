@@ -10,7 +10,7 @@ interface PlatformsContract {
 
         fun loadPlatformsTypes(refresh: Boolean)
 
-        fun formatPlatform(platform: PlatformContainers): String
+        fun platformToJson(platform: PlatformContainers): String
     }
 
     interface View : IBaseView {

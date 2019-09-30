@@ -121,7 +121,6 @@ class MapView : FrameLayout {
         runCall("mapSaveState_5()")
     }
 
-    @Synchronized
     private fun runCall(call: String?) {
         if (call != null) {
             try {

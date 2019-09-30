@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
+import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.view.View
@@ -27,11 +28,16 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     private val photoTypes = arrayListOf<PhotoType>()
 
+    private val comparator = ComparatorLocation()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platforms)
         presenter = PlatformsPresenter(application).also {
             it.attachView(this)
+        }
+        platformsAdapter = PlatformsAdapter(applicationContext).apply {
+            setAdapterListener(this@PlatformsActivity)
         }
         platforms_map.apply {
             loadUrl(URL)
@@ -50,9 +56,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                     setDrawable(it)
                 }
             })
-            platformsAdapter = PlatformsAdapter(applicationContext).apply {
-                setAdapterListener(this@PlatformsActivity)
-            }
             adapter = platformsAdapter
         }
         platforms_complete.onClick {
@@ -76,6 +79,14 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
     }
 
+    override fun onAdapterEvent(position: Int, item: PlatformContainers, param: Any?) {
+        startActivityNoop<PlatformActivity>(
+            REQUEST_PLATFORM,
+            EXTRA_TYPES to photoTypes,
+            EXTRA_PLATFORM to presenter.platformToJson(item)
+        )
+    }
+
     override fun onReceivedTypes(data: List<PhotoType>) {
         photoTypes.apply {
             clear()
@@ -91,14 +102,16 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platformsAdapter.apply {
             primaryItems.apply {
                 clear()
-                addAll()
+                addAll(primary)
             }
-            items.clear()
-            primary.forEach {
-                primaryItems.add(it)
+            preferences.apply {
+                lastTime?.let {
+                    sortByLocation(lastLat.toDouble(), lastLon.toDouble())
+                }
             }
-            secondary.forEach {
-                items.add(it)
+            items.apply {
+                clear()
+                addAll(secondary)
             }
             notifyDataSetChanged()
         }
@@ -106,7 +119,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     /**
-     * Primary platforms will overlay secondary
+     * NOTICE primary platforms will overlay secondary in such order
      */
     override fun updateMapMarkers(primary: String, secondary: String) {
         platforms_map.setMarkers(secondary, primary)
@@ -114,18 +127,26 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     override fun onLocationResult(location: Location) {
         platforms_map.setLocation(location.latitude, location.longitude)
-        // todo sort primary
+        sortByLocation(location.latitude, location.longitude)
+        platformsAdapter.notifyDataSetChanged()
     }
 
-    override fun onAdapterEvent(position: Int, item: PlatformContainers, param: Any?) {
-        startActivityNoop<PlatformActivity>(
-            null,
-            EXTRA_TYPES to photoTypes,
-            EXTRA_PLATFORM to presenter.formatPlatform(item)
-        )
+    private fun sortByLocation(latitude: Double, longitude: Double) {
+        platformsAdapter.apply {
+            primaryItems.sortWith(comparator.apply {
+                updateLocation(latitude, longitude)
+            })
+        }
     }
 
     override fun onBackPressed() {}
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_PLATFORM) {
+
+        }
+    }
 
     override fun onDestroy() {
         platforms_map.release()
@@ -133,6 +154,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     companion object {
+
+        private const val REQUEST_PLATFORM = 1100
 
         private const val URL = "file:///android_asset/platforms.html"
     }

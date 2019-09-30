@@ -19,7 +19,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         setContentView(R.layout.activity_platform)
         presenter = PlatformPresenter(application).also {
             it.attachView(this)
-            platform = it.parsePlatform(intent.getStringExtra(EXTRA_PLATFORM))
+            platform = it.platformFromJson(intent.getStringExtra(EXTRA_PLATFORM))
         }
         toolbar_back.onClick {
             finish()
@@ -42,7 +42,6 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     }
 
     override fun onLocationResult(location: Location) {
-        super.onLocationResult(location)
         platform_map.setLocation(location.latitude, location.longitude)
     }
 

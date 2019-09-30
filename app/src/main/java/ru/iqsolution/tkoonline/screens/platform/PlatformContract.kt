@@ -7,7 +7,7 @@ interface PlatformContract {
 
     interface Presenter {
 
-        fun parsePlatform(json: String): PlatformContainers
+        fun platformFromJson(json: String): PlatformContainers
     }
 
     interface View : IBaseView
