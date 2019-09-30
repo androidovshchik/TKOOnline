@@ -1,6 +1,8 @@
 package ru.iqsolution.tkoonline.screens.login
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
+import android.app.FragmentTransaction
 import android.os.Bundle
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_login.*
@@ -21,7 +23,11 @@ import ru.iqsolution.tkoonline.screens.qrcode.ScannerListener
 @Suppress("DEPRECATION")
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, DialogCallback {
 
-    private lateinit var dialogManager: DialogManager
+    private val settingsDialog = SettingsDialog()
+
+    private val passwordDialog = PasswordDialog()
+
+    private var hasPrompted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,13 +36,12 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             it.attachView(this)
             it.clearAuthorization()
         }
-        dialogManager = DialogManager(this)
         statusBarHeight.let {
             (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = it
             login_shadow.topPadding = it
         }
         login_menu.onClick {
-            openSettings(preferences)
+            openDialog(preferences)
         }
     }
 
@@ -48,21 +53,41 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
         }
     }
 
-    override fun openSettings(preferences: Preferences) {
-        dialogManager.openSettings(preferences)
+    override fun openDialog(preferences: Preferences) {
+        transact {
+            remove(passwordDialog)
+            remove(settingsDialog)
+            if (preferences.enableLock) {
+                if (!hasPrompted) {
+                    passwordDialog.show(this, passwordDialog.javaClass.simpleName)
+                    return
+                }
+            }
+            settingsDialog.show(this, settingsDialog.javaClass.simpleName)
+        }
     }
 
-    override fun setupPassword() {
-        dialogManager.setupPassword()
+    override fun openSettingsDialog() {
+        transact {
+            remove(passwordDialog)
+            remove(settingsDialog)
+            settingsDialog.show(this, settingsDialog.javaClass.simpleName)
+        }
+    }
+
+    override fun openPasswordDialog() {
+        transact {
+            remove(passwordDialog)
+            passwordDialog.show(this, passwordDialog.javaClass.simpleName)
+        }
     }
 
     override fun enterKioskMode() {
-        dialogManager.enterKioskMode()
+        hasPrompted = false
         startActivityNoop<LockActivity>()
     }
 
     override fun exitKioskMode() {
-        dialogManager.exitKioskMode()
         startActivityNoop<LockActivity>()
     }
 
@@ -79,6 +104,11 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             }
             return 0
         }
+
+    @SuppressLint("CommitTransaction")
+    private inline fun transact(action: FragmentTransaction.() -> Unit) {
+        fragmentManager.beginTransaction().apply(action)
+    }
 
     override fun onBackPressed() {
         if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {

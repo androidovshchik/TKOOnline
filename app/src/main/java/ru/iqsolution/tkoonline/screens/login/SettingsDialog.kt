@@ -44,15 +44,19 @@ class SettingsDialog : BaseDialogFragment() {
     private fun setLocked(enable: Boolean, preferences: Preferences?) {
         isEnabledLock = enable
         dialog_unlock.text = if (enable) "Разблокировать" else "Заблокировать"
-        preferences?.apply {
+        if (preferences == null) {
+            return
+        }
+        preferences.bulk {
             enableLock = enable
-            activity?.let {
-                if (it is DialogCallback && !it.isFinishing) {
-                    if (enable) {
-                        it.setupPassword()
-                    } else {
-                        it.exitKioskMode()
-                    }
+            lockPassword = null
+        }
+        activity?.let {
+            if (it is DialogCallback && !it.isFinishing) {
+                if (enable) {
+                    it.openPasswordDialog()
+                } else {
+                    it.exitKioskMode()
                 }
             }
         }

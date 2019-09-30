@@ -4,12 +4,11 @@ import ru.iqsolution.tkoonline.local.Preferences
 
 interface DialogCallback {
 
-    fun openSettings(preferences: Preferences)
+    fun openDialog(preferences: Preferences)
 
-    /**
-     * Open [PasswordDialog] to save password
-     */
-    fun setupPassword()
+    fun openSettingsDialog()
+
+    fun openPasswordDialog()
 
     fun enterKioskMode()
 
