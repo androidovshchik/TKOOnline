@@ -8,10 +8,9 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.EXTRA_PLATFORM
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.models.PlatformContainers
-import ru.iqsolution.tkoonline.screens.MapView
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 
-class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View, MapView.Listener {
+class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View {
 
     private lateinit var platform: PlatformContainers
 
@@ -25,21 +24,20 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         toolbar_back.onClick {
             finish()
         }
-        platform_map.loadUrl(URL)
+        platform_map.apply {
+            loadUrl(URL)
+            preferences.apply {
+                lastTime?.let {
+                    setLocation(lastLat.toDouble(), lastLon.toDouble())
+                }
+            }
+            moveTo(platform.latitude, platform.longitude)
+        }
         platform_not_cleaned.onClick {
             finish()
         }
         platform_cleaned.onClick {
             finish()
-        }
-    }
-
-    override fun onPageFinished(url: String) {
-        if (url == URL) {
-            platform_map.apply {
-                setLocation(preferences.latitude.toDouble(), preferences.longitude.toDouble())
-                moveTo(platform.latitude, platform.longitude)
-            }
         }
     }
 

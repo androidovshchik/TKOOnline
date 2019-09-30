@@ -77,11 +77,11 @@ class MapView : FrameLayout {
         map.loadUrl(url)
     }
 
-    private fun zoomIn(duration: Int = 500) {
+    fun zoomIn(duration: Int = 500) {
         runCall("mapZoomIn_1($duration)")
     }
 
-    private fun zoomOut(duration: Int = 500) {
+    fun zoomOut(duration: Int = 500) {
         runCall("mapZoomOut_1($duration)")
     }
 
@@ -126,15 +126,23 @@ class MapView : FrameLayout {
         if (call != null) {
             try {
                 val n = call.split("_")[1]
-                calls.removeAll { it.endsWith("_$n") }
-                calls.add(call)
+                calls.apply {
+                    removeAll { it.endsWith("_$n") }
+                    add(call)
+                }
             } catch (e: Exception) {
             }
         }
         if (isReady) {
-            val task = TextUtils.join(";", calls)
-            calls.clear()
-            loadUrl("javascript:")
+            if (calls.isNotEmpty()) {
+                val js = TextUtils.join(";", calls)
+                calls.clear()
+                loadUrl("javascript:$js")
+            }
+        } else {
+            if (call == null) {
+                calls.clear()
+            }
         }
     }
 
@@ -155,11 +163,13 @@ class MapView : FrameLayout {
     inner class Client : WebViewClient() {
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+            Timber.d("onPageStarted: $url")
             isReady = false
+            runCall(null)
         }
 
         override fun onPageFinished(view: WebView, url: String) {
-            Timber.d(url)
+            Timber.d("onPageFinished: $url")
             isReady = true
             runCall(null)
         }
