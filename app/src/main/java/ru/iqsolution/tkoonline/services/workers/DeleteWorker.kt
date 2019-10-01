@@ -25,9 +25,11 @@ class DeleteWorker(app: Application, params: WorkerParameters) : BaseWorker(app,
         val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
         val expiredTokens = arrayListOf<AccessToken>()
         db.tokenDao().apply {
-            getTokens().forEach {
-                if (it.expires.withZone(timeZone).isBefore(now)) {
-                    expiredTokens.add(it)
+            for (token in getTokens()) {
+                if (token.expires.withZone(timeZone).isBefore(now)) {
+                    expiredTokens.add(token)
+                } else {
+                    break
                 }
             }
             if (expiredTokens.isNotEmpty()) {

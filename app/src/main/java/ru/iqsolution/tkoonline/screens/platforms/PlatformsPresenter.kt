@@ -44,14 +44,8 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                 val bunks = SimpleArrayMap<Int, Container>()
                 val specials = SimpleArrayMap<Int, Container>()
                 val unknown = SimpleArrayMap<Int, Container>()
-                val errorTypes = SimpleArrayMap<Int, String>()
                 val primary = arrayListOf<PlatformContainers>()
                 val secondary = arrayListOf<PlatformContainers>()
-                responseTypes.data.forEach {
-                    if (it.isError == 1) {
-                        errorTypes.put(it.type, it.shortName)
-                    }
-                }
                 responsePlatforms.data.forEach {
                     if (it.isValid) {
                         if (it.linkedKpId == null) {
@@ -80,11 +74,29 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                         }
                     }
                 }
-                if (responsePlatforms.data.isNotEmpty()) {
-                    viewRef.get()?.changeMapPosition(SimpleLocation((maxLat + minLat) / 2, (maxLon + minLon) / 2))
+                primary.forEach {
+                    it.apply {
+                        addContainer(regulars.get(it.kpId))
+                        addContainer(bunkers.get(it.kpId))
+                        addContainer(bunks.get(it.kpId))
+                        addContainer(specials.get(it.kpId))
+                        addContainer(unknown.get(it.kpId))
+                    }
+                }
+                viewRef.get()?.apply {
+                    if (responsePlatforms.data.isNotEmpty()) {
+                        changeMapPosition(SimpleLocation((maxLat + minLat) / 2, (maxLon + minLon) / 2))
+                    }
+                    onReceivedPrimary(primary)
                 }
                 withContext(Dispatchers.IO) {
+                    val errorTypes = SimpleArrayMap<Int, String>()
                     val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
+                    responseTypes.data.forEach {
+                        if (it.isError == 1) {
+                            errorTypes.put(it.type, it.shortName)
+                        }
+                    }
                     db.photoDao().getEvents().forEach {
                         for (platform in secondary) {
                             if (it.photo.kpId == platform.kpId) {
@@ -108,28 +120,21 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                             }
                         }
                     }
-                    secondary.sortByDescending { it.timestamp }
-                }
-                primary.forEach {
-                    it.apply {
-                        addContainer(regulars.get(it.kpId))
-                        addContainer(bunkers.get(it.kpId))
-                        addContainer(bunks.get(it.kpId))
-                        addContainer(specials.get(it.kpId))
-                        addContainer(unknown.get(it.kpId))
-                    }
-                }
-                secondary.forEach {
-                    it.apply {
-                        addContainer(regulars.get(it.kpId))
-                        addContainer(bunkers.get(it.kpId))
-                        addContainer(bunks.get(it.kpId))
-                        addContainer(specials.get(it.kpId))
-                        addContainer(unknown.get(it.kpId))
+                    secondary.apply {
+                        sortByDescending { it.timestamp }
+                        forEach {
+                            it.apply {
+                                addContainer(regulars.get(it.kpId))
+                                addContainer(bunkers.get(it.kpId))
+                                addContainer(bunks.get(it.kpId))
+                                addContainer(specials.get(it.kpId))
+                                addContainer(unknown.get(it.kpId))
+                            }
+                        }
                     }
                 }
                 viewRef.get()?.apply {
-                    onReceivedPlatforms(primary, secondary)
+                    onReceivedSecondary(secondary)
                     updateMapMarkers(gson.toJson(primary), gson.toJson(secondary))
                 }
             } catch (e: CancellationException) {

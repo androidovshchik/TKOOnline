@@ -80,7 +80,7 @@ function addPlatforms(platforms: Platform[]) {
     platforms.forEach(p => {
         const layout = ymaps.templateLayoutFactory.createClass(`
             <div class="placemark">
-                ${p._e ? `<span class="trash_text">${p._e}</span>` : ''}
+                ${p._e.length > 0 ? `<span class="trash_text">${p._e.join(", ")}</span>` : ''}
                 <div class="trash_ring" style="border-color: ${getColor(p.status)}"></div>
                 <img class="trash_icon" src="icons/ic_delete.svg">
             </div>`

@@ -22,7 +22,9 @@ interface PlatformsContract {
 
         fun changeMapPosition(location: SimpleLocation)
 
-        fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>)
+        fun onReceivedPrimary(platforms: List<PlatformContainers>)
+
+        fun onReceivedSecondary(platforms: List<PlatformContainers>)
 
         fun updateMapMarkers(primary: String, secondary: String)
     }
