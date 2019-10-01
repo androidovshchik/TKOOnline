@@ -28,7 +28,6 @@ function init() {
 const script = document.createElement('script');
 script.src = "https://api-maps.yandex.ru/2.1/?apikey=a92bd5d3-176f-40b5-8213-844995d832ab&lang=ru_RU";
 script.type = "text/javascript";
-script.async = false;
 script.onload = function () {
     ymaps.ready(init);
 };
