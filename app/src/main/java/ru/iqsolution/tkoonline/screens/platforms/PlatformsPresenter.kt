@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.Database
+import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.models.*
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
@@ -18,6 +19,12 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
     val gson: Gson by instance()
 
     val db: Database by instance()
+
+    override fun saveAccessToken() {
+        GlobalScope.launch(Dispatchers.IO) {
+            db.tokenDao().insert(AccessToken(preferences))
+        }
+    }
 
     override fun loadPlatformsTypes(refresh: Boolean) {
         baseJob.cancelChildren()
@@ -37,7 +44,7 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                 val unknown = SimpleArrayMap<Int, Container>()
                 val primary = arrayListOf<PlatformContainers>()
                 val secondary = arrayListOf<PlatformContainers>()
-                preferences.latitude
+                //preferences.latitude
                 responsePlatforms.data.forEach {
                     if (it.isValid) {
                         if (it.linkedKpId == null) {
@@ -69,11 +76,11 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                 if (responsePlatforms.data.isNotEmpty()) {
                     viewRef.get()?.changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
                 }
-                withContext(Dispatchers.IO) {
+                /*withContext(Dispatchers.IO) {
                     val photoEvents = db.photoDao().getEvents()
                     val cleanEvents = db.cleanDao().getEvents()
 
-                }
+                }*/
                 primary.forEach {
                     it.apply {
                         addContainer(regulars.get(it.kpId))
@@ -99,7 +106,7 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
         }
     }
 
-    override fun formatPlatform(platform: PlatformContainers): String {
+    override fun platformToJson(platform: PlatformContainers): String {
         return gson.toJson(platform)
     }
 

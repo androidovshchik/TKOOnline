@@ -1,13 +1,12 @@
 package ru.iqsolution.tkoonline.models
 
-import android.location.Location
 import java.io.Serializable
 
-class SimpleLocation() : Serializable {
+class SimpleLocation() : Location, Serializable {
 
-    var latitude = 0.0
+    override var latitude = 0.0
 
-    var longitude = 0.0
+    override var longitude = 0.0
 
     constructor(lat: Double, lon: Double) : this() {
         latitude = lat
@@ -19,7 +18,7 @@ class SimpleLocation() : Serializable {
         longitude = lon.toDouble()
     }
 
-    constructor(location: Location) : this() {
+    constructor(location: android.location.Location) : this() {
         latitude = location.latitude
         longitude = location.longitude
     }
