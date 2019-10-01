@@ -17,7 +17,9 @@ interface Location {
     fun getDistance(l: Location): Double {
         val dLat = (l.latitude - latitude) * D
         val dLon = (l.longitude - longitude) * D
-        val a = sin(dLat / 2) * sin(dLat / 2) + cos(latitude * D) * cos(l.latitude * D) * sin(dLon / 2) * sin(dLon / 2)
+        val sinDLat = sin(dLat / 2)
+        val sinDLon = sin(dLon / 2)
+        val a = sinDLat * sinDLat + cos(latitude * D) * cos(l.latitude * D) * sinDLon * sinDLon
         return 2 * R * atan2(sqrt(a), sqrt(1 - a))
     }
 

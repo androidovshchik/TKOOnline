@@ -33,7 +33,7 @@
                 layout="@layout/platform_info"/>
 
             <View
-                android:id="@+id/platforms_divider"
+                android:id="@+id/platform_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/colorDivider"

@@ -139,10 +139,16 @@ class MapView : FrameLayout {
         if (call != null) {
             // NOTICE currently supports only 0-9 range, don't use split
             calls.apply {
-                if (isNotEmpty()) {
-                    removeAll { it.startsWith("_${call[1]}_") }
+                when {
+                    isNotEmpty() -> {
+                        removeAll { it[1] == call[1] }
+                        add(call)
+                    }
+                    isReady -> {
+                        loadUrl("javascript:$call")
+                        return
+                    }
                 }
-                add(call)
             }
         }
         if (isReady) {

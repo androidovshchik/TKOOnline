@@ -1,10 +1,13 @@
 package ru.iqsolution.tkoonline.screens.platform
 
 import android.os.Bundle
+import android.view.View
 import kotlinx.android.synthetic.main.activity_platform.*
+import kotlinx.android.synthetic.main.platform_info.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.EXTRA_PLATFORM
+import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -29,6 +32,13 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             setLocation(preferences.location)
             moveTo(platform.latitude, platform.longitude)
         }
+        platform_id.text = platform.kpId.toString()
+        platform_range.text = getString(
+            R.string.container_range,
+            platform.timeLimitFrom.toString(FORMAT_TIME),
+            platform.timeLimitTo.toString(FORMAT_TIME)
+        )
+        platform_divider.visibility = View.VISIBLE
         platform_not_cleaned.onClick {
             finish()
         }
