@@ -27,6 +27,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         toolbar_back.onClick {
             finish()
         }
+        toolbar_title.text = platform.address
         platform_map.apply {
             loadUrl(URL)
             setLocation(preferences.location)
