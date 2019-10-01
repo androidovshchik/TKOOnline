@@ -1,7 +1,8 @@
 package ru.iqsolution.tkoonline.models
 
-import kotlin.math.asin
+import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 interface Location {
@@ -11,12 +12,24 @@ interface Location {
     var longitude: Double
 
     /**
-     * Based on Haversine formula
+     * https://stackoverflow.com/a/27943/5279156
      */
     fun getDistance(l: Location): Double {
-        val a =
-            0.5 - cos((l.latitude - latitude) * D) / 2 + cos(latitude * D) * cos(l.latitude * D) * (1 - cos((l.longitude - longitude) * D)) / 2
-        return R * asin(sqrt(a))
+        var R = 6371; // Radius of the earth in km
+        var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+        var dLon = deg2rad(lon2 - lon1);
+        var a =
+            sin(dLat / 2) * Math.sin(dLat / 2) +
+                    cos(deg2rad(lat1)) * cos(deg2rad(lat2)) *
+                    sin(dLon / 2) * sin(dLon / 2)
+        ;
+        var c = 2 * atan2(sqrt(a), sqrt(1 - a));
+        var d = R * c; // Distance in km
+        return d;
+    }
+
+    fun deg2rad(deg) {
+        return deg * (Math.PI / 180)
     }
 
     companion object {
