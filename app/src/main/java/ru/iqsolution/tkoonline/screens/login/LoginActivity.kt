@@ -95,6 +95,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             remove(passwordDialog)
             commit()
         }
+        settingsDialog.setLocked(true, null)
         startActivityNoop<LockActivity>()
     }
 

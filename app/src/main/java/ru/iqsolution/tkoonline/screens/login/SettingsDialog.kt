@@ -30,9 +30,16 @@ class SettingsDialog : BaseDialogFragment() {
             setLocked(!isEnabledLock, preferences)
         }
         dialog_save.onClick {
+            val slashRegex = "/+$".toRegex()
+            val serverAddress = dialog_main_server.text.toString().trim()
+                .replace(slashRegex, "")
+            val telemetryAddress = dialog_telemetry_server.text.toString().trim()
+                .replace(slashRegex, "")
+            dialog_main_server.setText(serverAddress)
+            dialog_telemetry_server.setText(telemetryAddress)
             preferences.bulk {
-                mainServerAddress = dialog_main_server.text.toString().trim()
-                mainTelemetryAddress = dialog_telemetry_server.text.toString().trim()
+                mainServerAddress = serverAddress
+                mainTelemetryAddress = telemetryAddress
             }
             dismiss()
         }
@@ -41,15 +48,17 @@ class SettingsDialog : BaseDialogFragment() {
         }
     }
 
-    private fun setLocked(enable: Boolean, preferences: Preferences?) {
-        isEnabledLock = enable
-        dialog_unlock.text = if (enable) "Разблокировать" else "Заблокировать"
-        if (preferences == null) {
-            return
-        }
-        preferences.bulk {
-            enableLock = enable
-            lockPassword = null
+    fun setLocked(enable: Boolean, preferences: Preferences?) {
+        if (!(enable && preferences != null)) {
+            isEnabledLock = enable
+            dialog_unlock.text = if (enable) "Разблокировать" else "Заблокировать"
+            if (preferences == null) {
+                return
+            }
+            preferences.bulk {
+                enableLock = enable
+                lockPassword = null
+            }
         }
         activity?.let {
             if (it is DialogCallback && !it.isFinishing) {
