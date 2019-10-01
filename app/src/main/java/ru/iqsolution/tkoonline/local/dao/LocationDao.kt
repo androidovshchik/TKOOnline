@@ -21,6 +21,13 @@ interface LocationDao {
     @Insert
     fun insert(item: LocationEvent)
 
+    @Query(
+        """
+        UPDATE location_events SET le_sent = 1 WHERE le_id = :id
+    """
+    )
+    fun markAsSent(id: Long)
+
     @Delete
     fun delete(items: List<LocationEvent>)
 }

@@ -4,15 +4,17 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.work.*
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.remote.api.RequestClean
 import ru.iqsolution.tkoonline.services.BaseWorker
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, params) {
@@ -24,25 +26,36 @@ class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, p
     val server: Server by instance()
 
     override suspend fun doWork(): Result = coroutineScope {
-        db.cleanDao().getEvents().reversed().chunked(2).forEach {
-            val a = async {
-                val event1 = it[0]
-                val event2 = it.getOrNull(1)
-                val request = RequestClean(event1.cleaning)
-                event1?.token?.token
-                server.sendClean("", 0, RequestClean(event1.cleaning)).execute()
-
+        val plaintText = "text/plain".toMediaTypeOrNull()
+        db.cleanDao().getEvents().reversed().forEach {
+            try {
+                val responseClean = server.sendClean(
+                    it.token.authHeader,
+                    it.clean.kpId,
+                    RequestClean(it.clean)
+                ).execute()
+                Timber.d("responseClean ${responseClean.code()}")
+            } catch (e: Exception) {
+                Timber.e(e)
             }
-            val b = async {
-
-            }
-            launch {
-
-            }
-            awaiaat()
         }
-        db.photoDao().getEvents().reversed().chunked(2).forEach {
-            server.sendPhoto().execute()
+        db.photoDao().getEvents().reversed().forEach {
+            try {
+                fileManager.readFile(it.photo.path)?.let { photo ->
+                    val responsePhoto = server.sendPhoto(
+                        it.token.authHeader,
+                        it.photo.kpId?.toString()?.toRequestBody(plaintText),
+                        it.photo.typeId.toString().toRequestBody(plaintText),
+                        it.photo.whenTime.toString(PATTERN_DATETIME).toRequestBody(plaintText),
+                        it.photo.latitude.toString().toRequestBody(plaintText),
+                        it.photo.longitude.toString().toRequestBody(plaintText),
+                        photo
+                    ).execute()
+                    Timber.d("responsePhoto ${responsePhoto.code()}")
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
         }
         Result.success()
     }
@@ -51,7 +64,7 @@ class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, p
 
         fun launch(context: Context): LiveData<WorkInfo> {
             val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiredNetworkType(NetworkType.METERED)
                 .build()
             val request = OneTimeWorkRequestBuilder<SendWorker>()
                 .setConstraints(constraints)

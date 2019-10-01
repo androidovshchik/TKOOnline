@@ -32,4 +32,7 @@ class AccessToken {
      */
     @ColumnInfo(name = "t_expires")
     lateinit var expires: DateTime
+
+    val authHeader: String
+        get() = "Bearer $token"
 }

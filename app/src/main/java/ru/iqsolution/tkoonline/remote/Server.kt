@@ -51,7 +51,7 @@ interface Server {
     @POST("container-sites/photos")
     fun sendPhoto(
         @Header("Authorization") token: String,
-        @Part("kpId") kpId: RequestBody,
+        @Part("kpId") kpId: RequestBody?,
         @Part("type") type: RequestBody,
         @Part("time") time: RequestBody,
         @Part("latitude") latitude: RequestBody,

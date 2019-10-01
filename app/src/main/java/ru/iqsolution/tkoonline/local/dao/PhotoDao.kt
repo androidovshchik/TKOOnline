@@ -18,6 +18,13 @@ interface PhotoDao {
     )
     fun getEvents(): List<PhotoEventToken>
 
+    @Query(
+        """
+        UPDATE photo_events SET pe_sent = 1 WHERE pe_id = :id
+    """
+    )
+    fun markAsSent(id: Long)
+
     @Insert
     fun insert(item: PhotoEvent)
 }

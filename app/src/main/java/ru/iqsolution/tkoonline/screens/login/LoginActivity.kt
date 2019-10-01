@@ -13,6 +13,7 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
 import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
+import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
@@ -37,6 +38,9 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             it.attachView(this)
             it.clearAuthorization()
         }
+        GlideApp.with(applicationContext)
+            .load(R.drawable.login_background)
+            .into(login_background)
         statusBarHeight.let {
             (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = it
             login_shadow.topPadding = it

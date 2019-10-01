@@ -6,11 +6,12 @@
     tools:ignore="MissingPrefix">
 
     <ImageView
+        android:id="@+id/login_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/login_background"
         android:adjustViewBounds="true"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        tools:src="@drawable/login_background"/>
 
     <View
         android:id="@+id/login_layer"

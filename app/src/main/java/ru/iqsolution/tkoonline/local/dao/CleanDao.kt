@@ -18,6 +18,13 @@ interface CleanDao {
     )
     fun getEvents(): List<CleanEventToken>
 
+    @Query(
+        """
+        UPDATE clean_events SET ce_sent = 1 WHERE ce_id = :id
+    """
+    )
+    fun markAsSent(id: Long)
+
     @Insert
     fun insert(item: CleanEvent)
 }
