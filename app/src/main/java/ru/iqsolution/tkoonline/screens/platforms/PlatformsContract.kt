@@ -8,6 +8,8 @@ interface PlatformsContract {
 
     interface Presenter {
 
+        fun saveAccessToken()
+
         fun loadPlatformsTypes(refresh: Boolean)
 
         fun platformToJson(platform: PlatformContainers): String

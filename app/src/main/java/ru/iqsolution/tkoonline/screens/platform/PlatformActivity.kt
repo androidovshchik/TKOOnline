@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.platform
 
-import android.location.Location
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -8,6 +7,7 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.EXTRA_PLATFORM
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 
 class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View {
@@ -26,11 +26,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         }
         platform_map.apply {
             loadUrl(URL)
-            preferences.apply {
-                lastTime?.let {
-                    setLocation(lastLat.toDouble(), lastLon.toDouble())
-                }
-            }
+            setLocation(preferences.location)
             moveTo(platform.latitude, platform.longitude)
         }
         platform_not_cleaned.onClick {
@@ -41,8 +37,8 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         }
     }
 
-    override fun onLocationResult(location: Location) {
-        platform_map.setLocation(location.latitude, location.longitude)
+    override fun onLocationResult(location: SimpleLocation) {
+        platform_map.setLocation(location)
     }
 
     override fun onBackPressed() {}

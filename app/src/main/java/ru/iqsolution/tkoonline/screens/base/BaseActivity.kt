@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.location.Location
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.MenuItem
@@ -20,6 +19,7 @@ import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.WaitDialog
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
 import ru.iqsolution.tkoonline.services.LocationListener
@@ -118,7 +118,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
     /**
      * Will be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */
-    override fun onLocationResult(location: Location) {}
+    override fun onLocationResult(location: SimpleLocation) {}
 
     protected fun takePhoto() {
         if (photoPath != null) {

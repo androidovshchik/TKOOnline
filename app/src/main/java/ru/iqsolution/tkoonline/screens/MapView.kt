@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.map_view.view.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -101,6 +102,12 @@ class MapView : FrameLayout {
         lat = null
         lon = null
         runCall("mapClearLocation_4()")
+    }
+
+    fun setLocation(location: SimpleLocation?, radius: Int = 0) {
+        location?.let {
+            setLocation(it.latitude, it.longitude, radius)
+        }
     }
 
     /**

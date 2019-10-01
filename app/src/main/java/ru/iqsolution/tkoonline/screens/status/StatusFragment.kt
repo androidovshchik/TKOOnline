@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.screens.status
 
 import android.annotation.SuppressLint
-import android.location.Location
 import android.os.BatteryManager
 import android.os.Bundle
 import android.os.Looper
@@ -17,6 +16,7 @@ import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import timber.log.Timber
@@ -143,7 +143,7 @@ class StatusFragment : BaseFragment(), SyncListener {
         onLocationChanged(state?.isLocationUsable == true)
     }
 
-    override fun onLocationResult(location: Location) {
+    override fun onLocationResult(location: SimpleLocation) {
         baseActivity?.onLocationResult(location)
     }
 
