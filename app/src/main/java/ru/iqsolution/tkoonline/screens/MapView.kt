@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -78,11 +79,11 @@ class MapView : FrameLayout {
     }
 
     fun zoomIn(duration: Int = 500) {
-        runCall("mapZoomIn_1($duration)")
+        runCall("_1_mapZoomIn($duration)")
     }
 
     fun zoomOut(duration: Int = 500) {
-        runCall("mapZoomOut_1($duration)")
+        runCall("_1_mapZoomOut($duration)")
     }
 
     fun moveTo(location: SimpleLocation?, zoom: Int = 12, duration: Int = 500) {
@@ -92,22 +93,22 @@ class MapView : FrameLayout {
     }
 
     fun moveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
-        runCall("mapMoveTo_2($latitude, $longitude, $zoom, $duration)")
+        runCall("_2_mapMoveTo($latitude, $longitude, $zoom, $duration)")
     }
 
     fun clearMarkers() {
-        runCall("mapClearMarkers_3()")
+        runCall("_3_mapClearMarkers()")
     }
 
     fun setMarkers(first: String, second: String = "[]") {
         // NOTICE here string will be converted to array and objects in js
-        runCall("mapSetMarkers_3($first, $second)")
+        runCall("_3_mapSetMarkers($first, $second)")
     }
 
     fun clearLocation() {
         lat = null
         lon = null
-        runCall("mapClearLocation_4()")
+        runCall("_4_mapClearLocation()")
     }
 
     fun setLocation(location: SimpleLocation?, radius: Int = 0) {
@@ -123,26 +124,25 @@ class MapView : FrameLayout {
     fun setLocation(latitude: Double, longitude: Double, radius: Int = 0) {
         lat = latitude
         lon = longitude
-        runCall("mapSetLocation_4($latitude, $longitude, $radius)")
+        runCall("_4_mapSetLocation($latitude, $longitude, $radius)")
     }
 
     fun clearState(all: Boolean = false) {
-        runCall("mapClearState_5($all)")
+        runCall("_5_mapClearState($all)")
     }
 
     fun saveState() {
-        runCall("mapSaveState_5()")
+        runCall("_5_mapSaveState()")
     }
 
     private fun runCall(call: String?) {
         if (call != null) {
-            try {
-                val n = call.split("_")[1]
-                calls.apply {
-                    removeAll { it.endsWith("_$n") }
-                    add(call)
+            // NOTICE currently supports only 0-9 range, don't use split
+            calls.apply {
+                if (isNotEmpty()) {
+                    removeAll { it.startsWith("_${call[1]}_") }
                 }
-            } catch (e: Exception) {
+                add(call)
             }
         }
         if (isReady) {
@@ -160,6 +160,12 @@ class MapView : FrameLayout {
 
     fun release() {
         map.destroy()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        requestDisallowInterceptTouchEvent(true)
+        return super.onTouchEvent(event)
     }
 
     override fun hasOverlappingRendering() = false

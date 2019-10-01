@@ -33,9 +33,11 @@
                 layout="@layout/platform_info"/>
 
             <View
+                android:id="@+id/platforms_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/colorDivider"/>
+                android:background="@color/colorDivider"
+                android:visibility="gone"/>
 
             <include
                 android:id="@+id/platform_regular"
@@ -43,37 +45,11 @@
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <View
-                android:id="@+id/platform_regular_div1"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="9dp"
-                android:background="@color/colorDivider"/>
-
-            <View
-                android:id="@+id/platform_regular_div2"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorDivider"/>
-
             <include
                 android:id="@+id/platform_bunker"
                 layout="@layout/container_type"
                 android:visibility="gone"
                 tools:visibility="visible"/>
-
-            <View
-                android:id="@+id/platform_bunker_div1"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="9dp"
-                android:background="@color/colorDivider"/>
-
-            <View
-                android:id="@+id/platform_bunker_div2"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorDivider"/>
 
             <include
                 android:id="@+id/platform_bulk"
@@ -81,36 +57,23 @@
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <View
-                android:id="@+id/platform_bulk_div1"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="9dp"
-                android:background="@color/colorDivider"/>
-
-            <View
-                android:id="@+id/platform_bulk_div2"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorDivider"/>
-
             <include
                 android:id="@+id/platform_special"
                 layout="@layout/container_type"
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <View
-                android:id="@+id/platform_special_div"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorDivider"/>
+            <include
+                android:id="@+id/platform_unknown"
+                layout="@layout/container_type"
+                android:visibility="gone"
+                tools:visibility="visible"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="7dp"
                 android:layout_marginBottom="12dp"
                 android:textSize="18sp"
                 android:textColor="@color/colorTextGrayLight"
@@ -133,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="12dp"
                 android:textSize="18sp"
                 android:textColor="@color/colorTextGrayLight"

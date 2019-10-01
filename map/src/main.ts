@@ -35,11 +35,11 @@ script.onload = function () {
 document.getElementsByTagName('head')[0].appendChild(script);
 
 /**
- * NOTICE the number at window functions is needed for similarity
+ * NOTICE the number at window functions is needed for similarity detection
  */
 
 // @ts-ignore
-window.mapZoomIn_1 = function (duration: number = 500) {
+window._1_mapZoomIn = function (duration: number = 500) {
     if (map == null) {
         return
     }
@@ -49,7 +49,7 @@ window.mapZoomIn_1 = function (duration: number = 500) {
 };
 
 // @ts-ignore
-window.mapZoomOut_1 = function (duration: number = 500) {
+window._1_mapZoomOut = function (duration: number = 500) {
     if (map == null) {
         return
     }
@@ -59,7 +59,7 @@ window.mapZoomOut_1 = function (duration: number = 500) {
 };
 
 // @ts-ignore
-window.mapMoveTo_2 = function (latitude: number, longitude: number, zoom: number = 12, duration: number = 800) {
+window._2_mapMoveTo = function (latitude: number, longitude: number, zoom: number = 12, duration: number = 800) {
     if (map == null) {
         return
     }
@@ -69,7 +69,7 @@ window.mapMoveTo_2 = function (latitude: number, longitude: number, zoom: number
 };
 
 // @ts-ignore
-window.mapClearMarkers_3 = function () {
+window._3_mapClearMarkers = function () {
     if (map == null) {
         return
     }
@@ -98,7 +98,7 @@ function addPlatforms(platforms: Platform[]) {
 }
 
 // @ts-ignore
-window.mapSetMarkers_3 = function (first: Platform[], second: Platform[] = []) {
+window._3_mapSetMarkers = function (first: Platform[], second: Platform[] = []) {
     if (map == null) {
         return
     }
@@ -108,7 +108,7 @@ window.mapSetMarkers_3 = function (first: Platform[], second: Platform[] = []) {
 };
 
 // @ts-ignore
-window.mapClearLocation_4 = function () {
+window._4_mapClearLocation = function () {
     if (map == null) {
         return
     }
@@ -119,7 +119,7 @@ window.mapClearLocation_4 = function () {
  * @param radius in meters
  */
 // @ts-ignore
-window.mapSetLocation_4 = function (latitude: number, longitude: number, radius: number = 0) {
+window._4_mapSetLocation = function (latitude: number, longitude: number, radius: number = 0) {
     if (map == null) {
         return
     }
@@ -148,7 +148,7 @@ window.mapSetLocation_4 = function (latitude: number, longitude: number, radius:
 };
 
 // @ts-ignore
-window.mapClearState_5 = function (all: boolean = false) {
+window._5_mapClearState = function (all: boolean = false) {
     if (map == null) {
         return
     }
@@ -162,7 +162,7 @@ window.mapClearState_5 = function (all: boolean = false) {
 };
 
 // @ts-ignore
-window.mapSaveState_5 = function () {
+window._5_mapSaveState = function () {
     if (map == null) {
         return
     }
