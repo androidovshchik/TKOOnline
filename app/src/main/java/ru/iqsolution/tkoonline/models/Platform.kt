@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
 
-open class Platform : Container {
+open class Platform : Container, Location {
 
     @SerializedName("kp_id")
     var kpId = 0
@@ -16,10 +16,10 @@ open class Platform : Container {
     lateinit var address: String
 
     @SerializedName("latitude")
-    var latitude = 0.0
+    override var latitude = 0.0
 
     @SerializedName("longitude")
-    var longitude = 0.0
+    override var longitude = 0.0
 
     @SerializedName("bal_keeper")
     var balKeeper: String? = null

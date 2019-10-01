@@ -66,9 +66,10 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
                 item.timeLimitTo.toString(FORMAT_TIME)
             )
             oval.apply {
+                val size = if (item.meters < 80) maxSize else minSize
                 layoutParams.apply {
-                    height = minSize
-                    width = minSize
+                    height = size
+                    width = size
                 }
                 backgroundDrawable = ContextCompat.getDrawable(appContext, item.status.drawable)
             }

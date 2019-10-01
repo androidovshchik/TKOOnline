@@ -28,7 +28,12 @@ class PlatformContainers() : Platform() {
      * It's needed only for map
      */
     @SerializedName("_e")
-    var errors: String? = null
+    var errors = arrayListOf<String>()
+
+    /**
+     * It's needed for sorting primary items and sizing ovals in list
+     */
+    var meters = 9999.0
 
     /**
      * It's needed for sorting secondary items in list
@@ -74,6 +79,12 @@ class PlatformContainers() : Platform() {
                 ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> special.addContainer(it)
                 else -> unknown.addContainer(it)
             }
+        }
+    }
+
+    fun addError(error: String) {
+        if (!errors.contains(error)) {
+            errors.add(error)
         }
     }
 }

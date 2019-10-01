@@ -10,6 +10,9 @@ interface Location {
 
     var longitude: Double
 
+    /**
+     * Haversine formula
+     */
     fun getDistance(l: Location): Double {
         val a =
             0.5 - cos((l.latitude - latitude) * D) / 2 + cos(latitude * D) * cos(l.latitude * D) * (1 - cos((l.longitude - longitude) * D)) / 2

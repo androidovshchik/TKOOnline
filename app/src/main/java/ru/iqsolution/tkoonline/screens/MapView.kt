@@ -8,7 +8,6 @@ import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
@@ -159,14 +158,6 @@ class MapView : FrameLayout {
     }
 
     fun release() {
-        try {
-            (parent as ViewGroup?)?.removeView(this)
-        } catch (e: Exception) {
-        }
-        try {
-            removeAllViews()
-        } catch (e: Exception) {
-        }
         map.destroy()
     }
 
