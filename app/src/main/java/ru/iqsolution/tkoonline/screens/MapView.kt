@@ -86,6 +86,12 @@ class MapView : FrameLayout {
         runCall("mapZoomOut_1($duration)")
     }
 
+    fun moveTo(location: SimpleLocation?, zoom: Int = 12, duration: Int = 500) {
+        location?.let {
+            moveTo(it.latitude, it.longitude, zoom, duration)
+        }
+    }
+
     fun moveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
         runCall("mapMoveTo_2($latitude, $longitude, $zoom, $duration)")
     }

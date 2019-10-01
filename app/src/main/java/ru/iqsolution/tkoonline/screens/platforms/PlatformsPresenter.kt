@@ -4,12 +4,14 @@ import android.app.Application
 import androidx.collection.SimpleArrayMap
 import com.google.gson.Gson
 import kotlinx.coroutines.*
+import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.models.*
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
+import java.util.*
 
 class PlatformsPresenter(application: Application) : BasePresenter<PlatformsContract.View>(application),
     PlatformsContract.Presenter {
@@ -42,9 +44,14 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                 val bunks = SimpleArrayMap<Int, Container>()
                 val specials = SimpleArrayMap<Int, Container>()
                 val unknown = SimpleArrayMap<Int, Container>()
+                val errorTypes = SimpleArrayMap<Int, String>()
                 val primary = arrayListOf<PlatformContainers>()
                 val secondary = arrayListOf<PlatformContainers>()
-                //preferences.latitude
+                responseTypes.data.forEach {
+                    if (it.isError == 1) {
+                        errorTypes.put(it.type, it.shortName)
+                    }
+                }
                 responsePlatforms.data.forEach {
                     if (it.isValid) {
                         if (it.linkedKpId == null) {
@@ -74,13 +81,35 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                     }
                 }
                 if (responsePlatforms.data.isNotEmpty()) {
-                    viewRef.get()?.changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
+                    viewRef.get()?.changeMapPosition(SimpleLocation((maxLat + minLat) / 2, (maxLon + minLon) / 2))
                 }
-                /*withContext(Dispatchers.IO) {
-                    val photoEvents = db.photoDao().getEvents()
-                    val cleanEvents = db.cleanDao().getEvents()
-
-                }*/
+                withContext(Dispatchers.IO) {
+                    val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
+                    db.photoDao().getEvents().forEach {
+                        for (platform in secondary) {
+                            if (it.photo.kpId == platform.kpId) {
+                                if (platform.timestamp == 0L) {
+                                    platform.timestamp = it.photo.whenTime.withZone(timeZone).millis
+                                }
+                                errorTypes.get(it.photo.typeId)?.run {
+                                    platform.addError(this)
+                                }
+                            }
+                        }
+                    }
+                    db.cleanDao().getEvents().forEach {
+                        for (platform in secondary) {
+                            if (it.clean.kpId == platform.kpId) {
+                                val millis = it.clean.whenTime.withZone(timeZone).millis
+                                if (platform.timestamp < millis) {
+                                    platform.timestamp = millis
+                                }
+                                break
+                            }
+                        }
+                    }
+                    secondary.sortByDescending { it.timestamp }
+                }
                 primary.forEach {
                     it.apply {
                         addContainer(regulars.get(it.kpId))
@@ -99,8 +128,10 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                         addContainer(unknown.get(it.kpId))
                     }
                 }
-                viewRef.get()?.onReceivedPlatforms(primary, secondary)
-                viewRef.get()?.updateMapMarkers(gson.toJson(primary), gson.toJson(secondary))
+                viewRef.get()?.apply {
+                    onReceivedPlatforms(primary, secondary)
+                    updateMapMarkers(gson.toJson(primary), gson.toJson(secondary))
+                }
             } catch (e: CancellationException) {
             }
         }
