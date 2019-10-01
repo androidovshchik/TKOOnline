@@ -1,9 +1,7 @@
 package ru.iqsolution.tkoonline.services.workers
 
 import android.app.Application
-import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.work.*
+import androidx.work.WorkerParameters
 import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -15,7 +13,6 @@ import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.remote.api.RequestClean
 import ru.iqsolution.tkoonline.services.BaseWorker
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, params) {
 
@@ -62,7 +59,7 @@ class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, p
 
     companion object {
 
-        fun launch(context: Context): LiveData<WorkInfo> {
+        /*fun launch(context: Context): LiveData<WorkInfo> {
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.METERED)
                 .build()
@@ -80,6 +77,6 @@ class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, p
                     .enqueue(request)
                 return getWorkInfoByIdLiveData(work.id)
             }
-        }
+        }*/
     }
 }

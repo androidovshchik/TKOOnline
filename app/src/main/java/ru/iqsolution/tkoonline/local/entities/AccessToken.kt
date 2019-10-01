@@ -5,6 +5,9 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.PATTERN_DATETIME
+import ru.iqsolution.tkoonline.local.Preferences
+import timber.log.Timber
 
 @Entity(
     tableName = "tokens",
@@ -12,7 +15,7 @@ import org.joda.time.DateTime
         Index(value = ["t_token"], unique = true)
     ]
 )
-class AccessToken {
+class AccessToken() {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "t_id")
@@ -25,7 +28,7 @@ class AccessToken {
     lateinit var queName: String
 
     @ColumnInfo(name = "t_car_id")
-    var cardId = 0
+    var carId = 0
 
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
@@ -35,4 +38,18 @@ class AccessToken {
 
     val authHeader: String
         get() = "Bearer $token"
+
+    constructor(preferences: Preferences) : this() {
+        preferences.accessToken?.let {
+            token = it
+            queName = preferences.queName.toString()
+            carId = preferences.carId
+            expires = try {
+                DateTime.parse(preferences.expiresWhen, PATTERN_DATETIME)
+            } catch (e: Exception) {
+                Timber.e(e)
+                DateTime.now()
+            }
+        }
+    }
 }

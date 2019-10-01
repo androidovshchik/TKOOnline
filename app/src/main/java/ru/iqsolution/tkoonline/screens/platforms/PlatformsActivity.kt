@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
 import android.content.Intent
-import android.location.Location
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -16,6 +15,7 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
@@ -28,8 +28,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     private lateinit var platformsAdapter: PlatformsAdapter
 
     private val photoTypes = arrayListOf<PhotoType>()
-
-    private val comparator = ComparatorLocation()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,11 +42,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
         platforms_map.apply {
             loadUrl(URL)
-            preferences.apply {
-                lastTime?.let {
-                    setLocation(lastLat.toDouble(), lastLon.toDouble())
-                }
-            }
+            setLocation(preferences.location)
         }
         platforms_refresh.setOnRefreshListener {
             presenter.loadPlatformsTypes(true)
@@ -76,7 +70,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             platforms_photo.apply {
                 visibility = View.VISIBLE
                 onClick {
-
+                    takePhoto()
                 }
             }
         }
@@ -90,35 +84,39 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         )
     }
 
-    override fun onReceivedTypes(data: List<PhotoType>) {
+    override fun onReceivedTypes(types: List<PhotoType>) {
         photoTypes.apply {
             clear()
-            addAll(data)
+            addAll(types)
         }
     }
 
-    override fun changeMapPosition(latitude: Double, longitude: Double) {
-        platforms_map.moveTo(latitude, longitude)
+    override fun changeMapPosition(location: SimpleLocation) {
+        platforms_map.moveTo(location)
     }
 
-    override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
+    override fun onReceivedPrimary(platforms: List<PlatformContainers>) {
         platformsAdapter.apply {
             primaryItems.apply {
                 clear()
-                addAll(primary)
+                addAll(platforms)
             }
-            preferences.apply {
-                lastTime?.let {
-                    sortByLocation(lastLat.toDouble(), lastLon.toDouble())
-                }
-            }
-            items.apply {
-                clear()
-                addAll(secondary)
+            preferences.location?.let {
+                primaryItems.sortBy { it.meters }
             }
             notifyDataSetChanged()
         }
         platforms_refresh.isRefreshing = false
+    }
+
+    override fun onReceivedSecondary(platforms: List<PlatformContainers>) {
+        platformsAdapter.apply {
+            items.apply {
+                clear()
+                addAll(platforms)
+            }
+            notifyDataSetChanged()
+        }
     }
 
     /**
@@ -128,17 +126,19 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platforms_map.setMarkers(secondary, primary)
     }
 
-    override fun onLocationResult(location: Location) {
-        platforms_map.setLocation(location.latitude, location.longitude)
-        sortByLocation(location.latitude, location.longitude)
-        platformsAdapter.notifyDataSetChanged()
-    }
-
-    private fun sortByLocation(latitude: Double, longitude: Double) {
+    override fun onLocationResult(location: SimpleLocation) {
+        platforms_map.setLocation(location)
         platformsAdapter.apply {
-            primaryItems.sortWith(comparator.apply {
-                updateLocation(latitude, longitude)
-            })
+            primaryItems.forEach {
+
+            }
+            items.forEach {
+
+            }
+            preferences.location?.let {
+                primaryItems.sortBy { it.meters }
+            }
+            notifyDataSetChanged()
         }
     }
 
