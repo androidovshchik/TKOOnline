@@ -33,9 +33,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             setLocation(preferences.location)
             moveTo(platform.latitude, platform.longitude)
         }
-        platform_id.text = platform.kpId.toString()
+        platform_id.text = getString(R.string.platform_id, platform.kpId)
         platform_range.text = getString(
-            R.string.container_range,
+            R.string.platform_range,
             platform.timeLimitFrom.toString(FORMAT_TIME),
             platform.timeLimitTo.toString(FORMAT_TIME)
         )

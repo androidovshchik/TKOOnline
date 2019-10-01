@@ -61,7 +61,7 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
         override fun onBindItem(position: Int, item: PlatformContainers) {
             address.text = item.address
             range.text = appContext.getString(
-                R.string.container_range,
+                R.string.platform_range_n,
                 item.timeLimitFrom.toString(FORMAT_TIME),
                 item.timeLimitTo.toString(FORMAT_TIME)
             )
