@@ -5,6 +5,7 @@ import android.content.Context
 import com.google.android.gms.location.*
 import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
 import ru.iqsolution.tkoonline.extensions.areGranted
+import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -36,7 +37,7 @@ class LocationManager(context: Context, listener: LocationListener) {
         override fun onLocationResult(result: LocationResult?) {
             result?.lastLocation?.let {
                 Timber.i("Last location is $it")
-                reference.get()?.onLocationResult(it)
+                reference.get()?.onLocationResult(SimpleLocation(it))
             } ?: run {
                 Timber.w("Last location is null")
             }

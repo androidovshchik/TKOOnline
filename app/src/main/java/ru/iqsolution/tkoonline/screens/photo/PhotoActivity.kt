@@ -11,8 +11,8 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo)
-        presenter = PhotoPresenter(application).also {
-            it.attachView(this)
+        presenter = PhotoPresenter(application).apply {
+            attachView(this@PhotoActivity)
         }
         toolbar_back.onClick {
             finish()

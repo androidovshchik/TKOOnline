@@ -3,7 +3,6 @@ package ru.iqsolution.tkoonline.services
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.location.Location
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
@@ -19,6 +18,7 @@ import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startForegroundService
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.models.SimpleLocation
 
 class TelemetryService : BaseService(), LocationListener {
 
@@ -70,7 +70,7 @@ class TelemetryService : BaseService(), LocationListener {
             })
     }
 
-    override fun onLocationResult(location: Location) {
+    override fun onLocationResult(location: SimpleLocation) {
         preferences.bulk {
             lastLat = location.latitude.toFloat()
             lastLon = location.longitude.toFloat()

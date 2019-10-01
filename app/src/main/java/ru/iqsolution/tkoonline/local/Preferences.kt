@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.local
 
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel
+import ru.iqsolution.tkoonline.models.SimpleLocation
 
 class Preferences(context: Context) : KotprefModel(context) {
 
@@ -70,4 +71,9 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     val serverDay: String
         get() = serverTime?.split("T")?.get(0).toString()
+
+    val location: SimpleLocation?
+        get() = lastTime?.let {
+            SimpleLocation(lastLat, lastLon)
+        }
 }

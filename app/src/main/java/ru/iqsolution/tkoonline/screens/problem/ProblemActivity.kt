@@ -11,8 +11,8 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_problem)
-        presenter = ProblemPresenter(application).also {
-            it.attachView(this)
+        presenter = ProblemPresenter(application).apply {
+            attachView(this@ProblemActivity)
         }
         toolbar_back.onClick {
             finish()

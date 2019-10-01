@@ -1,7 +1,7 @@
 package ru.iqsolution.tkoonline.services
 
-import android.location.Location
 import com.google.android.gms.location.LocationSettingsStates
+import ru.iqsolution.tkoonline.models.SimpleLocation
 
 interface LocationListener {
 
@@ -13,5 +13,5 @@ interface LocationListener {
 
     fun onLocationAvailability(available: Boolean)
 
-    fun onLocationResult(location: Location)
+    fun onLocationResult(location: SimpleLocation)
 }

@@ -37,9 +37,10 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platformsAdapter = PlatformsAdapter(applicationContext).apply {
             setAdapterListener(this@PlatformsActivity)
         }
-        presenter = PlatformsPresenter(application).also {
-            it.attachView(this)
-            it.loadPlatformsTypes(false)
+        presenter = PlatformsPresenter(application).apply {
+            attachView(this@PlatformsActivity)
+            saveAccessToken()
+            loadPlatformsTypes(false)
         }
         platforms_map.apply {
             loadUrl(URL)

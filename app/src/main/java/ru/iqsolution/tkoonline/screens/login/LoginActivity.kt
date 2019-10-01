@@ -34,9 +34,9 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        presenter = LoginPresenter(application).also {
-            it.attachView(this)
-            it.clearAuthorization()
+        presenter = LoginPresenter(application).apply {
+            attachView(this@LoginActivity)
+            clearAuthorization()
         }
         GlideApp.with(applicationContext)
             .load(R.drawable.login_background)

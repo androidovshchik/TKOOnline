@@ -17,9 +17,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform)
-        presenter = PlatformPresenter(application).also {
-            it.attachView(this)
-            platform = it.platformFromJson(intent.getStringExtra(EXTRA_PLATFORM))
+        presenter = PlatformPresenter(application).apply {
+            attachView(this@PlatformActivity)
+            platform = platformFromJson(intent.getStringExtra(EXTRA_PLATFORM))
         }
         toolbar_back.onClick {
             finish()

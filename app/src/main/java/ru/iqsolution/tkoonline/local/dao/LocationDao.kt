@@ -18,9 +18,6 @@ interface LocationDao {
     )
     fun getEvents(): List<LocationEventToken>
 
-    @Insert
-    fun insert(item: LocationEvent)
-
     @Query(
         """
         UPDATE location_events SET le_sent = 1 WHERE le_id = :id
@@ -28,6 +25,12 @@ interface LocationDao {
     )
     fun markAsSent(id: Long)
 
+    @Insert
+    fun insert(item: LocationEvent)
+
+    /**
+     * Lifetime is less than 48 hours
+     */
     @Delete
     fun delete(items: List<LocationEvent>)
 }
