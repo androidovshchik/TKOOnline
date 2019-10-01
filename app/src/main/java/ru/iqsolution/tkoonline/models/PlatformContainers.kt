@@ -1,6 +1,8 @@
 package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
+import ru.iqsolution.tkoonline.models.Location.Companion.D
+import ru.iqsolution.tkoonline.models.Location.Companion.R
 import kotlin.math.absoluteValue
 import kotlin.math.asin
 import kotlin.math.cos
@@ -100,17 +102,18 @@ class PlatformContainers() : Platform() {
             PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> {
             }
             else -> {
-                val diffLat = (latitude - l.latitude).absoluteValue * LAT1
-                val diffLon = (longitude - l.longitude).absoluteValue * getLon1(l.latitude)
-                if (diffLat > RANGE_DISTANCE || diffLon > RANGE_DISTANCE) {
+                val dLat = (l.latitude - latitude).absoluteValue * LAT1
+                val dLon = (l.longitude - longitude).absoluteValue * getLon1(l.latitude)
+                if (dLat > RANGE_DISTANCE || dLon > RANGE_DISTANCE) {
                     return DEFAULT_DISTANCE
                 }
             }
         }
         // https://stackoverflow.com/a/21623206/5279156
-        val a =
-            0.5 - cos((l.latitude - latitude) * D) / 2 + cos(latitude * D) * cos(l.latitude * D) * (1 - cos((l.longitude - longitude) * D)) / 2
-        return R * asin(sqrt(a))
+        val dLat = (l.latitude - latitude) * D
+        val dLon = (l.longitude - longitude) * D
+        val a = 0.5 - cos(dLat) / 2 + cos(latitude * D) * cos(l.latitude * D) * (1 - cos(dLon)) / 2
+        return 2 * R * asin(sqrt(a))
     }
 
     companion object {
@@ -124,10 +127,6 @@ class PlatformContainers() : Platform() {
          * It's value doesn't matter but must be more than [RANGE_DISTANCE]
          */
         private const val DEFAULT_DISTANCE = 9999.0
-
-        private const val D = 0.017453292519943295 // Math.PI / 180
-
-        private const val R = 12742000 // 2 * R; R = 6371 km
 
         /**
          * Length in meters of 1° of latitude = always 111.32 km
