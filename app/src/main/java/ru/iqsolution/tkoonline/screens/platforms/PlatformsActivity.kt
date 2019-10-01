@@ -8,10 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_platforms.*
 import org.jetbrains.anko.sdk23.listeners.onClick
-import ru.iqsolution.tkoonline.EXTRA_ID
-import ru.iqsolution.tkoonline.EXTRA_PLATFORM
-import ru.iqsolution.tkoonline.EXTRA_TYPES
-import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
@@ -100,9 +97,12 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             primaryItems.apply {
                 clear()
                 addAll(platforms)
-            }
-            preferences.location?.let {
-                primaryItems.sortBy { it.meters }
+                preferences.location?.let { location ->
+                    forEach {
+                        it.meters = it.getDistance(location)
+                    }
+                    sortBy { it.meters }
+                }
             }
             notifyDataSetChanged()
         }
@@ -114,6 +114,11 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             items.apply {
                 clear()
                 addAll(platforms)
+                preferences.location?.let { location ->
+                    forEach {
+                        it.meters = it.getDistance(location)
+                    }
+                }
             }
             notifyDataSetChanged()
         }
@@ -130,13 +135,11 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platforms_map.setLocation(location)
         platformsAdapter.apply {
             primaryItems.forEach {
-
+                it.meters = it.getDistance(location)
             }
+            primaryItems.sortBy { it.meters }
             items.forEach {
-
-            }
-            preferences.location?.let {
-                primaryItems.sortBy { it.meters }
+                it.meters = it.getDistance(location)
             }
             notifyDataSetChanged()
         }
@@ -148,12 +151,18 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_PLATFORM) {
             if (resultCode == RESULT_OK) {
+                val id = data?.getIntExtra(EXTRA_ID, -1) ?: -1
+                val errors = data?.getStringArrayListExtra(EXTRA_ERRORS).orEmpty()
                 platformsAdapter.apply {
-                    primaryItems.apply {
-                        val id = data?.getIntExtra(EXTRA_ID, -1) ?: -1
+                    items.apply {
                         firstOrNull { it.kpId == id }?.let {
                             remove(it)
+                            it.errors.apply {
+                                clear()
+                                addAll(errors)
+                            }
                             add(0, it)
+                            // todo also map changes
                             notifyDataSetChanged()
                         }
                     }

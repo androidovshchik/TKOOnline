@@ -34,3 +34,5 @@ const val EXTRA_PLATFORM = "extra_platform"
 const val EXTRA_TYPES = "extra_types"
 
 const val EXTRA_ID = "extra_id"
+
+const val EXTRA_ERRORS = "extra_errors"

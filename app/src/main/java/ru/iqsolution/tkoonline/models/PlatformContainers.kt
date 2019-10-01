@@ -1,6 +1,8 @@
 package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
+import kotlin.math.absoluteValue
+import kotlin.math.cos
 
 /**
  * Special class for non-linked platforms
@@ -33,7 +35,7 @@ class PlatformContainers() : Platform() {
     /**
      * It's needed for sorting primary items and sizing ovals in list
      */
-    var meters = 9999.0
+    var meters = DEFAULT_DISTANCE
 
     /**
      * It's needed for sorting secondary items in list
@@ -85,6 +87,49 @@ class PlatformContainers() : Platform() {
     fun addError(error: String) {
         if (!errors.contains(error)) {
             errors.add(error)
+        }
+    }
+
+    /**
+     * Simplifying here calculation for better performance
+     */
+    override fun getDistance(l: Location): Double {
+        return when (status) {
+            PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> super.getDistance(l)
+            else -> {
+                val diffLat = (latitude - l.latitude).absoluteValue * LAT1
+                val diffLon = (longitude - l.longitude).absoluteValue * getLon1(diffLat)
+                return if (diffLat < RANGE_DISTANCE && diffLon < RANGE_DISTANCE) {
+                    super.getDistance(l)
+                } else {
+                    DEFAULT_DISTANCE
+                }
+            }
+        }
+    }
+
+    companion object {
+
+        /**
+         * Min range for better calculation
+         */
+        private const val RANGE_DISTANCE = 999.0
+
+        /**
+         * It's value doesn't matter but must be more than [RANGE_DISTANCE]
+         */
+        private const val DEFAULT_DISTANCE = 9999.0
+
+        /**
+         * Length in meters of 1° of latitude = always 111.32 km
+         */
+        private const val LAT1 = 111320
+
+        /**
+         * Length in meters of 1° of longitude = 40075 km * cos(latitude) / 360
+         */
+        private fun getLon1(latitude: Double): Double {
+            return 40075000 * cos(latitude) / 360
         }
     }
 }
