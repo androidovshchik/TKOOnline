@@ -98,7 +98,7 @@ class PlatformContainers() : Platform() {
             PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> super.getDistance(l)
             else -> {
                 val diffLat = (latitude - l.latitude).absoluteValue * LAT1
-                val diffLon = (longitude - l.longitude).absoluteValue * getLon1(diffLat)
+                val diffLon = (longitude - l.longitude).absoluteValue * getLon1(l.latitude)
                 return if (diffLat < RANGE_DISTANCE && diffLon < RANGE_DISTANCE) {
                     super.getDistance(l)
                 } else {

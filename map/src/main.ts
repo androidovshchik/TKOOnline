@@ -98,13 +98,13 @@ function addPlatforms(platforms: Platform[]) {
 }
 
 // @ts-ignore
-window.mapSetMarkers_3 = function (first: string, second: string = "[]") {
+window.mapSetMarkers_3 = function (first: Platform[], second: Platform[] = []) {
     if (map == null) {
         return
     }
     markersCollection.removeAll();
-    addPlatforms(JSON.parse(first));
-    addPlatforms(JSON.parse(second));
+    addPlatforms(first);
+    addPlatforms(second);
 };
 
 // @ts-ignore

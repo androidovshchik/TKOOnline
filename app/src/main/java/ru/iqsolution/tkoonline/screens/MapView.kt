@@ -100,6 +100,7 @@ class MapView : FrameLayout {
     }
 
     fun setMarkers(first: String, second: String = "[]") {
+        // NOTICE here string will be converted to array and objects in js
         runCall("mapSetMarkers_3($first, $second)")
     }
 

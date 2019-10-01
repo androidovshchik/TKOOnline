@@ -84,7 +84,7 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                     }
                 }
                 viewRef.get()?.apply {
-                    if (responsePlatforms.data.isNotEmpty()) {
+                    if (!refresh && responsePlatforms.data.isNotEmpty()) {
                         changeMapPosition(SimpleLocation((maxLat + minLat) / 2, (maxLon + minLon) / 2))
                     }
                     onReceivedPrimary(primary)

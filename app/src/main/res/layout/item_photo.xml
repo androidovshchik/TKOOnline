@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<de.hdodenhof.circleimageview.CircleImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/photo"
     android:layout_width="@dimen/gallery_height"
     android:layout_height="@dimen/gallery_height"
     android:src="@drawable/ic_camera_white"
-    android:background="@drawable/photo_oval"
-    app:civ_border_width="5dp"/>
+    android:scaleType="center"
+    android:adjustViewBounds="true"
+    android:background="@drawable/photo_oval"/>
