@@ -1,16 +1,17 @@
 package ru.iqsolution.tkoonline.screens.photo
 
 import ru.iqsolution.tkoonline.local.FileManager
-import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.screens.base.IBaseView
+import java.io.File
 
 interface PhotoContract {
 
     interface Presenter {
 
-        fun platformFromJson(json: String?): PlatformContainers?
+        fun moveFile(fileManager: FileManager, src: File, dist: File)
 
-        fun moveFile(fileManager: FileManager)
+        fun saveEvent(photoEvent: PhotoEvent)
     }
 
     interface View : IBaseView

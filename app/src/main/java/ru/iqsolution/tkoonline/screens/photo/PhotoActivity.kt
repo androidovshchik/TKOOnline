@@ -10,7 +10,6 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.local.FileManager
-import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import java.io.File
 
@@ -18,11 +17,13 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
 
     private lateinit var fileManager: FileManager
 
-    private var platform: PlatformContainers? = null
+    private var externalPhoto: File? = null
 
-    private var outerPhoto: File? = null
+    private var internalPhoto: File? = null
 
-    private var innerPhoto: File? = null
+    private var kpId: Int? = null
+
+    private var photoType = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,14 +33,10 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             platform = platformFromJson(intent.getStringExtra(EXTRA_PLATFORM))
         }
         fileManager = FileManager(applicationContext)
-        photoPath = intent.getStringExtra(EXTRA_PATH)
         toolbar_back.onClick {
             finish()
         }
         toolbar_title.text = intent.getStringExtra(EXTRA_TITLE)
-        if (photoPath != null) {
-            showPhoto()
-        }
         photo_delete.onClick {
             setResult(RESULT_CANCELED)
             finish()
@@ -52,13 +49,17 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             setResult(RESULT_OK)
             finish()
         }
-        takePhoto()
+        if (intent.hasExtra(EXTRA_PATH)) {
+            internalPhoto = File(intent.getStringExtra(EXTRA_PATH))
+            externalPhoto = File(fileManager.externalDir, internalPhoto?.name)
+            showPhoto()
+        } else {
+            externalPhoto = fileManager.createTempFile()
+            takePhoto()
+        }
     }
 
     private fun takePhoto(path: String? = null) {
-        if (photoPath != null) {
-            return
-        }
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(packageManager) != null) {
             photoPath = path ?: fileManager.createTempFile().path
@@ -74,7 +75,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
 
     private fun showPhoto() {
         GlideApp.with(applicationContext)
-            .load(innerPhoto)
+            .load(internalPhoto)
             .into(photo_preview)
     }
 
@@ -86,7 +87,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             REQUEST_PHOTO -> {
                 outerPhoto?.also {
                     if (resultCode == RESULT_OK) {
-                        fileManager.moveToInternal(it)
+                        fileManager.moveFile(it)
                     } else {
                         fileManager.deleteFile(it)
                     }

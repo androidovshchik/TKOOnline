@@ -8,6 +8,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -27,27 +28,27 @@ class FileManager(context: Context) {
         return File.createTempFile("photo", ".jpeg", externalDir)
     }
 
-    fun moveToInternal(path: String): String {
-        return moveToInternal(File(path))
+    fun moveFile(src: String, dist: String) {
+        moveFile(File(src), File(dist))
     }
 
     /**
      * @return new path of file
      */
     @WorkerThread
-    fun moveToInternal(file: File): String {
-        val dist = File(photosDir, file.name)
+    fun moveFile(src: File, dist: File) {
         try {
-            FileInputStream(file).use { input ->
+            FileInputStream(src).use { input ->
                 FileOutputStream(dist).use { output ->
                     input.copyTo(output)
                 }
             }
+        } catch (e: FileNotFoundException) {
+            Timber.e(e)
         } catch (e: Exception) {
             Timber.e(e)
             dist.delete()
         }
-        return dist.path
     }
 
     fun readFile(path: String): MultipartBody.Part? {
