@@ -11,6 +11,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import kotlinx.android.synthetic.main.merge_container.view.*
+import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 
 class ContainerLayout : LinearLayout {
@@ -33,6 +35,18 @@ class ContainerLayout : LinearLayout {
 
     init {
         View.inflate(context, R.layout.merge_container, this)
+        arrow_up_volume.onClick {
+
+        }
+        arrow_down_volume.onClick {
+
+        }
+        arrow_up_count.onClick {
+
+        }
+        arrow_down_count.onClick {
+
+        }
     }
 
     override fun hasOverlappingRendering() = false

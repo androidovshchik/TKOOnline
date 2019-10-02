@@ -16,4 +16,23 @@ class PhotoType : Serializable {
 
     @SerializedName("is_error")
     var isError = 0
+
+    @Suppress("unused")
+    enum class Default(
+        val id: Int,
+        val description: String,
+        val isDelete: Boolean,
+        val isError: Boolean,
+        val shortName: String
+    ) {
+        BEFORE(0, "До", false, false, "До"),
+        AFTER(1, "После", false, false, "Посл");
+
+        companion object {
+
+            private val map = values().associateBy(Default::id)
+
+            fun fromId(value: Int): Default? = map[value]
+        }
+    }
 }
