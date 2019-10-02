@@ -3,6 +3,8 @@
     <string name="platform_range_n">с\u0020\u0020\u0020%1$s\nдо %2$s</string>
     <string name="platform_id">ID: %1$d</string>
     <string name="platform_range">с %1$s до %2$s</string>
+    <string name="platform_volume">%1$.1fм3</string>
+    <string name="platform_count">%1$dшт</string>
     <plurals name="attempts">
         <item quantity="zero">Нет попыток</item>
         <item quantity="one">Осталось %1$d попытка</item>
