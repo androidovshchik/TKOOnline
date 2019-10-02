@@ -39,7 +39,7 @@
                 android:background="@color/colorDivider"
                 android:visibility="gone"/>
 
-            <ru.iqsolution.tkoonline.screens.platform.ContainerView
+            <ru.iqsolution.tkoonline.screens.platform.ContainerLayout
                 android:id="@+id/platform_regular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <ru.iqsolution.tkoonline.screens.platform.ContainerView
+            <ru.iqsolution.tkoonline.screens.platform.ContainerLayout
                 android:id="@+id/platform_bunker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <ru.iqsolution.tkoonline.screens.platform.ContainerView
+            <ru.iqsolution.tkoonline.screens.platform.ContainerLayout
                 android:id="@+id/platform_bulk"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <ru.iqsolution.tkoonline.screens.platform.ContainerView
+            <ru.iqsolution.tkoonline.screens.platform.ContainerLayout
                 android:id="@+id/platform_special"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <ru.iqsolution.tkoonline.screens.platform.ContainerView
+            <ru.iqsolution.tkoonline.screens.platform.ContainerLayout
                 android:id="@+id/platform_unknown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
                 tools:textStyle="bold"
                 fontPath="fonts/Roboto-Bold.ttf"/>
 
-            <ru.iqsolution.tkoonline.screens.platform.GalleryView
+            <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
                 android:id="@+id/gallery_before"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/gallery_height"/>
@@ -116,7 +116,7 @@
                 tools:textStyle="bold"
                 fontPath="fonts/Roboto-Bold.ttf"/>
 
-            <ru.iqsolution.tkoonline.screens.platform.GalleryView
+            <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
                 android:id="@+id/gallery_after"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/gallery_height"/>
