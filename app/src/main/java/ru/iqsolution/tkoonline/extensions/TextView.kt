@@ -2,9 +2,13 @@
 
 package ru.iqsolution.tkoonline.extensions
 
+import android.graphics.Typeface
 import android.text.InputFilter
 import android.text.InputType
+import android.text.Spannable
+import android.text.SpannableStringBuilder
 import android.text.method.DigitsKeyListener
+import android.text.style.StyleSpan
 import android.widget.TextView
 
 fun TextView.setMaxLength(length: Int) {
@@ -18,7 +22,12 @@ fun TextView.setOnlyNumbers() {
     keyListener = DigitsKeyListener.getInstance("0123456789")
 }
 
-fun TextView.setOnlyUppercase() {
-    inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
-    filters = arrayOf(InputFilter.AllCaps())
+fun TextView.setTextBoldSpan(text: CharSequence, indices: List<Int>) {
+    require(indices.size % 2 == 0) { "The size of list must be an even number" }
+    val boldStyle = StyleSpan(Typeface.BOLD)
+    setText(SpannableStringBuilder(text).apply {
+        indices.chunked(2).forEach {
+            setSpan(boldStyle, it[0], it[1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+    })
 }
