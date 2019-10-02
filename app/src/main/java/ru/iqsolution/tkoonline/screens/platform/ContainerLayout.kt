@@ -18,10 +18,12 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
+import kotlin.math.max
+import kotlin.math.min
 
 class ContainerLayout : LinearLayout, Container {
 
-    override var containerType = ContainerType.UNKNOWN.id
+    override var containerType = ContainerType.UNKNOWN.id.toString()
 
     override var containerVolume = 0.0f
 
@@ -51,13 +53,13 @@ class ContainerLayout : LinearLayout, Container {
         View.inflate(context, R.layout.merge_container, this)
         arrow_up_volume.onClick {
             if (containerVolume < 9.9f) {
-                containerVolume += 0.1f
+                containerVolume = min(9.999f, containerVolume + 0.1f)
                 volume_value.setRichText(context.getString(R.string.platform_volume, containerVolume))
             }
         }
         arrow_down_volume.onClick {
             if (containerVolume >= 0.1f) {
-                containerVolume -= 0.1f
+                containerVolume = max(0f, containerVolume - 0.1f)
                 volume_value.setRichText(context.getString(R.string.platform_volume, containerVolume))
             }
         }
@@ -77,14 +79,13 @@ class ContainerLayout : LinearLayout, Container {
 
     @SuppressLint("Recycle")
     private fun init(attrs: AttributeSet?) {
-        val type = ContainerType.UNKNOWN
+        var type = ContainerType.UNKNOWN
         attrs?.let {
             context.obtainStyledAttributes(it, R.styleable.ContainerLayout).use { a ->
-                containerType = ContainerType.fromId(a.getString(R.styleable.ContainerLayout_containerType))
+                type = ContainerType.fromId(a.getString(R.styleable.ContainerLayout_containerType))
+                containerType = type.id.toString()
             }
         }
-        icon_type.setImageResource(containerType.icon)
-        text_type.text = containerType.shortName
         if (type == ContainerType.BULK1 || type == ContainerType.BULK2) {
             arrow_up_volume.visibility = INVISIBLE
             arrow_down_volume.visibility = INVISIBLE
@@ -92,22 +93,26 @@ class ContainerLayout : LinearLayout, Container {
             arrow_down_count.visibility = INVISIBLE
             count_value.visibility = INVISIBLE
         }
+        icon_type.setImageResource(type.icon)
+        text_type.text = type.shortName
     }
 
     override fun addContainer(container: Container?) {
         super.addContainer(container)
-        volume_value.setRichText(context.getString(R.string.platform_volume, containerVolume))
-        count_value.setRichText(context.getString(R.string.platform_count, containerCount))
+        context.apply {
+            volume_value.setRichText(getString(R.string.platform_volume, containerVolume))
+            count_value.setRichText(getString(R.string.platform_count, containerCount))
+        }
     }
 
     override fun hasOverlappingRendering() = false
 
     private fun TextView.setRichText(text: CharSequence) {
-        val smallStyle = RelativeSizeSpan(0.8f)
-        val colorStyle = ForegroundColorSpan(sd)
+        val smallStyle = RelativeSizeSpan(0.6f)
+        val colorStyle = ForegroundColorSpan(context.getColor(R.color.colorTextGrayDark))
         setText(SpannableStringBuilder(text).apply {
-            setSpan(colorStyle, 0, 0, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            setSpan(smallStyle, 0, 0, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(colorStyle, 0, text.length - 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(smallStyle, text.length - 2, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         })
     }
 }

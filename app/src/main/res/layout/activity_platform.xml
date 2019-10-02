@@ -85,55 +85,17 @@
                 app:containerType="НЕИЗВЕСТНЫЙ"
                 tools:visibility="visible"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="12dp"
-                android:textSize="18sp"
-                android:textColor="@color/colorTextGrayLight"
-                android:lineSpacingExtra="3sp"
-                android:text="Фотографии “до”"
-                tools:textStyle="bold"
-                fontPath="fonts/Roboto-Bold.ttf"/>
-
             <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
                 android:id="@+id/gallery_before"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/gallery_height"
                 app:photoType="0"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="26dp"
-                android:background="@color/colorDivider"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="12dp"
-                android:textSize="18sp"
-                android:textColor="@color/colorTextGrayLight"
-                android:lineSpacingExtra="3sp"
-                android:text="Фотографии “после”"
-                tools:textStyle="bold"
-                fontPath="fonts/Roboto-Bold.ttf"/>
-
             <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
                 android:id="@+id/gallery_after"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/gallery_height"
                 app:photoType="1"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="26dp"
-                android:background="@color/colorDivider"/>
 
             <Button
                 android:id="@+id/platform_report"

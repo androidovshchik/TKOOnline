@@ -2,12 +2,29 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:layout_width="match_parent"
-    tools:layout_height="@dimen/gallery_height"
-    tools:parentTag="RelativeLayout">
+    tools:layout_height="wrap_content"
+    tools:parentTag="RelativeLayout"
+    tools:ignore="MissingPrefix">
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
+        android:textColor="@color/colorTextGrayLight"
+        android:lineSpacingExtra="3sp"
+        tools:text="Фотографии “до”"
+        tools:textStyle="bold"
+        fontPath="fonts/Roboto-Bold.ttf"/>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="@dimen/gallery_height"
+        android:layout_below="@+id/subtitle">
 
         <LinearLayout
             android:id="@+id/gallery"
@@ -54,8 +71,16 @@
     <ImageView
         android:id="@+id/mark"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/gallery_height"
+        android:layout_below="@+id/subtitle"
         android:adjustViewBounds="true"
         tools:src="@drawable/ic_rect_green"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/mark"
+        android:layout_marginTop="26dp"
+        android:background="@color/colorDivider"/>
 
 </merge>
