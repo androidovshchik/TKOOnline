@@ -13,16 +13,6 @@ import java.io.File
 
 class PhotoLoader : ModelLoader<PhotoEvent, File> {
 
-    @Suppress("unused")
-    class Factory : ModelLoaderFactory<PhotoEvent, File> {
-
-        override fun build(factory: MultiModelLoaderFactory): ModelLoader<PhotoEvent, File> {
-            return PhotoLoader()
-        }
-
-        override fun teardown() {}
-    }
-
     override fun buildLoadData(
         reference: PhotoEvent,
         height: Int,
@@ -34,6 +24,16 @@ class PhotoLoader : ModelLoader<PhotoEvent, File> {
 
     override fun handles(reference: PhotoEvent): Boolean {
         return true
+    }
+
+    @Suppress("unused")
+    class Factory : ModelLoaderFactory<PhotoEvent, File> {
+
+        override fun build(factory: MultiModelLoaderFactory): ModelLoader<PhotoEvent, File> {
+            return PhotoLoader()
+        }
+
+        override fun teardown() {}
     }
 }
 

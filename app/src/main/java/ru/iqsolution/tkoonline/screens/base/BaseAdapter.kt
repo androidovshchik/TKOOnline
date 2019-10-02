@@ -10,10 +10,10 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<BaseViewHolder<T>>() {
 
     val items = arrayListOf<T>()
 
-    protected var listenerRef: WeakReference<Listener<T>>? = null
+    protected var reference: WeakReference<AdapterListener<T>>? = null
 
-    fun setAdapterListener(listener: Listener<T>) {
-        listenerRef = WeakReference(listener)
+    fun setAdapterListener(listener: AdapterListener<T>) {
+        reference = WeakReference(listener)
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<T>, position: Int) {
@@ -21,11 +21,6 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<BaseViewHolder<T>>() {
     }
 
     override fun getItemCount() = items.size
-
-    interface Listener<T> {
-
-        fun onAdapterEvent(position: Int, item: T, param: Any? = null)
-    }
 }
 
 @Suppress("UNUSED_PARAMETER", "unused")

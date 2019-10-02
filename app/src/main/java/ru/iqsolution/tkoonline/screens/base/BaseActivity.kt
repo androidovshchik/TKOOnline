@@ -6,10 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.MenuItem
 import android.view.WindowManager
-import androidx.core.content.FileProvider
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
@@ -17,7 +15,6 @@ import com.google.android.gms.location.LocationSettingsStates
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.WaitDialog
@@ -32,18 +29,13 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
 
     protected lateinit var presenter: T
 
-    protected lateinit var fileManager: FileManager
-
     protected lateinit var preferences: Preferences
 
     private var waitDialog: WaitDialog? = null
 
-    private var photoPath: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        fileManager = FileManager(applicationContext)
         preferences = Preferences(applicationContext)
     }
 
@@ -120,23 +112,6 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
      */
     override fun onLocationResult(location: SimpleLocation) {}
 
-    protected fun takePhoto() {
-        if (photoPath != null) {
-            return
-        }
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (intent.resolveActivity(packageManager) != null) {
-            val file = fileManager.createFile()
-            photoPath = file.path
-            val uri = FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", file)
-            startActivityForResult(intent.apply {
-                putExtra(MediaStore.EXTRA_OUTPUT, uri)
-            }, REQUEST_PHOTO)
-        } else {
-            toast("Не найдено приложение для фото")
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -146,16 +121,6 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
                 } else {
                     checkLocation()
                 }
-            }
-            REQUEST_PHOTO -> {
-                photoPath?.also {
-                    if (resultCode == RESULT_OK) {
-                        fileManager.moveFile(it)
-                    } else {
-                        fileManager.deleteFile(it)
-                    }
-                }
-                photoPath = null
             }
         }
     }
@@ -181,8 +146,6 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
 
     companion object {
 
-        private const val REQUEST_PHOTO = 500
-
-        private const val REQUEST_LOCATION = 600
+        private const val REQUEST_LOCATION = 100
     }
 }
