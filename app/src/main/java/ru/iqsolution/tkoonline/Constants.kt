@@ -22,17 +22,34 @@ val PATTERN_DATETIME: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd'T'
 val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
 /**
- * Extras
+ * Telemetry events
  */
 
 const val EXTRA_LOCATION = "extra_location"
 
 const val EXTRA_AVAILABILITY = "extra_availability"
 
+/**
+ * Platform
+ */
+
+// + Photo
 const val EXTRA_PLATFORM = "extra_platform"
 
 const val EXTRA_TYPES = "extra_types"
 
+/**
+ * Platform callback
+ */
+
 const val EXTRA_ID = "extra_id"
 
 const val EXTRA_ERRORS = "extra_errors"
+
+/**
+ * Photo
+ */
+
+const val EXTRA_TITLE = "extra_title"
+
+const val EXTRA_PATH = "extra_path"
