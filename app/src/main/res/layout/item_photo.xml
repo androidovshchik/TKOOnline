@@ -6,4 +6,4 @@
     android:src="@drawable/ic_camera_white"
     android:scaleType="center"
     android:adjustViewBounds="true"
-    android:background="@drawable/photo_oval"/>
+    android:background="@drawable/photo_oval_light"/>

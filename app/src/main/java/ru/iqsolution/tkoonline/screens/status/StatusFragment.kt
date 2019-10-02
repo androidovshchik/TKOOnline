@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.gms.location.LocationSettingsStates
-import kotlinx.android.synthetic.main.status_bar.*
+import kotlinx.android.synthetic.main.include_status.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.FORMAT_TIME
@@ -53,7 +53,7 @@ class StatusFragment : BaseFragment(), SyncListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.status_bar, container, false)
+        return inflater.inflate(R.layout.include_status, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
