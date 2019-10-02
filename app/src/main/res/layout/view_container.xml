@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="vertical"
+    tools:layout_width="match_parent"
+    tools:layout_height="wrap_content"
+    tools:gravity="center_vertical"
+    tools:orientation="vertical"
+    tools:parentTag="LinearLayout"
     tools:ignore="MissingPrefix">
 
     <View
@@ -131,4 +132,4 @@
         android:layout_height="1dp"
         android:background="@color/colorDivider"/>
 
-</LinearLayout>
+</merge>
