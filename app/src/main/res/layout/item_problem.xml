@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/problem"
+    android:layout_width="match_parent"
+    android:layout_height="53dp"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    android:layout_marginBottom="20dp"
+    android:textAllCaps="false"
+    tools:text="Прочее"
+    android:textColor="@android:color/white"
+    android:textSize="18sp"
+    android:lineSpacingExtra="3sp"
+    android:background="@drawable/button_gray"
+    android:foreground="?android:attr/selectableItemBackground"
+    fontPath="fonts/Roboto-Medium.ttf"
+    tools:ignore="MissingPrefix"/>

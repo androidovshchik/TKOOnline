@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:ignore="MissingPrefix">
 
     <fragment
@@ -11,7 +10,7 @@
         android:name="ru.iqsolution.tkoonline.screens.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"
-        tools:layout="@layout/status_bar"/>
+        tools:layout="@layout/include_status"/>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -31,7 +30,7 @@
                 tools:background="@android:color/darker_gray"/>
 
             <include
-                layout="@layout/platform_info"/>
+                layout="@layout/include_platform"/>
 
             <View
                 android:id="@+id/platform_divider"
@@ -40,33 +39,43 @@
                 android:background="@color/colorDivider"
                 android:visibility="gone"/>
 
-            <include
+            <ru.iqsolution.tkoonline.screens.platform.ContainerView
                 android:id="@+id/platform_regular"
-                layout="@layout/container_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <include
+            <ru.iqsolution.tkoonline.screens.platform.ContainerView
                 android:id="@+id/platform_bunker"
-                layout="@layout/container_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <include
+            <ru.iqsolution.tkoonline.screens.platform.ContainerView
                 android:id="@+id/platform_bulk"
-                layout="@layout/container_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <include
+            <ru.iqsolution.tkoonline.screens.platform.ContainerView
                 android:id="@+id/platform_special"
-                layout="@layout/container_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <include
+            <ru.iqsolution.tkoonline.screens.platform.ContainerView
                 android:id="@+id/platform_unknown"
-                layout="@layout/container_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
@@ -83,9 +92,10 @@
                 tools:textStyle="bold"
                 fontPath="fonts/Roboto-Bold.ttf"/>
 
-            <include
-                android:id="@+id/photos_before"
-                layout="@layout/platform_gallery"/>
+            <ru.iqsolution.tkoonline.screens.platform.GalleryView
+                android:id="@+id/gallery_before"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/gallery_height"/>
 
             <View
                 android:layout_width="match_parent"
@@ -106,9 +116,10 @@
                 tools:textStyle="bold"
                 fontPath="fonts/Roboto-Bold.ttf"/>
 
-            <include
-                android:id="@+id/photos_after"
-                layout="@layout/platform_gallery"/>
+            <ru.iqsolution.tkoonline.screens.platform.GalleryView
+                android:id="@+id/gallery_after"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/gallery_height"/>
 
             <View
                 android:layout_width="match_parent"
@@ -187,7 +198,7 @@
 
     <include
         android:id="@+id/platform_toolbar"
-        layout="@layout/toolbar"
+        layout="@layout/include_toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
         android:layout_below="@+id/status_bar_fragment"/>
