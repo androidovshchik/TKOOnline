@@ -17,7 +17,7 @@
         android:textSize="18sp"
         android:textColor="@color/colorTextGrayLight"
         android:lineSpacingExtra="3sp"
-        tools:text="Фотографии “до”"
+        tools:text="@string/platform_gallery"
         tools:textStyle="bold"
         fontPath="fonts/Roboto-Bold.ttf"/>
 

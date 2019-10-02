@@ -6,16 +6,18 @@ import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.SystemClock
 import androidx.core.content.PermissionChecker.PermissionResult
 import org.jetbrains.anko.alarmManager
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startService
+
+tailrec fun Context.activity(): Activity? = when (this) {
+    is Activity -> this
+    else -> (this as? ContextWrapper)?.baseContext?.activity()
+}
 
 @PermissionResult
 fun Context.areGranted(vararg permissions: String): Boolean {

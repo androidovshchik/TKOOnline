@@ -61,7 +61,7 @@ class SettingsDialog : BaseDialogFragment() {
             }
         }
         activity?.let {
-            if (it is DialogCallback && !it.isFinishing) {
+            if (it is DialogListener && !it.isFinishing) {
                 if (enable) {
                     it.openPasswordDialog()
                 } else {

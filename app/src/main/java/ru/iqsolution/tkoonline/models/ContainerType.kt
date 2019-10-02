@@ -9,7 +9,8 @@ enum class ContainerType(
     val isEditable: Boolean,
     val shortName: String = id.toString()
 ) {
-    UNKNOWN(null, R.drawable.ic_question, false, "Неиз."),
+    // UNKNOWN.id is only my own implementation
+    UNKNOWN("НЕИЗВЕСТНЫЙ", R.drawable.ic_question, false, "Неиз."),
     REGULAR("ТБО", R.drawable.ic_trash_can, true),
     BUNKER("КГМ", R.drawable.ic_trash_bin, true),
     BULK1("БТ", R.drawable.ic_rubbish_bag, false),
