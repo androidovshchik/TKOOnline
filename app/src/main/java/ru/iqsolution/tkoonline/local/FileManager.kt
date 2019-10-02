@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.local
 
 import android.content.Context
-import android.os.Environment
 import androidx.annotation.WorkerThread
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -14,32 +13,29 @@ import java.io.FileOutputStream
 @Suppress("MemberVisibilityCanBePrivate")
 class FileManager(context: Context) {
 
-    private val picturesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.apply {
+    val externalDir = context.getExternalFilesDir(null)?.apply {
         mkdirs()
     }
 
-    private val filesDir = context.filesDir
+    val internalDir: File = context.filesDir
 
-    private val photosDir = File(filesDir, "photos").apply {
+    val photosDir = File(internalDir, "photos").apply {
         mkdirs()
     }
 
-    val hasPhotos: Boolean
-        get() = photosDir.list().isNotEmpty()
-
-    fun createFile(): File {
-        return File.createTempFile("photo", ".jpeg", picturesDir)
+    fun createTempFile(): File {
+        return File.createTempFile("photo", ".jpeg", externalDir)
     }
 
-    fun moveFile(path: String): String {
-        return moveFile(File(path))
+    fun moveToInternal(path: String): String {
+        return moveToInternal(File(path))
     }
 
     /**
      * @return new path of file
      */
     @WorkerThread
-    fun moveFile(file: File): String {
+    fun moveToInternal(file: File): String {
         val dist = File(photosDir, file.name)
         try {
             FileInputStream(file).use { input ->
@@ -74,8 +70,12 @@ class FileManager(context: Context) {
     }
 
     fun deleteFile(path: String) {
+        deleteFile(File(path))
+    }
+
+    fun deleteFile(file: File) {
         try {
-            File(path).delete()
+            file.delete()
         } catch (e: Exception) {
             Timber.e(e)
         }
