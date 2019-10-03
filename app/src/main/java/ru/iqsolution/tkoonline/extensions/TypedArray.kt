@@ -11,7 +11,7 @@ inline fun <T> TypedArray.use(block: (TypedArray) -> T): T {
     } finally {
         try {
             recycle()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e)
         }
     }

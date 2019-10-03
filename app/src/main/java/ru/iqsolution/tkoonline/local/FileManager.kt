@@ -47,7 +47,7 @@ class FileManager(context: Context) {
                 }
             }
         } catch (e: FileNotFoundException) {
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e)
             dist.delete()
         }
@@ -66,7 +66,7 @@ class FileManager(context: Context) {
                     file.asRequestBody("image/jpeg".toMediaTypeOrNull())
                 )
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e)
         }
         return null
@@ -80,7 +80,7 @@ class FileManager(context: Context) {
         try {
             file?.delete()
         } catch (e: FileNotFoundException) {
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e)
         }
     }
@@ -93,7 +93,7 @@ class FileManager(context: Context) {
                 if (now - it.lastModified() >= LIFETIME) {
                     it.delete()
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Timber.e(e)
             }
         }

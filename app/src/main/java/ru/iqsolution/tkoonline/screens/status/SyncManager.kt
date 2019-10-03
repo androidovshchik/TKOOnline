@@ -73,7 +73,7 @@ class SyncManager(listener: SyncListener) {
                             val timeZone = TimeZone.getDefault()
                             DateTimeZone.setDefault(DateTimeZone.forTimeZone(timeZone))
                             Timber.d("Changed default timezone to ${timeZone.id}")
-                        } catch (e: Exception) {
+                        } catch (e: Throwable) {
                             Timber.e(e)
                         }
                     }

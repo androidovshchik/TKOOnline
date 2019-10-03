@@ -139,8 +139,13 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
         TelemetryService.stop(context)
         // todo launch worker with listener
         launch {
-            server.logout(preferences.authHeader)
-            reference.get()?.onLoggedOut()
+            try {
+                server.logout(preferences.authHeader)
+                reference.get()?.onLoggedOut()
+            } catch (e: Throwable) {
+                reference.get()?.hideLoading()
+                throw e
+            }
         }
     }
 

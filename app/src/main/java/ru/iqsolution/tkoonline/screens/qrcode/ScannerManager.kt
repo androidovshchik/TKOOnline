@@ -50,7 +50,7 @@ class ScannerManager(context: Context, listener: ScannerListener) {
         try {
             cameraSource.start(holder)
             return cameraSource.previewSize
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e)
         }
         return null

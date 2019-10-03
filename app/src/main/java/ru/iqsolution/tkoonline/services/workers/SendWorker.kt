@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.local.Database
@@ -32,7 +31,7 @@ class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, p
                     RequestClean(it.clean)
                 ).execute()
                 Timber.d("responseClean ${responseClean.code()}")
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Timber.e(e)
             }
         }
@@ -50,7 +49,7 @@ class SendWorker(app: Application, params: WorkerParameters) : BaseWorker(app, p
                     ).execute()
                     Timber.d("responsePhoto ${responsePhoto.code()}")
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Timber.e(e)
             }
         }

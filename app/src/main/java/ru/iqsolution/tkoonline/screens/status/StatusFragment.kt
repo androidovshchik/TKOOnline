@@ -47,7 +47,7 @@ class StatusFragment : BaseFragment(), SyncListener {
         preferences = Preferences(context)
         try {
             serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e)
         }
     }

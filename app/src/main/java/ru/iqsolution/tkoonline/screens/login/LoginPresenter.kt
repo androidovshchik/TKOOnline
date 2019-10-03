@@ -79,7 +79,7 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
                 }
                 reference.get()?.onLoggedIn()
             } catch (e: CancellationException) {
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 try {
                     // short toast time
                     delay(2000)
