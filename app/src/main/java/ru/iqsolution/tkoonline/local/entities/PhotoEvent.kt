@@ -27,11 +27,11 @@ class PhotoEvent : SendEvent {
     @ColumnInfo(name = "pe_token_id")
     override var tokenId = 0L
 
-    @ColumnInfo(name = "pe_type_id")
-    var typeId = 0
-
     @ColumnInfo(name = "pe_kp_id")
     var kpId: Int? = null
+
+    @ColumnInfo(name = "pe_type")
+    var type = -1
 
     @ColumnInfo(name = "pe_path")
     lateinit var path: String

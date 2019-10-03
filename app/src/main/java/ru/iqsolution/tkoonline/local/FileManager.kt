@@ -24,19 +24,22 @@ class FileManager(context: Context) {
         mkdirs()
     }
 
-    fun createTempFile(): File {
+    fun createFile(): File {
         return File.createTempFile("photo", ".jpeg", externalDir)
     }
 
-    fun moveFile(src: String, dist: String) {
-        moveFile(File(src), File(dist))
+    fun copyFile(src: String, dist: String) {
+        copyFile(File(src), File(dist))
     }
 
     /**
      * @return new path of file
      */
     @WorkerThread
-    fun moveFile(src: File, dist: File) {
+    fun copyFile(src: File?, dist: File?) {
+        if (src == null || dist == null) {
+            return
+        }
         try {
             FileInputStream(src).use { input ->
                 FileOutputStream(dist).use { output ->
@@ -44,7 +47,6 @@ class FileManager(context: Context) {
                 }
             }
         } catch (e: FileNotFoundException) {
-            Timber.e(e)
         } catch (e: Exception) {
             Timber.e(e)
             dist.delete()
@@ -74,9 +76,10 @@ class FileManager(context: Context) {
         deleteFile(File(path))
     }
 
-    fun deleteFile(file: File) {
+    fun deleteFile(file: File?) {
         try {
-            file.delete()
+            file?.delete()
+        } catch (e: FileNotFoundException) {
         } catch (e: Exception) {
             Timber.e(e)
         }

@@ -11,13 +11,20 @@ interface PhotoDao {
 
     @Query(
         """
-        SELECT photo_events.*, tokens.* FROM photo_events 
-        INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
-        WHERE photo_events.pe_when_time LIKE :day || '%'
-        ORDER BY photo_events.pe_id DESC
+        SELECT * FROM photo_events
+        WHERE pe_when_time LIKE :day || '%'
+        ORDER BY pe_id DESC
     """
     )
-    fun getDayEvents(day: String): List<PhotoEventToken>
+    fun getDayEvents(day: String): List<PhotoEvent>
+
+    @Query(
+        """
+        SELECT * FROM photo_events 
+        WHERE pe_kp_id = :id AND pe_when_time LIKE :day || '%'
+    """
+    )
+    fun getDayKpIdEvents(day: String, id: Int): List<PhotoEvent>
 
     @Query(
         """
