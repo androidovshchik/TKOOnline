@@ -52,7 +52,7 @@ class MainApp : Application(), KodeinAware {
                                 .d(message)
                         }
                     }).apply {
-                        level = HttpLoggingInterceptor.Level.BODY
+                        level = HttpLoggingInterceptor.Level.BASIC
                     })
                 }
                 addInterceptor(DomainInterceptor(applicationContext))

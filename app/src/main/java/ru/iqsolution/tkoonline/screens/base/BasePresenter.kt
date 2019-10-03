@@ -30,12 +30,12 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
         viewRef = WeakReference(view)
     }
 
-    override fun <T> toJson(instance: T, clss: Class<out T>): String {
-        return gson.toJson(clss)
+    override fun <T> toJson(instance: T, tClass: Class<out T>): String {
+        return gson.toJson(tClass)
     }
 
-    override fun <T> fromJson(json: String, clss: Class<out T>): T {
-        return gson.fromJson(json, clss)
+    override fun <T> fromJson(json: String, tClass: Class<out T>): T {
+        return gson.fromJson(json, tClass)
     }
 
     override fun clearAuthorization() {

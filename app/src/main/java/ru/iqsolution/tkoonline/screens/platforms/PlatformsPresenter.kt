@@ -2,12 +2,10 @@ package ru.iqsolution.tkoonline.screens.platforms
 
 import android.app.Application
 import androidx.collection.SimpleArrayMap
-import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.Database
-import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.models.*
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
@@ -18,15 +16,7 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
 
     val server: Server by instance()
 
-    val gson: Gson by instance()
-
     val db: Database by instance()
-
-    override fun saveAccessToken() {
-        GlobalScope.launch(Dispatchers.IO) {
-            db.tokenDao().insert(AccessToken(preferences))
-        }
-    }
 
     override fun loadPlatformsTypes(refresh: Boolean) {
         baseJob.cancelChildren()
@@ -90,29 +80,29 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                     onReceivedPrimary(primary)
                 }
                 withContext(Dispatchers.IO) {
-                    val errorTypes = SimpleArrayMap<Int, String>()
+                    val errorNames = SimpleArrayMap<Int, String>()
                     val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
                     responseTypes.data.forEach {
                         if (it.isError == 1) {
-                            errorTypes.put(it.type, it.shortName)
+                            errorNames.put(it.id, it.shortName)
                         }
                     }
-                    db.photoDao().getEvents().forEach {
+                    db.photoDao().getDayEvents(preferences.serverDay).forEach {
                         for (platform in secondary) {
-                            if (it.photo.kpId == platform.kpId) {
+                            if (it.kpId == platform.kpId) {
                                 if (platform.timestamp == 0L) {
-                                    platform.timestamp = it.photo.whenTime.withZone(timeZone).millis
+                                    platform.timestamp = it.whenTime.withZone(timeZone).millis
                                 }
-                                errorTypes.get(it.photo.typeId)?.run {
+                                errorNames.get(it.type)?.run {
                                     platform.addError(this)
                                 }
                             }
                         }
                     }
-                    db.cleanDao().getEvents().forEach {
+                    db.cleanDao().getDayEvents(preferences.serverDay).forEach {
                         for (platform in secondary) {
-                            if (it.clean.kpId == platform.kpId) {
-                                val millis = it.clean.whenTime.withZone(timeZone).millis
+                            if (it.kpId == platform.kpId) {
+                                val millis = it.whenTime.withZone(timeZone).millis
                                 if (platform.timestamp < millis) {
                                     platform.timestamp = millis
                                 }
@@ -140,10 +130,6 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
             } catch (e: CancellationException) {
             }
         }
-    }
-
-    override fun platformToJson(platform: PlatformContainers): String {
-        return gson.toJson(platform)
     }
 
     private fun SimpleArrayMap<Int, Container>.putLinked(item: Platform) {
