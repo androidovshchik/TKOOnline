@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/photo"
     android:layout_width="@dimen/gallery_height"
     android:layout_height="@dimen/gallery_height"
     android:src="@drawable/ic_camera_white"
+    android:padding="5dp"
     android:scaleType="center"
     android:adjustViewBounds="true"
     android:background="@drawable/photo_oval_light"/>

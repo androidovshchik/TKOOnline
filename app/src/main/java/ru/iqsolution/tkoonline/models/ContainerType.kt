@@ -4,10 +4,10 @@ import ru.iqsolution.tkoonline.R
 
 @Suppress("unused")
 enum class ContainerType(
-    val id: String?,
+    val id: String,
     val icon: Int,
     val isEditable: Boolean,
-    val shortName: String = id.toString()
+    val shortName: String = id
 ) {
     // UNKNOWN.id is only my own implementation
     UNKNOWN("НЕИЗВЕСТНЫЙ", R.drawable.ic_question, false, "Неиз."),

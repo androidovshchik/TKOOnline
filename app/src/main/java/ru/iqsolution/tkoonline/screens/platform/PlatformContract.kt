@@ -21,5 +21,7 @@ interface PlatformContract {
         fun onPhotoEvents(events: List<PhotoEvent>)
 
         fun onLastCleanEvent(event: CleanEvent?)
+
+        fun onFinish()
     }
 }

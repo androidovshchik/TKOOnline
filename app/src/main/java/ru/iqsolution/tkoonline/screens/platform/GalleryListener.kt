@@ -5,5 +5,5 @@ import ru.iqsolution.tkoonline.models.PhotoType
 
 interface GalleryListener {
 
-    fun onPhotoClick(photoType: PhotoType, photoEvent: PhotoEvent?)
+    fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?)
 }

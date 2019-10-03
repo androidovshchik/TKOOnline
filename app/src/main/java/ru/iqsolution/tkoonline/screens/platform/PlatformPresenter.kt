@@ -31,9 +31,16 @@ class PlatformPresenter(application: Application) : BasePresenter<PlatformContra
     }
 
     override fun createCleanEvents(platform: PlatformContainers) {
+        reference.get()?.showLoading()
         launch {
-            withContext(Dispatchers.IO) {
-                db.cleanDao().insert()
+            try {
+                withContext(Dispatchers.IO) {
+                    db.cleanDao().insert()
+                }
+                // todo launch worker with listener
+            } catch (e: Throwable) {
+                reference.get()?.hideLoading()
+                throw e
             }
         }
     }

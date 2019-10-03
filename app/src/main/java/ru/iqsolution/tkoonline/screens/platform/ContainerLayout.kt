@@ -22,7 +22,7 @@ import kotlin.math.min
 
 class ContainerLayout : LinearLayout, Container {
 
-    override var containerType = ContainerType.UNKNOWN.id.toString()
+    override var containerType = ContainerType.UNKNOWN.id
 
     override var containerVolume = 0.0f
         set(value) {
@@ -90,7 +90,7 @@ class ContainerLayout : LinearLayout, Container {
         attrs?.let {
             context.obtainStyledAttributes(it, R.styleable.ContainerLayout).use { a ->
                 type = ContainerType.fromId(a.getString(R.styleable.ContainerLayout_containerType))
-                containerType = type.id.toString()
+                containerType = type.id
             }
         }
         if (type == ContainerType.BULK1 || type == ContainerType.BULK2) {
@@ -102,12 +102,6 @@ class ContainerLayout : LinearLayout, Container {
         }
         icon_type.setImageResource(type.icon)
         text_type.text = type.shortName
-    }
-
-    override fun addContainer(container: Container?) {
-        super.addContainer(container)
-        updateVolumeText()
-        updateCountText()
     }
 
     private fun updateVolumeText() {

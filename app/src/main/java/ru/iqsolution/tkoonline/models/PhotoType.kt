@@ -33,7 +33,7 @@ class PhotoType : Serializable {
 
             private val map = values().associateBy(Default::id)
 
-            fun fromId(value: Int): Default? = map[value]
+            fun fromId(value: Int) = map.getOrDefault(value, OTHER)
         }
     }
 }

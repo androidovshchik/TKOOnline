@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.item_photo.view.*
+import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.merge_gallery.view.*
 import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
@@ -21,6 +21,8 @@ import ru.iqsolution.tkoonline.models.PhotoType
 class GalleryLayout : RelativeLayout {
 
     private val photoEvents = arrayListOf<PhotoEvent>()
+
+    private var photoType = PhotoType.Default.OTHER
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -63,7 +65,7 @@ class GalleryLayout : RelativeLayout {
     private fun onClickEvent(photoEvent: PhotoEvent?) {
         context.activity()?.let {
             if (it is GalleryListener && !it.isFinishing) {
-                it.onPhotoClick(photoEvent)
+                it.onPhotoClick(photoType, photoEvent)
             }
         }
     }
@@ -71,40 +73,40 @@ class GalleryLayout : RelativeLayout {
     @SuppressLint("Recycle")
     private fun init(attrs: AttributeSet?) {
         var id = 0
-        var title = "Фотографии"
         attrs?.let {
             context.obtainStyledAttributes(it, R.styleable.GalleryLayout).use { a ->
-                id = when (PhotoType.Default.fromId(a.getInt(R.styleable.GalleryLayout_photoType, -1))) {
+                photoType = PhotoType.Default.fromId(a.getInt(R.styleable.GalleryLayout_photoType, -1))
+                when (photoType) {
                     PhotoType.Default.BEFORE -> {
-                        title = context.getString(
-                            R.string.platform_gallery,
-                            PhotoType.Default.BEFORE.description.toLowerCase()
-                        )
-                        R.drawable.ic_rect_green
+                        id = R.drawable.ic_rect_green
                     }
                     PhotoType.Default.AFTER -> {
-                        title = context.getString(
-                            R.string.platform_gallery,
-                            PhotoType.Default.AFTER.description.toLowerCase()
-                        )
-                        R.drawable.ic_rect_red
+                        id = R.drawable.ic_rect_red
                     }
-                    else -> 0
+                    else -> {
+                    }
                 }
             }
         }
-        subtitle.text = title
+        subtitle.text = context.getString(
+            R.string.platform_gallery,
+            photoType.description.toLowerCase()
+        )
         mark.background = ContextCompat.getDrawable(context, id)
     }
 
     fun updatePhotos(events: List<PhotoEvent>) {
         photoEvents.apply {
             clear()
-            addAll(events)
+            events.forEach {
+                if (it.type == photoType.id) {
+                    add(it)
+                }
+            }
         }
-        photo1.photo.updatePhoto(events.getOrNull(0))
-        photo2.photo.updatePhoto(events.getOrNull(1))
-        photo3.photo.updatePhoto(events.getOrNull(2))
+        (photo1 as ImageView).updatePhoto(events.getOrNull(0))
+        (photo2 as ImageView).updatePhoto(events.getOrNull(1))
+        (photo3 as ImageView).updatePhoto(events.getOrNull(2))
     }
 
     override fun hasOverlappingRendering() = false
@@ -114,6 +116,7 @@ class GalleryLayout : RelativeLayout {
             background = ContextCompat.getDrawable(context, R.drawable.photo_oval_dark)
             GlideApp.with(context)
                 .load(it)
+                .apply(RequestOptions.circleCropTransform())
                 .into(this)
         } ?: run {
             background = ContextCompat.getDrawable(context, R.drawable.photo_oval_light)
