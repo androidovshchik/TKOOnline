@@ -7,6 +7,9 @@ import com.google.gson.annotations.SerializedName
  */
 class SimpleContainer : Container {
 
+    @SerializedName("l")
+    var linkedIds = arrayListOf<Int>()
+
     @SerializedName("t")
     override lateinit var containerType: String
 

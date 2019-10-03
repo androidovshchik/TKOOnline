@@ -3,13 +3,14 @@ package ru.iqsolution.tkoonline.screens.problem
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import kotlinx.android.synthetic.main.activity_problem.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
-import kotlinx.android.synthetic.main.item_problem.view.*
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
@@ -49,18 +50,20 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
     }
 
     private fun addButton(photoType: PhotoType) {
-        val view = View.inflate(applicationContext, R.layout.item_problem, null).apply {
-            problem.text = photoType.description
+        val button = View.inflate(applicationContext, R.layout.item_problem, null) as Button
+        problem_content.addView(button.apply {
+            text = photoType.description
             setOnClickListener {
                 startActivityNoop<PhotoActivity>(
                     REQUEST_PHOTO,
                     EXTRA_PHOTO_TITLE to photoType.description,
-                    EXTRA_PHOTO_KP_ID to platform.kpId,
-                    EXTRA_PHOTO_TYPE to photoType.id
+                    EXTRA_PHOTO_EVENT to PhotoEvent().apply {
+                        kpId = platform.kpId
+                        type = photoType.id
+                    }
                 )
             }
-        }
-        problem_content.addView(view)
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

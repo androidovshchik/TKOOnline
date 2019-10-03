@@ -37,11 +37,6 @@ const val EXTRA_PHOTO_TITLE = "photo_title"
 
 const val EXTRA_PHOTO_EVENT = "photo_event"
 
-// NOTICE nullable
-const val EXTRA_PHOTO_KP_ID = "photo_kp_id"
-
-const val EXTRA_PHOTO_TYPE = "photo_type"
-
 const val EXTRA_PROBLEM_PLATFORM = "problem_platform"
 
 const val EXTRA_PROBLEM_PHOTO_TYPES = "problem_photo_types"

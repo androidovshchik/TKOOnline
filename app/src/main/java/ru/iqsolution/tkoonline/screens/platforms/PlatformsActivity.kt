@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_platforms.*
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -62,8 +63,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                     startActivityNoop<PhotoActivity>(
                         null,
                         EXTRA_PHOTO_TITLE to photoType.description,
-                        EXTRA_PHOTO_KP_ID to null,
-                        EXTRA_PHOTO_TYPE to photoType.id
+                        EXTRA_PHOTO_EVENT to PhotoEvent().apply {
+                            type = photoType.id
+                        }
                     )
                 }
             }

@@ -20,7 +20,7 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
     override fun moveFile(fileManager: FileManager, src: File, dist: File) {
         launch {
             withContext(Dispatchers.IO) {
-                fileManager.moveFile()
+                fileManager.copyFile()
             }
         }
     }

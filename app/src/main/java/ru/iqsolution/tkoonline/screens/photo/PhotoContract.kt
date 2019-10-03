@@ -11,6 +11,8 @@ interface PhotoContract {
 
         fun moveFile(fileManager: FileManager, src: File, dist: File)
 
+        fun deleteEvent(photoEvent: PhotoEvent)
+
         fun saveEvent(photoEvent: PhotoEvent)
     }
 
