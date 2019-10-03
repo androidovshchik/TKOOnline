@@ -41,12 +41,11 @@ class PhotoLoader : ModelLoader<PhotoEvent, File> {
 private class PhotoFetcher(private val photoEvent: PhotoEvent) : DataFetcher<File> {
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in File>) {
-        File(photoEvent.path).let {
-            if (it.exists()) {
-                callback.onDataReady(it)
-            } else {
-                callback.onLoadFailed(FileNotFoundException(photoEvent.path))
-            }
+        val file = File(photoEvent.path)
+        if (file.exists()) {
+            callback.onDataReady(file)
+        } else {
+            callback.onLoadFailed(FileNotFoundException(photoEvent.path))
         }
     }
 

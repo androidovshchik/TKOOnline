@@ -26,7 +26,8 @@ class PhotoType : Serializable {
         val shortName: String
     ) {
         BEFORE(0, "До", false, false, "До"),
-        AFTER(1, "После", false, false, "Посл");
+        AFTER(1, "После", false, false, "Посл"),
+        OTHER(16, "Прочее", false, true, "Пр");
 
         companion object {
 
