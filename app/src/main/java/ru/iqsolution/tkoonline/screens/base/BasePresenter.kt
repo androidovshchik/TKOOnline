@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.base
 
 import android.app.Application
 import com.chibatching.kotpref.bulk
+import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
@@ -16,6 +17,8 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
 
     val preferences: Preferences by instance()
 
+    val gson: Gson by instance()
+
     protected lateinit var viewRef: WeakReference<V>
 
     protected val baseJob = SupervisorJob()
@@ -25,6 +28,14 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
 
     override fun attachView(view: V) {
         viewRef = WeakReference(view)
+    }
+
+    override fun <T> toJson(instance: T, clss: Class<out T>): String {
+        return gson.toJson(clss)
+    }
+
+    override fun <T> fromJson(json: String, clss: Class<out T>): T {
+        return gson.fromJson(json, clss)
     }
 
     override fun clearAuthorization() {

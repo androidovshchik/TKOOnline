@@ -10,6 +10,7 @@ import com.bumptech.glide.load.model.MultiModelLoaderFactory
 import com.bumptech.glide.signature.ObjectKey
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import java.io.File
+import java.io.FileNotFoundException
 
 class PhotoLoader : ModelLoader<PhotoEvent, File> {
 
@@ -40,7 +41,13 @@ class PhotoLoader : ModelLoader<PhotoEvent, File> {
 private class PhotoFetcher(private val photoEvent: PhotoEvent) : DataFetcher<File> {
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in File>) {
-        callback.onDataReady(File(photoEvent.path))
+        File(photoEvent.path).let {
+            if (it.exists()) {
+                callback.onDataReady(it)
+            } else {
+                callback.onLoadFailed(FileNotFoundException(photoEvent.path))
+            }
+        }
     }
 
     override fun cleanup() {}
