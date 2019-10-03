@@ -26,8 +26,16 @@ class ContainerLayout : LinearLayout, Container {
     override var containerType = ContainerType.UNKNOWN.id.toString()
 
     override var containerVolume = 0.0f
+        set(value) {
+            field = value
+            updateVolumeText()
+        }
 
     override var containerCount = 0
+        set(value) {
+            field = value
+            updateCountText()
+        }
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -54,25 +62,25 @@ class ContainerLayout : LinearLayout, Container {
         arrow_up_volume.onClick {
             if (containerVolume < 9.9f) {
                 containerVolume = min(9.999f, containerVolume + 0.1f)
-                volume_value.setRichText(context.getString(R.string.platform_volume, containerVolume))
+                updateVolumeText()
             }
         }
         arrow_down_volume.onClick {
             if (containerVolume >= 0.1f) {
                 containerVolume = max(0f, containerVolume - 0.1f)
-                volume_value.setRichText(context.getString(R.string.platform_volume, containerVolume))
+                updateVolumeText()
             }
         }
         arrow_up_count.onClick {
             if (containerCount < 99) {
                 containerCount++
-                count_value.setRichText(context.getString(R.string.platform_count, containerCount))
+                updateCountText()
             }
         }
         arrow_down_count.onClick {
             if (containerCount > 0) {
                 containerCount--
-                count_value.setRichText(context.getString(R.string.platform_count, containerCount))
+                updateCountText()
             }
         }
     }
@@ -99,10 +107,16 @@ class ContainerLayout : LinearLayout, Container {
 
     override fun addContainer(container: Container?) {
         super.addContainer(container)
-        context.apply {
-            volume_value.setRichText(getString(R.string.platform_volume, containerVolume))
-            count_value.setRichText(getString(R.string.platform_count, containerCount))
-        }
+        updateVolumeText()
+        updateCountText()
+    }
+
+    private fun updateVolumeText() {
+        volume_value.setRichText(context.getString(R.string.platform_volume, containerVolume))
+    }
+
+    private fun updateCountText() {
+        count_value.setRichText(context.getString(R.string.platform_count, containerCount))
     }
 
     override fun hasOverlappingRendering() = false

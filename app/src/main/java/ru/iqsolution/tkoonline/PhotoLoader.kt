@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.glide
+package ru.iqsolution.tkoonline
 
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource

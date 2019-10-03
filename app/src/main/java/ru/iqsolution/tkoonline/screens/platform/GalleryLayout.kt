@@ -6,10 +6,13 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
+import kotlinx.android.synthetic.main.item_photo.view.*
 import kotlinx.android.synthetic.main.merge_gallery.view.*
 import org.jetbrains.anko.sdk23.listeners.onClick
+import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.activity
 import ru.iqsolution.tkoonline.extensions.use
@@ -18,7 +21,7 @@ import ru.iqsolution.tkoonline.models.PhotoType
 
 class GalleryLayout : RelativeLayout {
 
-    val photoEvents = arrayListOf<PhotoEvent>()
+    private val photoEvents = arrayListOf<PhotoEvent>()
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -45,34 +48,23 @@ class GalleryLayout : RelativeLayout {
     init {
         View.inflate(context, R.layout.merge_gallery, this)
         photo1.onClick {
-            val event = photoEvents.getOrNull(0) ?: return@onClick
-            context.activity()?.let {
-                if (it is GalleryListener && !it.isFinishing) {
-                    it.onPhotoClick(event)
-                }
-            }
+            onClickEvent(photoEvents.getOrNull(0) ?: return@onClick)
         }
         photo2.onClick {
-            val event = photoEvents.getOrNull(1) ?: return@onClick
-            context.activity()?.let {
-                if (it is GalleryListener && !it.isFinishing) {
-                    it.onPhotoClick(event)
-                }
-            }
+            onClickEvent(photoEvents.getOrNull(1) ?: return@onClick)
         }
         photo3.onClick {
-            val event = photoEvents.getOrNull(2) ?: return@onClick
-            context.activity()?.let {
-                if (it is GalleryListener && !it.isFinishing) {
-                    it.onPhotoClick(event)
-                }
-            }
+            onClickEvent(photoEvents.getOrNull(2) ?: return@onClick)
         }
         photo_add.onClick {
-            context.activity()?.let {
-                if (it is GalleryListener && !it.isFinishing) {
-                    it.onPhotoClick(null)
-                }
+            onClickEvent(null)
+        }
+    }
+
+    private fun onClickEvent(photoEvent: PhotoEvent?) {
+        context.activity()?.let {
+            if (it is GalleryListener && !it.isFinishing) {
+                it.onPhotoClick(photoEvent)
             }
         }
     }
@@ -107,8 +99,26 @@ class GalleryLayout : RelativeLayout {
     }
 
     fun updatePhotos(events: List<PhotoEvent>) {
-
+        photoEvents.apply {
+            clear()
+            addAll(events)
+        }
+        photo1.photo.updatePhoto(events.getOrNull(0))
+        photo2.photo.updatePhoto(events.getOrNull(1))
+        photo3.photo.updatePhoto(events.getOrNull(2))
     }
 
     override fun hasOverlappingRendering() = false
+
+    private fun ImageView.updatePhoto(photoEvent: PhotoEvent?) {
+        photoEvent?.let {
+            background = ContextCompat.getDrawable(context, R.drawable.photo_oval_dark)
+            GlideApp.with(context)
+                .load(it)
+                .into(this)
+        } ?: run {
+            background = ContextCompat.getDrawable(context, R.drawable.photo_oval_light)
+            setImageResource(R.drawable.ic_camera_white)
+        }
+    }
 }

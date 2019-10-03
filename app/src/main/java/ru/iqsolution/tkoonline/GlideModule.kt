@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.glide
+package ru.iqsolution.tkoonline
 
 import android.content.Context
 import com.bumptech.glide.Glide
