@@ -23,7 +23,7 @@ import timber.log.Timber
 import java.util.*
 
 /**
- * NOTICE should have an id [R.id.status_bar_fragment]
+ * NOTICE should have an id [R.id.status_fragment]
  */
 class StatusFragment : BaseFragment(), SyncListener {
 

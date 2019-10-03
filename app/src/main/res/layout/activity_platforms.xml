@@ -7,7 +7,7 @@
     tools:ignore="MissingPrefix">
 
     <fragment
-        android:id="@+id/status_bar_fragment"
+        android:id="@+id/status_fragment"
         android:name="ru.iqsolution.tkoonline.screens.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"
@@ -17,7 +17,7 @@
         android:id="@+id/platforms_map"
         android:layout_width="match_parent"
         android:layout_height="@dimen/map_height"
-        android:layout_below="@+id/status_bar_fragment"
+        android:layout_below="@+id/status_fragment"
         android:background="@android:color/white"
         android:elevation="6dp"
         tools:background="@android:color/darker_gray"
@@ -26,7 +26,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="6dp"
-        android:layout_below="@+id/status_bar_fragment"
+        android:layout_below="@+id/status_fragment"
         android:background="@drawable/bottom_shadow"
         android:elevation="6dp"
         tools:elevation="0dp"/>

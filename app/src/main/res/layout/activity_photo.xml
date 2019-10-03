@@ -6,7 +6,7 @@
     tools:ignore="MissingPrefix">
 
     <fragment
-        android:id="@+id/status_bar_fragment"
+        android:id="@+id/status_fragment"
         android:name="ru.iqsolution.tkoonline.screens.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"
@@ -17,9 +17,7 @@
         layout="@layout/include_toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:layout_below="@+id/status_bar_fragment"
-        android:background="@color/colorPrimary"
-        android:elevation="6dp"/>
+        android:layout_below="@+id/status_fragment"/>
 
     <ImageView
         android:id="@+id/photo_preview"
@@ -87,5 +85,11 @@
         android:background="@drawable/button_green"
         android:foreground="?android:attr/selectableItemBackground"
         fontPath="fonts/Roboto-Medium.ttf"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_below="@+id/photo_toolbar"
+        android:background="@drawable/bottom_shadow"/>
 
 </RelativeLayout>

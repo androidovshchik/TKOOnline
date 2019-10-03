@@ -7,7 +7,7 @@
     tools:ignore="MissingPrefix">
 
     <fragment
-        android:id="@+id/status_bar_fragment"
+        android:id="@+id/status_fragment"
         android:name="ru.iqsolution.tkoonline.screens.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"
@@ -171,7 +171,7 @@
         layout="@layout/include_toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:layout_below="@+id/status_bar_fragment"/>
+        android:layout_below="@+id/status_fragment"/>
 
     <View
         android:layout_width="match_parent"

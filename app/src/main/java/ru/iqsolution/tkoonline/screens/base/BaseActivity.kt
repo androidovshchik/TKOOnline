@@ -30,12 +30,20 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
     protected lateinit var preferences: Preferences
 
+    private var statusBar: StatusFragment? = null
+
     private var waitDialog: WaitDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         preferences = Preferences(applicationContext)
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        statusBar = fragmentManager.findFragmentById(R.id.status_fragment) as StatusFragment?
     }
 
     /**
@@ -73,11 +81,7 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
     @Suppress("DEPRECATION")
     override fun onLocationState(state: LocationSettingsStates?) {
-        fragmentManager.findFragmentById(R.id.status_bar_fragment)?.let {
-            if (it is StatusFragment) {
-                it.onLocationState(state)
-            }
-        }
+        statusBar?.onLocationState(state)
     }
 
     /**
