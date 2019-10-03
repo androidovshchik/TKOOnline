@@ -12,6 +12,7 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStates
+import com.google.android.gms.location.SettingsClient
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.R
@@ -30,6 +31,8 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
     protected lateinit var preferences: Preferences
 
+    private lateinit var locationSettings: SettingsClient
+
     private var statusBar: StatusFragment? = null
 
     private var waitDialog: WaitDialog? = null
@@ -38,6 +41,7 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         preferences = Preferences(applicationContext)
+        locationSettings = LocationServices.getSettingsClient(this)
     }
 
     @Suppress("DEPRECATION")
@@ -54,18 +58,7 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
      * Should be called from [StatusFragment]
      */
     override fun checkLocation() {
-        LocationServices.getSettingsClient(this)
-            .checkLocationSettings(
-                LocationSettingsRequest.Builder()
-                    .addLocationRequest(LocationManager.locationRequest)
-                    /**
-                     * Whether or not location is required by the calling app in order to continue.
-                     * Set this to true if location is required to continue and false if having location provides better results,
-                     * but is not required. This changes the wording/appearance of the dialog accordingly.
-                     */
-                    .setAlwaysShow(true)
-                    .build()
-            )
+        locationSettings.checkLocationSettings(settingsRequest)
             .addOnSuccessListener {
                 onLocationState(it.locationSettingsStates)
             }
@@ -154,5 +147,15 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
     companion object {
 
         private const val REQUEST_LOCATION = 100
+
+        private val settingsRequest = LocationSettingsRequest.Builder()
+            .addLocationRequest(LocationManager.locationRequest)
+            /**
+             * Whether or not location is required by the calling app in order to continue.
+             * Set this to true if location is required to continue and false if having location provides better results,
+             * but is not required. This changes the wording/appearance of the dialog accordingly.
+             */
+            .setAlwaysShow(true)
+            .build()
     }
 }

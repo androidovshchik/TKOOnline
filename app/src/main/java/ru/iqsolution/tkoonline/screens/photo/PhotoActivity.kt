@@ -8,10 +8,13 @@ import com.bumptech.glide.signature.ObjectKey
 import kotlinx.android.synthetic.main.activity_photo.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.toast
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_EVENT
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_TITLE
 import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
+import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import java.io.File
 
@@ -21,9 +24,9 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
 
     private lateinit var photoEvent: PhotoEvent
 
-    private var externalPhoto: File? = null
+    private lateinit var externalPhoto: File
 
-    private var internalPhoto: File? = null
+    private lateinit var internalPhoto: File
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,32 +35,40 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             attachView(this@PhotoActivity)
         }
         fileManager = FileManager(applicationContext)
+        photoEvent = intent.getSerializableExtra(EXTRA_PHOTO_EVENT) as PhotoEvent
         toolbar_back.setOnClickListener {
             fileManager.deleteFile(externalPhoto)
             setResult(RESULT_CANCELED)
             finish()
         }
-        toolbar_title.text = intent.getStringExtra(EXTRA_TITLE) ?: "Прочее"
+        toolbar_title.text = intent.getStringExtra(EXTRA_PHOTO_TITLE) ?: PhotoType.Default.OTHER.description
         photo_delete.setOnClickListener {
-            toolbar_back.performClick()
+            presenter.deleteEvent(photoEvent)
         }
         photo_retake.setOnClickListener {
-
-            setResult(RESULT_FIRST_USER)
-            finish()
+            takePhoto()
         }
         photo_save.setOnClickListener {
-            fileManager.copyFile()
-            setResult(RESULT_OK)
-            finish()
+            presenter.saveEvent(photoEvent)
         }
-        if (intent.hasExtra(EXTRA_PATH)) {
-            internalPhoto = File(intent.getStringExtra(EXTRA_PATH))
+        if (photoEvent.sent) {
+            photo_delete.isEnabled = false
+            photo_retake.isEnabled = false
+            photo_save.isEnabled = false
+        }
+        if (photoEvent.id != null) {
+            internalPhoto = File(photoEvent.path)
+            externalPhoto = File(fileManager.externalDir, internalPhoto.name)
             showPhoto()
         } else {
             externalPhoto = fileManager.createFile()
+            internalPhoto = File(fileManager.photosDir, externalPhoto.name)
             takePhoto()
         }
+    }
+
+    override fun closeScreen() {
+        finish()
     }
 
     //externalPhoto = File(fileManager.externalDir, internalPhoto?.name)
