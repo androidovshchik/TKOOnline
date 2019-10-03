@@ -21,31 +21,20 @@ val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
 const val ACTION_LOCATION = "action_location"
 
-/**
- * Telemetry events
- */
+const val EXTRA_TELEMETRY_LOCATION = "telemetry_location"
 
-const val EXTRA_LOCATION = "extra_location"
+const val EXTRA_TELEMETRY_AVAILABILITY = "telemetry_availability"
 
-const val EXTRA_AVAILABILITY = "extra_availability"
+const val EXTRA_PLATFORMS_KP_ID = "platforms_kp_id"
+
+const val EXTRA_PLATFORMS_ERRORS = "platforms_errors"
 
 const val EXTRA_PLATFORM_PLATFORM = "platform_platform"
 
 const val EXTRA_PLATFORM_PHOTO_TYPES = "platform_photo types"
 
-/**
- * Platform callback
- */
-
-const val EXTRA_ID = "extra_id"
-
-const val EXTRA_ERRORS = "extra_errors"
-
 const val EXTRA_PHOTO_TITLE = "photo_title"
 
-/**
- * if only photo event exists otherwise [EXTRA_PHOTO_KP_ID] and [EXTRA_PHOTO_TYPE] must be present
- */
 const val EXTRA_PHOTO_EVENT = "photo_event"
 
 // NOTICE nullable

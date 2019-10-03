@@ -91,16 +91,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     override fun onReceivedPrimary(platforms: List<PlatformContainers>) {
         platformsAdapter.apply {
-            primaryItems.apply {
-                clear()
-                addAll(platforms)
-                preferences.location?.let { location ->
-                    forEach {
-                        it.meters = it.getDistance(location)
-                    }
-                    sortBy { it.meters }
-                }
-            }
+            notifyPrimaryItems(preferences.location, platforms)
             notifyDataSetChanged()
         }
         platforms_refresh.isRefreshing = false
@@ -108,15 +99,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     override fun onReceivedSecondary(platforms: List<PlatformContainers>) {
         platformsAdapter.apply {
-            items.apply {
-                clear()
-                addAll(platforms)
-                preferences.location?.let { location ->
-                    forEach {
-                        it.meters = it.getDistance(location)
-                    }
-                }
-            }
+            notifySecondaryItems(preferences.location, platforms)
             notifyDataSetChanged()
         }
     }
@@ -136,13 +119,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onLocationResult(location: SimpleLocation) {
         platforms_map.setLocation(location)
         platformsAdapter.apply {
-            primaryItems.forEach {
-                it.meters = it.getDistance(location)
-            }
-            primaryItems.sortBy { it.meters }
-            items.forEach {
-                it.meters = it.getDistance(location)
-            }
+            notifyPrimaryItems(location)
+            notifySecondaryItems(location)
             notifyDataSetChanged()
         }
     }
@@ -153,21 +131,20 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_PLATFORM) {
             if (resultCode == RESULT_OK) {
-                val id = data?.getIntExtra(EXTRA_ID, -1) ?: -1
-                val errors = data?.getStringArrayListExtra(EXTRA_ERRORS).orEmpty()
                 platformsAdapter.apply {
                     items.apply {
+                        val id = data?.getIntExtra(EXTRA_PLATFORMS_KP_ID, -1) ?: -1
                         firstOrNull { it.kpId == id }?.let {
                             remove(it)
                             it.errors.apply {
                                 clear()
-                                addAll(errors)
+                                addAll(data?.getStringArrayListExtra(EXTRA_PLATFORMS_ERRORS).orEmpty())
                             }
                             add(0, it)
                             // todo also map changes
-                            notifyDataSetChanged()
                         }
                     }
+                    notifyDataSetChanged()
                 }
             }
         }
@@ -176,6 +153,41 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onDestroy() {
         platforms_map.release()
         super.onDestroy()
+    }
+
+    private fun PlatformsAdapter.notifyPrimaryItems(
+        location: SimpleLocation?,
+        platforms: List<PlatformContainers>? = null
+    ) {
+        platforms?.let {
+            primaryItems.apply {
+                clear()
+                addAll(it)
+            }
+        }
+        if (location != null) {
+            primaryItems.forEach {
+                it.meters = it.getDistance(location)
+            }
+            primaryItems.sortBy { it.meters }
+        }
+    }
+
+    private fun PlatformsAdapter.notifySecondaryItems(
+        location: SimpleLocation?,
+        platforms: List<PlatformContainers>? = null
+    ) {
+        platforms?.let {
+            items.apply {
+                clear()
+                addAll(it)
+            }
+        }
+        if (location != null) {
+            items.forEach {
+                it.meters = it.getDistance(location)
+            }
+        }
     }
 
     companion object {

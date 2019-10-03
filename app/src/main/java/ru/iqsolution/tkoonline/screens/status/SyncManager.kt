@@ -13,8 +13,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.ACTION_LOCATION
-import ru.iqsolution.tkoonline.EXTRA_AVAILABILITY
-import ru.iqsolution.tkoonline.EXTRA_LOCATION
+import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_AVAILABILITY
+import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_LOCATION
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -80,12 +80,12 @@ class SyncManager(listener: SyncListener) {
                     reference.get()?.onTimeChanged()
                 }
                 ACTION_LOCATION -> {
-                    if (intent.hasExtra(EXTRA_LOCATION)) {
-                        val location = intent.getSerializableExtra(EXTRA_LOCATION) as SimpleLocation
+                    if (intent.hasExtra(EXTRA_TELEMETRY_LOCATION)) {
+                        val location = intent.getSerializableExtra(EXTRA_TELEMETRY_LOCATION) as SimpleLocation
                         reference.get()?.onLocationResult(location)
                     }
-                    if (intent.hasExtra(EXTRA_AVAILABILITY)) {
-                        val available = intent.getBooleanExtra(EXTRA_AVAILABILITY, false)
+                    if (intent.hasExtra(EXTRA_TELEMETRY_AVAILABILITY)) {
+                        val available = intent.getBooleanExtra(EXTRA_TELEMETRY_AVAILABILITY, false)
                         reference.get()?.onLocationAvailability(available)
                     }
                 }
