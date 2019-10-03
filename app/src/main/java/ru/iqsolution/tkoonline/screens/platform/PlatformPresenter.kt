@@ -14,32 +14,26 @@ class PlatformPresenter(application: Application) : BasePresenter<PlatformContra
 
     val db: Database by instance()
 
-    override fun loadPhotoCleanEvents(platform: PlatformContainers) {
+    override fun loadLastCleanEvent(id: Int) {
         launch {
             withContext(Dispatchers.IO) {
-                db.photoDao().getDayKpIdEvents(preferences.serverDay).forEach {
-                    for (platform in secondary) {
-                        if (it.kpId == platform.kpId) {
-                            if (platform.timestamp == 0L) {
-                                platform.timestamp = it.whenTime.withZone(timeZone).millis
-                            }
-                            errorNames.get(it.type)?.run {
-                                platform.addError(this)
-                            }
-                        }
-                    }
-                }
-                db.cleanDao().getDayKpIdEvent(preferences.serverDay).forEach {
-                    for (platform in secondary) {
-                        if (it.kpId == platform.kpId) {
-                            val millis = it.whenTime.withZone(timeZone).millis
-                            if (platform.timestamp < millis) {
-                                platform.timestamp = millis
-                            }
-                            break
-                        }
-                    }
-                }
+                reference.get()?.onLastCleanEvent(db.cleanDao().getDayKpIdEvent(preferences.serverDay, id))
+            }
+        }
+    }
+
+    override fun loadPhotoEvents(id: Int) {
+        launch {
+            withContext(Dispatchers.IO) {
+                reference.get()?.onPhotoEvents(db.photoDao().getDayKpIdEvents(preferences.serverDay, id))
+            }
+        }
+    }
+
+    override fun createCleanEvents(platform: PlatformContainers) {
+        launch {
+            withContext(Dispatchers.IO) {
+                db.cleanDao().insert()
             }
         }
     }

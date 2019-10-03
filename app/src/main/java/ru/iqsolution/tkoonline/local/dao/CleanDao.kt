@@ -45,5 +45,5 @@ interface CleanDao {
     fun markAsSent(id: Long)
 
     @Insert
-    fun insert(item: CleanEvent)
+    fun insert(items: List<CleanEvent>)
 }

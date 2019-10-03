@@ -1,8 +1,9 @@
 package ru.iqsolution.tkoonline.screens.platform
 
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
+import ru.iqsolution.tkoonline.models.PhotoType
 
 interface GalleryListener {
 
-    fun onPhotoClick(photoEvent: PhotoEvent?)
+    fun onPhotoClick(photoType: PhotoType, photoEvent: PhotoEvent?)
 }
