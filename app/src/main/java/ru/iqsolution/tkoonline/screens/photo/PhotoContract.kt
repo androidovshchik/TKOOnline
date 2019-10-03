@@ -9,15 +9,17 @@ interface PhotoContract {
 
     interface Presenter {
 
-        fun moveFile(fileManager: FileManager, src: File?, dist: File?)
+        fun moveFile(fileManager: FileManager, src: File, dist: File)
 
-        fun deleteEvent(photoEvent: PhotoEvent)
+        fun deleteEvent(photoEvent: PhotoEvent, file: File)
 
-        fun saveEvent(photoEvent: PhotoEvent)
+        fun saveEvent(photoEvent: PhotoEvent, file: File)
     }
 
     interface View : IBaseView {
 
-        fun closeScreen()
+        fun showPhoto()
+
+        fun closeScreen(result: Int)
     }
 }

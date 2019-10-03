@@ -18,6 +18,9 @@ import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import java.io.File
 
+/**
+ * Returns [android.app.Activity.RESULT_OK] if photo event was saved
+ */
 class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
 
     private lateinit var fileManager: FileManager
@@ -37,19 +40,17 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         fileManager = FileManager(applicationContext)
         photoEvent = intent.getSerializableExtra(EXTRA_PHOTO_EVENT) as PhotoEvent
         toolbar_back.setOnClickListener {
-            fileManager.deleteFile(externalPhoto)
-            setResult(RESULT_CANCELED)
-            finish()
+            closeScreen(RESULT_CANCELED)
         }
         toolbar_title.text = intent.getStringExtra(EXTRA_PHOTO_TITLE) ?: PhotoType.Default.OTHER.description
         photo_delete.setOnClickListener {
-            presenter.deleteEvent(photoEvent)
+            presenter.deleteEvent(photoEvent, internalPhoto)
         }
         photo_retake.setOnClickListener {
             takePhoto()
         }
         photo_save.setOnClickListener {
-            presenter.saveEvent(photoEvent)
+            presenter.saveEvent(photoEvent, internalPhoto)
         }
         if (photoEvent.sent) {
             photo_delete.isEnabled = false
@@ -61,36 +62,35 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             externalPhoto = File(fileManager.externalDir, internalPhoto.name)
             showPhoto()
         } else {
-            externalPhoto = fileManager.createFile()
+            externalPhoto = fileManager.getRandomFile()
             internalPhoto = File(fileManager.photosDir, externalPhoto.name)
             takePhoto()
         }
     }
 
-    override fun closeScreen() {
+    override fun showPhoto() {
+        GlideApp.with(applicationContext)
+            .load(internalPhoto)
+            .signature(ObjectKey(System.currentTimeMillis()))
+            .into(photo_preview)
+    }
+
+    override fun closeScreen(result: Int) {
+        setResult(result)
         finish()
     }
 
-    //externalPhoto = File(fileManager.externalDir, internalPhoto?.name)
-    private fun takePhoto(path: String? = null) {
+    private fun takePhoto() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(packageManager) != null) {
-            photoPath = path ?: fileManager.createFile().path
-            val uri = FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", file)
+            val uri = FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", externalPhoto)
             startActivityForResult(intent.apply {
                 putExtra(MediaStore.EXTRA_OUTPUT, uri)
             }, REQUEST_PHOTO)
         } else {
             toast("Не найдено приложение для фото")
-            finish()
+            closeScreen(RESULT_CANCELED)
         }
-    }
-
-    private fun showPhoto() {
-        GlideApp.with(applicationContext)
-            .load(internalPhoto)
-            .signature(ObjectKey(System.currentTimeMillis()))
-            .into(photo_preview)
     }
 
     override fun onBackPressed() {}
@@ -99,14 +99,10 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_PHOTO -> {
-                outerPhoto?.also {
-                    if (resultCode == RESULT_OK) {
-                        fileManager.copyFile(it)
-                    } else {
-                        fileManager.deleteFile(it)
-                    }
+                if (resultCode == RESULT_OK) {
+                    photo_preview.setImageResource(0)
+                    presenter.moveFile(fileManager, externalPhoto, internalPhoto)
                 }
-                photoPath = null
             }
         }
     }

@@ -28,7 +28,8 @@
         android:layout_marginBottom="10dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/login_background"/>
+        android:src="@drawable/login_background"
+        android:background="#fafafa"/>
 
     <LinearLayout
         android:id="@+id/photo_buttons"

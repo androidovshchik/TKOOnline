@@ -17,22 +17,25 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
 
     val db: Database by instance()
 
-    override fun moveFile(fileManager: FileManager, src: File?, dist: File?) {
+    override fun moveFile(fileManager: FileManager, src: File, dist: File) {
         launch {
             withContext(Dispatchers.IO) {
-                fileManager.copyFile()
+                fileManager.apply {
+                    copyFile(src, dist)
+                    deleteFile(src)
+                }
             }
+            reference.get()?.showPhoto()
         }
     }
 
-    override fun deleteEvent(photoEvent: PhotoEvent) {
+    override fun deleteEvent(photoEvent: PhotoEvent, file: File) {
         if (photoEvent.id != null) {
 
         }
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun saveEvent(photoEvent: PhotoEvent) {
+    override fun saveEvent(photoEvent: PhotoEvent, file: File) {
         GlobalScope.launch(Dispatchers.IO) {
             db.photoDao().insert(photoEvent)
         }
