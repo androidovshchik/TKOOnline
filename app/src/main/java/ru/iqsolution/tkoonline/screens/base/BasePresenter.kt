@@ -38,6 +38,7 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
             queName = null
             carId = 0
             lastTime = null
+            tokenId = 0L
         }
     }
 

@@ -56,19 +56,20 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
                     vehicleNumber = qrCode.regNum
                     queName = responseAuth.queName
                     carId = qrCode.carId
-                }
-                withContext(Dispatchers.IO) {
-                    preferences.tokenId = db.tokenDao().insert(AccessToken().apply {
-                        token = responseAuth.accessKey
-                        queName = responseAuth.queName
-                        carId = qrCode.carId
-                        expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME)
-                    })
+                    tokenId = withContext(Dispatchers.IO) {
+                        db.tokenDao().insert(AccessToken().apply {
+                            token = responseAuth.accessKey
+                            queName = responseAuth.queName
+                            carId = qrCode.carId
+                            expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME)
+                        })
+                    }
                 }
                 viewRef.get()?.onAuthorized()
             } catch (e: CancellationException) {
             } catch (e: Exception) {
                 try {
+                    // short toast time
                     delay(2000)
                 } catch (e: CancellationException) {
                 }

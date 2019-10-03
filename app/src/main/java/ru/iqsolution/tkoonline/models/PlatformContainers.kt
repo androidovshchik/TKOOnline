@@ -3,7 +3,6 @@ package ru.iqsolution.tkoonline.models
 import com.google.gson.annotations.SerializedName
 import ru.iqsolution.tkoonline.models.Location.Companion.D
 import ru.iqsolution.tkoonline.models.Location.Companion.R
-import kotlin.math.absoluteValue
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.sqrt
@@ -65,6 +64,9 @@ class PlatformContainers() : Platform() {
         addContainer(platform)
     }
 
+    override val isEmpty: Boolean
+        get() = regular.isEmpty && bunker.isEmpty && bunk.isEmpty && special.isEmpty && unknown.isEmpty
+
     /**
      * It may be important to keep the original [containerVolume] and [containerCount] values
      */
@@ -98,20 +100,19 @@ class PlatformContainers() : Platform() {
      * Simplifying here calculation for better performance
      */
     override fun getDistance(l: Location): Double {
-        when (status) {
+        val dLat = (l.latitude - latitude) * D
+        val dLon = (l.longitude - longitude) * D
+        // todo
+        /*when (status) {
             PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> {
             }
             else -> {
-                val dLat = (l.latitude - latitude).absoluteValue * LAT1
-                val dLon = (l.longitude - longitude).absoluteValue * getLon1(l.latitude)
-                if (dLat > RANGE_DISTANCE || dLon > RANGE_DISTANCE) {
+                if (dLat * LAT1 in -RANGE_DISTANCE..RANGE_DISTANCE || dLon * getLon1(l.latitude) in -RANGE_DISTANCE..RANGE_DISTANCE) {
                     return DEFAULT_DISTANCE
                 }
             }
-        }
+        }*/
         // https://stackoverflow.com/a/21623206/5279156
-        val dLat = (l.latitude - latitude) * D
-        val dLon = (l.longitude - longitude) * D
         val a = 0.5 - cos(dLat) / 2 + cos(latitude * D) * cos(l.latitude * D) * (1 - cos(dLon)) / 2
         return 2 * R * asin(sqrt(a))
     }
@@ -121,12 +122,12 @@ class PlatformContainers() : Platform() {
         /**
          * Min range for better calculation
          */
-        private const val RANGE_DISTANCE = 999.0
+        private const val RANGE_DISTANCE = 9999.0
 
         /**
          * It's value doesn't matter but must be more than [RANGE_DISTANCE]
          */
-        private const val DEFAULT_DISTANCE = 9999.0
+        private const val DEFAULT_DISTANCE = 99999.0
 
         /**
          * Length in meters of 1° of latitude = always 111.32 km
@@ -137,7 +138,7 @@ class PlatformContainers() : Platform() {
          * Length in meters of 1° of longitude = 40075 km * cos(latitude) / 360
          */
         private fun getLon1(latitude: Double): Double {
-            return 40075000 * cos(latitude) / 360
+            return 40075000 * cos(latitude * D) / 360
         }
     }
 }
