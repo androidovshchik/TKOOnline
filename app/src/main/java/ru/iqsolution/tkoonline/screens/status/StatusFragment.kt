@@ -21,6 +21,7 @@ import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 import timber.log.Timber
 import java.util.*
+import kotlin.math.min
 
 /**
  * NOTICE should have an id [R.id.status_fragment]
@@ -61,12 +62,16 @@ class StatusFragment : BaseFragment(), SyncListener {
         onTimeChanged()
         onLocationChanged(false)
         onNetworkChanged(false)
-        status_uploads.setImageResource(R.drawable.ic_cloud_upload)
     }
 
     override fun onStart() {
         super.onStart()
+        onPhotoCountChanged()
         syncManager.register(context)
+    }
+
+    override fun onResume() {
+        super.onResume()
         baseActivity?.checkLocation()
     }
 
@@ -133,6 +138,23 @@ class StatusFragment : BaseFragment(), SyncListener {
         }
         if (level >= 0) {
             status_percent.text = "$level%"
+        }
+    }
+
+    override fun onPhotoCountChanged() {
+        val count = preferences.photoCount
+        if (count > 0) {
+            status_uploads.setImageResource(R.drawable.ic_cloud_upload_green)
+            status_count.apply {
+                text = min(9, count).toString()
+                visibility = View.VISIBLE
+            }
+        } else {
+            status_uploads.setImageResource(R.drawable.ic_cloud_upload)
+            status_count.apply {
+                text = ""
+                visibility = View.GONE
+            }
         }
     }
 

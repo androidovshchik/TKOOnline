@@ -12,4 +12,6 @@ interface SyncListener : LocationListener {
     fun onNetworkChanged(available: Boolean)
 
     fun onBatteryChanged(status: Int, level: Int)
+
+    fun onPhotoCountChanged()
 }

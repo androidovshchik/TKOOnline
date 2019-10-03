@@ -46,8 +46,12 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         statusBar = fragmentManager.findFragmentById(R.id.status_fragment) as StatusFragment?
     }
 
+    override fun updatePhotoCount() {
+        statusBar?.onPhotoCountChanged()
+    }
+
     /**
-     * Should be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
+     * Should be called from [StatusFragment]
      */
     override fun checkLocation() {
         LocationServices.getSettingsClient(this)
@@ -85,12 +89,12 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
     }
 
     /**
-     * Will be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
+     * Will be called from [StatusFragment]
      */
     override fun onLocationAvailability(available: Boolean) {}
 
     /**
-     * Will be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
+     * Will be called from [StatusFragment]
      */
     override fun onLocationResult(location: SimpleLocation) {}
 
