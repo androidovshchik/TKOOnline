@@ -3,17 +3,22 @@ package ru.iqsolution.tkoonline.screens.platform
 import android.os.Bundle
 import android.view.View
 import kotlinx.android.synthetic.main.activity_platform.*
-import kotlinx.android.synthetic.main.platform_info.*
-import kotlinx.android.synthetic.main.toolbar.*
-import org.jetbrains.anko.sdk23.listeners.onClick
-import ru.iqsolution.tkoonline.EXTRA_PLATFORM
+import kotlinx.android.synthetic.main.include_platform.*
+import kotlinx.android.synthetic.main.include_toolbar.*
+import ru.iqsolution.tkoonline.EXTRA_PLATFORM_PLATFORM
 import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
+import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.local.entities.CleanEvent
+import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
+import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
 
-class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View {
+class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View, GalleryListener {
 
     private lateinit var platform: PlatformContainers
 
@@ -22,9 +27,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         setContentView(R.layout.activity_platform)
         presenter = PlatformPresenter(application).apply {
             attachView(this@PlatformActivity)
-            platform = platformFromJson(intent.getStringExtra(EXTRA_PLATFORM))
+            platform = fromJson(intent.getStringExtra(EXTRA_PLATFORM_PLATFORM), PlatformContainers::class.java)
         }
-        toolbar_back.onClick {
+        toolbar_back.setOnClickListener {
             finish()
         }
         toolbar_title.text = platform.address
@@ -33,19 +38,46 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             setLocation(preferences.location)
             moveTo(platform.latitude, platform.longitude)
         }
-        platform_id.text = getString(R.string.platform_id, platform.kpId)
-        platform_range.text = getString(
+        platform_id.setTextBoldSpan(getString(R.string.platform_id, platform.kpId), 0, 3)
+        platform_range.setTextBoldSpan(
+            getString(
             R.string.platform_range,
             platform.timeLimitFrom.toString(FORMAT_TIME),
             platform.timeLimitTo.toString(FORMAT_TIME)
+            ), 2, 7, 11, 16
         )
-        platform_divider.visibility = View.VISIBLE
-        platform_not_cleaned.onClick {
+        if (platform.isEmpty) {
+            platform_divider.visibility = View.VISIBLE
+        }
+        platform_report.setOnClickListener {
+            startActivityNoop<ProblemActivity>(
+                null,
+                EXTRA_PHOTO_TYPES to 0
+            )
+        }
+        platform_not_cleaned.setOnClickListener {
             finish()
         }
-        platform_cleaned.onClick {
+        platform_cleaned.setOnClickListener {
             finish()
         }
+    }
+
+    override fun onPhotoClick(photoEvent: PhotoEvent?) {
+        startActivityNoop<PhotoActivity>(
+            REQUEST_PHOTO,
+            EXTRA_PHOTO_TITLE to photoType.description,
+            EXTRA_PHOTO_KP_ID to platform.kpId,
+            EXTRA_PHOTO_TYPE to photoType.id
+        )
+    }
+
+    override fun onPhotoEvents(events: List<PhotoEvent>) {
+
+    }
+
+    override fun onCleanEvents(events: List<CleanEvent>) {
+
     }
 
     override fun onLocationResult(location: SimpleLocation) {
@@ -60,6 +92,8 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     }
 
     companion object {
+
+        private const val REQUEST_PHOTO = 400
 
         private const val URL = "file:///android_asset/platform.html"
     }

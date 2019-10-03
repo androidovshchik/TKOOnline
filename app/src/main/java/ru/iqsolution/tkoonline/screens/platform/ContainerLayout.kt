@@ -13,7 +13,6 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import kotlinx.android.synthetic.main.merge_container.view.*
-import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.models.Container
@@ -59,25 +58,25 @@ class ContainerLayout : LinearLayout, Container {
 
     init {
         View.inflate(context, R.layout.merge_container, this)
-        arrow_up_volume.onClick {
+        arrow_up_volume.setOnClickListener {
             if (containerVolume < 9.9f) {
                 containerVolume = min(9.999f, containerVolume + 0.1f)
                 updateVolumeText()
             }
         }
-        arrow_down_volume.onClick {
+        arrow_down_volume.setOnClickListener {
             if (containerVolume >= 0.1f) {
                 containerVolume = max(0f, containerVolume - 0.1f)
                 updateVolumeText()
             }
         }
-        arrow_up_count.onClick {
+        arrow_up_count.setOnClickListener {
             if (containerCount < 99) {
                 containerCount++
                 updateCountText()
             }
         }
-        arrow_down_count.onClick {
+        arrow_down_count.setOnClickListener {
             if (containerCount > 0) {
                 containerCount--
                 updateCountText()

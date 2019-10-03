@@ -11,7 +11,6 @@ import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.item_photo.view.*
 import kotlinx.android.synthetic.main.merge_gallery.view.*
-import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.activity
@@ -47,16 +46,16 @@ class GalleryLayout : RelativeLayout {
 
     init {
         View.inflate(context, R.layout.merge_gallery, this)
-        photo1.onClick {
-            onClickEvent(photoEvents.getOrNull(0) ?: return@onClick)
+        photo1.setOnClickListener {
+            onClickEvent(photoEvents.getOrNull(0) ?: return@setOnClickListener)
         }
-        photo2.onClick {
-            onClickEvent(photoEvents.getOrNull(1) ?: return@onClick)
+        photo2.setOnClickListener {
+            onClickEvent(photoEvents.getOrNull(1) ?: return@setOnClickListener)
         }
-        photo3.onClick {
-            onClickEvent(photoEvents.getOrNull(2) ?: return@onClick)
+        photo3.setOnClickListener {
+            onClickEvent(photoEvents.getOrNull(2) ?: return@setOnClickListener)
         }
-        photo_add.onClick {
+        photo_add.setOnClickListener {
             onClickEvent(null)
         }
     }
