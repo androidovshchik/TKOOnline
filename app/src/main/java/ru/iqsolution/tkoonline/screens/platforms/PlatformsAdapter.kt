@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.item_platform.view.*
 import org.jetbrains.anko.backgroundDrawable
 import org.jetbrains.anko.dip
-import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.inflate
@@ -48,12 +47,12 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
         private val oval: View = itemView.container_oval
 
         init {
-            itemView.onClick {
+            itemView.setOnClickListener {
                 val item = when {
                     adapterPosition < primaryItems.size -> primaryItems[adapterPosition]
                     else -> items[adapterPosition - primaryItems.size]
                 }
-                listenerRef?.get()?.onAdapterEvent(adapterPosition, item)
+                reference?.get()?.onAdapterEvent(adapterPosition, item)
             }
         }
 
@@ -66,7 +65,7 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
                 item.timeLimitTo.toString(FORMAT_TIME)
             )
             oval.apply {
-                val size = if (item.meters < 80) maxSize else minSize
+                val size = if (item.meters < 80.0) maxSize else minSize
                 layoutParams.apply {
                     height = size
                     width = size
