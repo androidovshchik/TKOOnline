@@ -7,20 +7,19 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_platforms.*
-import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import ru.iqsolution.tkoonline.screens.base.AdapterListener
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
-import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
+import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
-import ru.iqsolution.tkoonline.services.TelemetryService
 
 class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View,
-    BaseAdapter.Listener<PlatformContainers> {
+    AdapterListener<PlatformContainers> {
 
     private lateinit var platformsAdapter: PlatformsAdapter
 
@@ -34,7 +33,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
         presenter = PlatformsPresenter(application).apply {
             attachView(this@PlatformsActivity)
-            saveAccessToken()
             loadPlatformsTypes(false)
         }
         platforms_map.apply {
@@ -52,22 +50,21 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             })
             adapter = platformsAdapter
         }
-        platforms_complete.onClick {
-            platforms_map.clearState(true)
-            TelemetryService.stop(applicationContext)
-            presenter.apply {
-                clearAuthorization()
-                detachView()
-            }
-            startActivityNoop<LoginActivity>()
-            finish()
+        platforms_complete.setOnClickListener {
+            presenter.logout(applicationContext)
         }
         if (preferences.allowPhotoRefKp) {
             platforms_placeholder.visibility = View.VISIBLE
             platforms_photo.apply {
                 visibility = View.VISIBLE
-                onClick {
-                    takePhoto()
+                setOnClickListener {
+                    val photoType = PhotoType.Default.OTHER
+                    startActivityNoop<PhotoActivity>(
+                        null,
+                        EXTRA_PHOTO_TITLE to photoType.description,
+                        EXTRA_PHOTO_KP_ID to null,
+                        EXTRA_PHOTO_TYPE to photoType.id
+                    )
                 }
             }
         }
@@ -76,8 +73,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onAdapterEvent(position: Int, item: PlatformContainers, param: Any?) {
         startActivityNoop<PlatformActivity>(
             REQUEST_PLATFORM,
-            EXTRA_TYPES to photoTypes,
-            EXTRA_PLATFORM to presenter.platformToJson(item)
+            EXTRA_PLATFORM_PLATFORM to presenter.toJson(item, item.javaClass),
+            EXTRA_PLATFORM_PHOTO_TYPES to photoTypes
         )
     }
 
@@ -131,6 +128,11 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platforms_map.setMarkers(secondary, primary)
     }
 
+    override fun onLoggedOut() {
+        startActivityNoop<LoginActivity>()
+        finish()
+    }
+
     override fun onLocationResult(location: SimpleLocation) {
         platforms_map.setLocation(location)
         platformsAdapter.apply {
@@ -178,7 +180,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     companion object {
 
-        private const val REQUEST_PLATFORM = 1100
+        private const val REQUEST_PLATFORM = 300
 
         private const val URL = "file:///android_asset/platforms.html"
     }

@@ -29,19 +29,14 @@ const val EXTRA_LOCATION = "extra_location"
 
 const val EXTRA_AVAILABILITY = "extra_availability"
 
-/**
- * Platform
- */
+const val EXTRA_PLATFORM_PLATFORM = "platform_platform"
 
-const val EXTRA_PLATFORM = "extra_platform"
-
-const val EXTRA_PHOTO_TYPES = "extra_photo types"
+const val EXTRA_PLATFORM_PHOTO_TYPES = "platform_photo types"
 
 /**
  * Platform callback
  */
 
-// + Photo
 const val EXTRA_ID = "extra_id"
 
 const val EXTRA_ERRORS = "extra_errors"
@@ -53,6 +48,7 @@ const val EXTRA_PHOTO_TITLE = "photo_title"
  */
 const val EXTRA_PHOTO_EVENT = "photo_event"
 
+// NOTICE nullable
 const val EXTRA_PHOTO_KP_ID = "photo_kp_id"
 
 const val EXTRA_PHOTO_TYPE = "photo_type"

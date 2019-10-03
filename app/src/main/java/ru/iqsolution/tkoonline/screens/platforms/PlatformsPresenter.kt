@@ -27,7 +27,7 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
         baseJob.cancelChildren()
         launch {
             val responseTypes = server.getPhotoTypes(preferences.authHeader)
-            viewRef.get()?.onReceivedTypes(responseTypes.data)
+            reference.get()?.onReceivedTypes(responseTypes.data)
             val responsePlatforms = server.getPlatforms(preferences.authHeader, preferences.serverDay)
             var minLat = Double.MAX_VALUE
             var maxLat = Double.MIN_VALUE
@@ -77,7 +77,7 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                     addContainer(unknown.get(it.kpId))
                 }
             }
-            viewRef.get()?.apply {
+            reference.get()?.apply {
                 if (!refresh && responsePlatforms.data.isNotEmpty()) {
                     changeMapPosition(SimpleLocation((maxLat + minLat) / 2, (maxLon + minLon) / 2))
                 }
@@ -127,7 +127,7 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
                     }
                 }
             }
-            viewRef.get()?.apply {
+            reference.get()?.apply {
                 onReceivedSecondary(secondary)
                 updateMapMarkers(gson.toJson(primary), gson.toJson(secondary))
             }
@@ -135,12 +135,12 @@ class PlatformsPresenter(application: Application) : BasePresenter<PlatformsCont
     }
 
     override fun logout(context: Context) {
-        viewRef.get()?.showLoading()
-        // todo launch worker with listener
+        reference.get()?.showLoading()
         TelemetryService.stop(context)
+        // todo launch worker with listener
         launch {
             server.logout(preferences.authHeader)
-            viewRef.get()?.onLoggedOut()
+            reference.get()?.onLoggedOut()
         }
     }
 

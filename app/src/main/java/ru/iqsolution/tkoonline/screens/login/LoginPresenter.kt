@@ -77,7 +77,7 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
                         })
                     }
                 }
-                viewRef.get()?.onLoggedIn()
+                reference.get()?.onLoggedIn()
             } catch (e: CancellationException) {
             } catch (e: Exception) {
                 try {

@@ -18,15 +18,15 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
 
     val gson: Gson by instance()
 
-    protected lateinit var viewRef: WeakReference<V>
+    protected lateinit var reference: WeakReference<V>
 
     protected val baseJob = SupervisorJob()
 
     override val isAttached: Boolean
-        get() = ::viewRef.isInitialized
+        get() = ::reference.isInitialized
 
     override fun attachView(view: V) {
-        viewRef = WeakReference(view)
+        reference = WeakReference(view)
     }
 
     override fun <T> toJson(instance: T, tClass: Class<out T>): String {
@@ -39,7 +39,7 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
 
     override fun detachView() {
         baseJob.cancelChildren()
-        viewRef.clear()
+        reference.clear()
     }
 
     override val kodein = (application as MainApp).kodein
@@ -47,7 +47,7 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
     override val coroutineContext = Dispatchers.Main + baseJob + CoroutineExceptionHandler { _, e ->
         Timber.e(e)
         if (e !is CancellationException) {
-            viewRef.get()?.showError(
+            reference.get()?.showError(
                 if (BuildConfig.DEBUG) {
                     e.toString()
                 } else {
