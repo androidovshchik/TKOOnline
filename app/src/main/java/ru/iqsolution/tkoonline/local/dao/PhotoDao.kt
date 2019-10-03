@@ -13,10 +13,20 @@ interface PhotoDao {
         """
         SELECT photo_events.*, tokens.* FROM photo_events 
         INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
+        WHERE photo_events.pe_when_time LIKE :day || '%'
         ORDER BY photo_events.pe_id DESC
     """
     )
-    fun getEvents(): List<PhotoEventToken>
+    fun getDayEvents(day: String): List<PhotoEventToken>
+
+    @Query(
+        """
+        SELECT photo_events.*, tokens.* FROM photo_events 
+        INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
+        WHERE photo_events.pe_sent = 0
+    """
+    )
+    fun getSendEvents(): List<PhotoEventToken>
 
     @Query(
         """

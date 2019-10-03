@@ -13,10 +13,20 @@ interface CleanDao {
         """
         SELECT clean_events.*, tokens.* FROM clean_events 
         INNER JOIN tokens ON clean_events.ce_token_id = tokens.t_id
+        WHERE clean_events.ce_when_time LIKE :day || '%'
         ORDER BY clean_events.ce_id DESC
     """
     )
-    fun getEvents(): List<CleanEventToken>
+    fun getDayEvents(day: String): List<CleanEventToken>
+
+    @Query(
+        """
+        SELECT clean_events.*, tokens.* FROM clean_events 
+        INNER JOIN tokens ON clean_events.ce_token_id = tokens.t_id
+        WHERE clean_events.ce_sent = 0
+    """
+    )
+    fun getSendEvents(): List<CleanEventToken>
 
     @Query(
         """
