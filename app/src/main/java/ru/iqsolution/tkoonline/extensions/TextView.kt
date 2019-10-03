@@ -22,12 +22,12 @@ fun TextView.setOnlyNumbers() {
     keyListener = DigitsKeyListener.getInstance("0123456789")
 }
 
-fun TextView.setTextBoldSpan(text: CharSequence, indices: List<Int>) {
-    require(indices.size % 2 == 0) { "The size of list must be an even number" }
+fun TextView.setTextBoldSpan(text: CharSequence, vararg array: Int) {
+    require(array.size % 2 == 0) { "The size of list must be an even number" }
     val boldStyle = StyleSpan(Typeface.BOLD)
     setText(SpannableStringBuilder(text).apply {
-        indices.chunked(2).forEach {
-            setSpan(boldStyle, it[0], it[1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        for (i in array.indices step 2) {
+            setSpan(boldStyle, array[i], array[i + 1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     })
 }

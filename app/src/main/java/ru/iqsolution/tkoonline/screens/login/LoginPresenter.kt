@@ -5,12 +5,12 @@ import android.os.SystemClock
 import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
+import ru.iqsolution.tkoonline.local.Database
+import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.models.QrCode
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
@@ -22,6 +22,8 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
     val server: Server by instance()
 
     val gson: Gson by instance()
+
+    val db: Database by instance()
 
     private var loginJson: String? = null
 
@@ -47,19 +49,27 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
                 )
                 preferences.bulk {
                     accessToken = responseAuth.accessKey
-                    expiresWhen = responseAuth.expire
+                    expiresWhen = responseAuth.expireTime
                     allowPhotoRefKp = responseAuth.noKpPhoto == 1
-                    serverTime = responseAuth.datetime.toString(PATTERN_DATETIME)
+                    serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
                     elapsedTime = SystemClock.elapsedRealtime()
                     vehicleNumber = qrCode.regNum
                     queName = responseAuth.queName
                     carId = qrCode.carId
                 }
+                withContext(Dispatchers.IO) {
+                    preferences.tokenId = db.tokenDao().insert(AccessToken().apply {
+                        token = responseAuth.accessKey
+                        queName = responseAuth.queName
+                        carId = qrCode.carId
+                        expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME)
+                    })
+                }
                 viewRef.get()?.onAuthorized()
             } catch (e: CancellationException) {
             } catch (e: Exception) {
                 try {
-                    delay(1000)
+                    delay(2000)
                 } catch (e: CancellationException) {
                 }
                 loginJson = null

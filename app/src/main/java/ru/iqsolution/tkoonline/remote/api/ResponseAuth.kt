@@ -9,13 +9,13 @@ class ResponseAuth {
     lateinit var accessKey: String
 
     @SerializedName("expire")
-    lateinit var expire: String
+    lateinit var expireTime: String
 
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
     @SerializedName("current_time")
-    lateinit var datetime: DateTime
+    lateinit var currentTime: DateTime
 
     @SerializedName("no_kp_photo")
     var noKpPhoto = 0
