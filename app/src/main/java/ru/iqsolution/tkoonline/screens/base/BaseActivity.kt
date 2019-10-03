@@ -38,27 +38,6 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         preferences = Preferences(applicationContext)
     }
 
-    override fun showLoading() {
-        if (waitDialog == null) {
-            waitDialog = WaitDialog(this)
-        }
-        waitDialog?.let {
-            if (!it.isShowing) {
-                it.show()
-            }
-        }
-    }
-
-    override fun hideLoading() {
-        waitDialog?.hide()
-    }
-
-    override fun showError(message: CharSequence?) {
-        message?.let {
-            toast(it)
-        }
-    }
-
     /**
      * Should be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */
@@ -110,6 +89,27 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
      * Will be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */
     override fun onLocationResult(location: SimpleLocation) {}
+
+    override fun showLoading() {
+        if (waitDialog == null) {
+            waitDialog = WaitDialog(this)
+        }
+        waitDialog?.let {
+            if (!it.isShowing) {
+                it.show()
+            }
+        }
+    }
+
+    override fun hideLoading() {
+        waitDialog?.hide()
+    }
+
+    override fun showError(message: CharSequence?) {
+        message?.let {
+            toast(it)
+        }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

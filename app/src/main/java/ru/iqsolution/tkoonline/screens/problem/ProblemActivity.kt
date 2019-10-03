@@ -28,6 +28,7 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
             platform = fromJson(intent.getStringExtra(EXTRA_PROBLEM_PLATFORM), PlatformContainers::class.java)
         }
         toolbar_back.setOnClickListener {
+            setResult(RESULT_CANCELED)
             finish()
         }
         toolbar_title.text = platform.address
@@ -66,6 +67,7 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_PHOTO) {
             if (resultCode == RESULT_OK) {
+                setResult(RESULT_OK)
                 finish()
             }
         }

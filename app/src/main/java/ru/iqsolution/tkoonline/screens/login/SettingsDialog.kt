@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_login.*
-import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.base.BaseDialogFragment
@@ -26,10 +25,10 @@ class SettingsDialog : BaseDialogFragment() {
             dialog_telemetry_server.setText(mainTelemetryAddress)
             setLocked(enableLock, null)
         }
-        dialog_unlock.onClick {
+        dialog_unlock.setOnClickListener {
             setLocked(!isEnabledLock, preferences)
         }
-        dialog_save.onClick {
+        dialog_save.setOnClickListener {
             val slashRegex = "/+$".toRegex()
             val serverAddress = dialog_main_server.text.toString().trim()
                 .replace(slashRegex, "")
@@ -43,7 +42,7 @@ class SettingsDialog : BaseDialogFragment() {
             }
             dismiss()
         }
-        dialog_close.onClick {
+        dialog_close.setOnClickListener {
             dismiss()
         }
     }

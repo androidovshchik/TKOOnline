@@ -125,8 +125,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
     }
 
-    override fun onBackPressed() {}
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_PLATFORM) {
@@ -149,6 +147,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             }
         }
     }
+
+    override fun onBackPressed() {}
 
     override fun onDestroy() {
         platforms_map.release()

@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.dialog_password.*
-import org.jetbrains.anko.sdk23.listeners.onClick
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.setMaxLength
 import ru.iqsolution.tkoonline.extensions.setOnlyNumbers
@@ -36,7 +35,7 @@ class PasswordDialog : BaseDialogFragment() {
         if (System.currentTimeMillis() - time < WAIT_TIME) {
             retryLater()
         }
-        dialog_accept.onClick {
+        dialog_accept.setOnClickListener {
             val input = dialog_password.text.toString()
             dialog_error.text = ""
             when {
@@ -63,7 +62,7 @@ class PasswordDialog : BaseDialogFragment() {
                 else -> dialog_error.text = "Введите 4 цифры"
             }
         }
-        dialog_close.onClick {
+        dialog_close.setOnClickListener {
             dismiss()
         }
     }

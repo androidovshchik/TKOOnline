@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
-import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
 import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
@@ -22,8 +21,9 @@ import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 import ru.iqsolution.tkoonline.screens.qrcode.ScannerListener
+import ru.iqsolution.tkoonline.services.workers.DeleteWorker
 
-class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, DialogCallback {
+class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, DialogListener {
 
     private val settingsDialog = SettingsDialog()
 
@@ -38,6 +38,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             attachView(this@LoginActivity)
             clearAuthorization()
         }
+        DeleteWorker.launch(applicationContext)
         GlideApp.with(applicationContext)
             .load(R.drawable.login_background)
             .into(login_background)
@@ -45,7 +46,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = it
             login_shadow.topPadding = it
         }
-        login_menu.onClick {
+        login_menu.setOnClickListener {
             openDialog(preferences)
         }
     }
@@ -103,7 +104,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
         startActivityNoop<LockActivity>()
     }
 
-    override fun onAuthorized() {
+    override fun onLoggedIn() {
         startActivityNoop<PlatformsActivity>()
         finish()
     }
