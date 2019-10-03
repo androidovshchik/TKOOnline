@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.screens.base
 
 import android.app.Application
-import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
@@ -38,21 +37,6 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
         return gson.fromJson(json, tClass)
     }
 
-    override fun clearAuthorization() {
-        preferences.bulk {
-            accessToken = null
-            expiresWhen = null
-            allowPhotoRefKp = false
-            serverTime = null
-            elapsedTime = 0L
-            vehicleNumber = null
-            queName = null
-            carId = 0
-            lastTime = null
-            tokenId = 0L
-        }
-    }
-
     override fun detachView() {
         baseJob.cancelChildren()
         viewRef.clear()
@@ -62,12 +46,14 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
 
     override val coroutineContext = Dispatchers.Main + baseJob + CoroutineExceptionHandler { _, e ->
         Timber.e(e)
-        viewRef.get()?.showError(
-            if (BuildConfig.DEBUG) {
-                e.toString()
-            } else {
-                e.localizedMessage
-            }
-        )
+        if (e !is CancellationException) {
+            viewRef.get()?.showError(
+                if (BuildConfig.DEBUG) {
+                    e.toString()
+                } else {
+                    e.localizedMessage
+                }
+            )
+        }
     }
 }

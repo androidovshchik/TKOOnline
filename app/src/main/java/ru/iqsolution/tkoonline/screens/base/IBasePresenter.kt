@@ -6,11 +6,9 @@ interface IBasePresenter<V : IBaseView> {
 
     fun attachView(view: V)
 
-    fun <T> toJson(instance: T, clss: Class<out T>): String
+    fun <T> toJson(instance: T, tClass: Class<out T>): String
 
-    fun <T> fromJson(json: String, clss: Class<out T>): T
-
-    fun clearAuthorization()
+    fun <T> fromJson(json: String, tClass: Class<out T>): T
 
     fun detachView()
 }

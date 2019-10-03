@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
+import android.content.Context
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -10,6 +11,8 @@ interface PlatformsContract {
     interface Presenter {
 
         fun loadPlatformsTypes(refresh: Boolean)
+
+        fun logout(context: Context)
     }
 
     interface View : IBaseView {
@@ -23,5 +26,7 @@ interface PlatformsContract {
         fun onReceivedSecondary(platforms: List<PlatformContainers>)
 
         fun updateMapMarkers(primary: String, secondary: String)
+
+        fun onLoggedOut()
     }
 }

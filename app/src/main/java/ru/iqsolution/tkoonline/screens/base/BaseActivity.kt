@@ -24,7 +24,7 @@ import timber.log.Timber
 
 @SuppressLint("Registered")
 @Suppress("MemberVisibilityCanBePrivate")
-open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
+open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseView {
 
     protected lateinit var presenter: T
 

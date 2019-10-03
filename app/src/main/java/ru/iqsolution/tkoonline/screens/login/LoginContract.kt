@@ -6,11 +6,13 @@ interface LoginContract {
 
     interface Presenter {
 
+        fun clearAuthorization()
+
         fun login(data: String)
     }
 
     interface View : IBaseView {
 
-        fun onAuthorized()
+        fun onLoggedIn()
     }
 }

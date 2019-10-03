@@ -3,7 +3,6 @@ package ru.iqsolution.tkoonline.screens.login
 import android.app.Application
 import android.os.SystemClock
 import com.chibatching.kotpref.bulk
-import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.*
 import org.joda.time.DateTime
@@ -21,11 +20,24 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
 
     val server: Server by instance()
 
-    val gson: Gson by instance()
-
     val db: Database by instance()
 
     private var loginJson: String? = null
+
+    override fun clearAuthorization() {
+        preferences.bulk {
+            accessToken = null
+            expiresWhen = null
+            allowPhotoRefKp = false
+            serverTime = null
+            elapsedTime = 0L
+            vehicleNumber = null
+            queName = null
+            carId = 0
+            lastTime = null
+            tokenId = 0L
+        }
+    }
 
     override fun login(data: String) {
         if (data == loginJson) {
@@ -65,7 +77,7 @@ class LoginPresenter(application: Application) : BasePresenter<LoginContract.Vie
                         })
                     }
                 }
-                viewRef.get()?.onAuthorized()
+                viewRef.get()?.onLoggedIn()
             } catch (e: CancellationException) {
             } catch (e: Exception) {
                 try {
