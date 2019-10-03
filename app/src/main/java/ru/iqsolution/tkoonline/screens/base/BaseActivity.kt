@@ -19,13 +19,12 @@ import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.WaitDialog
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
-import ru.iqsolution.tkoonline.services.LocationListener
 import ru.iqsolution.tkoonline.services.LocationManager
 import timber.log.Timber
 
 @SuppressLint("Registered")
 @Suppress("MemberVisibilityCanBePrivate")
-open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationListener {
+open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView {
 
     protected lateinit var presenter: T
 
@@ -63,7 +62,7 @@ open class BaseActivity<T : BasePresenter<*>> : Activity(), IBaseView, LocationL
     /**
      * Should be called from [ru.iqsolution.tkoonline.screens.status.StatusFragment]
      */
-    fun checkLocation() {
+    override fun checkLocation() {
         LocationServices.getSettingsClient(this)
             .checkLocationSettings(
                 LocationSettingsRequest.Builder()

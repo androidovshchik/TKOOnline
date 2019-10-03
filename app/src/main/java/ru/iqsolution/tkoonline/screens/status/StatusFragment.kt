@@ -17,8 +17,8 @@ import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
-import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
+import ru.iqsolution.tkoonline.screens.base.IBaseView
 import timber.log.Timber
 import java.util.*
 
@@ -152,9 +152,9 @@ class StatusFragment : BaseFragment(), SyncListener {
         baseActivity?.onLocationAvailability(available)
     }
 
-    private val baseActivity: BaseActivity<*>?
+    private val baseActivity: IBaseView?
         get() = activity?.let {
-            if (it is BaseActivity<*> && !it.isFinishing) {
+            if (it is IBaseView && !it.isFinishing) {
                 return it
             }
             return null
