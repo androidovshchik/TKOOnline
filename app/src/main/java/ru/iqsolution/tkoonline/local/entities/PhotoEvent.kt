@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.local.entities
 
 import androidx.room.*
 import org.joda.time.DateTime
+import java.io.Serializable
 
 @Entity(
     tableName = "photo_events",
@@ -18,7 +19,7 @@ import org.joda.time.DateTime
         Index(value = ["pe_token_id"])
     ]
 )
-class PhotoEvent : SendEvent {
+class PhotoEvent : Serializable, SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pe_id")

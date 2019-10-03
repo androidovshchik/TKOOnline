@@ -63,6 +63,8 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     var tokenId by longPref(0L, "0x10")
 
+    var photoCount by intPref(0, "0x11")
+
     val isLoggedIn: Boolean
         get() = accessToken != null
 

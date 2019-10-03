@@ -10,14 +10,20 @@ class DomainInterceptor(context: Context) : Interceptor {
 
     private val preferences = Preferences(context)
 
+    private var address = preferences.mainServerAddress
+
     @Throws(Exception::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
+        val url = request.url.toString()
+        // NOTICE refreshing address only on login request
+        if (url.endsWith("auth")) {
+            address = preferences.mainServerAddress
+        }
         return chain.proceed(
             request.newBuilder()
                 .url(
-                    request.url.toString()
-                        .replace("localhost", preferences.mainServerAddress)
+                    url.replace("localhost", address)
                         .toHttpUrlOrNull() ?: request.url
                 )
                 .build()
