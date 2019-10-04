@@ -38,6 +38,9 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             externalPhoto = initEvent(photoEvent)
         }
         toolbar_back.setOnClickListener {
+            if (preFinishing) {
+                return@setOnClickListener
+            }
             closePreview(RESULT_CANCELED)
         }
         toolbar_title.text = intent.getStringExtra(EXTRA_PHOTO_TITLE) ?: PhotoType.Default.OTHER.description
@@ -49,7 +52,10 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             presenter.deleteEvent(photoEvent)
         }
         photo_retake.setOnClickListener {
-            takePhoto(externalPhoto)
+            if (preFinishing) {
+                return@setOnClickListener
+            }
+            takePhoto()
         }
         photo_save.setOnClickListener {
             if (preFinishing) {
@@ -63,31 +69,11 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             photo_retake.isEnabled = false
             photo_save.isEnabled = false
         }
-    }
-
-    override fun takePhoto(file: File) {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent.apply {
-                putExtra(
-                    MediaStore.EXTRA_OUTPUT,
-                    FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", file)
-                )
-            }, REQUEST_PHOTO)
+        if (photoEvent.id != null) {
+            showPhoto(photoEvent)
         } else {
-            toast("Не найдено приложение для фото")
-            closePreview(RESULT_CANCELED)
+            takePhoto()
         }
-    }
-
-    override fun showPhoto(file: File) {
-        if (isFinishing) {
-            return
-        }
-        GlideApp.with(applicationContext)
-            .load(file)
-            .signature(ObjectKey(System.currentTimeMillis()))
-            .into(photo_preview)
     }
 
     override fun closePreview(result: Int) {
@@ -103,7 +89,27 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         finish()
     }
 
-    override fun onBackPressed() {}
+    private fun showPhoto(instance: Any) {
+        GlideApp.with(applicationContext)
+            .load(instance)
+            .signature(ObjectKey(System.currentTimeMillis()))
+            .into(photo_preview)
+    }
+
+    private fun takePhoto() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent.apply {
+                putExtra(
+                    MediaStore.EXTRA_OUTPUT,
+                    FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", externalPhoto)
+                )
+            }, REQUEST_PHOTO)
+        } else {
+            toast("Не найдено приложение для фото")
+            closePreview(RESULT_CANCELED)
+        }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -115,6 +121,8 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             }
         }
     }
+
+    override fun onBackPressed() {}
 
     companion object {
 

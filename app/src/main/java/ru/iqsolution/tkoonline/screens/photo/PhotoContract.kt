@@ -17,10 +17,6 @@ interface PhotoContract {
 
     interface View : IBaseView {
 
-        fun takePhoto(file: File)
-
-        fun showPhoto(file: File)
-
         fun closePreview(result: Int)
     }
 }

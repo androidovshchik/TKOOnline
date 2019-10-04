@@ -28,13 +28,10 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
             if (photoEvent.id != null) {
                 val internalPhoto = File(photoEvent.path)
                 externalPhoto = File(fileManager.externalDir, internalPhoto.name)
-                showPhoto(internalPhoto)
             } else {
-                externalPhoto = fileManager.getRandomFile().also {
-                    val internalPhoto = File(fileManager.photosDir, it.name)
-                    photoEvent.path = internalPhoto.path
-                    takePhoto(it)
-                }
+                externalPhoto = fileManager.getRandomFile()
+                val internalPhoto = File(fileManager.photosDir, externalPhoto?.name)
+                photoEvent.path = internalPhoto.path
             }
         }
         return externalPhoto ?: fileManager.getRandomFile()
@@ -48,19 +45,18 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
                     deleteFile(src)
                 }
             }
-            reference.get()?.showPhoto()
-        }
-        db.photoDao().update(photoEvent)
-        if (photoEvent.id == null) {
-            launch {
-                withContext(Dispatchers.IO) {
-                    db.photoDao().insert(photoEvent.apply {
-                    })
+            db.photoDao().update(photoEvent)
+            if (photoEvent.id == null) {
+                launch {
+                    withContext(Dispatchers.IO) {
+                        db.photoDao().insert(photoEvent.apply {
+                        })
+                    }
+                    reference.get()?.closePreview(Activity.RESULT_OK)
                 }
+            } else {
                 reference.get()?.closePreview(Activity.RESULT_OK)
             }
-        } else {
-            reference.get()?.closePreview(Activity.RESULT_OK)
         }
     }
 
