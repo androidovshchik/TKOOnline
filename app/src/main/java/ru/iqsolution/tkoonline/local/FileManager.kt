@@ -48,6 +48,7 @@ class FileManager(context: Context) {
                 }
             }
         } catch (e: FileNotFoundException) {
+            Timber.e(e)
         } catch (e: Throwable) {
             Timber.e(e)
             dist.delete()
@@ -80,7 +81,6 @@ class FileManager(context: Context) {
     fun deleteFile(file: File?) {
         try {
             file?.delete()
-        } catch (e: FileNotFoundException) {
         } catch (e: Throwable) {
             Timber.e(e)
         }

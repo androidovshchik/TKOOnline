@@ -49,7 +49,7 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
         if (photoEvent.id == null) {
             launch {
                 withContext(Dispatchers.IO) {
-                    photoEvent.id = db.photoDao().insert(photoEvent)
+                    db.photoDao().insert(photoEvent)
                 }
                 reference.get()?.closePreview(Activity.RESULT_OK)
             }

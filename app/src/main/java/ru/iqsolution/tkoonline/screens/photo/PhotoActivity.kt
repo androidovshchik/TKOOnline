@@ -28,6 +28,8 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
 
     override lateinit var internalPhoto: File
 
+    private var preFinishing = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo)
@@ -41,12 +43,20 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         }
         toolbar_title.text = intent.getStringExtra(EXTRA_PHOTO_TITLE) ?: PhotoType.Default.OTHER.description
         photo_delete.setOnClickListener {
+            if (preFinishing) {
+                return@setOnClickListener
+            }
+            preFinishing = true
             presenter.deleteEvent(photoEvent)
         }
         photo_retake.setOnClickListener {
             takePhoto()
         }
         photo_save.setOnClickListener {
+            if (preFinishing) {
+                return@setOnClickListener
+            }
+            preFinishing = true
             presenter.saveEvent(photoEvent)
         }
         if (photoEvent.sent) {
@@ -96,7 +106,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         when (requestCode) {
             REQUEST_PHOTO -> {
                 if (resultCode == RESULT_OK) {
-                    photo_preview.setImageResource(0)
+                    photo_preview.setImageResource(android.R.color.transparent)
                     presenter.movePhoto(externalPhoto.path, internalPhoto.path)
                 }
             }
