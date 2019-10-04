@@ -9,23 +9,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.EXTRA_WORKER_MESSAGE
 import ru.iqsolution.tkoonline.local.Database
+import ru.iqsolution.tkoonline.local.entities.CleanEvent
+import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.*
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.services.workers.SendWorker
-import java.util.*
 
-class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsContract.Presenter, Observer<WorkInfo> {
+class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsContract.Presenter, Observer<WorkInfo?> {
 
     val server: Server by instance()
 
     val db: Database by instance()
 
-    private var observer: LiveData<WorkInfo>? = null
+    private var observer: LiveData<WorkInfo?>? = null
 
     override fun loadPlatformsTypes(refresh: Boolean) {
         baseJob.cancelChildren()
@@ -81,8 +81,13 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                     addContainer(unknown.get(it.kpId))
                 }
             }
+            reference.get()?.apply {
+                if (!refresh && responsePlatforms.data.isNotEmpty()) {
+                    changeMapPosition(SimpleLocation((maxLat + minLat) / 2, (maxLon + minLon) / 2))
+                }
+                onReceivedPrimary(primary)
+            }
             secondary.apply {
-                sortByDescending { it.timestamp }
                 forEach {
                     it.apply {
                         addContainer(regulars.get(it.kpId))
@@ -94,76 +99,38 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                 }
             }
             reference.get()?.apply {
-                if (!refresh && responsePlatforms.data.isNotEmpty()) {
-                    changeMapPosition(SimpleLocation((maxLat + minLat) / 2, (maxLon + minLon) / 2))
-                }
-                onReceivedPrimary(primary)
-            }
-            reference.get()?.apply {
                 onReceivedSecondary(secondary)
                 updateMapMarkers(gson.toJson(primary), gson.toJson(secondary))
             }
         }
     }
 
-    override fun sortPlatforms() {
+    override fun loadPhotoCleanEvents() {
         launch {
+            val photoEvents = arrayListOf<PhotoEvent>()
+            val cleanEvents = arrayListOf<CleanEvent>()
             withContext(Dispatchers.IO) {
-                val errorNames = SimpleArrayMap<Int, String>()
-                val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-                responseTypes.data.forEach {
-                    if (it.isError == 1) {
-                        errorNames.put(it.id, it.shortName)
-                    }
-                }
-                db.photoDao().getDayEvents(preferences.serverDay).forEach {
-                    for (platform in secondary) {
-                        if (it.kpId == platform.kpId) {
-                            if (platform.timestamp == 0L) {
-                                platform.timestamp = it.whenTime.withZone(timeZone).millis
-                            }
-                            errorNames.get(it.type)?.run {
-                                platform.addError(this)
-                            }
-                        }
-                    }
-                }
-                db.cleanDao().getDayEvents(preferences.serverDay).forEach {
-                    for (platform in secondary) {
-                        if (it.kpId == platform.kpId) {
-                            val millis = it.whenTime.withZone(timeZone).millis
-                            if (platform.timestamp < millis) {
-                                platform.timestamp = millis
-                            }
-                            break
-                        }
-                    }
-                }
+                photoEvents.addAll(db.photoDao().getDayEvents(preferences.serverDay))
+                cleanEvents.addAll(db.cleanDao().getDayEvents(preferences.serverDay))
+            }
+            reference.get()?.apply {
+                onPhotoEvents(photoEvents)
+                onCleanEvents(cleanEvents)
             }
         }
     }
 
     override fun logout(context: Context) {
         reference.get()?.showLoading()
-        observer = SendWorker.launch(context).apply {
-            observeForever(this@PlatformsPresenter)
+        observer = SendWorker.launch(context, true).also {
+            it.observeForever(this)
         }
     }
 
-    override fun onChanged(t: WorkInfo) {
-        when (t.state) {
+    override fun onChanged(t: WorkInfo?) {
+        when (t?.state) {
             WorkInfo.State.SUCCEEDED -> {
-                launch {
-                    try {
-                        withContext(Dispatchers.IO) {
-                            server.logout(preferences.authHeader)
-                        }
-                    } catch (e: Throwable) {
-                        reference.get()?.hideLoading()
-                        throw e
-                    }
-                    reference.get()?.onLoggedOut()
-                }
+                reference.get()?.onLoggedOut()
             }
             WorkInfo.State.FAILED -> {
                 reference.get()?.apply {
@@ -171,7 +138,7 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                     showError(t.outputData.getString(EXTRA_WORKER_MESSAGE))
                 }
             }
-            WorkInfo.State.BLOCKED -> {
+            null, WorkInfo.State.BLOCKED -> {
                 reference.get()?.apply {
                     hideLoading()
                     showError("Попробуйте позже")

@@ -113,9 +113,10 @@ class TelemetryService : BaseService(), LocationListener {
         }
 
         /**
+         * Currently this shouldn't be called outside
          * @return true if service is stopped
          */
-        fun stop(context: Context): Boolean = context.run {
+        private fun stop(context: Context): Boolean = context.run {
             return if (activityManager.isRunning<TelemetryService>()) {
                 stopService<TelemetryService>()
             } else {

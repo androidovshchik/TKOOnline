@@ -1,6 +1,8 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
 import android.content.Context
+import ru.iqsolution.tkoonline.local.entities.CleanEvent
+import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -11,6 +13,8 @@ interface PlatformsContract {
     interface Presenter {
 
         fun loadPlatformsTypes(refresh: Boolean)
+
+        fun loadPhotoCleanEvents()
 
         fun logout(context: Context)
     }
@@ -26,6 +30,10 @@ interface PlatformsContract {
         fun onReceivedSecondary(platforms: List<PlatformContainers>)
 
         fun updateMapMarkers(primary: String, secondary: String)
+
+        fun onPhotoEvents(events: List<PhotoEvent>)
+
+        fun onCleanEvents(events: List<CleanEvent>)
 
         fun onLoggedOut()
     }

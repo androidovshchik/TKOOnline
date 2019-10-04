@@ -25,9 +25,7 @@ const val EXTRA_TELEMETRY_LOCATION = "telemetry_location"
 
 const val EXTRA_TELEMETRY_AVAILABILITY = "telemetry_availability"
 
-const val EXTRA_PLATFORMS_KP_ID = "platforms_kp_id"
-
-const val EXTRA_PLATFORMS_ERRORS = "platforms_errors"
+const val EXTRA_WORKER_MESSAGE = "worker_message"
 
 const val EXTRA_PLATFORM_PLATFORM = "platform_platform"
 
