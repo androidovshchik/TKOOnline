@@ -1,30 +1,26 @@
-package ru.iqsolution.tkoonline.screens
+package ru.iqsolution.tkoonline.screens.map
 
-import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import kotlinx.android.synthetic.main.map_view.view.*
-import org.jetbrains.anko.sdk23.listeners.onClick
-import ru.iqsolution.tkoonline.BuildConfig
+import kotlinx.android.synthetic.main.merge_map.view.*
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
-class MapView : FrameLayout {
+class MapLayout : FrameLayout {
 
-    private var lat: Double? = null
+    private var mLatitude: Double? = null
 
-    private var lon: Double? = null
+    private var mLongitude: Double? = null
 
     private var isReady = false
 
@@ -47,27 +43,17 @@ class MapView : FrameLayout {
     )
 
     init {
-        View.inflate(context, R.layout.map_view, this)
-        map.apply {
-            webViewClient = Client()
-            settings.apply {
-                @SuppressLint("SetJavaScriptEnabled")
-                javaScriptEnabled = true
-                domStorageEnabled = true
-                databaseEnabled = true
-                setAppCacheEnabled(true)
-                setAppCachePath(context.cacheDir.path)
-            }
-        }
-        map_plus.onClick {
+        View.inflate(context, R.layout.merge_map, this)
+        map.webViewClient = Client()
+        map_plus.setOnClickListener {
             zoomIn()
         }
-        map_minus.onClick {
+        map_minus.setOnClickListener {
             zoomOut()
         }
-        map_location.onClick {
-            lat?.let { latitude ->
-                lon?.let { longitude ->
+        map_location.setOnClickListener {
+            mLatitude?.let { latitude ->
+                mLongitude?.let { longitude ->
                     moveTo(latitude, longitude)
                 }
             }
@@ -106,8 +92,8 @@ class MapView : FrameLayout {
     }
 
     fun clearLocation() {
-        lat = null
-        lon = null
+        mLatitude = null
+        mLongitude = null
         runCall("_4_mapClearLocation()")
     }
 
@@ -118,12 +104,11 @@ class MapView : FrameLayout {
     }
 
     /**
-     * Should be called regularly from outside
      * @param radius in meters
      */
     fun setLocation(latitude: Double, longitude: Double, radius: Int = 0) {
-        lat = latitude
-        lon = longitude
+        mLatitude = latitude
+        mLongitude = longitude
         runCall("_4_mapSetLocation($latitude, $longitude, $radius)")
     }
 
@@ -135,31 +120,14 @@ class MapView : FrameLayout {
         runCall("_5_mapSaveState()")
     }
 
-    private fun runCall(call: String?) {
-        if (call != null) {
-            // NOTICE currently supports only 0-9 range, don't use split
-            calls.apply {
-                when {
-                    isNotEmpty() -> {
-                        removeAll { it[1] == call[1] }
-                        add(call)
-                    }
-                    isReady -> {
-                        loadUrl("javascript:$call")
-                        return
-                    }
-                }
-            }
-        }
+    private fun runCall(call: String) {
+        // NOTICE currently supports only 1 digit, don't use split
         if (isReady) {
-            if (calls.isNotEmpty()) {
-                val js = TextUtils.join(";", calls)
-                calls.clear()
-                loadUrl("javascript:$js")
-            }
+            loadUrl("javascript:$call")
         } else {
-            if (call == null) {
-                calls.clear()
+            calls.apply {
+                removeAll { it[1] == call[1] }
+                add(call)
             }
         }
     }
@@ -168,35 +136,26 @@ class MapView : FrameLayout {
         map.destroy()
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        requestDisallowInterceptTouchEvent(true)
-        return super.onTouchEvent(event)
-    }
-
     override fun hasOverlappingRendering() = false
 
     inner class Client : WebViewClient() {
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             Timber.d("onPageStarted: $url")
-            isReady = false
             map_tools.visibility = GONE
-            runCall(null)
+            isReady = false
+            calls.clear()
         }
 
         override fun onPageFinished(view: WebView, url: String) {
             Timber.d("onPageFinished: $url")
-            isReady = true
             map_tools.visibility = VISIBLE
-            runCall(null)
-        }
-    }
-
-    companion object {
-
-        init {
-            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+            isReady = true
+            val js = TextUtils.join(";", calls)
+            calls.clear()
+            if (!TextUtils.isEmpty(js)) {
+                loadUrl("javascript:$js")
+            }
         }
     }
 }
