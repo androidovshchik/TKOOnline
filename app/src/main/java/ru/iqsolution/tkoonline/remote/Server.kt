@@ -62,5 +62,5 @@ interface Server {
     @POST("auth/close")
     suspend fun logout(
         @Header("Authorization") token: String
-    )
+    ): Call<Unit>
 }
