@@ -20,25 +20,10 @@ class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presen
 
     val db: Database by instance()
 
-    private var loginJson: String? = null
-
-    override fun clearAuthorization() {
-        preferences.bulk {
-            accessToken = null
-            expiresWhen = null
-            allowPhotoRefKp = false
-            serverTime = null
-            elapsedTime = 0L
-            vehicleNumber = null
-            queName = null
-            carId = 0
-            lastTime = null
-            tokenId = 0L
-        }
-    }
+    private var qrCodeJson: String? = null
 
     override fun login(data: String) {
-        if (data == loginJson) {
+        if (data == qrCodeJson) {
             return
         }
         val qrCode = try {
@@ -48,7 +33,7 @@ class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presen
             return
         }
         Timber.d("Qr code json: $data")
-        loginJson = data
+        qrCodeJson = data
         baseJob.cancelChildren()
         launch {
             try {
@@ -83,7 +68,7 @@ class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presen
                     delay(2000)
                 } catch (e: CancellationException) {
                 }
-                loginJson = null
+                qrCodeJson = null
                 throw e
             }
         }
