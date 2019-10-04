@@ -7,8 +7,6 @@ import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.BuildConfig
-import ru.iqsolution.tkoonline.EXTRA_WORKER_MESSAGE
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
@@ -30,8 +28,10 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
     override suspend fun doWork(): Result = coroutineScope {
         val kpId = inputData.getInt(PARAM_KP_ID, -1)
+        val sendAll = kpId < 0
+        var hasErrors = false
         val plaintText = "text/plain".toMediaTypeOrNull()
-        val cleanEvents = if (kpId < 0) {
+        val cleanEvents = if (sendAll) {
             db.cleanDao().getSendEvents()
         } else {
             db.cleanDao().getSendKpIdEvents(kpId)
@@ -43,12 +43,15 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     it.clean.kpId,
                     RequestClean(it.clean)
                 ).execute()
-                Timber.d("responseClean ${responseClean.code()}")
+                if (responseClean.code() in 200..299) {
+                    db.cleanDao().markAsSent(it.clean.id ?: 0L)
+                }
             } catch (e: Throwable) {
                 Timber.e(e)
+                hasErrors = sendAll
             }
         }
-        val photoEvents = if (kpId < 0) {
+        val photoEvents = if (sendAll) {
             db.photoDao().getSendEvents()
         } else {
             db.photoDao().getSendKpIdEvents(kpId)
@@ -65,30 +68,27 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     it.photo.longitude.toString().toRequestBody(plaintText),
                     photo
                 ).execute()
-                Timber.d("responsePhoto ${responsePhoto.code()}")
+                if (responsePhoto.code() in 200..299) {
+                    db.cleanDao().markAsSent(it.photo.id ?: 0L)
+                }
             } catch (e: Throwable) {
                 Timber.e(e)
+                hasErrors = sendAll
             }
         }
-        if (all) {
+        if (sendAll) {
             try {
                 server.logout(preferences.authHeader).execute()
             } catch (e: Throwable) {
                 Timber.e(e)
-                return@coroutineScope Result.failure(
-                    Data.Builder()
-                        .putString(
-                            EXTRA_WORKER_MESSAGE, if (BuildConfig.DEBUG) {
-                                e.toString()
-                            } else {
-                                e.localizedMessage
-                            }
-                        )
-                        .build()
-                )
+                hasErrors = true
             }
         }
-        Result.success()
+        if (hasErrors) {
+            Result.failure()
+        } else {
+            Result.success()
+        }
     }
 
     companion object {

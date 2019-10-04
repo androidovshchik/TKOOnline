@@ -24,18 +24,17 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
     override suspend fun doWork(): Result = coroutineScope {
         val now = DateTime.now()
         val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
+        val allTokens = db.tokenDao().getTokens()
         val expiredTokens = arrayListOf<AccessToken>()
-        db.tokenDao().apply {
-            for (token in getTokens()) {
-                if (token.expires.withZone(timeZone).isBefore(now)) {
-                    expiredTokens.add(token)
-                } else {
-                    break
-                }
+        for (token in allTokens) {
+            if (token.expires.withZone(timeZone).isBefore(now)) {
+                expiredTokens.add(token)
+            } else {
+                break
             }
-            if (expiredTokens.isNotEmpty()) {
-                delete(expiredTokens)
-            }
+        }
+        if (expiredTokens.isNotEmpty()) {
+            db.tokenDao().delete(expiredTokens)
         }
         fileManager.deleteOldFiles()
         Result.success()
