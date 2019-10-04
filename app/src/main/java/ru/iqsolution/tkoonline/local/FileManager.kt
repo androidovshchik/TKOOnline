@@ -10,6 +10,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
 class FileManager(context: Context) {
@@ -24,8 +25,8 @@ class FileManager(context: Context) {
         mkdirs()
     }
 
-    fun createFile(): File {
-        return File.createTempFile("photo", ".jpeg", externalDir)
+    fun getRandomFile(): File {
+        return File("${UUID.randomUUID()}.jpg")
     }
 
     fun copyFile(src: String, dist: String) {

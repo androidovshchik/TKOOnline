@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.photo
 
+import android.app.Activity
 import android.app.Application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -17,8 +18,24 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
 
     val db: Database by instance()
 
-    override fun moveFile(fileManager: FileManager, src: File, dist: File) {
-        launch {
+    val fileManager: FileManager by instance()
+
+    override fun initEvent(photoEvent: PhotoEvent) {
+        reference.get()?.apply {
+            if (photoEvent.id != null) {
+                internalPhoto = File(photoEvent.path)
+                externalPhoto = File(fileManager.externalDir, internalPhoto.name)
+                showPhoto()
+            } else {
+                externalPhoto = fileManager.getRandomFile()
+                internalPhoto = File(fileManager.photosDir, externalPhoto.name)
+                takePhoto()
+            }
+        }
+    }
+
+    override fun movePhoto(src: String, dist: String) {
+        GlobalScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.IO) {
                 fileManager.apply {
                     copyFile(src, dist)
@@ -29,15 +46,21 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
         }
     }
 
-    override fun deleteEvent(photoEvent: PhotoEvent, file: File) {
-        if (photoEvent.id != null) {
-
+    override fun saveEvent(photoEvent: PhotoEvent) {
+        if (photoEvent.id == null) {
+            GlobalScope.launch(Dispatchers.IO) {
+                db.photoDao().insert(photoEvent)
+                reference.get()?.closePreview(Activity.RESULT_OK)
+            }
         }
     }
 
-    override fun saveEvent(photoEvent: PhotoEvent, file: File) {
-        GlobalScope.launch(Dispatchers.IO) {
-            db.photoDao().insert(photoEvent)
+    override fun deleteEvent(photoEvent: PhotoEvent) {
+        if (photoEvent.id != null) {
+            GlobalScope.launch(Dispatchers.IO) {
+                db.photoDao().delete(photoEvent)
+                reference.get()?.closePreview(Activity.RESULT_CANCELED)
+            }
         }
     }
 }

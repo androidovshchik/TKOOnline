@@ -27,6 +27,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.local.Database
+import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.PlatformStatus
@@ -75,6 +76,10 @@ class MainApp : Application(), KodeinAware {
 
         bind<Preferences>() with provider {
             Preferences(applicationContext)
+        }
+
+        bind<FileManager>() with provider {
+            FileManager(applicationContext)
         }
 
         bind<Server>() with singleton {

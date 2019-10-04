@@ -19,7 +19,7 @@ import java.io.Serializable
         Index(value = ["pe_token_id"])
     ]
 )
-class PhotoEvent : Serializable, SendEvent {
+class PhotoEvent() : Serializable, SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pe_id")
@@ -51,4 +51,19 @@ class PhotoEvent : Serializable, SendEvent {
 
     @ColumnInfo(name = "pe_sent")
     override var sent = false
+
+    constructor(typeId: Int) : this() {
+        type = typeId
+        // mock data
+        path = ""
+        whenTime = DateTime.now()
+    }
+
+    constructor(id: Int, typeId: Int) : this() {
+        kpId = id
+        type = typeId
+        // mock data
+        path = ""
+        whenTime = DateTime.now()
+    }
 }

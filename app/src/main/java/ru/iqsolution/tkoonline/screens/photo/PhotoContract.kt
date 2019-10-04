@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.photo
 
-import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 import java.io.File
@@ -9,17 +8,25 @@ interface PhotoContract {
 
     interface Presenter {
 
-        fun moveFile(fileManager: FileManager, src: File, dist: File)
+        fun initEvent(photoEvent: PhotoEvent)
 
-        fun deleteEvent(photoEvent: PhotoEvent, file: File)
+        fun movePhoto(src: String, dist: String)
 
-        fun saveEvent(photoEvent: PhotoEvent, file: File)
+        fun saveEvent(photoEvent: PhotoEvent)
+
+        fun deleteEvent(photoEvent: PhotoEvent)
     }
 
     interface View : IBaseView {
 
+        var externalPhoto: File
+
+        var internalPhoto: File
+
+        fun takePhoto()
+
         fun showPhoto()
 
-        fun closeScreen(result: Int)
+        fun closePreview(result: Int)
     }
 }
