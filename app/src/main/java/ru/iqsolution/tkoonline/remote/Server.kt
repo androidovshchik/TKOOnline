@@ -60,7 +60,7 @@ interface Server {
     ): Call<ResponsePhoto>
 
     @POST("auth/close")
-    suspend fun logout(
+    fun logout(
         @Header("Authorization") token: String
     ): Call<Unit>
 }

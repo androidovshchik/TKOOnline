@@ -58,7 +58,7 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
 
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: PlatformContainers) {
-            val size = if (item.meters < 80.0) maxSize else minSize
+            val size = if (item.meters < 80) maxSize else minSize
             address.text = item.address
             range.text = appContext.getString(
                 R.string.platform_range_n,

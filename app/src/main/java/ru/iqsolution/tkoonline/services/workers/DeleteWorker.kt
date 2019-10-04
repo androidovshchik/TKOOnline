@@ -43,13 +43,13 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
 
     companion object {
 
-        const val TAG = "DELETE"
+        const val NAME = "DELETE"
 
         fun launch(context: Context) {
             val request = OneTimeWorkRequestBuilder<DeleteWorker>()
                 .build()
             WorkManager.getInstance(context).apply {
-                enqueueUniqueWork(TAG, ExistingWorkPolicy.KEEP, request)
+                enqueueUniqueWork(NAME, ExistingWorkPolicy.KEEP, request)
             }
         }
     }
