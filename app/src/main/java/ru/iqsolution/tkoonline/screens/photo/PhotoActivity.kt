@@ -59,9 +59,11 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
     override fun takePhoto() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(packageManager) != null) {
-            val uri = FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", externalPhoto)
             startActivityForResult(intent.apply {
-                putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                putExtra(
+                    MediaStore.EXTRA_OUTPUT,
+                    FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", externalPhoto)
+                )
             }, REQUEST_PHOTO)
         } else {
             toast("Не найдено приложение для фото")
@@ -70,16 +72,19 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
     }
 
     override fun showPhoto() {
+        if (isFinishing) {
+            return
+        }
         GlideApp.with(applicationContext)
             .load(internalPhoto)
             .signature(ObjectKey(System.currentTimeMillis()))
             .into(photo_preview)
     }
 
-    /**
-     * Called from different threads
-     */
     override fun closePreview(result: Int) {
+        if (isFinishing) {
+            return
+        }
         setResult(result)
         finish()
     }

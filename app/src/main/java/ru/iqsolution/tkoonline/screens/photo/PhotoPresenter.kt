@@ -3,7 +3,6 @@ package ru.iqsolution.tkoonline.screens.photo
 import android.app.Activity
 import android.app.Application
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
@@ -35,7 +34,7 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
     }
 
     override fun movePhoto(src: String, dist: String) {
-        GlobalScope.launch(Dispatchers.Main) {
+        launch {
             withContext(Dispatchers.IO) {
                 fileManager.apply {
                     copyFile(src, dist)
@@ -48,19 +47,32 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
 
     override fun saveEvent(photoEvent: PhotoEvent) {
         if (photoEvent.id == null) {
-            GlobalScope.launch(Dispatchers.IO) {
-                db.photoDao().insert(photoEvent)
+            launch {
+                withContext(Dispatchers.IO) {
+                    photoEvent.id = db.photoDao().insert(photoEvent)
+                }
                 reference.get()?.closePreview(Activity.RESULT_OK)
             }
+        } else {
+            reference.get()?.closePreview(Activity.RESULT_CANCELED)
         }
     }
 
     override fun deleteEvent(photoEvent: PhotoEvent) {
         if (photoEvent.id != null) {
-            GlobalScope.launch(Dispatchers.IO) {
-                db.photoDao().delete(photoEvent)
+            launch {
+                withContext(Dispatchers.IO) {
+                    db.photoDao().delete(photoEvent)
+                }
                 reference.get()?.closePreview(Activity.RESULT_CANCELED)
             }
+        } else {
+            reference.get()?.closePreview(Activity.RESULT_CANCELED)
         }
+    }
+
+    override fun detachView() {
+        // no cancelling
+        reference.clear()
     }
 }
