@@ -1,9 +1,6 @@
 package ru.iqsolution.tkoonline.local.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEventToken
 
@@ -45,6 +42,9 @@ interface PhotoDao {
 
     @Insert
     fun insert(item: PhotoEvent)
+
+    @Update
+    fun update(item: PhotoEvent)
 
     @Delete
     fun delete(item: PhotoEvent)

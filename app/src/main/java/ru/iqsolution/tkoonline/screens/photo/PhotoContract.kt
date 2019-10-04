@@ -8,9 +8,9 @@ interface PhotoContract {
 
     interface Presenter {
 
-        fun initEvent(photoEvent: PhotoEvent)
+        fun initEvent(photoEvent: PhotoEvent): File
 
-        fun movePhoto(src: String, dist: String)
+        fun updateEvent(photoEvent: PhotoEvent)
 
         fun saveEvent(photoEvent: PhotoEvent)
 
@@ -18,10 +18,6 @@ interface PhotoContract {
     }
 
     interface View : IBaseView {
-
-        var externalPhoto: File
-
-        var internalPhoto: File
 
         fun takePhoto()
 

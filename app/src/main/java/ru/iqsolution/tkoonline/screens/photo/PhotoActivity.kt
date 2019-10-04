@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
-import com.bumptech.glide.signature.ObjectKey
 import kotlinx.android.synthetic.main.activity_photo.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.toast
@@ -24,9 +23,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
 
     private lateinit var photoEvent: PhotoEvent
 
-    override lateinit var externalPhoto: File
-
-    override lateinit var internalPhoto: File
+    private lateinit var externalPhoto: File
 
     private var preFinishing = false
 
@@ -36,7 +33,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         photoEvent = intent.getSerializableExtra(EXTRA_PHOTO_EVENT) as PhotoEvent
         presenter = PhotoPresenter(application).apply {
             attachView(this@PhotoActivity)
-            initEvent(photoEvent)
+            externalPhoto = initEvent(photoEvent)
         }
         toolbar_back.setOnClickListener {
             closePreview(RESULT_CANCELED)
@@ -86,8 +83,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             return
         }
         GlideApp.with(applicationContext)
-            .load(internalPhoto)
-            .signature(ObjectKey(System.currentTimeMillis()))
+            .load(photoEvent)
             .into(photo_preview)
     }
 
@@ -107,7 +103,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             REQUEST_PHOTO -> {
                 if (resultCode == RESULT_OK) {
                     photo_preview.setImageResource(android.R.color.transparent)
-                    presenter.movePhoto(externalPhoto.path, internalPhoto.path)
+                    presenter.updateEvent(photoEvent)
                 }
             }
         }

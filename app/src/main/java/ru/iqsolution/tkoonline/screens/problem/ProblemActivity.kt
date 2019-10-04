@@ -65,10 +65,12 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_PHOTO) {
-            if (resultCode == RESULT_OK) {
-                setResult(RESULT_OK)
-                finish()
+        when (requestCode) {
+            REQUEST_PHOTO -> {
+                if (resultCode == RESULT_OK) {
+                    setResult(RESULT_OK)
+                    finish()
+                }
             }
         }
     }

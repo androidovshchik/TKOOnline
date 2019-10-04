@@ -19,7 +19,7 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
 
     val fileManager: FileManager by instance()
 
-    override fun initEvent(photoEvent: PhotoEvent) {
+    override fun initEvent(photoEvent: PhotoEvent): File {
         reference.get()?.apply {
             if (photoEvent.id != null) {
                 internalPhoto = File(photoEvent.path)
@@ -28,6 +28,7 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
             } else {
                 externalPhoto = fileManager.getRandomFile()
                 internalPhoto = File(fileManager.photosDir, externalPhoto.name)
+                photoEvent.path = internalPhoto.path
                 takePhoto()
             }
         }
@@ -49,12 +50,24 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
         if (photoEvent.id == null) {
             launch {
                 withContext(Dispatchers.IO) {
-                    db.photoDao().insert(photoEvent)
+                    db.photoDao().insert(photoEvent.apply {
+                    })
                 }
                 reference.get()?.closePreview(Activity.RESULT_OK)
             }
         } else {
-            reference.get()?.closePreview(Activity.RESULT_CANCELED)
+            reference.get()?.closePreview(Activity.RESULT_OK)
+        }
+    }
+
+    override fun updateEvent(photoEvent: PhotoEvent) {
+        if (photoEvent.id != null) {
+            launch {
+                withContext(Dispatchers.IO) {
+                    db.photoDao().update(photoEvent)
+                }
+                reference.get()?.closePreview(Activity.RESULT_CANCELED)
+            }
         }
     }
 

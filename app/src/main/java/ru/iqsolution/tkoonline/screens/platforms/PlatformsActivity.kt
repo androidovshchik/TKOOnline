@@ -127,22 +127,24 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_PLATFORM) {
-            if (resultCode == RESULT_OK) {
-                platformsAdapter.apply {
-                    items.apply {
-                        val id = data?.getIntExtra(EXTRA_PLATFORMS_KP_ID, -1) ?: -1
-                        firstOrNull { it.kpId == id }?.let {
-                            remove(it)
-                            it.errors.apply {
-                                clear()
-                                addAll(data?.getStringArrayListExtra(EXTRA_PLATFORMS_ERRORS).orEmpty())
+        when (requestCode) {
+            REQUEST_PLATFORM -> {
+                if (resultCode == RESULT_OK) {
+                    platformsAdapter.apply {
+                        items.apply {
+                            val id = data?.getIntExtra(EXTRA_PLATFORMS_KP_ID, -1) ?: -1
+                            firstOrNull { it.kpId == id }?.let {
+                                remove(it)
+                                it.errors.apply {
+                                    clear()
+                                    addAll(data?.getStringArrayListExtra(EXTRA_PLATFORMS_ERRORS).orEmpty())
+                                }
+                                add(0, it)
+                                // todo also map changes
                             }
-                            add(0, it)
-                            // todo also map changes
                         }
+                        notifyDataSetChanged()
                     }
-                    notifyDataSetChanged()
                 }
             }
         }
