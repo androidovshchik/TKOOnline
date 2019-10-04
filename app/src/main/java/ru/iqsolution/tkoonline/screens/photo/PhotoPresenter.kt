@@ -19,22 +19,28 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
 
     val fileManager: FileManager by instance()
 
+    /**
+     * @return external file
+     */
     override fun initEvent(photoEvent: PhotoEvent): File {
+        var externalPhoto: File? = null
         reference.get()?.apply {
             if (photoEvent.id != null) {
-                internalPhoto = File(photoEvent.path)
+                val internalPhoto = File(photoEvent.path)
                 externalPhoto = File(fileManager.externalDir, internalPhoto.name)
-                showPhoto()
+                showPhoto(internalPhoto)
             } else {
-                externalPhoto = fileManager.getRandomFile()
-                internalPhoto = File(fileManager.photosDir, externalPhoto.name)
-                photoEvent.path = internalPhoto.path
-                takePhoto()
+                externalPhoto = fileManager.getRandomFile().also {
+                    val internalPhoto = File(fileManager.photosDir, it.name)
+                    photoEvent.path = internalPhoto.path
+                    takePhoto(it)
+                }
             }
         }
+        return externalPhoto ?: fileManager.getRandomFile()
     }
 
-    override fun movePhoto(src: String, dist: String) {
+    override fun saveEvent(photoEvent: PhotoEvent, externalFile: File) {
         launch {
             withContext(Dispatchers.IO) {
                 fileManager.apply {
@@ -44,9 +50,7 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
             }
             reference.get()?.showPhoto()
         }
-    }
-
-    override fun saveEvent(photoEvent: PhotoEvent) {
+        db.photoDao().update(photoEvent)
         if (photoEvent.id == null) {
             launch {
                 withContext(Dispatchers.IO) {
@@ -57,17 +61,6 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
             }
         } else {
             reference.get()?.closePreview(Activity.RESULT_OK)
-        }
-    }
-
-    override fun updateEvent(photoEvent: PhotoEvent) {
-        if (photoEvent.id != null) {
-            launch {
-                withContext(Dispatchers.IO) {
-                    db.photoDao().update(photoEvent)
-                }
-                reference.get()?.closePreview(Activity.RESULT_CANCELED)
-            }
         }
     }
 

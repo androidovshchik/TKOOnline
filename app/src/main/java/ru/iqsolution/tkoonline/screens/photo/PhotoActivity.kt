@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
+import com.bumptech.glide.signature.ObjectKey
 import kotlinx.android.synthetic.main.activity_photo.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.toast
@@ -14,6 +15,7 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import timber.log.Timber
 import java.io.File
 
 /**
@@ -47,14 +49,14 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             presenter.deleteEvent(photoEvent)
         }
         photo_retake.setOnClickListener {
-            takePhoto()
+            takePhoto(externalPhoto)
         }
         photo_save.setOnClickListener {
             if (preFinishing) {
                 return@setOnClickListener
             }
             preFinishing = true
-            presenter.saveEvent(photoEvent)
+            presenter.saveEvent(photoEvent, externalPhoto)
         }
         if (photoEvent.sent) {
             photo_delete.isEnabled = false
@@ -63,13 +65,13 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         }
     }
 
-    override fun takePhoto() {
+    override fun takePhoto(file: File) {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent.apply {
                 putExtra(
                     MediaStore.EXTRA_OUTPUT,
-                    FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", externalPhoto)
+                    FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", file)
                 )
             }, REQUEST_PHOTO)
         } else {
@@ -78,18 +80,24 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         }
     }
 
-    override fun showPhoto() {
+    override fun showPhoto(file: File) {
         if (isFinishing) {
             return
         }
         GlideApp.with(applicationContext)
-            .load(photoEvent)
+            .load(file)
+            .signature(ObjectKey(System.currentTimeMillis()))
             .into(photo_preview)
     }
 
     override fun closePreview(result: Int) {
         if (isFinishing) {
             return
+        }
+        try {
+            externalPhoto.delete()
+        } catch (e: Exception) {
+            Timber.e(e)
         }
         setResult(result)
         finish()
@@ -102,8 +110,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         when (requestCode) {
             REQUEST_PHOTO -> {
                 if (resultCode == RESULT_OK) {
-                    photo_preview.setImageResource(android.R.color.transparent)
-                    presenter.updateEvent(photoEvent)
+                    showPhoto(externalPhoto)
                 }
             }
         }

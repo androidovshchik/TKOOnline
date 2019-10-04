@@ -10,18 +10,16 @@ interface PhotoContract {
 
         fun initEvent(photoEvent: PhotoEvent): File
 
-        fun updateEvent(photoEvent: PhotoEvent)
-
-        fun saveEvent(photoEvent: PhotoEvent)
+        fun saveEvent(photoEvent: PhotoEvent, externalFile: File)
 
         fun deleteEvent(photoEvent: PhotoEvent)
     }
 
     interface View : IBaseView {
 
-        fun takePhoto()
+        fun takePhoto(file: File)
 
-        fun showPhoto()
+        fun showPhoto(file: File)
 
         fun closePreview(result: Int)
     }
