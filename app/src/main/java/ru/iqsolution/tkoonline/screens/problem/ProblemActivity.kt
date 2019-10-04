@@ -24,9 +24,9 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_problem)
-        presenter = ProblemPresenter(application).apply {
-            attachView(this@ProblemActivity)
-            platform = fromJson(intent.getStringExtra(EXTRA_PROBLEM_PLATFORM), PlatformContainers::class.java)
+        presenter = ProblemPresenter().also {
+            it.attachView(this)
+            platform = it.fromJson(intent.getStringExtra(EXTRA_PROBLEM_PLATFORM), PlatformContainers::class.java)
         }
         toolbar_back.setOnClickListener {
             setResult(RESULT_CANCELED)

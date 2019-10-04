@@ -33,9 +33,9 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo)
         photoEvent = intent.getSerializableExtra(EXTRA_PHOTO_EVENT) as PhotoEvent
-        presenter = PhotoPresenter(application).apply {
-            attachView(this@PhotoActivity)
-            externalPhoto = getExternalFile(photoEvent)
+        presenter = PhotoPresenter().also {
+            it.attachView(this)
+            externalPhoto = it.getExternalFile(photoEvent)
         }
         toolbar_back.setOnClickListener {
             if (preFinishing) {
@@ -77,12 +77,9 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
     }
 
     override fun closePreview(result: Int) {
-        if (isFinishing) {
-            return
-        }
         try {
             externalPhoto.delete()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e)
         }
         setResult(result)
@@ -115,8 +112,9 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_PHOTO -> {
-                if (resultCode == RESULT_OK) {
-                    showPhoto(externalPhoto)
+                when {
+                    resultCode == RESULT_OK -> showPhoto(externalPhoto)
+                    photoEvent.id == null -> closePreview(RESULT_CANCELED)
                 }
             }
         }

@@ -19,8 +19,10 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.WaitDialog
+import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
 import ru.iqsolution.tkoonline.services.LocationManager
+import ru.iqsolution.tkoonline.services.TelemetryService
 import timber.log.Timber
 
 @SuppressLint("Registered")
@@ -42,6 +44,9 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         preferences = Preferences(applicationContext)
         locationSettings = LocationServices.getSettingsClient(this)
+        if (this !is LoginActivity) {
+            TelemetryService.start(applicationContext)
+        }
     }
 
     @Suppress("DEPRECATION")
@@ -50,7 +55,7 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         statusBar = fragmentManager.findFragmentById(R.id.status_fragment) as StatusFragment?
     }
 
-    override fun updatePhotoCount() {
+    override fun updateCloud() {
         statusBar?.onPhotoCountChanged()
     }
 

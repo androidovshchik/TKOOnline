@@ -4,7 +4,7 @@ import ru.iqsolution.tkoonline.services.LocationListener
 
 interface IBaseView : LocationListener {
 
-    fun updatePhotoCount()
+    fun updateCloud()
 
     fun checkLocation()
 
