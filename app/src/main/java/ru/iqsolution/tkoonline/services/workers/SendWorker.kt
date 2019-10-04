@@ -30,7 +30,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         val kpId = inputData.getInt(PARAM_KP_ID, -1)
         val sendAll = kpId < 0
         var hasErrors = false
-        val plaintText = "text/plain".toMediaTypeOrNull()
         val cleanEvents = if (sendAll) {
             db.cleanDao().getSendEvents()
         } else {
@@ -61,11 +60,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             try {
                 val responsePhoto = server.sendPhoto(
                     it.token.authHeader,
-                    it.photo.kpId?.toString()?.toRequestBody(plaintText),
-                    it.photo.type.toString().toRequestBody(plaintText),
-                    it.photo.whenTime.toString(PATTERN_DATETIME).toRequestBody(plaintText),
-                    it.photo.latitude.toString().toRequestBody(plaintText),
-                    it.photo.longitude.toString().toRequestBody(plaintText),
+                    it.photo.kpId?.toString()?.toRequestBody(TEXT_TYPE),
+                    it.photo.type.toString().toRequestBody(TEXT_TYPE),
+                    it.photo.whenTime.toString(PATTERN_DATETIME).toRequestBody(TEXT_TYPE),
+                    it.photo.latitude.toString().toRequestBody(TEXT_TYPE),
+                    it.photo.longitude.toString().toRequestBody(TEXT_TYPE),
                     photo
                 ).execute()
                 if (responsePhoto.code() in 200..299) {
@@ -96,6 +95,8 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         const val NAME = "SEND"
 
         private const val PARAM_KP_ID = "kp_id"
+
+        private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
 
         fun launch(context: Context, id: Int = -1): LiveData<WorkInfo?> {
             val request = OneTimeWorkRequestBuilder<SendWorker>()
