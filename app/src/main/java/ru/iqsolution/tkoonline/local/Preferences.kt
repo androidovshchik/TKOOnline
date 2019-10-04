@@ -34,6 +34,7 @@ class Preferences(context: Context) : KotprefModel(context) {
     /**
      * Local time (milliseconds)
      */
+    // todo elapsed time?
     var blockTime by longPref(0L, "0x08")
 
     var vehicleNumber by nullableStringPref(null, "0x09")
@@ -49,11 +50,13 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     /**
      * Last known latitude
+     * NOTICE do not clear it because of photo event coordinates
      */
     var lastLat by floatPref(0f, "0x0d")
 
     /**
      * Last known longitude
+     * NOTICE do not clear it because of photo event coordinates
      */
     var lastLon by floatPref(0f, "0x0e")
 

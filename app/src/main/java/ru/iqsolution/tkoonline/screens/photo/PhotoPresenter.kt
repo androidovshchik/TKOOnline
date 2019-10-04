@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.screens.photo
 
 import android.app.Activity
-import android.app.Application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -13,32 +12,37 @@ import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import java.io.File
 
-class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.View>(application),
-    PhotoContract.Presenter {
+class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presenter {
 
     val db: Database by instance()
 
     val fileManager: FileManager by instance()
 
     override fun getExternalFile(photoEvent: PhotoEvent): File {
-        reference.get()?.run {
-            if (photoEvent.id != null) {
-                val internalPhoto = File(photoEvent.path)
-                return File(fileManager.externalDir, internalPhoto.name)
-            }
+        if (photoEvent.id != null) {
+            val internalPhoto = File(photoEvent.path)
+            return File(fileManager.externalDir, internalPhoto.name)
         }
         return fileManager.getRandomFile()
     }
 
     override fun saveEvent(photoEvent: PhotoEvent, externalFile: File) {
+        if (!externalFile.exists()) {
+            // there is nothing to save
+            reference.get()?.closePreview(Activity.RESULT_CANCELED)
+            return
+        }
+        val internalPhoto = File(fileManager.photosDir, externalFile.name)
+        photoEvent.apply {
+            tokenId = preferences.tokenId
+            latitude = preferences.lastLat.toDouble()
+            longitude = preferences.lastLon.toDouble()
+            path = internalPhoto.path
+            whenTime = DateTime.now()
+        }
         launch {
             withContext(Dispatchers.IO) {
-                val internalPhoto = File(fileManager.photosDir, externalFile.name)
                 fileManager.copyFile(externalFile, internalPhoto)
-                photoEvent.apply {
-                    path = internalPhoto.path
-                    whenTime = DateTime.now()
-                }
                 if (photoEvent.id == null) {
                     db.photoDao().insert(photoEvent)
                 } else {
@@ -51,13 +55,14 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
 
     override fun deleteEvent(photoEvent: PhotoEvent) {
         if (photoEvent.id != null) {
-            launch {
-                withContext(Dispatchers.IO) {
-                    db.photoDao().delete(photoEvent)
-                }
-                reference.get()?.closePreview(Activity.RESULT_CANCELED)
+            // there is nothing to delete
+            reference.get()?.closePreview(Activity.RESULT_CANCELED)
+            return
+        }
+        launch {
+            withContext(Dispatchers.IO) {
+                db.photoDao().delete(photoEvent)
             }
-        } else {
             reference.get()?.closePreview(Activity.RESULT_CANCELED)
         }
     }

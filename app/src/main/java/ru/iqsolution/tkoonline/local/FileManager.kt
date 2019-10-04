@@ -8,7 +8,6 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.util.*
 
@@ -41,14 +40,15 @@ class FileManager(context: Context) {
         if (src == null || dist == null) {
             return
         }
+        if (!src.exists()) {
+            return
+        }
         try {
             FileInputStream(src).use { input ->
                 FileOutputStream(dist).use { output ->
                     input.copyTo(output)
                 }
             }
-        } catch (e: FileNotFoundException) {
-            Timber.e(e)
         } catch (e: Throwable) {
             Timber.e(e)
             dist.delete()
@@ -90,12 +90,8 @@ class FileManager(context: Context) {
     fun deleteOldFiles() {
         val now = System.currentTimeMillis()
         photosDir.listFiles().forEach {
-            try {
-                if (now - it.lastModified() >= LIFETIME) {
-                    it.delete()
-                }
-            } catch (e: Throwable) {
-                Timber.e(e)
+            if (now - it.lastModified() >= LIFETIME) {
+                deleteFile(it)
             }
         }
     }
