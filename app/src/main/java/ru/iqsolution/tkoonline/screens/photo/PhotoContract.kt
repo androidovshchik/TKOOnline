@@ -8,7 +8,7 @@ interface PhotoContract {
 
     interface Presenter {
 
-        fun initEvent(photoEvent: PhotoEvent): File
+        fun getExternalFile(photoEvent: PhotoEvent): File
 
         fun saveEvent(photoEvent: PhotoEvent, externalFile: File)
 

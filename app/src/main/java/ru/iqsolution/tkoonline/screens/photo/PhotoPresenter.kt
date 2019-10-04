@@ -5,6 +5,7 @@ import android.app.Application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
@@ -19,44 +20,32 @@ class PhotoPresenter(application: Application) : BasePresenter<PhotoContract.Vie
 
     val fileManager: FileManager by instance()
 
-    /**
-     * @return external file
-     */
-    override fun initEvent(photoEvent: PhotoEvent): File {
-        var externalPhoto: File? = null
-        reference.get()?.apply {
+    override fun getExternalFile(photoEvent: PhotoEvent): File {
+        reference.get()?.run {
             if (photoEvent.id != null) {
                 val internalPhoto = File(photoEvent.path)
-                externalPhoto = File(fileManager.externalDir, internalPhoto.name)
-            } else {
-                externalPhoto = fileManager.getRandomFile()
-                val internalPhoto = File(fileManager.photosDir, externalPhoto?.name)
-                photoEvent.path = internalPhoto.path
+                return File(fileManager.externalDir, internalPhoto.name)
             }
         }
-        return externalPhoto ?: fileManager.getRandomFile()
+        return fileManager.getRandomFile()
     }
 
     override fun saveEvent(photoEvent: PhotoEvent, externalFile: File) {
         launch {
             withContext(Dispatchers.IO) {
-                fileManager.apply {
-                    copyFile(src, dist)
-                    deleteFile(src)
+                val internalPhoto = File(fileManager.photosDir, externalFile.name)
+                fileManager.copyFile(externalFile, internalPhoto)
+                photoEvent.apply {
+                    path = internalPhoto.path
+                    whenTime = DateTime.now()
+                }
+                if (photoEvent.id == null) {
+                    db.photoDao().insert(photoEvent)
+                } else {
+                    db.photoDao().update(photoEvent)
                 }
             }
-            db.photoDao().update(photoEvent)
-            if (photoEvent.id == null) {
-                launch {
-                    withContext(Dispatchers.IO) {
-                        db.photoDao().insert(photoEvent.apply {
-                        })
-                    }
-                    reference.get()?.closePreview(Activity.RESULT_OK)
-                }
-            } else {
-                reference.get()?.closePreview(Activity.RESULT_OK)
-            }
+            reference.get()?.closePreview(Activity.RESULT_OK)
         }
     }
 

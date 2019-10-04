@@ -34,7 +34,6 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_type")
     var type = -1
 
-    @Volatile
     @ColumnInfo(name = "pe_path")
     lateinit var path: String
 

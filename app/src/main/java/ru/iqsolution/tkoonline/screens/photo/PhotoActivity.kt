@@ -35,7 +35,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         photoEvent = intent.getSerializableExtra(EXTRA_PHOTO_EVENT) as PhotoEvent
         presenter = PhotoPresenter(application).apply {
             attachView(this@PhotoActivity)
-            externalPhoto = initEvent(photoEvent)
+            externalPhoto = getExternalFile(photoEvent)
         }
         toolbar_back.setOnClickListener {
             if (preFinishing) {
