@@ -1,7 +1,5 @@
 package ru.iqsolution.tkoonline.screens.problem
 
-import android.app.Application
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
-class ProblemPresenter(application: Application) : BasePresenter<ProblemContract.View>(application),
-    ProblemContract.Presenter
+class ProblemPresenter : BasePresenter<ProblemContract.View>(), ProblemContract.Presenter

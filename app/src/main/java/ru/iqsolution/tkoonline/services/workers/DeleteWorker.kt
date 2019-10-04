@@ -1,8 +1,10 @@
 package ru.iqsolution.tkoonline.services.workers
 
-import android.app.Application
 import android.content.Context
-import androidx.work.*
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import kotlinx.coroutines.coroutineScope
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -12,9 +14,8 @@ import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.services.BaseWorker
 import java.util.*
-import java.util.concurrent.TimeUnit
 
-class DeleteWorker(app: Application, params: WorkerParameters) : BaseWorker(app, params) {
+class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
     val db: Database by instance()
 
@@ -44,11 +45,6 @@ class DeleteWorker(app: Application, params: WorkerParameters) : BaseWorker(app,
 
         fun launch(context: Context) {
             val request = OneTimeWorkRequestBuilder<DeleteWorker>()
-                .setBackoffCriteria(
-                    BackoffPolicy.EXPONENTIAL,
-                    OneTimeWorkRequest.MAX_BACKOFF_MILLIS + 1,
-                    TimeUnit.MILLISECONDS
-                )
                 .build()
             WorkManager.getInstance(context).apply {
                 enqueueUniqueWork("DELETE", ExistingWorkPolicy.KEEP, request)

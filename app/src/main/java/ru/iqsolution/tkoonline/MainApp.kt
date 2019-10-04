@@ -35,6 +35,7 @@ import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.TelemetryService
+import ru.iqsolution.tkoonline.services.workers.MidnightWorker
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -111,6 +112,7 @@ class MainApp : Application(), KodeinAware {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
             Stetho.initialize(
@@ -120,6 +122,7 @@ class MainApp : Application(), KodeinAware {
             )
         }
         DateTimeZone.setProvider(ResourceZoneInfoProvider(applicationContext))
+        MidnightWorker.launch(applicationContext)
         if (isOreoPlus()) {
             notificationManager.createNotificationChannel(
                 NotificationChannel(CHANNEL_DEFAULT, CHANNEL_DEFAULT, NotificationManager.IMPORTANCE_LOW).also {
@@ -173,5 +176,11 @@ class MainApp : Application(), KodeinAware {
                 }
             }
         })
+    }
+
+    companion object {
+
+        lateinit var instance: MainApp
+            private set
     }
 }

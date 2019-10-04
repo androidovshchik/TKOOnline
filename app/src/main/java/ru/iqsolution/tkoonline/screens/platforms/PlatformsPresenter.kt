@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
-import android.app.Application
 import android.content.Context
 import androidx.collection.SimpleArrayMap
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +15,7 @@ import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.services.TelemetryService
 import java.util.*
 
-class PlatformsPresenter(application: Application) : BasePresenter<PlatformsContract.View>(application),
-    PlatformsContract.Presenter {
+class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsContract.Presenter {
 
     val server: Server by instance()
 

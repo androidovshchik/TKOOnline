@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.base
 
-import android.app.Application
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
@@ -12,7 +11,7 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
-open class BasePresenter<V : IBaseView>(application: Application) : IBasePresenter<V>, KodeinAware, CoroutineScope {
+open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, CoroutineScope {
 
     val preferences: Preferences by instance()
 
@@ -42,7 +41,7 @@ open class BasePresenter<V : IBaseView>(application: Application) : IBasePresent
         reference.clear()
     }
 
-    override val kodein = (application as MainApp).kodein
+    override val kodein = MainApp.instance.kodein
 
     override val coroutineContext = Dispatchers.Main + baseJob + CoroutineExceptionHandler { _, e ->
         Timber.e(e)

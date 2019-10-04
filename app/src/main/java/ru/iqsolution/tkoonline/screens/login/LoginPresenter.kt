@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.login
 
-import android.app.Application
 import android.os.SystemClock
 import com.chibatching.kotpref.bulk
 import com.google.gson.JsonSyntaxException
@@ -15,8 +14,7 @@ import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import timber.log.Timber
 
-class LoginPresenter(application: Application) : BasePresenter<LoginContract.View>(application),
-    LoginContract.Presenter {
+class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presenter {
 
     val server: Server by instance()
 

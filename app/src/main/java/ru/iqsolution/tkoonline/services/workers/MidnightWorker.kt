@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.services.workers
 
-import android.app.Application
 import android.content.Context
 import androidx.work.*
 import kotlinx.coroutines.coroutineScope
@@ -14,7 +13,7 @@ import ru.iqsolution.tkoonline.services.BaseWorker
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class MidnightWorker(app: Application, params: WorkerParameters) : BaseWorker(app, params) {
+class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
     val db: Database by instance()
 
@@ -43,15 +42,49 @@ class MidnightWorker(app: Application, params: WorkerParameters) : BaseWorker(ap
     companion object {
 
         fun launch(context: Context) {
-            val request = OneTimeWorkRequestBuilder<MidnightWorker>()
+            val SELF_REMINDER_HOUR = 8
+
+            if (DateTime.now().hourOfDay < SELF_REMINDER_HOUR) {
+                delay = Duration(
+                    DateTime.now(),
+                    DateTime.now().withTimeAtStartOfDay().plusHours(SELF_REMINDER_HOUR)
+                ).getStandardMinutes()
+            } else {
+                delay = Duration(
+                    DateTime.now(),
+                    DateTime.now().withTimeAtStartOfDay().plusDays(1).plusHours(SELF_REMINDER_HOUR)
+                ).getStandardMinutes()
+            }
+
+
+            val workRequest = PeriodicWorkRequest.Builder(
+                WorkerReminderPeriodic::class.java!!,
+                24,
+                TimeUnit.HOURS,
+                PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
+                .setInitialDelay(delay.toLong(), TimeUnit.MINUTES)
+                .addTag("send_reminder_periodic")
+                .build()
+
+
+            WorkManager.getInstance()
+                .enqueueUniquePeriodicWork("send_reminder_periodic", ExistingPeriodicWorkPolicy.REPLACE, workRequest)
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+            val request = PeriodicWorkRequestBuilder<MidnightWorker>()
+                .setConstraints(constraints)
                 .setBackoffCriteria(
                     BackoffPolicy.EXPONENTIAL,
                     OneTimeWorkRequest.MAX_BACKOFF_MILLIS + 1,
                     TimeUnit.MILLISECONDS
                 )
+                .setPeriodStartTime()
                 .build()
             WorkManager.getInstance(context).apply {
-                enqueueUniqueWork("DELETE", ExistingWorkPolicy.KEEP, request)
+                enqueueUniquePeriodicWork("MIDNIGHT", ExistingPeriodicWorkPolicy.KEEP, request)
             }
         }
     }
