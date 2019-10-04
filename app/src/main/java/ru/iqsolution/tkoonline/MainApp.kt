@@ -1,7 +1,9 @@
 package ru.iqsolution.tkoonline
 
-import android.app.*
-import android.os.Bundle
+import android.app.Application
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -14,7 +16,7 @@ import io.github.inflationx.viewpump.ViewPump
 import net.danlew.android.joda.ResourceZoneInfoProvider
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.jetbrains.anko.*
+import org.jetbrains.anko.notificationManager
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.Kodein
@@ -32,9 +34,6 @@ import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.*
-import ru.iqsolution.tkoonline.screens.LockActivity
-import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import ru.iqsolution.tkoonline.services.TelemetryService
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -140,40 +139,6 @@ class MainApp : Application(), KodeinAware {
                 )
                 .build()
         )
-        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-
-            override fun onActivityPaused(activity: Activity) {}
-
-            override fun onActivityResumed(activity: Activity) {}
-
-            override fun onActivityStarted(activity: Activity): Unit = activity.run {
-                if (this !is LockActivity && this !is LoginActivity) {
-                    if (!preferences.isLoggedIn) {
-                        startActivity(intentFor<LockActivity>().apply {
-                            if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
-                                clearTask()
-                            } else {
-                                clearTop()
-                            }
-                        })
-                    }
-                }
-            }
-
-            override fun onActivityDestroyed(activity: Activity) {}
-
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {}
-
-            override fun onActivityStopped(activity: Activity) {}
-
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?): Unit = activity.run {
-                if (this !is LockActivity && this !is LoginActivity) {
-                    TelemetryService.start(applicationContext)
-                } else {
-                    TelemetryService.stop(applicationContext)
-                }
-            }
-        })
     }
 
     companion object {

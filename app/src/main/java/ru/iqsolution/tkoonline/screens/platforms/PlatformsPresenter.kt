@@ -2,24 +2,30 @@ package ru.iqsolution.tkoonline.screens.platforms
 
 import android.content.Context
 import androidx.collection.SimpleArrayMap
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.work.WorkInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.EXTRA_WORKER_MESSAGE
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.models.*
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
-import ru.iqsolution.tkoonline.services.TelemetryService
+import ru.iqsolution.tkoonline.services.workers.SendWorker
 import java.util.*
 
-class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsContract.Presenter {
+class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsContract.Presenter, Observer<WorkInfo> {
 
     val server: Server by instance()
 
     val db: Database by instance()
+
+    private var observer: LiveData<WorkInfo>? = null
 
     override fun loadPlatformsTypes(refresh: Boolean) {
         baseJob.cancelChildren()
@@ -75,12 +81,33 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                     addContainer(unknown.get(it.kpId))
                 }
             }
+            secondary.apply {
+                sortByDescending { it.timestamp }
+                forEach {
+                    it.apply {
+                        addContainer(regulars.get(it.kpId))
+                        addContainer(bunkers.get(it.kpId))
+                        addContainer(bunks.get(it.kpId))
+                        addContainer(specials.get(it.kpId))
+                        addContainer(unknown.get(it.kpId))
+                    }
+                }
+            }
             reference.get()?.apply {
                 if (!refresh && responsePlatforms.data.isNotEmpty()) {
                     changeMapPosition(SimpleLocation((maxLat + minLat) / 2, (maxLon + minLon) / 2))
                 }
                 onReceivedPrimary(primary)
             }
+            reference.get()?.apply {
+                onReceivedSecondary(secondary)
+                updateMapMarkers(gson.toJson(primary), gson.toJson(secondary))
+            }
+        }
+    }
+
+    override fun sortPlatforms() {
+        launch {
             withContext(Dispatchers.IO) {
                 val errorNames = SimpleArrayMap<Int, String>()
                 val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
@@ -112,39 +139,52 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                         }
                     }
                 }
-                secondary.apply {
-                    sortByDescending { it.timestamp }
-                    forEach {
-                        it.apply {
-                            addContainer(regulars.get(it.kpId))
-                            addContainer(bunkers.get(it.kpId))
-                            addContainer(bunks.get(it.kpId))
-                            addContainer(specials.get(it.kpId))
-                            addContainer(unknown.get(it.kpId))
-                        }
-                    }
-                }
-            }
-            reference.get()?.apply {
-                onReceivedSecondary(secondary)
-                updateMapMarkers(gson.toJson(primary), gson.toJson(secondary))
             }
         }
     }
 
     override fun logout(context: Context) {
         reference.get()?.showLoading()
-        TelemetryService.stop(context)
-        // todo launch worker with listener
-        launch {
-            try {
-                server.logout(preferences.authHeader)
-                reference.get()?.onLoggedOut()
-            } catch (e: Throwable) {
-                reference.get()?.hideLoading()
-                throw e
+        observer = SendWorker.launch(context).apply {
+            observeForever(this@PlatformsPresenter)
+        }
+    }
+
+    override fun onChanged(t: WorkInfo) {
+        when (t.state) {
+            WorkInfo.State.SUCCEEDED -> {
+                launch {
+                    try {
+                        withContext(Dispatchers.IO) {
+                            server.logout(preferences.authHeader)
+                        }
+                    } catch (e: Throwable) {
+                        reference.get()?.hideLoading()
+                        throw e
+                    }
+                    reference.get()?.onLoggedOut()
+                }
+            }
+            WorkInfo.State.FAILED -> {
+                reference.get()?.apply {
+                    hideLoading()
+                    showError(t.outputData.getString(EXTRA_WORKER_MESSAGE))
+                }
+            }
+            WorkInfo.State.BLOCKED -> {
+                reference.get()?.apply {
+                    hideLoading()
+                    showError("Попробуйте позже")
+                }
+            }
+            else -> {
             }
         }
+    }
+
+    override fun detachView() {
+        observer?.removeObserver(this)
+        super.detachView()
     }
 
     private fun SimpleArrayMap<Int, Container>.putLinked(item: Platform) {

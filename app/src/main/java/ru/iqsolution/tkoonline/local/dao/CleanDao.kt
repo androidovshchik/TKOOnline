@@ -39,6 +39,15 @@ interface CleanDao {
 
     @Query(
         """
+        SELECT clean_events.*, tokens.* FROM clean_events 
+        INNER JOIN tokens ON clean_events.ce_token_id = tokens.t_id
+        WHERE clean_events.ce_kp_id = :id AND clean_events.ce_sent = 0
+    """
+    )
+    fun getSendKpIdEvents(id: Int): List<CleanEventToken>
+
+    @Query(
+        """
         UPDATE clean_events SET ce_sent = 1 WHERE ce_id = :id
     """
     )

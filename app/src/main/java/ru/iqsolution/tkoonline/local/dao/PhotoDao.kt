@@ -35,6 +35,15 @@ interface PhotoDao {
 
     @Query(
         """
+        SELECT photo_events.*, tokens.* FROM photo_events 
+        INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
+        WHERE photo_events.pe_kp_id = :id AND photo_events.pe_sent = 0
+    """
+    )
+    fun getSendKpIdEvents(id: Int): List<PhotoEventToken>
+
+    @Query(
+        """
         UPDATE photo_events SET pe_sent = 1 WHERE pe_id = :id
     """
     )
