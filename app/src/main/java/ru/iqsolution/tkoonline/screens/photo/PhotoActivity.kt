@@ -8,10 +8,7 @@ import com.bumptech.glide.signature.ObjectKey
 import kotlinx.android.synthetic.main.activity_photo.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.toast
-import ru.iqsolution.tkoonline.EXTRA_PHOTO_EVENT
-import ru.iqsolution.tkoonline.EXTRA_PHOTO_TITLE
-import ru.iqsolution.tkoonline.GlideApp
-import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
@@ -37,6 +34,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             it.attachView(this)
             externalPhoto = it.getExternalFile(photoEvent)
         }
+        val linkedIds = intent.getIntegerArrayListExtra(EXTRA_PHOTO_LINKED_IDS).orEmpty()
         toolbar_back.setOnClickListener {
             if (preFinishing) {
                 return@setOnClickListener
@@ -62,7 +60,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
                 return@setOnClickListener
             }
             preFinishing = true
-            presenter.saveEvent(photoEvent, externalPhoto)
+            presenter.saveEvent(photoEvent, linkedIds, externalPhoto)
         }
         if (photoEvent.sent) {
             photo_delete.isEnabled = false

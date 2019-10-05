@@ -10,7 +10,7 @@ interface PhotoContract {
 
         fun getExternalFile(photoEvent: PhotoEvent): File
 
-        fun saveEvent(photoEvent: PhotoEvent, externalFile: File)
+        fun saveEvent(photoEvent: PhotoEvent, linkedIds: List<Int>, externalFile: File)
 
         fun deleteEvent(photoEvent: PhotoEvent)
     }

@@ -57,7 +57,8 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
                 startActivityNoop<PhotoActivity>(
                     REQUEST_PHOTO,
                     EXTRA_PHOTO_TITLE to photoType.description,
-                    EXTRA_PHOTO_EVENT to PhotoEvent(platform.kpId, photoType.id)
+                    EXTRA_PHOTO_EVENT to PhotoEvent(platform.kpId, photoType.id),
+                    EXTRA_PHOTO_LINKED_IDS to platform.allLinkedIds
                 )
             }
         })
