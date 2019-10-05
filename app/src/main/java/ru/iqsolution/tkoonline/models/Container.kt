@@ -16,12 +16,20 @@ interface Container {
         containerCount = 0
     }
 
-    fun setFrom(container: Container?) {
+    fun setFromSame(container: Container?) {
         container?.let {
             if (toContainerType() == it.toContainerType()) {
                 containerVolume = it.containerVolume
                 containerCount = it.containerCount
             }
+        }
+    }
+
+    fun setFromAny(container: Container?) {
+        container?.let {
+            containerType = it.containerType
+            containerVolume = it.containerVolume
+            containerCount = it.containerCount
         }
     }
 

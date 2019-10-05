@@ -49,17 +49,20 @@ abstract class PhotoDao {
     @Transaction
     fun insertMultiple(item: PhotoEvent, linkedIds: List<Int>) {
         require(item.id == null && item.kpId != null)
+        val kp = item.kpId
         val related = insert(item)
         linkedIds.forEach {
             insert(item.apply {
                 id = null
-                linkedId = it
+                kpId = it
+                linkedId = kp
                 relatedId = related
             })
         }
         // reset values
         item.apply {
             id = related
+            kpId = kp
             linkedId = null
             relatedId = null
         }

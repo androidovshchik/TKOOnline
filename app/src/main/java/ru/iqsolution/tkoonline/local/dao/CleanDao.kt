@@ -55,14 +55,16 @@ abstract class CleanDao {
 
     @Transaction
     fun insertMultiple(day: String, item: CleanEvent, containers: List<SimpleContainer>) {
-        deleteDayKpId(day, item.kpId)
+        val kp = item.kpId
+        deleteDayKpId(day, kp)
         val related = insert(item)
         containers.forEach {
-            item.setFrom(regular)
-            it.linkedIds.forEach { linkedId ->
+            item.setFromAny(it)
+            it.linkedIds.forEach { linked ->
                 insert(item.apply {
                     id = null
-                    linkedId = it
+                    kpId = linked
+                    linkedId = kp
                     relatedId = related
                 })
             }
@@ -70,6 +72,7 @@ abstract class CleanDao {
         // reset values
         item.apply {
             id = related
+            kpId = kp
             linkedId = null
             relatedId = null
         }
