@@ -42,6 +42,9 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_kp_id")
     var kpId: Int? = null
 
+    @ColumnInfo(name = "pe_linked_id")
+    var linkedId: Int? = null
+
     /**
      * It's value is not [kpId] but it is [id] of parent platform
      */

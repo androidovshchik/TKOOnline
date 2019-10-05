@@ -43,6 +43,9 @@ class CleanEvent : Container, SendEvent {
     @ColumnInfo(name = "ce_kp_id")
     var kpId = 0
 
+    @ColumnInfo(name = "ce_linked_id")
+    var linkedId: Int? = null
+
     /**
      * It's value is not [kpId] but it is [id] of parent platform
      */

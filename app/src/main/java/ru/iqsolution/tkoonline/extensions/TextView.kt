@@ -23,7 +23,7 @@ fun TextView.setOnlyNumbers() {
 }
 
 fun TextView.setTextBoldSpan(text: CharSequence, vararg array: Int) {
-    require(array.size % 2 == 0) { "The size of list must be an even number" }
+    require(array.size % 2 == 0)
     val boldStyle = StyleSpan(Typeface.BOLD)
     setText(SpannableStringBuilder(text).apply {
         for (i in array.indices step 2) {
