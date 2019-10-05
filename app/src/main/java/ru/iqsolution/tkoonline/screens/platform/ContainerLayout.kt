@@ -24,6 +24,8 @@ class ContainerLayout : LinearLayout, Container {
 
     override var containerType = ContainerType.UNKNOWN.id
 
+    var hasChanges = false
+
     override var containerVolume = 0.0f
         set(value) {
             field = value
@@ -60,24 +62,28 @@ class ContainerLayout : LinearLayout, Container {
         View.inflate(context, R.layout.merge_container, this)
         arrow_up_volume.setOnClickListener {
             if (containerVolume < 9.9f) {
+                hasChanges = true
                 containerVolume = min(9.999f, containerVolume + 0.1f)
                 updateVolumeText()
             }
         }
         arrow_down_volume.setOnClickListener {
             if (containerVolume >= 0.1f) {
+                hasChanges = true
                 containerVolume = max(0f, containerVolume - 0.1f)
                 updateVolumeText()
             }
         }
         arrow_up_count.setOnClickListener {
             if (containerCount < 99) {
+                hasChanges = true
                 containerCount++
                 updateCountText()
             }
         }
         arrow_down_count.setOnClickListener {
             if (containerCount > 0) {
+                hasChanges = true
                 containerCount--
                 updateCountText()
             }

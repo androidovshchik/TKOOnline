@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.include_toolbar.*
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
-import ru.iqsolution.tkoonline.local.entities.CleanEvent
+import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
@@ -18,7 +18,7 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
 
-class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View, GalleryListener {
+class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View, ConfirmListener, GalleryListener {
 
     private lateinit var platform: PlatformContainers
 
@@ -26,17 +26,29 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
 
     private var confirmDialog: ConfirmDialog? = null
 
+    private var preFinishing = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform)
-        presenter = PlatformPresenter(application).also {
+        presenter = PlatformPresenter().also {
             it.attachView(this)
             platform = it.fromJson(intent.getStringExtra(EXTRA_PLATFORM_PLATFORM), PlatformContainers::class.java)
-            it.loadLastCleanEvent()
-            it.loadPhotoEvents()
+            it.loadCleanEvents(platform.kpId)
+            it.loadPhotoEvents(platform.kpId)
         }
         toolbar_back.setOnClickListener {
-            finish()
+            if (preFinishing) {
+                return@setOnClickListener
+            }
+            if (confirmDialog == null) {
+                confirmDialog = ConfirmDialog(this)
+            }
+            confirmDialog?.let {
+                if (!it.isShowing) {
+                    it.show()
+                }
+            }
         }
         toolbar_title.text = platform.address
         platform_map.apply {
@@ -56,6 +68,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             platform_divider.visibility = View.VISIBLE
         }
         platform_report.setOnClickListener {
+            if (preFinishing) {
+                return@setOnClickListener
+            }
             startActivityNoop<ProblemActivity>(
                 REQUEST_PROBLEM,
                 EXTRA_PROBLEM_PLATFORM to presenter.toJson(platform, platform.javaClass),
@@ -63,10 +78,18 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             )
         }
         platform_not_cleaned.setOnClickListener {
-            presenter.createCleanEvents()
+            if (preFinishing) {
+                return@setOnClickListener
+            }
+            preFinishing = true
+            presenter.saveCleanEvents()
         }
         platform_cleaned.setOnClickListener {
-            presenter.createCleanEvents()
+            if (preFinishing) {
+                return@setOnClickListener
+            }
+            preFinishing = true
+            presenter.saveCleanEvents()
         }
     }
 
@@ -80,8 +103,13 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         )
     }
 
-    override fun onLastCleanEvent(event: CleanEvent?) {
+    override fun onCleanEvents(event: CleanEventRelated?) {
+        event?.apply {
 
+        } ?: run {
+
+        }
+        platform_regular
     }
 
     override fun onPhotoEvents(events: List<PhotoEvent>) {

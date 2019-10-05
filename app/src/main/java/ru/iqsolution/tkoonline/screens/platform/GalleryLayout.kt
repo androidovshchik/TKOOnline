@@ -65,7 +65,7 @@ class GalleryLayout : RelativeLayout {
                 if (photoEvents.size < 3) {
                     onClickEvent(null)
                 } else {
-                    context.toast("")
+                    context.toast("Максимум 3 фото для раздела")
                 }
             }
         }

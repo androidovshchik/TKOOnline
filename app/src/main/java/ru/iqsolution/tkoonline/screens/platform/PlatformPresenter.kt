@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platform
 
 import android.app.Activity
-import android.app.Application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -11,8 +10,7 @@ import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
-class PlatformPresenter(application: Application) : BasePresenter<PlatformContract.View>(application),
-    PlatformContract.Presenter {
+class PlatformPresenter : BasePresenter<PlatformContract.View>(), PlatformContract.Presenter {
 
     val db: Database by instance()
 
