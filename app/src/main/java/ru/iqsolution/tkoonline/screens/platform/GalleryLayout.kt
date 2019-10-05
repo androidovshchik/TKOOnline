@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.merge_gallery.view.*
 import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.activity
+import ru.iqsolution.tkoonline.extensions.makeCallback
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
@@ -52,29 +52,35 @@ class GalleryLayout : RelativeLayout {
     init {
         View.inflate(context, R.layout.merge_gallery, this)
         photo1.setOnClickListener {
-            onClickEvent(photoEvents.getOrNull(0) ?: return@setOnClickListener)
+            photoEvents.getOrNull(0)?.let {
+                makeCallback<GalleryListener> {
+                    onPhotoClick(photoType, it)
+                }
+            }
         }
         photo2.setOnClickListener {
-            onClickEvent(photoEvents.getOrNull(1) ?: return@setOnClickListener)
+            photoEvents.getOrNull(1)?.let {
+                makeCallback<GalleryListener> {
+                    onPhotoClick(photoType, it)
+                }
+            }
         }
         photo3.setOnClickListener {
-            onClickEvent(photoEvents.getOrNull(2) ?: return@setOnClickListener)
+            photoEvents.getOrNull(2)?.let {
+                makeCallback<GalleryListener> {
+                    onPhotoClick(photoType, it)
+                }
+            }
         }
         photo_add.setOnClickListener {
             if (enableShoot) {
                 if (photoEvents.size < 3) {
-                    onClickEvent(null)
+                    makeCallback<GalleryListener> {
+                        onPhotoClick(photoType, null)
+                    }
                 } else {
-                    context.toast("Максимум 3 фото для раздела")
+                    context.toast("Доступно только 3 фото")
                 }
-            }
-        }
-    }
-
-    private fun onClickEvent(photoEvent: PhotoEvent?) {
-        context.activity()?.let {
-            if (it is GalleryListener && !it.isFinishing) {
-                it.onPhotoClick(photoType, photoEvent)
             }
         }
     }
