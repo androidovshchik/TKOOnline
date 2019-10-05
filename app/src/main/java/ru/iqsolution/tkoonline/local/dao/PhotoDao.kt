@@ -20,7 +20,7 @@ abstract class PhotoDao {
     @Query(
         """
         SELECT * FROM photo_events 
-        WHERE (pe_kp_id = :id OR pe_linked_id = :id) AND pe_when_time LIKE :day || '%'
+        WHERE pe_kp_id = :id AND pe_related_id IS NULL AND pe_when_time LIKE :day || '%'
     """
     )
     abstract fun getDayKpIdEvents(day: String, id: Int): List<PhotoEvent>

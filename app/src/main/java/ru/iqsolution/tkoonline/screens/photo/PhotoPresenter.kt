@@ -26,27 +26,28 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
         return fileManager.getRandomFile()
     }
 
-    override fun saveEvent(photoEvent: PhotoEvent, externalFile: File) {
-        if (!externalFile.exists()) {
-            // there is nothing to save
-            reference.get()?.closePreview(Activity.RESULT_CANCELED)
-            return
-        }
+    /**
+     * Normally there will be no case when file doesn't exist and id is null
+     */
+    override fun saveEvent(photoEvent: PhotoEvent, linkedIds: List<Int>, externalFile: File) {
         val internalPhoto = File(fileManager.photosDir, externalFile.name)
         photoEvent.apply {
             tokenId = preferences.tokenId
             latitude = preferences.lastLat.toDouble()
             longitude = preferences.lastLon.toDouble()
+            // it may be empty when there is a new event
             path = internalPhoto.path
             whenTime = DateTime.now()
         }
+        preferences.photoCount += linkedIds.size + 1
+        reference.get()?.updateCloud()
         launch {
             withContext(Dispatchers.IO) {
                 fileManager.copyFile(externalFile, internalPhoto)
                 if (photoEvent.id == null) {
-                    db.photoDao().insert(photoEvent)
+                    db.photoDao().insertMultiple(photoEvent, linkedIds)
                 } else {
-                    db.photoDao().update(photoEvent)
+                    db.photoDao().updateMultiple(photoEvent)
                 }
             }
             reference.get()?.closePreview(Activity.RESULT_OK)
@@ -54,7 +55,7 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
     }
 
     override fun deleteEvent(photoEvent: PhotoEvent) {
-        if (photoEvent.id != null) {
+        if (photoEvent.id == null) {
             // there is nothing to delete
             reference.get()?.closePreview(Activity.RESULT_CANCELED)
             return
