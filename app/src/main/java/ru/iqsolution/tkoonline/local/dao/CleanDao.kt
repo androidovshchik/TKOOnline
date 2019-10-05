@@ -7,7 +7,7 @@ import androidx.room.Transaction
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.CleanEventToken
-import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.models.SimpleContainer
 
 @Dao
 abstract class CleanDao {
@@ -25,12 +25,12 @@ abstract class CleanDao {
     @Query(
         """
         SELECT * FROM clean_events 
-        WHERE ce_kp_id = :id AND ce_related_id IS NULL AND clean_events.ce_sent = 0 AND ce_when_time LIKE :day || '%'
+        WHERE ce_kp_id = :kpId AND ce_related_id IS NULL AND ce_when_time LIKE :day || '%'
         ORDER BY ce_id DESC
         LIMIT 1
     """
     )
-    abstract fun getDayKpIdEvent(day: String, id: Int): CleanEventRelated
+    abstract fun getDayKpIdEvents(day: String, kpId: Int): CleanEventRelated?
 
     @Query(
         """
@@ -45,33 +45,31 @@ abstract class CleanDao {
         """
         SELECT clean_events.*, tokens.* FROM clean_events 
         INNER JOIN tokens ON clean_events.ce_token_id = tokens.t_id
-        WHERE (clean_events.ce_kp_id = :id OR clean_events.ce_linked_id = :id) AND clean_events.ce_sent = 0
+        WHERE (clean_events.ce_kp_id = :kpId OR clean_events.ce_linked_id = :kpId) AND clean_events.ce_sent = 0
     """
     )
-    abstract fun getSendKpIdEvents(id: Int): List<CleanEventToken>
+    abstract fun getSendKpIdEvents(kpId: Int): List<CleanEventToken>
 
     @Insert
     abstract fun insert(item: CleanEvent): Long
 
     @Transaction
-    fun insertMultiple(day: String, item: PlatformContainers) {
+    fun insertMultiple(day: String, item: CleanEvent, containers: List<SimpleContainer>) {
         deleteDayKpId(day, item.kpId)
-        item.regular.linkedIds
-        item.bunker.linkedIds
-        item.bunk.linkedIds
-        item.special.linkedIds
-        item.unknown.linkedIds
         val related = insert(item)
-        linkedIds.forEach {
-            insert(item.apply {
-                id = null
-                linkedId = it
-                relatedId = related
-            })
+        containers.forEach {
+            item.setFrom(regular)
+            it.linkedIds.forEach { linkedId ->
+                insert(item.apply {
+                    id = null
+                    linkedId = it
+                    relatedId = related
+                })
+            }
         }
         // reset values
         item.apply {
-            id = null
+            id = related
             linkedId = null
             relatedId = null
         }
