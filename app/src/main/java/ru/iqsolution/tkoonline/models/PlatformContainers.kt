@@ -64,6 +64,9 @@ class PlatformContainers() : Platform() {
         addContainer(platform)
     }
 
+    val allLinkedIds: List<Int>
+        get() = regular.linkedIds + bunker.linkedIds + bunk.linkedIds + special.linkedIds + unknown.linkedIds
+
     override val isEmpty: Boolean
         get() = regular.isEmpty && bunker.isEmpty && bunk.isEmpty && special.isEmpty && unknown.isEmpty
 

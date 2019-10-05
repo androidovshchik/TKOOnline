@@ -21,18 +21,24 @@ val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
 const val ACTION_LOCATION = "action_location"
 
+const val ACTION_CLOUD = "action_cloud"
+
 const val EXTRA_TELEMETRY_LOCATION = "telemetry_location"
 
 const val EXTRA_TELEMETRY_AVAILABILITY = "telemetry_availability"
+
+const val EXTRA_WORKER_PHOTO_COUNT = "worker_photo_count"
 
 const val EXTRA_PLATFORM_PLATFORM = "platform_platform"
 
 const val EXTRA_PLATFORM_PHOTO_TYPES = "platform_photo types"
 
+const val EXTRA_PROBLEM_PLATFORM = "problem_platform"
+
+const val EXTRA_PROBLEM_PHOTO_TYPES = "problem_photo_types"
+
 const val EXTRA_PHOTO_TITLE = "photo_title"
 
 const val EXTRA_PHOTO_EVENT = "photo_event"
 
-const val EXTRA_PROBLEM_PLATFORM = "problem_platform"
-
-const val EXTRA_PROBLEM_PHOTO_TYPES = "problem_photo_types"
+const val EXTRA_PHOTO_LINKED_IDS = "photo_linked_ids"

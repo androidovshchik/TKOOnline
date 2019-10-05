@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens
+package ru.iqsolution.tkoonline.screens.platforms
 
 import android.app.Activity
 import android.app.Dialog
@@ -7,10 +7,6 @@ import android.view.Window
 import ru.iqsolution.tkoonline.R
 
 class WaitDialog(activity: Activity) : Dialog(activity) {
-
-    init {
-        setCancelable(false)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

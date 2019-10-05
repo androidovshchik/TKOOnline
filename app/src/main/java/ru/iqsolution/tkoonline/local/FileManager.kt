@@ -65,7 +65,7 @@ class FileManager(context: Context) {
             if (file.exists()) {
                 return MultipartBody.Part.createFormData(
                     "file", file.name,
-                    file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    file.asRequestBody(IMAGE_TYPE)
                 )
             }
         } catch (e: Throwable) {
@@ -99,5 +99,7 @@ class FileManager(context: Context) {
     companion object {
 
         private const val LIFETIME = 4 * 24 * 60 * 60 * 1000L
+
+        private val IMAGE_TYPE = "image/jpeg".toMediaTypeOrNull()
     }
 }
