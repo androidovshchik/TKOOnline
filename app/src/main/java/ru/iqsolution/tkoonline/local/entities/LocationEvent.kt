@@ -4,6 +4,7 @@ import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 
+// todo careful with initialization
 @Entity(
     tableName = "location_events",
     foreignKeys = [

@@ -59,7 +59,7 @@ abstract class PhotoDao {
                 relatedId = related
             })
         }
-        // reset values
+        // apply changes
         item.apply {
             id = related
             kpId = kp

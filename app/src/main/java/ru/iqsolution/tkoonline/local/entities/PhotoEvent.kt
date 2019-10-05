@@ -85,11 +85,7 @@ class PhotoEvent() : Serializable, SendEvent {
         whenTime = DateTime.now()
     }
 
-    constructor(id: Int, typeId: Int) : this() {
-        kpId = id
-        type = typeId
-        // required for initialization only
-        path = ""
-        whenTime = DateTime.now()
+    constructor(kp: Int, typeId: Int) : this(typeId) {
+        kpId = kp
     }
 }

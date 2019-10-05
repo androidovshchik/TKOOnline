@@ -4,6 +4,8 @@ import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.models.Container
+import ru.iqsolution.tkoonline.models.ContainerType
+import ru.iqsolution.tkoonline.models.SimpleContainer
 
 @Entity(
     tableName = "clean_events",
@@ -28,7 +30,7 @@ import ru.iqsolution.tkoonline.models.Container
         Index(value = ["ce_related_id"])
     ]
 )
-class CleanEvent : Container, SendEvent {
+class CleanEvent() : Container, SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ce_id")
@@ -77,7 +79,20 @@ class CleanEvent : Container, SendEvent {
     @ColumnInfo(name = "ce_sent")
     override var sent = false
 
+    constructor(kp: Int) : this() {
+        kpId = kp
+        // required for initialization only
+        containerType = ContainerType.UNKNOWN.id
+        whenTime = DateTime.now()
+    }
+
     override fun addContainer(container: Container?) {
         throw IllegalAccessException("Should not be called at all")
+    }
+
+    fun toSimpleContainer(): SimpleContainer {
+        return SimpleContainer(toContainerType()).also {
+            it.setFromAny(this)
+        }
     }
 }

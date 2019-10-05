@@ -1,11 +1,13 @@
 package ru.iqsolution.tkoonline.screens.platform
 
+import android.app.Activity
 import android.app.Application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.Database
+import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
@@ -14,35 +16,38 @@ class PlatformPresenter(application: Application) : BasePresenter<PlatformContra
 
     val db: Database by instance()
 
-    override fun loadLastCleanEvent(kpId: Int) {
+    override fun loadCleanEvents(kpId: Int) {
+        val day = preferences.serverDay
         launch {
-            val cleanEvent = withContext(Dispatchers.IO) {
-                db.cleanDao().getDayKpIdEvent(preferences.serverDay, kpId)
+            val cleanEvents = withContext(Dispatchers.IO) {
+                db.cleanDao().getDayKpIdEvents(day, kpId)
             }
-            reference.get()?.onLastCleanEvent(cleanEvent)
+            reference.get()?.onCleanEvents(cleanEvents)
         }
     }
 
     override fun loadPhotoEvents(kpId: Int) {
+        val day = preferences.serverDay
         launch {
             val photoEvents = withContext(Dispatchers.IO) {
-                db.photoDao().getDayKpIdEvents(preferences.serverDay, kpId)
+                db.photoDao().getDayKpIdEvents(day, kpId)
             }
             reference.get()?.onPhotoEvents(photoEvents)
         }
     }
 
     override fun saveCleanEvents(platform: PlatformContainers) {
+        reference.get()?.updateCloud(platform.containers.size + 1, 0)
+        val day = preferences.serverDay
+        val cleanEvent = CleanEvent(platform.kpId).apply {
+            tokenId = preferences.tokenId
+            setFromAny(platform)
+        }
         launch {
-            try {
-                withContext(Dispatchers.IO) {
-                    db.cleanDao().insert()
-                }
-                // todo launch worker with listener
-            } catch (e: Throwable) {
-                reference.get()?.hideLoading()
-                throw e
+            withContext(Dispatchers.IO) {
+                db.cleanDao().insertMultiple(day, cleanEvent, platform.containers)
             }
+            reference.get()?.closeDetails(Activity.RESULT_OK)
         }
     }
 

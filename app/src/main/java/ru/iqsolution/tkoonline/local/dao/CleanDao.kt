@@ -58,6 +58,7 @@ abstract class CleanDao {
         val kp = item.kpId
         deleteDayKpId(day, kp)
         val related = insert(item)
+        val container = item.toSimpleContainer()
         containers.forEach {
             item.setFromAny(it)
             it.linkedIds.forEach { linked ->
@@ -69,12 +70,13 @@ abstract class CleanDao {
                 })
             }
         }
-        // reset values
+        // apply changes
         item.apply {
             id = related
             kpId = kp
             linkedId = null
             relatedId = null
+            setFromAny(container)
         }
     }
 
