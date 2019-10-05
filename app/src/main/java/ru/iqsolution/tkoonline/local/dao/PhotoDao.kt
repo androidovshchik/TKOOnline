@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline.local.dao
 
 import androidx.room.*
+import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEventToken
 
@@ -50,10 +51,49 @@ interface PhotoDao {
     fun markAsSent(id: Long)
 
     @Insert
-    fun insert(item: PhotoEvent)
+    fun insert(item: PhotoEvent): Long
+
+    @Transaction
+    fun insertMultiple(item: PhotoEvent, linkedIds: List<Int>) {
+        val kp = item.kpId
+        val related = insert(item)
+        linkedIds.forEach {
+            insert(item.apply {
+                id = null
+                kpId = it
+                relatedId = related
+            })
+        }
+        // reset values
+        item.apply {
+            id = null
+            kpId = kp
+            relatedId = null
+        }
+    }
 
     @Update
-    fun update(item: PhotoEvent)
+    fun updateSimple(item: PhotoEvent)
+
+    @Query(
+        """
+        UPDATE photo_events SET pe_token_id = :token, pe_latitude = :latitude, pe_longitude = :longitude, pe_when_time = :time 
+        WHERE pe_related_id =:id AND pe_sent = 0
+    """
+    )
+    fun updateRelated(id: Long, token: Long, latitude: Double, longitude: Double, time: String)
+
+    @Transaction
+    fun updateMultiple(item: PhotoEvent) {
+        updateSimple(item)
+        updateRelated(
+            item.id ?: 0L,
+            item.tokenId,
+            item.latitude,
+            item.longitude,
+            item.whenTime.toString(PATTERN_DATETIME)
+        )
+    }
 
     @Delete
     fun delete(item: PhotoEvent)

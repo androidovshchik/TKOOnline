@@ -14,10 +14,18 @@ import ru.iqsolution.tkoonline.models.Container
             childColumns = ["ce_token_id"],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = CleanEvent::class,
+            parentColumns = ["ce_id"],
+            childColumns = ["ce_related_id"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [
-        Index(value = ["ce_token_id"])
+        Index(value = ["ce_token_id"]),
+        Index(value = ["ce_related_id"])
     ]
 )
 class CleanEvent : Container, SendEvent {
@@ -26,6 +34,9 @@ class CleanEvent : Container, SendEvent {
     @ColumnInfo(name = "ce_id")
     override var id: Long? = null
 
+    /**
+     * May be changed
+     */
     @ColumnInfo(name = "ce_token_id")
     override var tokenId = 0L
 

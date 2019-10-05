@@ -13,10 +13,18 @@ import java.io.Serializable
             childColumns = ["pe_token_id"],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = PhotoEvent::class,
+            parentColumns = ["pe_id"],
+            childColumns = ["pe_related_id"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [
-        Index(value = ["pe_token_id"])
+        Index(value = ["pe_token_id"]),
+        Index(value = ["pe_related_id"])
     ]
 )
 class PhotoEvent() : Serializable, SendEvent {
@@ -25,6 +33,9 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_id")
     override var id: Long? = null
 
+    /**
+     * May be changed
+     */
     @ColumnInfo(name = "pe_token_id")
     override var tokenId = 0L
 
