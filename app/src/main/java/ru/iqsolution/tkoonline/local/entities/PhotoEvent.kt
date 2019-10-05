@@ -31,9 +31,18 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_kp_id")
     var kpId: Int? = null
 
+    /**
+     * It's value is not [kpId] but it is [id] of parent platform
+     */
+    @ColumnInfo(name = "pe_related_id")
+    var relatedId: Long? = null
+
     @ColumnInfo(name = "pe_type")
     var type = -1
 
+    /**
+     * Normally it will never change
+     */
     @ColumnInfo(name = "pe_path")
     lateinit var path: String
 
@@ -54,7 +63,7 @@ class PhotoEvent() : Serializable, SendEvent {
 
     constructor(typeId: Int) : this() {
         type = typeId
-        // mock data
+        // required for initialization only
         path = ""
         whenTime = DateTime.now()
     }
@@ -62,7 +71,7 @@ class PhotoEvent() : Serializable, SendEvent {
     constructor(id: Int, typeId: Int) : this() {
         kpId = id
         type = typeId
-        // mock data
+        // required for initialization only
         path = ""
         whenTime = DateTime.now()
     }

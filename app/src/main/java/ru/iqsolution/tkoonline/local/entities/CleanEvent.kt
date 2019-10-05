@@ -33,6 +33,12 @@ class CleanEvent : Container, SendEvent {
     var kpId = 0
 
     /**
+     * It's value is not [kpId] but it is [id] of parent platform
+     */
+    @ColumnInfo(name = "ce_related_id")
+    var relatedId: Long? = null
+
+    /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
     @ColumnInfo(name = "ce_when_time")
