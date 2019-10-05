@@ -24,4 +24,12 @@ open class BaseDialogFragment : DialogFragment() {
         context?.inputMethodManager?.hideSoftInputFromWindow(view?.windowToken, 0)
         super.dismiss()
     }
+
+    inline fun <reified T> makeCallback(action: T.() -> Unit) {
+        activity?.let {
+            if (it is T && !it.isFinishing) {
+                action(it)
+            }
+        }
+    }
 }
