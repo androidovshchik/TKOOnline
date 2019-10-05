@@ -59,7 +59,7 @@ abstract class PhotoDao {
         }
         // reset values
         item.apply {
-            id = null
+            id = related
             linkedId = null
             relatedId = null
         }
