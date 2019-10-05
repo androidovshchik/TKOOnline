@@ -19,4 +19,6 @@ interface Container {
             containerCount += it.containerCount
         }
     }
+
+    fun toContainerType() = ContainerType.fromId(containerType)
 }

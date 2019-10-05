@@ -62,6 +62,4 @@ open class Platform : Container, Location {
 
     val isValid: Boolean
         get() = BuildConfig.DEBUG || status != PlatformStatus.NO_TASK
-
-    fun toContainerType() = ContainerType.fromId(containerType)
 }

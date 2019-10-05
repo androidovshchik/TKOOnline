@@ -105,16 +105,16 @@ class ContainerLayout : LinearLayout, Container {
     }
 
     private fun updateVolumeText() {
-        volume_value.setRichText(context.getString(R.string.platform_volume, containerVolume))
+        volume_value.setValueText(context.getString(R.string.platform_volume, containerVolume))
     }
 
     private fun updateCountText() {
-        count_value.setRichText(context.getString(R.string.platform_count, containerCount))
+        count_value.setValueText(context.getString(R.string.platform_count, containerCount))
     }
 
     override fun hasOverlappingRendering() = false
 
-    private fun TextView.setRichText(text: CharSequence) {
+    private fun TextView.setValueText(text: CharSequence) {
         val smallStyle = RelativeSizeSpan(0.6f)
         val colorStyle = ForegroundColorSpan(context.getColor(R.color.colorTextGrayDark))
         setText(SpannableStringBuilder(text).apply {

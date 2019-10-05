@@ -121,7 +121,7 @@ class MapLayout : FrameLayout {
     }
 
     private fun runCall(call: String) {
-        // NOTICE currently supports only 1 digit, don't use split
+        // NOTICE currently supports only 1 digit, don't use split because of large text
         if (isReady) {
             loadUrl("javascript:$call")
         } else {
@@ -142,15 +142,15 @@ class MapLayout : FrameLayout {
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             Timber.d("onPageStarted: $url")
-            map_tools.visibility = GONE
             isReady = false
+            map_tools.visibility = GONE
             calls.clear()
         }
 
         override fun onPageFinished(view: WebView, url: String) {
             Timber.d("onPageFinished: $url")
-            map_tools.visibility = VISIBLE
             isReady = true
+            map_tools.visibility = VISIBLE
             val js = TextUtils.join(";", calls)
             calls.clear()
             if (!TextUtils.isEmpty(js)) {

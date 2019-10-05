@@ -72,27 +72,22 @@ class GalleryLayout : RelativeLayout {
 
     @SuppressLint("Recycle")
     private fun init(attrs: AttributeSet?) {
-        var id = 0
         attrs?.let {
             context.obtainStyledAttributes(it, R.styleable.GalleryLayout).use { a ->
                 photoType = PhotoType.Default.fromId(a.getInt(R.styleable.GalleryLayout_photoType, -1))
-                when (photoType) {
-                    PhotoType.Default.BEFORE -> {
-                        id = R.drawable.ic_rect_green
-                    }
-                    PhotoType.Default.AFTER -> {
-                        id = R.drawable.ic_rect_red
-                    }
-                    else -> {
-                    }
-                }
             }
         }
         subtitle.text = context.getString(
             R.string.platform_gallery,
             photoType.description.toLowerCase()
         )
-        mark.background = ContextCompat.getDrawable(context, id)
+        mark.background = ContextCompat.getDrawable(
+            context, when (photoType) {
+                PhotoType.Default.BEFORE -> R.drawable.ic_rect_green
+                PhotoType.Default.AFTER -> R.drawable.ic_rect_red
+                else -> 0
+            }
+        )
     }
 
     fun updatePhotos(events: List<PhotoEvent>) {
