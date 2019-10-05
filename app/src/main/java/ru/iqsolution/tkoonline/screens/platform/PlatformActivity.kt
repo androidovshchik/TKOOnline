@@ -24,14 +24,16 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
 
     private val photoTypes = arrayListOf<PhotoType>()
 
+    private var confirmDialog: ConfirmDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform)
-        presenter = PlatformPresenter(application).apply {
-            attachView(this@PlatformActivity)
-            platform = fromJson(intent.getStringExtra(EXTRA_PLATFORM_PLATFORM), PlatformContainers::class.java)
-            loadLastCleanEvent()
-            loadPhotoEvents()
+        presenter = PlatformPresenter(application).also {
+            it.attachView(this)
+            platform = it.fromJson(intent.getStringExtra(EXTRA_PLATFORM_PLATFORM), PlatformContainers::class.java)
+            it.loadLastCleanEvent()
+            it.loadPhotoEvents()
         }
         toolbar_back.setOnClickListener {
             finish()
@@ -69,20 +71,17 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {
-        photoEvent?.let {
-            startActivityNoop<PhotoActivity>(
-                REQUEST_PHOTO,
-                EXTRA_PHOTO_TITLE to photoType.description,
-                EXTRA_PHOTO_EVENT to photoEvent
-            )
-        } ?: run {
-            startActivityNoop<PhotoActivity>(
-                REQUEST_PHOTO,
-                EXTRA_PHOTO_TITLE to photoType.description,
-                EXTRA_PHOTO_KP_ID to platform.kpId,
-                EXTRA_PHOTO_TYPE to photoType.id
-            )
-        }
+        val event = photoEvent ?: PhotoEvent(platform.kpId, photoType.id)
+        startActivityNoop<PhotoActivity>(
+            REQUEST_PHOTO,
+            EXTRA_PHOTO_TITLE to photoType.description,
+            EXTRA_PHOTO_EVENT to event,
+            EXTRA_PHOTO_LINKED_IDS to platform.allLinkedIds
+        )
+    }
+
+    override fun onLastCleanEvent(event: CleanEvent?) {
+
     }
 
     override fun onPhotoEvents(events: List<PhotoEvent>) {
@@ -90,8 +89,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         gallery_after.updatePhotos(events)
     }
 
-    override fun onLastCleanEvent(event: CleanEvent?) {
-
+    override fun closeDetails(result: Int) {
+        setResult(result)
+        finish()
     }
 
     override fun onLocationResult(location: SimpleLocation) {
@@ -101,16 +101,18 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-
-        }
-        if (requestCode == REQUEST_PLATFORM) {
-
+            REQUEST_PHOTO -> {
+                if (resultCode == RESULT_OK) {
+                    presenter.loadPhotoEvents(platform.kpId)
+                }
+            }
         }
     }
 
     override fun onBackPressed() {}
 
     override fun onDestroy() {
+        confirmDialog?.dismiss()
         platform_map.release()
         super.onDestroy()
     }

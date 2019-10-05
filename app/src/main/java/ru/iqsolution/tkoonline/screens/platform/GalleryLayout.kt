@@ -11,6 +11,7 @@ import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.merge_gallery.view.*
+import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.activity
@@ -23,6 +24,8 @@ class GalleryLayout : RelativeLayout {
     private val photoEvents = arrayListOf<PhotoEvent>()
 
     private var photoType = PhotoType.Default.OTHER
+
+    private var enableShoot = false
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -58,7 +61,13 @@ class GalleryLayout : RelativeLayout {
             onClickEvent(photoEvents.getOrNull(2) ?: return@setOnClickListener)
         }
         photo_add.setOnClickListener {
-            onClickEvent(null)
+            if (enableShoot) {
+                if (photoEvents.size < 3) {
+                    onClickEvent(null)
+                } else {
+                    context.toast("")
+                }
+            }
         }
     }
 
@@ -99,6 +108,7 @@ class GalleryLayout : RelativeLayout {
                 }
             }
         }
+        enableShoot = true
         (photo1 as ImageView).updatePhoto(events.getOrNull(0))
         (photo2 as ImageView).updatePhoto(events.getOrNull(1))
         (photo3 as ImageView).updatePhoto(events.getOrNull(2))
@@ -107,15 +117,15 @@ class GalleryLayout : RelativeLayout {
     override fun hasOverlappingRendering() = false
 
     private fun ImageView.updatePhoto(photoEvent: PhotoEvent?) {
-        photoEvent?.let {
-            background = ContextCompat.getDrawable(context, R.drawable.photo_oval_dark)
+        background = photoEvent?.let {
             GlideApp.with(context)
                 .load(it)
                 .apply(RequestOptions.circleCropTransform())
                 .into(this)
+            ContextCompat.getDrawable(context, R.drawable.photo_oval_dark)
         } ?: run {
-            background = ContextCompat.getDrawable(context, R.drawable.photo_oval_light)
             setImageResource(R.drawable.ic_camera_white)
+            ContextCompat.getDrawable(context, R.drawable.photo_oval_light)
         }
     }
 }

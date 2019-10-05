@@ -20,10 +20,10 @@ abstract class PhotoDao {
     @Query(
         """
         SELECT * FROM photo_events 
-        WHERE pe_kp_id = :id AND pe_related_id IS NULL AND pe_when_time LIKE :day || '%'
+        WHERE pe_kp_id = :kpId AND pe_related_id IS NULL AND pe_when_time LIKE :day || '%'
     """
     )
-    abstract fun getDayKpIdEvents(day: String, id: Int): List<PhotoEvent>
+    abstract fun getDayKpIdEvents(day: String, kpId: Int): List<PhotoEvent>
 
     @Query(
         """
@@ -38,10 +38,10 @@ abstract class PhotoDao {
         """
         SELECT photo_events.*, tokens.* FROM photo_events 
         INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
-        WHERE (photo_events.pe_kp_id = :id OR photo_events.pe_linked_id = :id) AND photo_events.pe_sent = 0
+        WHERE (photo_events.pe_kp_id = :kpId OR photo_events.pe_linked_id = :kpId) AND photo_events.pe_sent = 0
     """
     )
-    abstract fun getSendKpIdEvents(id: Int): List<PhotoEventToken>
+    abstract fun getSendKpIdEvents(kpId: Int): List<PhotoEventToken>
 
     @Insert
     abstract fun insert(item: PhotoEvent): Long
@@ -70,11 +70,12 @@ abstract class PhotoDao {
 
     @Query(
         """
-        UPDATE photo_events SET pe_token_id = :token, pe_latitude = :latitude, pe_longitude = :longitude, pe_when_time = :time 
-        WHERE pe_related_id = :id AND pe_sent = 0
+        UPDATE photo_events 
+        SET pe_token_id = :token, pe_latitude = :latitude, pe_longitude = :longitude, pe_when_time = :time 
+        WHERE pe_related_id = :relatedId AND pe_sent = 0
     """
     )
-    abstract fun updateRelated(id: Long, token: Long, latitude: Double, longitude: Double, time: String)
+    abstract fun updateRelated(relatedId: Long, token: Long, latitude: Double, longitude: Double, time: String)
 
     /**
      * NOTICE some of them may be sent or not
@@ -96,7 +97,9 @@ abstract class PhotoDao {
 
     @Query(
         """
-        UPDATE photo_events SET pe_sent = 1 WHERE pe_id = :id
+        UPDATE photo_events
+        SET pe_sent = 1
+        WHERE pe_id = :id
     """
     )
     abstract fun markAsSent(id: Long)

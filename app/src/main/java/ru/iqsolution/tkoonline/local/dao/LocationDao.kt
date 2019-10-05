@@ -33,5 +33,8 @@ interface LocationDao {
      * Lifetime is less than 48 hours
      */
     @Delete
+    fun delete(item: LocationEvent)
+
+    @Delete
     fun delete(items: List<LocationEvent>)
 }
