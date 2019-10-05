@@ -39,14 +39,18 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
             path = internalPhoto.path
             whenTime = DateTime.now()
         }
-        preferences.photoCount += linkedIds.size + 1
-        reference.get()?.updateCloud()
+        reference.get()?.updateCloud(0, linkedIds.size + 1)
         launch {
             withContext(Dispatchers.IO) {
                 fileManager.copyFile(externalFile, internalPhoto)
                 if (photoEvent.id == null) {
-                    db.photoDao().insertMultiple(photoEvent, linkedIds)
+                    if (photoEvent.kpId == null) {
+                        db.photoDao().insert(photoEvent)
+                    } else {
+                        db.photoDao().insertMultiple(photoEvent, linkedIds)
+                    }
                 } else {
+                    // NOTICE events without kp id have no updates
                     db.photoDao().updateMultiple(photoEvent)
                 }
             }

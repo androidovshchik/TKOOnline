@@ -18,17 +18,21 @@ interface Container {
 
     fun setFrom(container: Container?) {
         container?.let {
-            containerVolume = it.containerVolume
-            containerCount = it.containerCount
+            if (toContainerType() == it.toContainerType()) {
+                containerVolume = it.containerVolume
+                containerCount = it.containerCount
+            }
         }
     }
 
     fun addContainer(container: Container?) {
         container?.let {
-            if (isEmpty) {
-                containerVolume = it.containerVolume
+            if (toContainerType() == it.toContainerType()) {
+                if (isEmpty) {
+                    containerVolume = it.containerVolume
+                }
+                containerCount += it.containerCount
             }
-            containerCount += it.containerCount
         }
     }
 

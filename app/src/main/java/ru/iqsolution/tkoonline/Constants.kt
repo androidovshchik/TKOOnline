@@ -37,8 +37,10 @@ const val EXTRA_PROBLEM_PLATFORM = "problem_platform"
 
 const val EXTRA_PROBLEM_PHOTO_TYPES = "problem_photo_types"
 
+// not required
 const val EXTRA_PHOTO_TITLE = "photo_title"
 
 const val EXTRA_PHOTO_EVENT = "photo_event"
 
+// not required
 const val EXTRA_PHOTO_LINKED_IDS = "photo_linked_ids"
