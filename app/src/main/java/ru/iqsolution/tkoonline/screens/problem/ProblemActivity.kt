@@ -16,6 +16,9 @@ import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 
+/**
+ * Returns [android.app.Activity.RESULT_OK] if photo event was saved
+ */
 class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
 
     private lateinit var platform: PlatformContainers

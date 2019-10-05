@@ -81,9 +81,10 @@ class CleanEvent() : Container, SendEvent {
 
     constructor(kp: Int) : this() {
         kpId = kp
+        // time is correct here
+        whenTime = DateTime.now()
         // required for initialization only
         containerType = ContainerType.UNKNOWN.id
-        whenTime = DateTime.now()
     }
 
     override fun addContainer(container: Container?) {
