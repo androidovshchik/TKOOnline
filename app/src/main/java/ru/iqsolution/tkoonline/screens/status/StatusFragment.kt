@@ -19,6 +19,7 @@ import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.services.LocationListener
 import timber.log.Timber
 import java.util.*
 import kotlin.math.min
@@ -72,7 +73,9 @@ class StatusFragment : BaseFragment(), SyncListener {
 
     override fun onResume() {
         super.onResume()
-        baseActivity?.checkLocation()
+        makeCallback<IBaseView> {
+            checkLocation()
+        }
     }
 
     /**
@@ -166,21 +169,17 @@ class StatusFragment : BaseFragment(), SyncListener {
     }
 
     override fun onLocationResult(location: SimpleLocation) {
-        baseActivity?.onLocationResult(location)
+        makeCallback<LocationListener> {
+            onLocationResult(location)
+        }
     }
 
     override fun onLocationAvailability(available: Boolean) {
         onLocationChanged(available)
-        baseActivity?.onLocationAvailability(available)
-    }
-
-    private val baseActivity: IBaseView?
-        get() = activity?.let {
-            if (it is IBaseView && !it.isFinishing) {
-                return it
-            }
-            return null
+        makeCallback<LocationListener> {
+            onLocationAvailability(available)
         }
+    }
 
     override fun onStop() {
         syncManager.unregister(context)

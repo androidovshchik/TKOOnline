@@ -58,8 +58,16 @@ class ContainerLayout : LinearLayout, Container {
         init(attrs)
     }
 
-    init {
+    @SuppressLint("Recycle")
+    private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_container, this)
+        var type = ContainerType.UNKNOWN
+        attrs?.let {
+            context.obtainStyledAttributes(it, R.styleable.ContainerLayout).use { a ->
+                type = ContainerType.fromId(a.getString(R.styleable.ContainerLayout_containerType))
+                containerType = type.id
+            }
+        }
         arrow_up_volume.setOnClickListener {
             if (containerVolume < 9.9f) {
                 hasChanges = true
@@ -86,17 +94,6 @@ class ContainerLayout : LinearLayout, Container {
                 hasChanges = true
                 containerCount--
                 updateCountText()
-            }
-        }
-    }
-
-    @SuppressLint("Recycle")
-    private fun init(attrs: AttributeSet?) {
-        var type = ContainerType.UNKNOWN
-        attrs?.let {
-            context.obtainStyledAttributes(it, R.styleable.ContainerLayout).use { a ->
-                type = ContainerType.fromId(a.getString(R.styleable.ContainerLayout_containerType))
-                containerType = type.id
             }
         }
         if (type == ContainerType.BULK1 || type == ContainerType.BULK2) {

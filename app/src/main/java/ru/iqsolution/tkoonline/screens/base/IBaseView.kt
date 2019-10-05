@@ -1,8 +1,6 @@
 package ru.iqsolution.tkoonline.screens.base
 
-import ru.iqsolution.tkoonline.services.LocationListener
-
-interface IBaseView : LocationListener {
+interface IBaseView {
 
     fun updateCloud(clean: Int, photo: Int)
 

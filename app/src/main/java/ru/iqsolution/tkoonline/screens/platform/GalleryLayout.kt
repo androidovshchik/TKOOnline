@@ -33,9 +33,7 @@ class GalleryLayout : RelativeLayout {
         attrs,
         defStyleAttr
     ) {
-        attrs?.let {
-            init(it)
-        }
+        init(attrs)
     }
 
     @Suppress("unused")
@@ -49,8 +47,14 @@ class GalleryLayout : RelativeLayout {
         init(attrs)
     }
 
-    init {
+    @SuppressLint("Recycle")
+    private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_gallery, this)
+        attrs?.let {
+            context.obtainStyledAttributes(it, R.styleable.GalleryLayout).use { a ->
+                photoType = PhotoType.Default.fromId(a.getInt(R.styleable.GalleryLayout_photoType, -1))
+            }
+        }
         photo1.setOnClickListener {
             photoEvents.getOrNull(0)?.let {
                 makeCallback<GalleryListener> {
@@ -81,15 +85,6 @@ class GalleryLayout : RelativeLayout {
                 } else {
                     context.toast("Доступно только 3 фото")
                 }
-            }
-        }
-    }
-
-    @SuppressLint("Recycle")
-    private fun init(attrs: AttributeSet?) {
-        attrs?.let {
-            context.obtainStyledAttributes(it, R.styleable.GalleryLayout).use { a ->
-                photoType = PhotoType.Default.fromId(a.getInt(R.styleable.GalleryLayout_photoType, -1))
             }
         }
         subtitle.text = context.getString(

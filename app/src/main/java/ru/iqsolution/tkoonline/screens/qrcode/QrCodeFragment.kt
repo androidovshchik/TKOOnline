@@ -26,13 +26,9 @@ class QrCodeFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context?.resources?.getDimensionPixelSize(R.dimen.barcode_max_size)?.let {
-            maxSize = it
-        }
-        activity?.apply {
-            if (this is ScannerListener && !this.isFinishing) {
-                scannerManager = ScannerManager(applicationContext, this)
-            }
+        maxSize = context?.resources?.getDimensionPixelSize(R.dimen.barcode_max_size) ?: 0
+        makeCallback<ScannerListener> {
+            scannerManager = ScannerManager(context, this)
         }
     }
 
