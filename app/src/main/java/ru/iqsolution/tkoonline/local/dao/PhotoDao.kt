@@ -71,7 +71,7 @@ abstract class PhotoDao {
     @Query(
         """
         UPDATE photo_events SET pe_token_id = :token, pe_latitude = :latitude, pe_longitude = :longitude, pe_when_time = :time 
-        WHERE pe_related_id =:id AND pe_sent = 0
+        WHERE pe_related_id = :id AND pe_sent = 0
     """
     )
     abstract fun updateRelated(id: Long, token: Long, latitude: Double, longitude: Double, time: String)

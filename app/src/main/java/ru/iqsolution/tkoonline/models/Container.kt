@@ -11,6 +11,18 @@ interface Container {
     val isEmpty: Boolean
         get() = containerVolume < 0.1f
 
+    fun reset() {
+        containerVolume = 0f
+        containerCount = 0
+    }
+
+    fun setFrom(container: Container?) {
+        container?.let {
+            containerVolume = it.containerVolume
+            containerCount = it.containerCount
+        }
+    }
+
     fun addContainer(container: Container?) {
         container?.let {
             if (isEmpty) {

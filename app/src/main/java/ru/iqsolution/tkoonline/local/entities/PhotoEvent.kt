@@ -51,6 +51,9 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_related_id")
     var relatedId: Long? = null
 
+    /**
+     * Normally it will never change
+     */
     @ColumnInfo(name = "pe_type")
     var type = -1
 

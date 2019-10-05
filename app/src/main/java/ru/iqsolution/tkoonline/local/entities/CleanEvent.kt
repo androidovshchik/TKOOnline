@@ -59,6 +59,9 @@ class CleanEvent : Container, SendEvent {
     @SerializedName("time")
     lateinit var whenTime: DateTime
 
+    /**
+     * May be changed
+     */
     @ColumnInfo(name = "ce_container_type")
     @SerializedName("container_type_fact")
     override lateinit var containerType: String

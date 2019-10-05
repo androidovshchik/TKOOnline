@@ -9,19 +9,19 @@ interface PlatformContract {
 
     interface Presenter {
 
-        fun loadLastCleanEvent(id: Int)
+        fun loadLastCleanEvent(kpId: Int)
 
-        fun loadPhotoEvents(id: Int)
+        fun loadPhotoEvents(kpId: Int)
 
-        fun createCleanEvents(platform: PlatformContainers)
+        fun saveCleanEvents(platform: PlatformContainers)
     }
 
     interface View : IBaseView {
 
-        fun onPhotoEvents(events: List<PhotoEvent>)
-
         fun onLastCleanEvent(event: CleanEvent?)
 
-        fun onFinish()
+        fun onPhotoEvents(events: List<PhotoEvent>)
+
+        fun closeDetails(result: Int)
     }
 }

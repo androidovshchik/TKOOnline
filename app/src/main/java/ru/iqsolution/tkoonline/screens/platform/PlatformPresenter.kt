@@ -14,24 +14,25 @@ class PlatformPresenter(application: Application) : BasePresenter<PlatformContra
 
     val db: Database by instance()
 
-    override fun loadLastCleanEvent(id: Int) {
+    override fun loadLastCleanEvent(kpId: Int) {
         launch {
-            withContext(Dispatchers.IO) {
-                reference.get()?.onLastCleanEvent(db.cleanDao().getDayKpIdEvent(preferences.serverDay, id))
+            val cleanEvent = withContext(Dispatchers.IO) {
+                db.cleanDao().getDayKpIdEvent(preferences.serverDay, kpId)
             }
+            reference.get()?.onLastCleanEvent(cleanEvent)
         }
     }
 
-    override fun loadPhotoEvents(id: Int) {
+    override fun loadPhotoEvents(kpId: Int) {
         launch {
-            withContext(Dispatchers.IO) {
-                reference.get()?.onPhotoEvents(db.photoDao().getDayKpIdEvents(preferences.serverDay, id))
+            val photoEvents = withContext(Dispatchers.IO) {
+                db.photoDao().getDayKpIdEvents(preferences.serverDay, kpId)
             }
+            reference.get()?.onPhotoEvents(photoEvents)
         }
     }
 
-    override fun createCleanEvents(platform: PlatformContainers) {
-        reference.get()?.showLoading()
+    override fun saveCleanEvents(platform: PlatformContainers) {
         launch {
             try {
                 withContext(Dispatchers.IO) {
@@ -43,5 +44,10 @@ class PlatformPresenter(application: Application) : BasePresenter<PlatformContra
                 throw e
             }
         }
+    }
+
+    override fun detachView() {
+        // no cancelling
+        reference.clear()
     }
 }
