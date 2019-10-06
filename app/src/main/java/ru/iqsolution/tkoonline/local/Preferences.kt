@@ -3,9 +3,10 @@ package ru.iqsolution.tkoonline.local
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel
 import ru.iqsolution.tkoonline.WAIT_TIME
+import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
-class Preferences(context: Context) : KotprefModel(context) {
+class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     override val kotprefName: String = "preferences"
 
@@ -51,13 +52,13 @@ class Preferences(context: Context) : KotprefModel(context) {
      * Last known latitude
      * NOTICE do not clear it because of photo event coordinates
      */
-    var lastLatitude by floatPref(0f, "0x0d")
+    override var latitude by floatPref(0f, "0x0d")
 
     /**
      * Last known longitude
      * NOTICE do not clear it because of photo event coordinates
      */
-    var lastLongitude by floatPref(0f, "0x0e")
+    override var longitude by floatPref(0f, "0x0e")
 
     /**
      * Time of last known location [ru.iqsolution.tkoonline.PATTERN_DATETIME]
@@ -77,7 +78,7 @@ class Preferences(context: Context) : KotprefModel(context) {
 
     val location: SimpleLocation?
         get() = locationTime?.let {
-            SimpleLocation(lastLatitude, lastLongitude)
+            SimpleLocation(latitude, longitude)
         }
 
     /**

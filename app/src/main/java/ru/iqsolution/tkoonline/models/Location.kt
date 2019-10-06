@@ -1,8 +1,8 @@
 package ru.iqsolution.tkoonline.models
 
-interface Location {
+interface Location<T> {
 
-    var latitude: Double
+    var latitude: T
 
-    var longitude: Double
+    var longitude: T
 }

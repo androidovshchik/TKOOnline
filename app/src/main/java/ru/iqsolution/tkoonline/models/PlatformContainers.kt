@@ -108,11 +108,11 @@ class PlatformContainers(platform: Platform) : Platform() {
      * angle = acrcos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dlon))
      * distance = radius * angle
      */
-    fun getDistance(l: Location): Double {
+    fun setDistanceTo(l: Location<Double>) {
         val lat1 = latitude * D
         val lat2 = l.latitude * D
         val dLon = (l.longitude - longitude) * D
-        return R * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dLon))
+        meters = R * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dLon))
     }
 
     companion object {
