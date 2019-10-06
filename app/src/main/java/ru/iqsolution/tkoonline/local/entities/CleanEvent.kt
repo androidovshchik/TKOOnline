@@ -87,10 +87,6 @@ class CleanEvent() : Container, SendEvent {
         containerType = ContainerType.UNKNOWN.id
     }
 
-    override fun addContainer(container: Container?) {
-        throw IllegalAccessException("Should not be called at all")
-    }
-
     fun toSimpleContainer(): SimpleContainer {
         return SimpleContainer(toContainerType()).also {
             it.setFromSame(this)

@@ -3,7 +3,7 @@ package ru.iqsolution.tkoonline.models
 import com.google.gson.annotations.SerializedName
 
 /**
- * Special class for linked platforms to summarize them
+ * Special class for linked platforms
  */
 class SimpleContainer(type: ContainerType) : Container {
 

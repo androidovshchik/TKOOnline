@@ -33,13 +33,6 @@
             <include
                 layout="@layout/include_platform"/>
 
-            <View
-                android:id="@+id/platform_divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorDivider"
-                android:visibility="gone"/>
-
             <ru.iqsolution.tkoonline.screens.platform.ContainerLayout
                 android:id="@+id/platform_regular"
                 android:layout_width="match_parent"

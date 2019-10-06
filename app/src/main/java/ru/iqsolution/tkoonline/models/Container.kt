@@ -8,9 +8,6 @@ interface Container {
 
     var containerCount: Int
 
-    val isEmpty: Boolean
-        get() = containerVolume < 0.1f
-
     fun reset() {
         containerVolume = 0f
         containerCount = 0
@@ -30,17 +27,6 @@ interface Container {
             containerType = it.containerType
             containerVolume = it.containerVolume
             containerCount = it.containerCount
-        }
-    }
-
-    fun addContainer(container: Container?) {
-        container?.let {
-            if (toContainerType() == it.toContainerType()) {
-                if (isEmpty) {
-                    containerVolume = it.containerVolume
-                }
-                containerCount += it.containerCount
-            }
         }
     }
 
