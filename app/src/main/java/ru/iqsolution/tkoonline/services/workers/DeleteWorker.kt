@@ -39,7 +39,7 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
 
     companion object {
 
-        const val NAME = "DELETE"
+        private const val NAME = "DELETE"
 
         fun launch(context: Context) {
             val request = OneTimeWorkRequestBuilder<DeleteWorker>()

@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.services.workers
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
 import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -15,6 +16,7 @@ import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.remote.api.RequestClean
 import ru.iqsolution.tkoonline.services.BaseWorker
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
@@ -26,34 +28,39 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
     val server: Server by instance()
 
+    private val broadcastManager = LocalBroadcastManager.getInstance(context)
+
     override suspend fun doWork(): Result = coroutineScope {
         val kpId = inputData.getInt(PARAM_KP_ID, -1)
-        val sendAll = kpId < 0
+        val photoNoKp = inputData.getBoolean(PARAM_PHOTO_NO_KP, false)
+        val sendAll = kpId < 0 && !photoNoKp
         var hasErrors = false
-        val cleanEvents = if (sendAll) {
-            db.cleanDao().getSendEvents()
-        } else {
-            db.cleanDao().getSendKpIdEvents(kpId)
-        }
-        cleanEvents.forEach {
-            try {
-                val responseClean = server.sendClean(
-                    it.token.authHeader,
-                    it.clean.kpId,
-                    RequestClean(it.clean)
-                ).execute()
-                if (responseClean.code() in 200..299) {
-                    db.cleanDao().markAsSent(it.clean.id ?: 0L)
+        if (!photoNoKp) {
+            val cleanEvents = if (sendAll) {
+                db.cleanDao().getSendEvents()
+            } else {
+                db.cleanDao().getSendKpIdEvents(kpId)
+            }
+            cleanEvents.forEach {
+                try {
+                    val responseClean = server.sendClean(
+                        it.token.authHeader,
+                        it.clean.kpId,
+                        RequestClean(it.clean)
+                    ).execute()
+                    if (responseClean.code() in 200..299) {
+                        db.cleanDao().markAsSent(it.clean.id ?: 0L)
+                    }
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                    hasErrors = sendAll
                 }
-            } catch (e: Throwable) {
-                Timber.e(e)
-                hasErrors = sendAll
             }
         }
-        val photoEvents = if (sendAll) {
-            db.photoDao().getSendEvents()
-        } else {
-            db.photoDao().getSendKpIdEvents(kpId)
+        val photoEvents = when {
+            onlyPhoto -> db.photoDao().getSendPhotoEvents()
+            sendAll -> db.photoDao().getSendEvents()
+            else -> db.photoDao().getSendKpIdEvents(kpId)
         }
         photoEvents.forEach {
             val photo = fileManager.readFile(it.photo.path) ?: return@forEach
@@ -70,6 +77,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 if (responsePhoto.code() in 200..299) {
                     db.cleanDao().markAsSent(it.photo.id ?: 0L)
                 }
+                // todo send broadcast
             } catch (e: Throwable) {
                 Timber.e(e)
                 hasErrors = sendAll
@@ -82,9 +90,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 Timber.e(e)
                 hasErrors = true
             }
-        }
-        if (hasErrors) {
-            Result.failure()
+            if (hasErrors) {
+                Result.retry()
+            } else {
+                Result.success()
+            }
         } else {
             Result.success()
         }
@@ -92,23 +102,43 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
     companion object {
 
-        const val NAME = "SEND"
+        private const val NAME = "SEND"
 
         private const val PARAM_KP_ID = "kp_id"
 
+        private const val PARAM_PHOTO_NO_KP = "photo_no_kp"
+
         private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
 
-        fun launch(context: Context, id: Int = -1): LiveData<WorkInfo?> {
+        fun launch(context: Context, kp: Int = -1, photoNoKp: Boolean = false): LiveData<WorkInfo>? {
+            val sendAll = kp < 0 && !photoNoKp
             val request = OneTimeWorkRequestBuilder<SendWorker>()
                 .setInputData(
                     Data.Builder()
-                        .putInt(PARAM_KP_ID, id)
+                        .putInt(PARAM_KP_ID, kp)
+                        .putBoolean(PARAM_PHOTO_NO_KP, photoNoKp)
                         .build()
                 )
+                .apply {
+                    if (sendAll) {
+                        setBackoffCriteria(BackoffPolicy.LINEAR, WorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+                    }
+                }
                 .build()
             WorkManager.getInstance(context).apply {
-                enqueueUniqueWork(NAME, ExistingWorkPolicy.KEEP, request)
-                return getWorkInfoByIdLiveData(request.id)
+                return if (sendAll) {
+                    enqueueUniqueWork(NAME, ExistingWorkPolicy.REPLACE, request)
+                    getWorkInfoByIdLiveData(request.id)
+                } else {
+                    enqueueUniqueWork(NAME, ExistingWorkPolicy.KEEP, request)
+                    null
+                }
+            }
+        }
+
+        fun cancel(context: Context) {
+            WorkManager.getInstance(context).apply {
+                cancelUniqueWork(NAME)
             }
         }
     }

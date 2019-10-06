@@ -41,13 +41,13 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
 
     companion object {
 
-        const val NAME = "MIDNIGHT"
+        private const val NAME = "MIDNIGHT"
 
         fun launch(context: Context) {
             val now = DateTime.now()
-            val delay = Duration(now, now.plusDays(1).withTime(0, 0, 0, 0)).standardSeconds
+            val delay = Duration(now, now.plusDays(1).withTime(0, 0, 0, 0)).millis
             val request = PeriodicWorkRequestBuilder<MidnightWorker>(24, TimeUnit.HOURS)
-                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .build()
             WorkManager.getInstance(context).apply {
                 enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.REPLACE, request)
