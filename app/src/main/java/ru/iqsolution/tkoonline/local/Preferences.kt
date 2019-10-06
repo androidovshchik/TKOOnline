@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.local
 
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel
+import ru.iqsolution.tkoonline.WAIT_TIME
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
 class Preferences(context: Context) : KotprefModel(context) {
@@ -31,15 +32,14 @@ class Preferences(context: Context) : KotprefModel(context) {
     var lockPassword by nullableStringPref(null, "0x07")
 
     /**
-     * Local time (milliseconds)
+     * Boot time (milliseconds)
      */
-    // todo elapsed time?
-    var blockTime by longPref(0L, "0x08")
+    var blockTime by longPref(-WAIT_TIME, "0x08")
 
     var vehicleNumber by nullableStringPref(null, "0x09")
 
     /**
-     * Boot time at the moment of server time (milliseconds)
+     * Boot time synced with server (milliseconds)
      */
     var elapsedTime by longPref(0L, "0x0a")
 

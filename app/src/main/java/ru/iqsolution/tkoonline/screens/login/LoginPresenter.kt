@@ -32,7 +32,7 @@ class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presen
             Timber.e(e)
             return
         }
-        Timber.d("Qr code json: $data")
+        Timber.d("QrCodeJson: $data")
         qrCodeJson = data
         baseJob.cancelChildren()
         launch {
