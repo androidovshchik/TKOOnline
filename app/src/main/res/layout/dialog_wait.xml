@@ -1,27 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="16dp"
+    android:paddingTop="16dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="0dp"
     tools:ignore="MissingPrefix">
 
     <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/progress_bar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:indeterminate="true"/>
 
     <TextView
         android:id="@+id/dialog_title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@+id/progress_bar"
+        android:gravity="center_vertical"
         android:text="Пожалуйста, подождите..."
         android:textSize="20sp"
         android:textColor="@color/colorTextBlack87"
         android:lineSpacingExtra="3sp"
         fontPath="fonts/Roboto-Medium.ttf"/>
 
-</LinearLayout>
+    <Button
+        android:id="@+id/dialog_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/dialog_title"
+        android:layout_alignParentEnd="true"
+        android:text="Отмена"
+        android:textSize="14sp"
+        android:textColor="@color/colorAccent"
+        android:lineSpacingExtra="2sp"
+        android:background="?android:attr/selectableItemBackground"/>
+
+</RelativeLayout>
