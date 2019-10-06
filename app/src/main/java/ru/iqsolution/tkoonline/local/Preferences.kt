@@ -52,18 +52,18 @@ class Preferences(context: Context) : KotprefModel(context) {
      * Last known latitude
      * NOTICE do not clear it because of photo event coordinates
      */
-    var lastLat by floatPref(0f, "0x0d")
+    var lastLatitude by floatPref(0f, "0x0d")
 
     /**
      * Last known longitude
      * NOTICE do not clear it because of photo event coordinates
      */
-    var lastLon by floatPref(0f, "0x0e")
+    var lastLongitude by floatPref(0f, "0x0e")
 
     /**
      * Time of last known location [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
-    var lastTime by nullableStringPref(null, "0x0f")
+    var locationTime by nullableStringPref(null, "0x0f")
 
     var tokenId by longPref(0L, "0x10")
 
@@ -79,8 +79,8 @@ class Preferences(context: Context) : KotprefModel(context) {
         get() = serverTime?.split("T")?.get(0).toString()
 
     val location: SimpleLocation?
-        get() = lastTime?.let {
-            SimpleLocation(lastLat, lastLon)
+        get() = locationTime?.let {
+            SimpleLocation(lastLatitude, lastLongitude)
         }
 
     fun logout() {
@@ -93,7 +93,7 @@ class Preferences(context: Context) : KotprefModel(context) {
             vehicleNumber = null
             queName = null
             carId = 0
-            lastTime = null
+            locationTime = null
             tokenId = 0L
         }
     }

@@ -2,38 +2,40 @@ package ru.iqsolution.tkoonline.screens.base
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.content.IntentSender
+import android.content.*
 import android.os.Bundle
+import android.os.IBinder
 import android.view.MenuItem
 import android.view.WindowManager
 import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStates
-import com.google.android.gms.location.SettingsClient
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
+import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
-import ru.iqsolution.tkoonline.screens.WaitDialog
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
+import ru.iqsolution.tkoonline.screens.platforms.WaitDialog
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
-import ru.iqsolution.tkoonline.services.LocationManager
+import ru.iqsolution.tkoonline.services.LocationListener
 import ru.iqsolution.tkoonline.services.TelemetryService
 import timber.log.Timber
 
 @SuppressLint("Registered")
 @Suppress("MemberVisibilityCanBePrivate")
-open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseView {
+open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseView, ServiceConnection, LocationListener {
+
+    open val attachService = false
 
     protected lateinit var presenter: T
 
     protected lateinit var preferences: Preferences
 
-    private lateinit var locationSettings: SettingsClient
+    protected var telemetryService: TelemetryService? = null
 
     private var statusBar: StatusFragment? = null
 
@@ -43,7 +45,6 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         preferences = Preferences(applicationContext)
-        locationSettings = LocationServices.getSettingsClient(this)
         if (this !is LoginActivity) {
             TelemetryService.start(applicationContext)
         }
@@ -55,7 +56,14 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         statusBar = fragmentManager.findFragmentById(R.id.status_fragment) as StatusFragment?
     }
 
-    override fun updateCloud() {
+    override fun onStart() {
+        super.onStart()
+        if (attachService) {
+            bindService(intentFor<TelemetryService>(), this, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    override fun updateCloud(clean: Int, photo: Int) {
         statusBar?.onPhotoCountChanged()
     }
 
@@ -63,7 +71,8 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
      * Should be called from [StatusFragment]
      */
     override fun checkLocation() {
-        locationSettings.checkLocationSettings(settingsRequest)
+        LocationServices.getSettingsClient(this)
+            .checkLocationSettings(locationSettingsRequest)
             .addOnSuccessListener {
                 onLocationState(it.locationSettingsStates)
             }
@@ -117,6 +126,21 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         }
     }
 
+    override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+        telemetryService = (binder as TelemetryService.Binder).service
+    }
+
+    override fun onServiceDisconnected(name: ComponentName) {
+        telemetryService = null
+    }
+
+    override fun onStop() {
+        if (telemetryService != null) {
+            unbindService(this)
+        }
+        super.onStop()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -153,8 +177,10 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
         private const val REQUEST_LOCATION = 100
 
-        private val settingsRequest = LocationSettingsRequest.Builder()
-            .addLocationRequest(LocationManager.locationRequest)
+        private val locationSettingsRequest = LocationSettingsRequest.Builder()
+            .addLocationRequest(LocationRequest.create().apply {
+                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            })
             /**
              * Whether or not location is required by the calling app in order to continue.
              * Set this to true if location is required to continue and false if having location provides better results,

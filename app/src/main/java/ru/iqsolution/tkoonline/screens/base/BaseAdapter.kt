@@ -12,7 +12,7 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<BaseViewHolder<T>>() {
 
     protected var reference: WeakReference<AdapterListener<T>>? = null
 
-    fun setAdapterListener(listener: AdapterListener<T>) {
+    fun setListener(listener: AdapterListener<T>) {
         reference = WeakReference(listener)
     }
 
