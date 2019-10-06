@@ -21,6 +21,7 @@ import java.lang.ref.WeakReference
  * · Для состояния движения и остановка - 1 минута
  */
 @Suppress("MemberVisibilityCanBePrivate")
+@SuppressLint("MissingPermission")
 class LocationManager(context: Context, listener: LocationListener) : android.location.LocationListener {
 
     private val reference = WeakReference(listener)
@@ -28,16 +29,20 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
     private val locationClient = context.locationManager
 
     @Volatile
-    private var satellites = 0
+    private var satellitesCount = 0
 
-    @SuppressLint("MissingPermission")
+    init {
+        listener.apply {
+            onLocationAvailability(locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
+                onLocationResult(SimpleLocation(it))
+            }
+        }
+    }
+
     fun requestUpdates() {
         locationClient.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, 0f, this)
         locationClient.registerGnssStatusCallback(gnssCallback)
-    }
-
-    override fun onLocationChanged(location: Location) {
-        reference.get()?.onLocationResult(SimpleLocation(location, satellites))
     }
 
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle?) {
@@ -53,6 +58,12 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
         )
     }
 
+    override fun onLocationChanged(location: Location) {
+        reference.get()?.onLocationResult(SimpleLocation(location).apply {
+            satellites = satellitesCount
+        })
+    }
+
     override fun onProviderEnabled(provider: String) {
         Timber.d("onProviderEnabled $provider")
     }
@@ -61,7 +72,6 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
         Timber.d("onProviderDisabled $provider")
     }
 
-    @SuppressLint("MissingPermission")
     fun removeUpdates() {
         locationClient.unregisterGnssStatusCallback(gnssCallback)
         locationClient.removeUpdates(this)
@@ -70,7 +80,7 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
     private val gnssCallback = object : GnssStatus.Callback() {
 
         override fun onSatelliteStatusChanged(status: GnssStatus) {
-            satellites = status.satelliteCount
+            satellitesCount = status.satelliteCount
         }
     }
 }

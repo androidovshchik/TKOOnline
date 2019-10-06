@@ -6,15 +6,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import java.io.File
 
 class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presenter {
-
-    val db: Database by instance()
 
     val fileManager: FileManager by instance()
 
@@ -33,8 +30,8 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
         val internalPhoto = File(fileManager.photosDir, externalFile.name)
         photoEvent.apply {
             tokenId = preferences.tokenId
-            latitude = preferences.lastLatitude.toDouble()
-            longitude = preferences.lastLongitude.toDouble()
+            latitude = preferences.latitude.toDouble()
+            longitude = preferences.longitude.toDouble()
             // it may be empty when there is a new event
             path = internalPhoto.path
             whenTime = DateTime.now()

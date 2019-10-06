@@ -50,12 +50,11 @@ class SimpleLocation : Location<Double>, Serializable {
 
     constructor(lat: Float, lon: Float) : this(lat.toDouble(), lon.toDouble())
 
-    constructor(location: android.location.Location, satelliteCount: Int) {
+    constructor(location: android.location.Location) {
         latitude = location.latitude
         longitude = location.longitude
         altitude = location.altitude.roundToInt()
         accuracy = location.accuracy
-        satellites = satelliteCount
         locationTime = DateTime.now()
     }
 }
