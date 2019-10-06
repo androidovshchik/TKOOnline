@@ -12,9 +12,6 @@ import ru.iqsolution.tkoonline.LOCATION_INTERVAL
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 import java.lang.ref.WeakReference
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
 
 /**
  * МП должно исключать генерацию более одного события в одну секунду.
@@ -30,14 +27,6 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
 
     private val locationClient = context.locationManager
 
-    private var timer: ScheduledFuture<*>? = null
-
-    @Volatile
-    private var lastLocation: Location? = null
-
-    @Volatile
-    private var availability = false
-
     @Volatile
     private var satellites = 0
 
@@ -45,20 +34,10 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
     fun requestUpdates() {
         locationClient.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, 0f, this)
         locationClient.registerGnssStatusCallback(gnssCallback)
-        val executor = Executors.newScheduledThreadPool(1)
-        timer = executor.scheduleAtFixedRate({
-            reference.get()?.apply {
-                onLocationAvailability(locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
-                val location = lastLocation ?: locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                if (location != null) {
-                    onLocationResult(SimpleLocation(location))
-                }
-            }
-        }, 0, 5, TimeUnit.SECONDS)
     }
 
     override fun onLocationChanged(location: Location) {
-        lastLocation = location
+        reference.get()?.onLocationResult(SimpleLocation(location, satellites))
     }
 
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle?) {
@@ -66,13 +45,12 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
         if (LocationManager.GPS_PROVIDER != provider) {
             return
         }
-        if () {
-
-        }
-        availability = when (status) {
+        reference.get()?.onLocationAvailability(
+            when (status) {
             LocationProvider.OUT_OF_SERVICE -> false
             else -> true
-        }
+            }
+        )
     }
 
     override fun onProviderEnabled(provider: String) {
@@ -85,7 +63,6 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
 
     @SuppressLint("MissingPermission")
     fun removeUpdates() {
-        timer?.cancel(true)
         locationClient.unregisterGnssStatusCallback(gnssCallback)
         locationClient.removeUpdates(this)
     }

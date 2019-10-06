@@ -3,17 +3,14 @@ package ru.iqsolution.tkoonline.services
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.os.Binder
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.stopService
-import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.areGranted
@@ -33,6 +30,9 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
     private var wakeLock: PowerManager.WakeLock? = null
 
     private val binder = Binder()
+
+    @Volatile
+    private var isRunning = false
 
     override fun onBind(intent: Intent): IBinder? {
         return binder
@@ -73,19 +73,11 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
     }
 
     override fun startTelemetry() {
-
-    }
-
-    override fun updateTelemetry(location: SimpleLocation) {
-        preferences.bulk {
-            lastLatitude = location.latitude.toFloat()
-            lastLongitude = location.longitude.toFloat()
-            locationTime = DateTime.now().toString(PATTERN_DATETIME)
-        }
+        isRunning = true
     }
 
     override fun stopTelemetry() {
-
+        isRunning = false
     }
 
     override fun onLocationState(state: LocationSettingsStates?) {}
@@ -96,9 +88,6 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
         })
     }
 
-    /**
-     * Only notifies UI
-     */
     override fun onLocationResult(location: SimpleLocation) {
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_TELEMETRY_LOCATION, location)
@@ -116,6 +105,13 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
         locationManager.removeUpdates()
         releaseWakeLock()
         super.onDestroy()
+    }
+
+    @Suppress("unused")
+    inner class Binder : android.os.Binder() {
+
+        val service: TelemetryService
+            get() = this@TelemetryService
     }
 
     companion object {

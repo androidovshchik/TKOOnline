@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.*
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
 import android.view.MenuItem
@@ -87,7 +88,16 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         statusBar?.onCloudChanged(allCount <= 0, photoCount)
     }
 
+    override fun showError(message: CharSequence?) {
+        message?.let {
+            toast(it)
+        }
+    }
+
     private fun checkLocation() {
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            return
+        }
         LocationServices.getSettingsClient(this)
             .checkLocationSettings(locationSettingsRequest)
             .addOnSuccessListener {
@@ -120,12 +130,6 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
      * Will be called from [StatusFragment]
      */
     override fun onLocationResult(location: SimpleLocation) {}
-
-    override fun showError(message: CharSequence?) {
-        message?.let {
-            toast(it)
-        }
-    }
 
     override fun onServiceConnected(name: ComponentName, binder: IBinder) {
         telemetryService = (binder as TelemetryService.Binder).service
