@@ -14,6 +14,14 @@ abstract class CleanDao {
 
     @Query(
         """
+        SELECT COUNT(*) FROM clean_events
+        WHERE ce_sent = 0
+    """
+    )
+    abstract fun getSendCount(): Int
+
+    @Query(
+        """
         SELECT * FROM clean_events 
         WHERE ce_related_id IS NULL AND ce_when_time LIKE :day || '%'
         ORDER BY ce_id DESC

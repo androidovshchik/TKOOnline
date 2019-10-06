@@ -10,6 +10,14 @@ abstract class PhotoDao {
 
     @Query(
         """
+        SELECT COUNT(*) FROM photo_events
+        WHERE pe_sent = 0
+    """
+    )
+    abstract fun getSendCount(): Int
+
+    @Query(
+        """
         SELECT * FROM photo_events
         WHERE pe_related_id IS NULL AND pe_when_time LIKE :day || '%'
         ORDER BY pe_id DESC

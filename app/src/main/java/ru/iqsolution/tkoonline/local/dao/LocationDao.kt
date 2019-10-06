@@ -12,6 +12,14 @@ interface LocationDao {
 
     @Query(
         """
+        SELECT COUNT(*) FROM location_events
+        WHERE le_sent = 0
+    """
+    )
+    fun getSendCount(): Int
+
+    @Query(
+        """
         SELECT location_events.*, tokens.* FROM location_events 
         INNER JOIN tokens ON location_events.le_token_id = tokens.t_id
         ORDER BY location_events.le_id DESC

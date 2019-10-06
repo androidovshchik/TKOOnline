@@ -30,7 +30,6 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
      * Normally there will be no case when file doesn't exist and id is null
      */
     override fun saveEvent(photoEvent: PhotoEvent, linkedIds: List<Int>, externalFile: File) {
-        reference.get()?.updateCloud(0, linkedIds.size + 1)
         val internalPhoto = File(fileManager.photosDir, externalFile.name)
         photoEvent.apply {
             tokenId = preferences.tokenId
@@ -54,7 +53,10 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
                     db.photoDao().updateMultiple(photoEvent)
                 }
             }
-            reference.get()?.closePreview(Activity.RESULT_OK)
+            reference.get()?.apply {
+                updateCloud()
+                closePreview(Activity.RESULT_OK)
+            }
         }
     }
 
