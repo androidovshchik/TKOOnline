@@ -7,14 +7,12 @@ import android.app.ActivityManager
 import android.app.FragmentTransaction
 import android.os.Bundle
 import android.view.ViewGroup
+import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
-import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
-import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
 import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.LockActivity
@@ -23,7 +21,7 @@ import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 import ru.iqsolution.tkoonline.screens.qrcode.ScannerListener
 import ru.iqsolution.tkoonline.services.workers.DeleteWorker
 
-class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, DialogListener {
+class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, SettingsListener {
 
     private val settingsDialog = SettingsDialog()
 
@@ -34,9 +32,11 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        presenter = LoginPresenter(application).apply {
-            attachView(this@LoginActivity)
-            clearAuthorization()
+        presenter = LoginPresenter().also {
+            it.attachView(this)
+        }
+        preferences.bulk {
+            logout()
         }
         DeleteWorker.launch(applicationContext)
         GlideApp.with(applicationContext)
@@ -52,11 +52,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
     }
 
     override fun onQrCode(value: String) {
-        if (areGranted(*DANGER_PERMISSIONS)) {
-            presenter.login(value)
-        } else {
-            toast("Требуется предоставить разрешения")
-        }
+        presenter.login(value)
     }
 
     override fun openDialog(preferences: Preferences) {

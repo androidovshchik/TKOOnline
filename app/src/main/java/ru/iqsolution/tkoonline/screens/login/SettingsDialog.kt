@@ -59,13 +59,11 @@ class SettingsDialog : BaseDialogFragment() {
                 lockPassword = null
             }
         }
-        activity?.let {
-            if (it is DialogListener && !it.isFinishing) {
-                if (enable) {
-                    it.openPasswordDialog()
-                } else {
-                    it.exitKioskMode()
-                }
+        makeCallback<SettingsListener> {
+            if (enable) {
+                openPasswordDialog()
+            } else {
+                exitKioskMode()
             }
         }
     }

@@ -2,7 +2,6 @@ package ru.iqsolution.tkoonline.local
 
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel
-import com.chibatching.kotpref.bulk
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
 class Preferences(context: Context) : KotprefModel(context) {
@@ -83,18 +82,19 @@ class Preferences(context: Context) : KotprefModel(context) {
             SimpleLocation(lastLatitude, lastLongitude)
         }
 
+    /**
+     * It's needed to be bulked
+     */
     fun logout() {
-        bulk {
-            accessToken = null
-            expiresWhen = null
-            allowPhotoRefKp = false
-            serverTime = null
-            elapsedTime = 0L
-            vehicleNumber = null
-            queName = null
-            carId = 0
-            locationTime = null
-            tokenId = 0L
-        }
+        accessToken = null
+        expiresWhen = null
+        allowPhotoRefKp = false
+        serverTime = null
+        elapsedTime = 0L
+        vehicleNumber = null
+        queName = null
+        carId = 0
+        locationTime = null
+        tokenId = 0L
     }
 }

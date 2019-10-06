@@ -2,7 +2,7 @@ package ru.iqsolution.tkoonline.screens.login
 
 import ru.iqsolution.tkoonline.local.Preferences
 
-interface LoginListener {
+interface SettingsListener {
 
     fun openDialog(preferences: Preferences)
 
