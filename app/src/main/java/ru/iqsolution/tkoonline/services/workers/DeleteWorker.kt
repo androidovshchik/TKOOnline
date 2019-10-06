@@ -7,13 +7,11 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.coroutineScope
 import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.services.BaseWorker
-import java.util.*
 
 class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
@@ -23,11 +21,10 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
 
     override suspend fun doWork(): Result = coroutineScope {
         val now = DateTime.now()
-        val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
         val allTokens = db.tokenDao().getTokens()
         val expiredTokens = arrayListOf<AccessToken>()
         for (token in allTokens) {
-            if (token.expires.withZone(timeZone).isBefore(now)) {
+            if (token.expires.withZone(now.zone).isBefore(now)) {
                 expiredTokens.add(token)
             } else {
                 break

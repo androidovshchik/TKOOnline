@@ -1,17 +1,20 @@
 package ru.iqsolution.tkoonline.services.workers
 
 import android.content.Context
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.coroutineScope
 import org.jetbrains.anko.activityManager
+import org.joda.time.DateTime
+import org.joda.time.Duration
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.services.BaseWorker
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
@@ -21,7 +24,7 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
 
     override suspend fun doWork(): Result = coroutineScope {
         val header = preferences.authHeader
-        if (header.endsWith("null")) {
+        if (header.endsWith("null", true)) {
             return@coroutineScope Result.success()
         }
         preferences.logout()
@@ -38,13 +41,16 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
 
     companion object {
 
-        const val TAG = "MIDNIGHT"
+        const val NAME = "MIDNIGHT"
 
         fun launch(context: Context) {
-            val request = OneTimeWorkRequestBuilder<MidnightWorker>()
+            val now = DateTime.now()
+            val delay = Duration(now, now.plusDays(1).withTime(0, 0, 0, 0)).standardSeconds
+            val request = PeriodicWorkRequestBuilder<MidnightWorker>(24, TimeUnit.HOURS)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
                 .build()
             WorkManager.getInstance(context).apply {
-                enqueueUniqueWork(TAG, ExistingWorkPolicy.KEEP, request)
+                enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.REPLACE, request)
             }
         }
     }
