@@ -8,6 +8,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.facebook.stetho.Stetho
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -34,6 +35,7 @@ import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.*
+import ru.iqsolution.tkoonline.services.workers.MidnightWorker
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -44,6 +46,7 @@ class MainApp : Application(), KodeinAware {
 
         bind<OkHttpClient>() with provider {
             OkHttpClient.Builder().apply {
+                addInterceptor(DomainInterceptor(applicationContext))
                 if (BuildConfig.DEBUG) {
                     addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
 
@@ -54,8 +57,8 @@ class MainApp : Application(), KodeinAware {
                     }).apply {
                         level = HttpLoggingInterceptor.Level.BASIC
                     })
+                    addNetworkInterceptor(StethoInterceptor())
                 }
-                addInterceptor(DomainInterceptor(applicationContext))
             }.connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(0, TimeUnit.SECONDS)
                 .readTimeout(0, TimeUnit.SECONDS)
@@ -84,7 +87,7 @@ class MainApp : Application(), KodeinAware {
         bind<Server>() with singleton {
             Retrofit.Builder()
                 .client(instance())
-                .baseUrl("https://localhost/mobile/v1/")
+                .baseUrl("https://localhost/mobile/v1/")// "localhost" will be replaced
                 .addConverterFactory(GsonConverterFactory.create(instance()))
                 .build()
                 .create(Server::class.java)
@@ -127,6 +130,7 @@ class MainApp : Application(), KodeinAware {
                 }
             )
         }
+        MidnightWorker.launch(applicationContext)
         ViewPump.init(
             ViewPump.builder()
                 .addInterceptor(

@@ -5,6 +5,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.chibatching.kotpref.blockingBulk
 import kotlinx.coroutines.coroutineScope
 import org.jetbrains.anko.activityManager
 import org.joda.time.DateTime
@@ -27,7 +28,9 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
         if (header.endsWith("null", true)) {
             return@coroutineScope Result.success()
         }
-        preferences.logout()
+        preferences.blockingBulk {
+            logout()
+        }
         applicationContext.activityManager.apply {
             // todo may be start login activity from here
         }

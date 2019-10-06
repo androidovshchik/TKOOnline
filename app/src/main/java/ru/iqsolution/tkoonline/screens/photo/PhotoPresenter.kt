@@ -34,8 +34,8 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
         val internalPhoto = File(fileManager.photosDir, externalFile.name)
         photoEvent.apply {
             tokenId = preferences.tokenId
-            latitude = preferences.lastLat.toDouble()
-            longitude = preferences.lastLon.toDouble()
+            latitude = preferences.lastLatitude.toDouble()
+            longitude = preferences.lastLongitude.toDouble()
             // it may be empty when there is a new event
             path = internalPhoto.path
             whenTime = DateTime.now()

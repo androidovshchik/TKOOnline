@@ -8,6 +8,9 @@ const val CHANNEL_DEFAULT = "default_channel"
 
 const val LOCATION_INTERVAL = 5000L
 
+// for password
+const val WAIT_TIME = 5 * 60 * 1000L
+
 val DANGER_PERMISSIONS = arrayOf(
     Manifest.permission.CAMERA,
     Manifest.permission.ACCESS_FINE_LOCATION
