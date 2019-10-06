@@ -1,33 +1,25 @@
 package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
-import ru.iqsolution.tkoonline.models.Location.Companion.D
-import ru.iqsolution.tkoonline.models.Location.Companion.R
-import kotlin.math.asin
+import kotlin.math.acos
 import kotlin.math.cos
-import kotlin.math.sqrt
+import kotlin.math.sin
 
 /**
  * Special class for non-linked platforms
- * NOTICE the subcontainers also include the primary [containerVolume] and [containerCount] values
+ * NOTICE containers also include platform [containerVolume] and [containerCount] values
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class PlatformContainers() : Platform() {
+class PlatformContainers(platform: Platform) : Platform() {
 
-    @SerializedName("_r")
-    var regular = SimpleContainer()
-
-    @SerializedName("_br")
-    var bunker = SimpleContainer()
-
-    @SerializedName("_b")
-    var bunk = SimpleContainer()
-
-    @SerializedName("_s")
-    var special = SimpleContainer()
-
-    @SerializedName("_u")
-    var unknown = SimpleContainer()
+    @SerializedName("_c")
+    var containers = arrayListOf(
+        SimpleContainer(ContainerType.REGULAR),
+        SimpleContainer(ContainerType.BUNKER),
+        SimpleContainer(ContainerType.BULK1),
+        SimpleContainer(ContainerType.SPECIAL1),
+        SimpleContainer(ContainerType.UNKNOWN)
+    )
 
     /**
      * It's needed only for map
@@ -45,7 +37,7 @@ class PlatformContainers() : Platform() {
      */
     var timestamp = 0L
 
-    constructor(platform: Platform) : this() {
+    init {
         kpId = platform.kpId
         linkedKpId = platform.kpId
         address = platform.address
@@ -65,10 +57,26 @@ class PlatformContainers() : Platform() {
     }
 
     val allLinkedIds: List<Int>
-        get() = regular.linkedIds + bunker.linkedIds + bunk.linkedIds + special.linkedIds + unknown.linkedIds
+        get() {
+            val all = arrayListOf<Int>()
+            containers.forEach {
+                all.addAll(it.linkedIds)
+            }
+            return all
+        }
 
     override val isEmpty: Boolean
-        get() = regular.isEmpty && bunker.isEmpty && bunk.isEmpty && special.isEmpty && unknown.isEmpty
+        get() {
+            if (!super.isEmpty) {
+                return false
+            }
+            containers.forEach {
+                if (!it.isEmpty) {
+                    return false
+                }
+            }
+            return true
+        }
 
     /**
      * It may be important to keep the original [containerVolume] and [containerCount] values
@@ -83,12 +91,8 @@ class PlatformContainers() : Platform() {
 
     fun addContainer(platform: Platform?) {
         platform?.let {
-            when (it.toContainerType()) {
-                ContainerType.REGULAR -> regular.addContainer(it)
-                ContainerType.BUNKER -> bunker.addContainer(it)
-                ContainerType.BULK1, ContainerType.BULK2 -> bunk.addContainer(it)
-                ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> special.addContainer(it)
-                else -> unknown.addContainer(it)
+            containers.forEach { container ->
+                container.addContainer(it)
             }
         }
     }
@@ -100,48 +104,32 @@ class PlatformContainers() : Platform() {
     }
 
     /**
-     * Simplifying here calculation for better performance
+     * Spherical law of cosinuses
+     * angle = acrcos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dlon))
+     * distance = radius * angle
      */
-    override fun getDistance(l: Location): Double {
-        val dLat = (l.latitude - latitude) * D
+    fun getDistance(l: Location): Double {
+        val lat1 = latitude * D
+        val lat2 = l.latitude * D
         val dLon = (l.longitude - longitude) * D
-        // todo
-        /*when (status) {
-            PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> {
-            }
-            else -> {
-                if (dLat * LAT1 in -RANGE_DISTANCE..RANGE_DISTANCE || dLon * getLon1(l.latitude) in -RANGE_DISTANCE..RANGE_DISTANCE) {
-                    return DEFAULT_DISTANCE
-                }
-            }
-        }*/
-        // https://stackoverflow.com/a/21623206/5279156
-        val a = 0.5 - cos(dLat) / 2 + cos(latitude * D) * cos(l.latitude * D) * (1 - cos(dLon)) / 2
-        return 2 * R * asin(sqrt(a))
+        return R * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dLon))
     }
 
     companion object {
 
         /**
-         * Min range for better calculation
+         * More than 80 meters
          */
-        private const val RANGE_DISTANCE = 9999.0
+        private const val DEFAULT_DISTANCE = 99.0
 
         /**
-         * It's value doesn't matter but must be more than [RANGE_DISTANCE]
+         * Count of radians in one degree
          */
-        private const val DEFAULT_DISTANCE = 99999.0
+        private const val D = Math.PI / 180
 
         /**
-         * Length in meters of 1° of latitude = always 111.32 km
+         * Radius of the earth in meters
          */
-        private const val LAT1 = 111320
-
-        /**
-         * Length in meters of 1° of longitude = 40075 km * cos(latitude) / 360
-         */
-        private fun getLon1(latitude: Double): Double {
-            return 40075000 * cos(latitude * D) / 360
-        }
+        private const val R = 6378137
     }
 }

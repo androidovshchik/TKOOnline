@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
 
-// todo careful with initialization
 open class Platform : Container, Location {
 
     @SerializedName("kp_id")
