@@ -20,6 +20,8 @@ class ScannerManager(context: Context, listener: ScannerListener) {
         .setBarcodeFormats(Barcode.QR_CODE)
         .build()
 
+    private val cameraSource: CameraSource
+
     private val processor = object : Detector.Processor<Barcode> {
 
         override fun receiveDetections(detections: Detector.Detections<Barcode>) {
@@ -34,8 +36,6 @@ class ScannerManager(context: Context, listener: ScannerListener) {
 
         override fun release() {}
     }
-
-    private val cameraSource: CameraSource
 
     init {
         barcodeDetector.setProcessor(processor)

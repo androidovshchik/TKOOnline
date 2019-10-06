@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.GnssStatus
 import android.location.LocationManager
 import org.jetbrains.anko.locationManager
+import ru.iqsolution.tkoonline.models.SimpleLocation
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -29,17 +30,24 @@ class LocationManager(context: Context, listener: LocationListener) {
     @Volatile
     private var satellites = 0
 
+    private var timerTick = 0L
+
     @SuppressLint("MissingPermission")
     fun requestUpdates() {
         locationClient.registerGnssStatusCallback(gnssCallback)
-        val service = Executors.newScheduledThreadPool(1)
-        timer = service.scheduleWithFixedDelay({
-            reference.get()?.apply {
-                onLocationAvailability(locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
-                onLocationResult()
+        val executor = Executors.newScheduledThreadPool(1)
+        timer = executor.scheduleAtFixedRate({
+            if (timerTick % 3 == 0L) {
+                locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
+
+                }
+                val location = SimpleLocation(locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER))
+                reference.get()?.apply {
+                    onLocationAvailability(locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                    onLocationResult(location)
+                }
             }
-            locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            timerTick++
         }, 0, 5, TimeUnit.SECONDS)
     }
 
