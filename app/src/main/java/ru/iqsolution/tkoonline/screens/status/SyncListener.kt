@@ -13,5 +13,10 @@ interface SyncListener : LocationListener {
 
     fun onBatteryChanged(status: Int, level: Int)
 
+    /**
+     * Requires to find out new data
+     */
+    fun onCloudChanged()
+
     fun onCloudChanged(hasData: Boolean, photoCount: Int)
 }

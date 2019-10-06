@@ -58,24 +58,17 @@ class StatusFragment : BaseFragment(), SyncListener {
         return inflater.inflate(R.layout.include_status, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         status_number.text = preferences.vehicleNumber ?: ""
         onTimeChanged()
         onLocationChanged(false)
         onNetworkChanged(false)
-        onCloudChanged(false, 0)
+        onCloudChanged(true, 0)
     }
 
     override fun onStart() {
         super.onStart()
         syncManager.register(context)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        makeCallback<IBaseView> {
-            checkLocation()
-        }
     }
 
     /**
@@ -100,11 +93,43 @@ class StatusFragment : BaseFragment(), SyncListener {
     }
 
     override fun onNetworkChanged(available: Boolean) {
-        connectionIcon = if (available) R.drawable.ic_swap_vert_green else R.drawable.ic_swap_vert
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            connectionRunnable.run()
+        makeCallback<Any> {
+            connectionIcon = if (available) R.drawable.ic_swap_vert_green else R.drawable.ic_swap_vert
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                connectionRunnable.run()
+            } else {
+                activity?.runOnUiThread(connectionRunnable)
+            }
+        }
+    }
+
+    override fun onCloudChanged() {
+        makeCallback<IBaseView> {
+            updateCloud()
+        }
+    }
+
+    override fun onCloudChanged(hasData: Boolean, photoCount: Int) {
+        if (view == null) {
+            return
+        }
+        status_uploads.setImageResource(
+            if (hasData) {
+                R.drawable.ic_cloud_upload
+            } else {
+                R.drawable.ic_cloud_upload_green
+            }
+        )
+        if (photoCount > 0) {
+            status_count.apply {
+                text = min(9, photoCount).toString()
+                visibility = View.VISIBLE
+            }
         } else {
-            activity?.runOnUiThread(connectionRunnable)
+            status_count.apply {
+                text = ""
+                visibility = View.GONE
+            }
         }
     }
 
@@ -141,27 +166,6 @@ class StatusFragment : BaseFragment(), SyncListener {
         }
         if (level >= 0) {
             status_percent.text = "$level%"
-        }
-    }
-
-    override fun onCloudChanged(hasData: Boolean, photoCount: Int) {
-        status_uploads.setImageResource(
-            if (hasData) {
-                R.drawable.ic_cloud_upload
-            } else {
-                R.drawable.ic_cloud_upload_green
-            }
-        )
-        if (photoCount > 0) {
-            status_count.apply {
-                text = min(9, photoCount).toString()
-                visibility = View.VISIBLE
-            }
-        } else {
-            status_count.apply {
-                text = ""
-                visibility = View.GONE
-            }
         }
     }
 

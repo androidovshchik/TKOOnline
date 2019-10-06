@@ -12,6 +12,7 @@ import android.os.BatteryManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
+import ru.iqsolution.tkoonline.ACTION_CLOUD
 import ru.iqsolution.tkoonline.ACTION_LOCATION
 import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_AVAILABILITY
 import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_LOCATION
@@ -39,7 +40,10 @@ class SyncManager(listener: SyncListener) {
             addAction(Intent.ACTION_BATTERY_OKAY)
         })
         LocalBroadcastManager.getInstance(this)
-            .registerReceiver(receiver, IntentFilter(ACTION_LOCATION))
+            .registerReceiver(receiver, IntentFilter().apply {
+                addAction(ACTION_LOCATION)
+                addAction(ACTION_CLOUD)
+            })
     }
 
     fun unregister(context: Context) = context.run {
@@ -88,6 +92,9 @@ class SyncManager(listener: SyncListener) {
                         val available = intent.getBooleanExtra(EXTRA_TELEMETRY_AVAILABILITY, false)
                         reference.get()?.onLocationAvailability(available)
                     }
+                }
+                ACTION_CLOUD -> {
+                    reference.get()?.onCloudChanged()
                 }
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
                     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
