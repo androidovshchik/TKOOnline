@@ -4,7 +4,7 @@ import org.joda.time.DateTime
 import java.io.Serializable
 import kotlin.math.roundToInt
 
-class SimpleLocation() : Location, Serializable {
+class SimpleLocation : Location, Serializable {
 
     override var latitude = 0.0
 
@@ -40,22 +40,21 @@ class SimpleLocation() : Location, Serializable {
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
-    lateinit var locationTime: DateTime
+    var locationTime: DateTime
 
-    constructor(lat: Double, lon: Double) : this() {
+    constructor(lat: Double, lon: Double) {
         latitude = lat
         longitude = lon
+        locationTime = DateTime.now()
     }
 
-    constructor(lat: Float, lon: Float) : this() {
-        latitude = lat.toDouble()
-        longitude = lon.toDouble()
-    }
+    constructor(lat: Float, lon: Float) : this(lat.toDouble(), lon.toDouble())
 
-    constructor(location: android.location.Location) : this() {
+    constructor(location: android.location.Location) {
         latitude = location.latitude
         longitude = location.longitude
         altitude = location.altitude.roundToInt()
         accuracy = location.accuracy
+        locationTime = DateTime.now()
     }
 }

@@ -2,54 +2,56 @@ package ru.iqsolution.tkoonline.services
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.google.android.gms.location.*
-import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
-import ru.iqsolution.tkoonline.extensions.areGranted
-import ru.iqsolution.tkoonline.models.SimpleLocation
-import timber.log.Timber
+import android.location.GnssStatus
+import android.location.LocationManager
+import org.jetbrains.anko.locationManager
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 
+/**
+ * МП должно исключать генерацию более одного события в одну секунду.
+ * Данные события должны генерироваться по факту прохождения дистанции в 200 метров, повороте, остановке или начале движения,
+ * а также по времени не реже чем:
+ * · Для состояния стоянка - 5 минут
+ * · Для состояния движения и остановка - 1 минута
+ */
 @Suppress("MemberVisibilityCanBePrivate")
 class LocationManager(context: Context, listener: LocationListener) {
 
     private val reference = WeakReference(listener)
 
-    private val locationClient = LocationServices.getFusedLocationProviderClient(context)
+    private val locationClient = context.locationManager
+
+    private var timer: ScheduledFuture<*>? = null
+
+    @Volatile
+    private var satellites = 0
 
     @SuppressLint("MissingPermission")
-    fun requestUpdates(context: Context) {
-        if (context.areGranted(*DANGER_PERMISSIONS)) {
-            locationClient.requestLocationUpdates(locationRequest, locationCallback, null)
-        }
-    }
-
-    fun release() {
-        locationClient.removeLocationUpdates(locationCallback)
-    }
-
-    private val locationCallback = object : LocationCallback() {
-
-        override fun onLocationAvailability(availability: LocationAvailability) {
-            Timber.d("onLocationAvailability $availability")
-            reference.get()?.onLocationAvailability(availability.isLocationAvailable)
-        }
-
-        override fun onLocationResult(result: LocationResult?) {
-            result?.lastLocation?.let {
-                Timber.i("Last location is $it")
-                reference.get()?.onLocationResult(SimpleLocation(it))
-            } ?: run {
-                Timber.w("Last location is null")
+    fun requestUpdates() {
+        locationClient.registerGnssStatusCallback(gnssCallback)
+        val service = Executors.newScheduledThreadPool(1)
+        timer = service.scheduleWithFixedDelay({
+            reference.get()?.apply {
+                onLocationAvailability(locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                onLocationResult()
             }
-        }
+            locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        }, 0, 5, TimeUnit.SECONDS)
     }
 
-    companion object {
+    fun removeUpdates() {
+        timer?.cancel(true)
+        locationClient.unregisterGnssStatusCallback(gnssCallback)
+    }
 
-        val locationRequest: LocationRequest = LocationRequest.create().apply {
-            interval = 15_000L
-            fastestInterval = 15_000L
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    private val gnssCallback = object : GnssStatus.Callback() {
+
+        override fun onSatelliteStatusChanged(status: GnssStatus) {
+            satellites = status.satelliteCount
         }
     }
 }

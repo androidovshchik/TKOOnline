@@ -5,21 +5,17 @@ import com.google.gson.annotations.SerializedName
 /**
  * Special class for linked platforms to summarize them
  */
-class SimpleContainer() : Container {
+class SimpleContainer(type: ContainerType) : Container {
 
     @SerializedName("l")
     var linkedIds = arrayListOf<Int>()
 
     @SerializedName("t")
-    override lateinit var containerType: String
+    override var containerType: String = type.id
 
     @SerializedName("v")
     override var containerVolume = 0f
 
     @SerializedName("c")
     override var containerCount = 0
-
-    constructor(type: ContainerType) : this() {
-        containerType = type.id
-    }
 }
