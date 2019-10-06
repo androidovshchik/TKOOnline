@@ -38,6 +38,15 @@ abstract class PhotoDao {
         """
         SELECT photo_events.*, tokens.* FROM photo_events 
         INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
+        WHERE photo_events.pe_kp_id IS NULL AND photo_events.pe_sent = 0
+    """
+    )
+    abstract fun getSendNoKpEvents(): List<PhotoEventToken>
+
+    @Query(
+        """
+        SELECT photo_events.*, tokens.* FROM photo_events 
+        INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
         WHERE (photo_events.pe_kp_id = :kpId OR photo_events.pe_linked_id = :kpId) AND photo_events.pe_sent = 0
     """
     )

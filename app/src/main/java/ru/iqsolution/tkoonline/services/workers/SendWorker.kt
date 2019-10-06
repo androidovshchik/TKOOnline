@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline.services.workers
 
 import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
@@ -8,6 +9,7 @@ import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.ACTION_CLOUD
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
@@ -56,9 +58,12 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     hasErrors = sendAll
                 }
             }
+            if (cleanEvents.isNotEmpty()) {
+                broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+            }
         }
         val photoEvents = when {
-            onlyPhoto -> db.photoDao().getSendPhotoEvents()
+            photoNoKp -> db.photoDao().getSendNoKpEvents()
             sendAll -> db.photoDao().getSendEvents()
             else -> db.photoDao().getSendKpIdEvents(kpId)
         }
@@ -75,13 +80,15 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     photo
                 ).execute()
                 if (responsePhoto.code() in 200..299) {
-                    db.cleanDao().markAsSent(it.photo.id ?: 0L)
+                    db.photoDao().markAsSent(it.photo.id ?: 0L)
                 }
-                // todo send broadcast
             } catch (e: Throwable) {
                 Timber.e(e)
                 hasErrors = sendAll
             }
+        }
+        if (photoEvents.isNotEmpty()) {
+            broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
         if (sendAll) {
             try {
