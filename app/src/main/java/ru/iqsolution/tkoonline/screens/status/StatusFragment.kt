@@ -63,11 +63,11 @@ class StatusFragment : BaseFragment(), SyncListener {
         onTimeChanged()
         onLocationChanged(false)
         onNetworkChanged(false)
+        onCloudChanged(false, 0)
     }
 
     override fun onStart() {
         super.onStart()
-        onPhotoCountChanged()
         syncManager.register(context)
     }
 
@@ -144,16 +144,20 @@ class StatusFragment : BaseFragment(), SyncListener {
         }
     }
 
-    override fun onPhotoCountChanged() {
-        val count = preferences.photoCount
-        if (count > 0) {
-            status_uploads.setImageResource(R.drawable.ic_cloud_upload_green)
+    override fun onCloudChanged(hasData: Boolean, photoCount: Int) {
+        status_uploads.setImageResource(
+            if (hasData) {
+                R.drawable.ic_cloud_upload
+            } else {
+                R.drawable.ic_cloud_upload_green
+            }
+        )
+        if (photoCount > 0) {
             status_count.apply {
-                text = min(9, count).toString()
+                text = min(9, photoCount).toString()
                 visibility = View.VISIBLE
             }
         } else {
-            status_uploads.setImageResource(R.drawable.ic_cloud_upload)
             status_count.apply {
                 text = ""
                 visibility = View.GONE
