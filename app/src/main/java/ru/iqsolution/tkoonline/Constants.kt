@@ -6,6 +6,8 @@ import org.joda.time.format.DateTimeFormatter
 
 const val CHANNEL_DEFAULT = "default_channel"
 
+const val LOCATION_INTERVAL = 5000L
+
 val DANGER_PERMISSIONS = arrayOf(
     Manifest.permission.CAMERA,
     Manifest.permission.ACCESS_FINE_LOCATION
