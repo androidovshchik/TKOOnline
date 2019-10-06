@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.services
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
@@ -15,21 +16,30 @@ import org.jetbrains.anko.stopService
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
+import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startForegroundService
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
-class TelemetryService : BaseService(), LocationListener {
+class TelemetryService : BaseService(), TelemetryListener, LocationListener {
 
     val preferences: Preferences by instance()
 
     private lateinit var locationManager: LocationManager
 
+    private lateinit var broadcastManager: LocalBroadcastManager
+
     private var wakeLock: PowerManager.WakeLock? = null
 
+    private val binder = Binder()
+
     override fun onBind(intent: Intent): IBinder? {
-        return null
+        return binder
+    }
+
+    override fun onUnbind(intent: Intent): Boolean {
+        return true
     }
 
     @SuppressLint("MissingPermission")
@@ -43,8 +53,9 @@ class TelemetryService : BaseService(), LocationListener {
                 .build()
         )
         acquireWakeLock()
-        locationManager = LocationManager(applicationContext, this).apply {
-            requestUpdates(applicationContext)
+        broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
+        locationManager = LocationManager(applicationContext, this).also {
+            it.requestUpdates()
         }
     }
 
@@ -61,25 +72,37 @@ class TelemetryService : BaseService(), LocationListener {
         return START_STICKY
     }
 
+    override fun startTelemetry() {
+
+    }
+
+    override fun updateTelemetry(location: SimpleLocation) {
+        preferences.bulk {
+            lastLatitude = location.latitude.toFloat()
+            lastLongitude = location.longitude.toFloat()
+            locationTime = DateTime.now().toString(PATTERN_DATETIME)
+        }
+    }
+
+    override fun stopTelemetry() {
+
+    }
+
     override fun onLocationState(state: LocationSettingsStates?) {}
 
     override fun onLocationAvailability(available: Boolean) {
-        LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(Intent(ACTION_LOCATION).apply {
-                putExtra(EXTRA_TELEMETRY_AVAILABILITY, available)
-            })
+        broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
+            putExtra(EXTRA_TELEMETRY_AVAILABILITY, available)
+        })
     }
 
+    /**
+     * Only notifies UI
+     */
     override fun onLocationResult(location: SimpleLocation) {
-        preferences.bulk {
-            lastLat = location.latitude.toFloat()
-            lastLon = location.longitude.toFloat()
-            lastTime = DateTime.now().toString(PATTERN_DATETIME)
-        }
-        LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(Intent(ACTION_LOCATION).apply {
-                putExtra(EXTRA_TELEMETRY_LOCATION, location)
-            })
+        broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
+            putExtra(EXTRA_TELEMETRY_LOCATION, location)
+        })
     }
 
     private fun releaseWakeLock() {
@@ -90,7 +113,7 @@ class TelemetryService : BaseService(), LocationListener {
     }
 
     override fun onDestroy() {
-        locationManager.release()
+        locationManager.removeUpdates()
         releaseWakeLock()
         super.onDestroy()
     }
@@ -101,6 +124,9 @@ class TelemetryService : BaseService(), LocationListener {
          * @return true if service is running
          */
         fun start(context: Context): Boolean = context.run {
+            if (!areGranted(*DANGER_PERMISSIONS)) {
+                return false
+            }
             return if (!activityManager.isRunning<TelemetryService>()) {
                 try {
                     startForegroundService<TelemetryService>() != null
