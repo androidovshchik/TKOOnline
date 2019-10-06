@@ -18,6 +18,9 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
 
+/**
+ * Returns [android.app.Activity.RESULT_OK] if there were changes
+ */
 class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View, ConfirmListener, GalleryListener {
 
     private lateinit var platform: PlatformContainers
@@ -28,14 +31,14 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
 
     private var preFinishing = false
 
+    private var mHasChanges = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform)
         presenter = PlatformPresenter().also {
             it.attachView(this)
             platform = it.fromJson(intent.getStringExtra(EXTRA_PLATFORM_PLATFORM), PlatformContainers::class.java)
-            it.loadCleanEvents(platform.kpId)
-            it.loadPhotoEvents(platform.kpId)
         }
         toolbar_back.setOnClickListener {
             if (preFinishing) {
@@ -82,14 +85,18 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
                 return@setOnClickListener
             }
             preFinishing = true
-            presenter.saveCleanEvents()
+            presenter.saveCleanEvents(platform)
         }
         platform_cleaned.setOnClickListener {
             if (preFinishing) {
                 return@setOnClickListener
             }
             preFinishing = true
-            presenter.saveCleanEvents()
+            presenter.saveCleanEvents(platform)
+        }
+        presenter.apply {
+            loadCleanEvents(platform.kpId)
+            loadPhotoEvents(platform.kpId)
         }
     }
 
@@ -104,12 +111,18 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     }
 
     override fun onCleanEvents(event: CleanEventRelated?) {
+        if (platform.isEmpty) {
+            platform_divider.visibility = View.VISIBLE
+        } else {
+            platform.containers.forEach {
+                addContainer(it)
+            }
+        }
         event?.apply {
 
         } ?: run {
 
         }
-        platform_regular
     }
 
     override fun onPhotoEvents(events: List<PhotoEvent>) {
@@ -117,8 +130,8 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         gallery_after.updatePhotos(events)
     }
 
-    override fun closeDetails(result: Int) {
-        setResult(result)
+    override fun closeDetails(hasChanges: Boolean) {
+        setResult(if (mHasChanges || hasChanges) RESULT_OK else RESULT_CANCELED)
         finish()
     }
 
@@ -129,8 +142,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            REQUEST_PHOTO -> {
+            REQUEST_PHOTO, REQUEST_PROBLEM -> {
                 if (resultCode == RESULT_OK) {
+                    mHasChanges = true
                     presenter.loadPhotoEvents(platform.kpId)
                 }
             }

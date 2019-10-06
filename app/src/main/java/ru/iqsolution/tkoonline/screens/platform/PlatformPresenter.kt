@@ -41,7 +41,7 @@ class PlatformPresenter : BasePresenter<PlatformContract.View>(), PlatformContra
             }
             reference.get()?.apply {
                 updateCloud()
-                closeDetails()
+                closeDetails(true)
             }
         }
     }

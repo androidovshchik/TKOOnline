@@ -22,6 +22,6 @@ interface PlatformContract {
 
         fun onPhotoEvents(events: List<PhotoEvent>)
 
-        fun closeDetails()
+        fun closeDetails(hasChanges: Boolean)
     }
 }

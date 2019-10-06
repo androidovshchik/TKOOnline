@@ -15,7 +15,7 @@ class ConfirmDialog(activity: Activity) : BaseDialog(activity) {
         setContentView(R.layout.dialog_confirm)
         dialog_exit.setOnClickListener {
             makeCallback<ConfirmListener> {
-                closeDetails()
+                closeDetails(false)
             }
         }
         dialog_continue.setOnClickListener {
