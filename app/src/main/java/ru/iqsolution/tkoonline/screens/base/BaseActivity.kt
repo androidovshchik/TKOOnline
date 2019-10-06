@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.base
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
@@ -13,13 +14,12 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStates
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
-import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.*
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import ru.iqsolution.tkoonline.screens.platforms.WaitDialog
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
 import ru.iqsolution.tkoonline.services.LocationListener
 import ru.iqsolution.tkoonline.services.TelemetryService
@@ -39,8 +39,6 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
     private var statusBar: StatusFragment? = null
 
-    private var waitDialog: WaitDialog? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -58,12 +56,23 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
     override fun onStart() {
         super.onStart()
+        if (this !is LoginActivity) {
+            if (!preferences.isLoggedIn) {
+                startActivity(intentFor<LockActivity>().apply {
+                    if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
+                        clearTask()
+                    } else {
+                        clearTop()
+                    }
+                })
+            }
+        }
         if (attachService) {
             bindService(intentFor<TelemetryService>(), this, Context.BIND_AUTO_CREATE)
         }
     }
 
-    override fun updateCloud(clean: Int, photo: Int) {
+    override fun updateCloud() {
         statusBar?.onPhotoCountChanged()
     }
 
@@ -104,21 +113,6 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
      * Will be called from [StatusFragment]
      */
     override fun onLocationResult(location: SimpleLocation) {}
-
-    override fun showLoading() {
-        if (waitDialog == null) {
-            waitDialog = WaitDialog(this)
-        }
-        waitDialog?.let {
-            if (!it.isShowing) {
-                it.show()
-            }
-        }
-    }
-
-    override fun hideLoading() {
-        waitDialog?.hide()
-    }
 
     override fun showError(message: CharSequence?) {
         message?.let {
@@ -168,7 +162,6 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
     }
 
     override fun onDestroy() {
-        waitDialog?.dismiss()
         presenter.detachView()
         super.onDestroy()
     }
