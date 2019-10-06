@@ -15,28 +15,22 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.merge_container.view.*
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.use
-import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
+import ru.iqsolution.tkoonline.models.SimpleContainer
 import kotlin.math.max
 import kotlin.math.min
 
-class ContainerLayout : LinearLayout, Container {
+class ContainerLayout : LinearLayout {
 
-    override var containerType = ContainerType.UNKNOWN.id
-
-    var hasChanges = false
-
-    override var containerVolume = 0.0f
+    var container: SimpleContainer? = null
         set(value) {
             field = value
             updateVolumeText()
+            updateCountText()
+            visibility = View.VISIBLE
         }
 
-    override var containerCount = 0
-        set(value) {
-            field = value
-            updateCountText()
-        }
+    var hasChanges = false
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -65,35 +59,42 @@ class ContainerLayout : LinearLayout, Container {
         attrs?.let {
             context.obtainStyledAttributes(it, R.styleable.ContainerLayout).use { a ->
                 type = ContainerType.fromId(a.getString(R.styleable.ContainerLayout_containerType))
-                containerType = type.id
             }
         }
         arrow_up_volume.setOnClickListener {
-            if (containerVolume < 9.9f) {
-                hasChanges = true
-                containerVolume = min(9.999f, containerVolume + 0.1f)
-                updateVolumeText()
+            container?.apply {
+                if (containerVolume < 9.9f) {
+                    hasChanges = true
+                    containerVolume = min(9.999f, containerVolume + 0.1f)
+                    updateVolumeText()
+                }
             }
         }
         arrow_down_volume.setOnClickListener {
-            if (containerVolume >= 0.1f) {
-                hasChanges = true
-                containerVolume = max(0f, containerVolume - 0.1f)
-                updateVolumeText()
+            container?.apply {
+                if (containerVolume >= 0.1f) {
+                    hasChanges = true
+                    containerVolume = max(0f, containerVolume - 0.1f)
+                    updateVolumeText()
+                }
             }
         }
         arrow_up_count.setOnClickListener {
-            if (containerCount < 99) {
-                hasChanges = true
-                containerCount++
-                updateCountText()
+            container?.apply {
+                if (containerCount < 99) {
+                    hasChanges = true
+                    containerCount++
+                    updateCountText()
+                }
             }
         }
         arrow_down_count.setOnClickListener {
-            if (containerCount > 0) {
-                hasChanges = true
-                containerCount--
-                updateCountText()
+            container?.apply {
+                if (containerCount > 0) {
+                    hasChanges = true
+                    containerCount--
+                    updateCountText()
+                }
             }
         }
         if (type == ContainerType.BULK1 || type == ContainerType.BULK2) {
@@ -108,11 +109,15 @@ class ContainerLayout : LinearLayout, Container {
     }
 
     private fun updateVolumeText() {
-        volume_value.setValueText(context.getString(R.string.platform_volume, containerVolume))
+        container?.apply {
+            volume_value.setValueText(context.getString(R.string.platform_volume, containerVolume))
+        }
     }
 
     private fun updateCountText() {
-        count_value.setValueText(context.getString(R.string.platform_count, containerCount))
+        container?.apply {
+            count_value.setValueText(context.getString(R.string.platform_count, containerCount))
+        }
     }
 
     override fun hasOverlappingRendering() = false

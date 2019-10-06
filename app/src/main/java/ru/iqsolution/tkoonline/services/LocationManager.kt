@@ -35,7 +35,9 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
         listener.apply {
             onLocationAvailability(locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
             locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
-                onLocationResult(SimpleLocation(it))
+                onLocationResult(SimpleLocation(it).apply {
+                    satellites = satellitesCount
+                })
             }
         }
     }
@@ -80,6 +82,7 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
     private val gnssCallback = object : GnssStatus.Callback() {
 
         override fun onSatelliteStatusChanged(status: GnssStatus) {
+            Timber.d("onSatelliteStatusChanged ${status.satelliteCount}")
             satellitesCount = status.satelliteCount
         }
     }
