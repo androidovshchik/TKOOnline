@@ -1,12 +1,14 @@
 package ru.iqsolution.tkoonline.screens.login
 
 import android.os.Bundle
+import android.os.SystemClock
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.dialog_password.*
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.WAIT_TIME
 import ru.iqsolution.tkoonline.extensions.setMaxLength
 import ru.iqsolution.tkoonline.extensions.setOnlyNumbers
 import ru.iqsolution.tkoonline.local.Preferences
@@ -32,14 +34,14 @@ class PasswordDialog : BaseDialogFragment() {
                 inputType = inputType or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             }
         }
-        if (System.currentTimeMillis() - time < WAIT_TIME) {
+        if (SystemClock.elapsedRealtime() - time < WAIT_TIME) {
             retryLater()
         }
         dialog_accept.setOnClickListener {
             val input = dialog_password.text.toString()
             dialog_error.text = ""
             when {
-                System.currentTimeMillis() - time < WAIT_TIME -> retryLater()
+                SystemClock.elapsedRealtime() - time < WAIT_TIME -> retryLater()
                 input.length == 4 -> when (password) {
                     null -> {
                         preferences.lockPassword = input
@@ -53,7 +55,7 @@ class PasswordDialog : BaseDialogFragment() {
                             dialog_error.text = resources.getQuantityString(R.plurals.attempts, count, count)
                         } else {
                             attemptsCount = 0
-                            time = System.currentTimeMillis()
+                            time = SystemClock.elapsedRealtime()
                             preferences.blockTime = time
                             retryLater()
                         }
@@ -72,10 +74,10 @@ class PasswordDialog : BaseDialogFragment() {
         dialog_error.text = "Попробуйте позже"
     }
 
-    private fun onPrompted(setup: Boolean) {
+    private fun onPrompted(afterSetup: Boolean) {
         dialog_password.setText("")
         makeCallback<SettingsListener> {
-            if (setup) {
+            if (afterSetup) {
                 enterKioskMode()
             } else {
                 openSettingsDialog()
@@ -86,7 +88,5 @@ class PasswordDialog : BaseDialogFragment() {
     companion object {
 
         private const val MAX_ATTEMPTS = 3
-
-        private const val WAIT_TIME = 5 * 60 * 1000L
     }
 }

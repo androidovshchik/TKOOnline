@@ -26,7 +26,7 @@ class QrCodeFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        maxSize = context?.resources?.getDimensionPixelSize(R.dimen.barcode_max_size) ?: 0
+        maxSize = context.resources.getDimensionPixelSize(R.dimen.barcode_max_size)
         makeCallback<ScannerListener> {
             scannerManager = ScannerManager(context, this)
         }
@@ -72,11 +72,9 @@ class QrCodeFragment : BaseFragment() {
         }
         cameraView.apply {
             scannerManager?.start(holder)?.let {
-                if (maxSize > 0) {
-                    // NOTICE supported only the portrait orientation
-                    layoutParams = FrameLayout.LayoutParams(maxSize * it.height / it.width, maxSize).apply {
-                        gravity = Gravity.CENTER
-                    }
+                // NOTICE supported only the portrait orientation
+                layoutParams = FrameLayout.LayoutParams(maxSize * it.height / it.width, maxSize).apply {
+                    gravity = Gravity.CENTER
                 }
             }
         }
@@ -97,7 +95,7 @@ class QrCodeFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
-        scannerManager?.release()
+        scannerManager?.destroy()
         super.onDestroyView()
     }
 

@@ -12,7 +12,7 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
-class ScannerManager(context: Context, listener: ScannerListener) {
+class ScannerManager(context: Context, listener: ScannerListener) : Detector.Processor<Barcode> {
 
     private val reference = WeakReference(listener)
 
@@ -22,23 +22,8 @@ class ScannerManager(context: Context, listener: ScannerListener) {
 
     private val cameraSource: CameraSource
 
-    private val processor = object : Detector.Processor<Barcode> {
-
-        override fun receiveDetections(detections: Detector.Detections<Barcode>) {
-            detections.apply {
-                if (detectorIsOperational()) {
-                    if (detectedItems.size() > 0) {
-                        reference.get()?.onQrCode(detectedItems.valueAt(0).rawValue ?: "")
-                    }
-                }
-            }
-        }
-
-        override fun release() {}
-    }
-
     init {
-        barcodeDetector.setProcessor(processor)
+        barcodeDetector.setProcessor(this)
         cameraSource = CameraSource.Builder(context, barcodeDetector)
             .setRequestedPreviewSize(640, 480) // 4:3
             .setAutoFocusEnabled(true)
@@ -56,11 +41,26 @@ class ScannerManager(context: Context, listener: ScannerListener) {
         return null
     }
 
+    override fun receiveDetections(detections: Detector.Detections<Barcode>) {
+        detections.apply {
+            if (detectorIsOperational()) {
+                if (detectedItems.size() > 0) {
+                    reference.get()?.onQrCode(detectedItems.valueAt(0).rawValue ?: "")
+                }
+            }
+        }
+    }
+
+    /**
+     * Due to [Detector.Processor]
+     */
+    override fun release() {}
+
     fun stop() {
         cameraSource.stop()
     }
 
-    fun release() {
+    fun destroy() {
         barcodeDetector.release()
         cameraSource.release()
     }
