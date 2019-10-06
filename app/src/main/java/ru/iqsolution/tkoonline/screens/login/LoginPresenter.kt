@@ -7,7 +7,6 @@ import kotlinx.coroutines.*
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
-import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.models.QrCode
 import ru.iqsolution.tkoonline.remote.Server
@@ -17,8 +16,6 @@ import timber.log.Timber
 class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presenter {
 
     val server: Server by instance()
-
-    val db: Database by instance()
 
     private var qrCodeJson: String? = null
 
