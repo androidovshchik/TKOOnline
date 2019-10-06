@@ -6,6 +6,7 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.MainApp
+import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -14,6 +15,8 @@ import java.lang.ref.WeakReference
 open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, CoroutineScope {
 
     val preferences: Preferences by instance()
+
+    val db: Database by instance()
 
     val gson: Gson by instance()
 
@@ -26,6 +29,17 @@ open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, Corout
 
     override fun attachView(view: V) {
         reference = WeakReference(view)
+    }
+
+    override fun calculateSend() {
+        launch {
+            var photoCount = 0
+            val allCount = withContext(Dispatchers.IO) {
+                photoCount = db.photoDao().getSendCount()
+                photoCount + db.cleanDao().getSendCount() + db.locationDao().getSendCount()
+            }
+            reference.get()?.updateCloud(allCount, photoCount)
+        }
     }
 
     override fun <T> toJson(instance: T, tClass: Class<out T>): String {

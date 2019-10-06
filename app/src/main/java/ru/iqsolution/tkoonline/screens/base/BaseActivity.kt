@@ -65,21 +65,29 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
                         clearTop()
                     }
                 })
+                return
             }
         }
         if (attachService) {
             bindService(intentFor<TelemetryService>(), this, Context.BIND_AUTO_CREATE)
         }
+        updateCloud()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkLocation()
     }
 
     override fun updateCloud() {
-        statusBar?.onPhotoCountChanged()
+        presenter.calculateSend()
     }
 
-    /**
-     * Should be called from [StatusFragment]
-     */
-    override fun checkLocation() {
+    override fun updateCloud(allCount: Int, photoCount: Int) {
+        statusBar?.onCloudChanged(allCount <= 0, photoCount)
+    }
+
+    private fun checkLocation() {
         LocationServices.getSettingsClient(this)
             .checkLocationSettings(locationSettingsRequest)
             .addOnSuccessListener {
@@ -99,7 +107,6 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
             }
     }
 
-    @Suppress("DEPRECATION")
     override fun onLocationState(state: LocationSettingsStates?) {
         statusBar?.onLocationState(state)
     }

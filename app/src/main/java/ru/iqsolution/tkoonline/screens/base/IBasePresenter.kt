@@ -6,6 +6,8 @@ interface IBasePresenter<V : IBaseView> {
 
     fun attachView(view: V)
 
+    fun calculateSend()
+
     fun <T> toJson(instance: T, tClass: Class<out T>): String
 
     fun <T> fromJson(json: String, tClass: Class<out T>): T
