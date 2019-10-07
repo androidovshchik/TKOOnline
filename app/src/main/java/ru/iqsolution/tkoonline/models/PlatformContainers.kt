@@ -12,7 +12,6 @@ import kotlin.math.sin
 @Suppress("MemberVisibilityCanBePrivate")
 class PlatformContainers(platform: Platform) : Platform() {
 
-    @SerializedName("_c")
     var containers = arrayListOf(
         SimpleContainer(ContainerType.REGULAR),
         SimpleContainer(ContainerType.BUNKER),

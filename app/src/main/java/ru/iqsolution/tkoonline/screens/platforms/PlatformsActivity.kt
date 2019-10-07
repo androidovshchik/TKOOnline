@@ -86,7 +86,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onAdapterEvent(position: Int, item: PlatformContainers, param: Any?) {
         startActivityNoop<PlatformActivity>(
             REQUEST_PLATFORM,
-            EXTRA_PLATFORM_PLATFORM to presenter.toJson(item, item.javaClass),
+            EXTRA_PLATFORM_PLATFORM to item,
             EXTRA_PLATFORM_PHOTO_TYPES to photoTypes
         )
     }

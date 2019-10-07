@@ -45,7 +45,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         }
         platform = intent.getSerializableExtra(EXTRA_PLATFORM_PLATFORM) as PlatformContainers
         photoTypes.apply {
-            addAll(intent.getSerializableExtra(EXTRA_PROBLEM_PHOTO_TYPES) as ArrayList<PhotoType>)
+            addAll(intent.getSerializableExtra(EXTRA_PLATFORM_PHOTO_TYPES) as ArrayList<PhotoType>)
             forEach {
                 if (it.isError == 1) {
                     photoErrors.put(it.id, it.shortName)
@@ -84,7 +84,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             }
             startActivityNoop<ProblemActivity>(
                 REQUEST_PROBLEM,
-                EXTRA_PROBLEM_PLATFORM to presenter.toJson(platform, platform.javaClass),
+                EXTRA_PROBLEM_PLATFORM to platform,
                 EXTRA_PROBLEM_PHOTO_TYPES to photoTypes
             )
         }
