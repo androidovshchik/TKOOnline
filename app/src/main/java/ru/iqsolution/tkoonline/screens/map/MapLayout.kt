@@ -97,16 +97,16 @@ class MapLayout : FrameLayout {
         runCall("_4_mapClearLocation()")
     }
 
-    fun setLocation(location: SimpleLocation?, radius: Int = 0) {
+    fun setLocation(location: SimpleLocation?) {
         location?.let {
-            setLocation(it.latitude, it.longitude, radius)
+            setLocation(it.latitude, it.longitude, it.accuracy)
         }
     }
 
     /**
      * @param radius in meters
      */
-    fun setLocation(latitude: Double, longitude: Double, radius: Int = 0) {
+    fun setLocation(latitude: Double, longitude: Double, radius: Float = 0f) {
         mLatitude = latitude
         mLongitude = longitude
         runCall("_4_mapSetLocation($latitude, $longitude, $radius)")

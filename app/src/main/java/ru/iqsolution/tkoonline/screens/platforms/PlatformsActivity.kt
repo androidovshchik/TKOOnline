@@ -119,7 +119,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     override fun onPhotoCleanEvents(photo: List<PhotoEvent>, clean: List<CleanEvent>) {
         platformsAdapter.apply {
-            primaryItems.notifyItems(null, null, photo, clean)
+            primaryItems.notifyItems(null, null, photo, null)
             items.apply {
                 notifyItems(null, null, photo, clean)
                 sortByDescending { it.timestamp }
@@ -188,41 +188,50 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         super.onDestroy()
     }
 
-    private fun List<PlatformContainers>.notifyItems(
+    private fun ArrayList<PlatformContainers>.notifyItems(
         platforms: List<PlatformContainers>? = null,
         location: SimpleLocation? = null,
         photo: List<PhotoEvent>? = null,
         clean: List<CleanEvent>? = null
     ) {
         platforms?.let {
-            items.apply {
-                clear()
-                addAll(it)
-            }
+            clear()
+            addAll(it)
         }
         if (location != null) {
-            items.forEach {
+            forEach {
                 it.setDistanceTo(location)
             }
         }
-        val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-        for (platform in photo) {
-            if (it.kpId == platform.kpId) {
-                if (platform.timestamp == 0L) {
-                    platform.timestamp = it.whenTime.withZone(timeZone).millis
-                }
-                photoErrors.get(it.type)?.run {
-                    platform.addError(this)
+        val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
+        if (photo != null) {
+            forEach {
+                for (event in photo) {
+                    if (it.kpId == event.kpId) {
+                        if (clean != null) {
+                            // only for secondary
+                            if (it.timestamp == 0L) {
+                                it.timestamp = event.whenTime.withZone(zone).millis
+                            }
+                        }
+                        photoErrors.get(event.type)?.run {
+                            it.addError(this)
+                        }
+                    }
                 }
             }
         }
-        for (platform in clean) {
-            if (it.kpId == platform.kpId) {
-                val millis = it.whenTime.withZone(timeZone).millis
-                if (platform.timestamp < millis) {
-                    platform.timestamp = millis
+        if (clean != null) {
+            forEach {
+                for (event in clean) {
+                    if (it.kpId == event.kpId) {
+                        val millis = event.whenTime.withZone(zone).millis
+                        if (it.timestamp < millis) {
+                            it.timestamp = millis
+                        }
+                        break
+                    }
                 }
-                break
             }
         }
     }
