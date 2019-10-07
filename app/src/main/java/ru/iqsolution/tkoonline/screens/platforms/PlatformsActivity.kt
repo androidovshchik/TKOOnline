@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_platforms.*
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
@@ -19,20 +20,24 @@ import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 
-class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View,
+class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View, WaitListener,
     AdapterListener<PlatformContainers> {
+
+    override val attachService = true
 
     private lateinit var platformsAdapter: PlatformsAdapter
 
     private val photoTypes = arrayListOf<PhotoType>()
 
+    private var waitDialog: WaitDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platforms)
         platformsAdapter = PlatformsAdapter(applicationContext).apply {
-            setAdapterListener(this@PlatformsActivity)
+            setListener(this@PlatformsActivity)
         }
-        presenter = PlatformsPresenter(application).apply {
+        presenter = PlatformsPresenter().apply {
             attachView(this@PlatformsActivity)
             loadPlatformsTypes(false)
         }
@@ -85,8 +90,19 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
     }
 
-    override fun changeMapPosition(location: SimpleLocation) {
-        platforms_map.moveTo(location)
+    private fun showLoading() {
+        if (waitDialog == null) {
+            waitDialog = WaitDialog(this)
+        }
+        waitDialog?.let {
+            if (!it.isShowing) {
+                it.show()
+            }
+        }
+    }
+
+    override fun changeMapPosition(latitude: Double, longitude: Double) {
+        platforms_map.moveTo(latitude, longitude)
     }
 
     override fun onReceivedPrimary(platforms: List<PlatformContainers>) {
@@ -111,6 +127,41 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platforms_map.setMarkers(secondary, primary)
     }
 
+    override fun onPhotoEvents(events: List<PhotoEvent>) {
+        val errorNames = SimpleArrayMap<Int, String>()
+        val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
+        responseTypes.data.forEach {
+            if (it.isError == 1) {
+                errorNames.put(it.id, it.shortName)
+            }
+        }
+        secondary.apply {
+            sortByDescending { it.timestamp }
+        }
+        for (platform in secondary) {
+            if (it.kpId == platform.kpId) {
+                if (platform.timestamp == 0L) {
+                    platform.timestamp = it.whenTime.withZone(timeZone).millis
+                }
+                errorNames.get(it.type)?.run {
+                    platform.addError(this)
+                }
+            }
+        }
+    }
+
+    override fun onCleanEvents(events: List<CleanEvent>) {
+        for (platform in secondary) {
+            if (it.kpId == platform.kpId) {
+                val millis = it.whenTime.withZone(timeZone).millis
+                if (platform.timestamp < millis) {
+                    platform.timestamp = millis
+                }
+                break
+            }
+        }
+    }
+
     override fun onLoggedOut() {
         startActivityNoop<LoginActivity>()
         finish()
@@ -130,21 +181,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         when (requestCode) {
             REQUEST_PLATFORM -> {
                 if (resultCode == RESULT_OK) {
-                    platformsAdapter.apply {
-                        items.apply {
-                            val id = data?.getIntExtra(EXTRA_PLATFORMS_KP_ID, -1) ?: -1
-                            firstOrNull { it.kpId == id }?.let {
-                                remove(it)
-                                it.errors.apply {
-                                    clear()
-                                    addAll(data?.getStringArrayListExtra(EXTRA_PLATFORMS_ERRORS).orEmpty())
-                                }
-                                add(0, it)
-                                // todo also map changes
-                            }
-                        }
-                        notifyDataSetChanged()
-                    }
+                    presenter.sortSecondary()
                 }
             }
         }
@@ -153,6 +190,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onBackPressed() {}
 
     override fun onDestroy() {
+        waitDialog?.dismiss()
         platforms_map.release()
         super.onDestroy()
     }
