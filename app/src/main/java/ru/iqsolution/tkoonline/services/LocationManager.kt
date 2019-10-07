@@ -54,8 +54,8 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
         }
         reference.get()?.onLocationAvailability(
             when (status) {
-            LocationProvider.OUT_OF_SERVICE -> false
-            else -> true
+                LocationProvider.OUT_OF_SERVICE -> false
+                else -> true
             }
         )
     }

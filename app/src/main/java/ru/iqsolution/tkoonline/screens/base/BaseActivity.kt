@@ -77,7 +77,9 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
     override fun onResume() {
         super.onResume()
-        checkLocation()
+        if (this !is LoginActivity) {
+            checkLocation()
+        }
     }
 
     override fun updateCloud() {

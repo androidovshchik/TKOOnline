@@ -62,7 +62,7 @@ abstract class CleanDao {
     abstract fun insert(item: CleanEvent): Long
 
     @Transaction
-    fun insertMultiple(day: String, item: CleanEvent, containers: List<SimpleContainer>) {
+    open fun insertMultiple(day: String, item: CleanEvent, containers: List<SimpleContainer>) {
         val kp = item.kpId
         deleteDayKpId(day, kp)
         val related = insert(item)

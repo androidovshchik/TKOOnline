@@ -64,7 +64,7 @@ abstract class PhotoDao {
     abstract fun insert(item: PhotoEvent): Long
 
     @Transaction
-    fun insertMultiple(item: PhotoEvent, linkedIds: List<Int>) {
+    open fun insertMultiple(item: PhotoEvent, linkedIds: List<Int>) {
         require(item.id == null && item.kpId != null)
         val kp = item.kpId
         val related = insert(item)
@@ -101,7 +101,7 @@ abstract class PhotoDao {
      * NOTICE some of them may be sent or not
      */
     @Transaction
-    fun updateMultiple(item: PhotoEvent) {
+    open fun updateMultiple(item: PhotoEvent) {
         require(item.id != null && item.kpId != null)
         if (!item.sent) {
             updateSimple(item)
