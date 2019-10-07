@@ -9,10 +9,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.request.RequestOptions
+import coil.api.load
+import coil.transform.CircleCropTransformation
 import kotlinx.android.synthetic.main.merge_gallery.view.*
 import org.jetbrains.anko.toast
-import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.makeCallback
 import ru.iqsolution.tkoonline.extensions.use
@@ -119,10 +119,9 @@ class GalleryLayout : RelativeLayout {
 
     private fun ImageView.updatePhoto(photoEvent: PhotoEvent?) {
         background = photoEvent?.let {
-            GlideApp.with(context)
-                .load(it.toFile())
-                .apply(RequestOptions.circleCropTransform())
-                .into(this)
+            load(it.toFile()) {
+                transformations(CircleCropTransformation())
+            }
             ContextCompat.getDrawable(context, R.drawable.photo_oval_dark)
         } ?: run {
             setImageResource(R.drawable.ic_camera_white)

@@ -7,6 +7,8 @@ import android.app.NotificationManager
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import coil.Coil
+import coil.ImageLoader
 import com.facebook.stetho.Stetho
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
@@ -128,6 +130,15 @@ class MainApp : Application(), KodeinAware {
             )
         }
         MidnightWorker.launch(applicationContext)
+        Coil.setDefaultImageLoader(ImageLoader(applicationContext) {
+            availableMemoryPercentage(0.5)
+            bitmapPoolPercentage(0.5)
+            okHttpClient {
+                OkHttpClient.Builder()
+                    .cache(null)
+                    .build()
+            }
+        })
         ViewPump.init(
             ViewPump.builder()
                 .addInterceptor(

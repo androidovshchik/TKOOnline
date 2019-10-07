@@ -7,11 +7,11 @@ import android.app.ActivityManager
 import android.app.FragmentTransaction
 import android.os.Bundle
 import android.view.ViewGroup
+import coil.api.load
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.topPadding
-import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.screens.LockActivity
@@ -38,9 +38,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             logout()
         }
         DeleteWorker.launch(applicationContext)
-        GlideApp.with(applicationContext)
-            .load(R.drawable.login_background)
-            .into(login_background)
+        login_background.load(R.drawable.login_background)
         statusBarHeight.let {
             (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = it
             login_shadow.topPadding = it

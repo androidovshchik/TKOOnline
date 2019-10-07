@@ -94,16 +94,15 @@ dependencies {
     kapt "androidx.room:room-compiler:${Versions.room}"
     implementation 'com.google.android.gms:play-services-vision:18.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation "org.kodein.di:kodein-di-generic-jvm:${Versions.kodein}"
+    implementation "org.kodein.di:kodein-di-framework-android-core:${Versions.kodein}"
     implementation "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.2.0'
-    implementation "org.kodein.di:kodein-di-generic-jvm:${Versions.kodein}"
-    implementation "org.kodein.di:kodein-di-framework-android-core:${Versions.kodein}"
-    implementation "com.github.bumptech.glide:glide:${Versions.glide}"
-    kapt "com.github.bumptech.glide:compiler:${Versions.glide}"
     implementation 'com.rabbitmq:amqp-client:5.7.3'
-    implementation 'com.chibatching.kotpref:kotpref:2.9.1'
     implementation 'net.danlew:android.joda:2.10.3'
+    implementation 'com.chibatching.kotpref:kotpref:2.9.1'
+    implementation 'io.coil-kt:coil:0.7.0'
     implementation 'io.github.inflationx:calligraphy3:3.1.1'
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'com.jakewharton.timber:timber:4.7.1'

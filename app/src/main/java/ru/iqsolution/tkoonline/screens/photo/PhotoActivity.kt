@@ -4,11 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
-import com.bumptech.glide.signature.ObjectKey
+import coil.api.load
 import kotlinx.android.synthetic.main.activity_photo.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.toast
-import ru.iqsolution.tkoonline.*
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_EVENT
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_LINKED_IDS
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_TITLE
+import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
@@ -68,7 +71,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             photo_save.isEnabled = false
         }
         if (photoEvent.id != null) {
-            showPhoto(photoEvent.toFile())
+            photo_preview.load(photoEvent.toFile())
         } else {
             takePhoto()
         }
@@ -78,13 +81,6 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         preFinishing = true
         setResult(result)
         finish()
-    }
-
-    private fun showPhoto(file: File) {
-        GlideApp.with(applicationContext)
-            .load(file)
-            .signature(ObjectKey(System.currentTimeMillis()))
-            .into(photo_preview)
     }
 
     private fun takePhoto() {
@@ -107,7 +103,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         when (requestCode) {
             REQUEST_PHOTO -> {
                 when {
-                    resultCode == RESULT_OK -> showPhoto(externalPhoto)
+                    resultCode == RESULT_OK -> photo_preview.load(externalPhoto)
                     photoEvent.id == null -> closePreview(RESULT_CANCELED)
                 }
             }
