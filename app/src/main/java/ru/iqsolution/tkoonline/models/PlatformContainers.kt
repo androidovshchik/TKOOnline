@@ -53,7 +53,7 @@ class PlatformContainers(platform: Platform) : Platform() {
         timeLimitTo = platform.timeLimitTo
         timeLimitFrom = platform.timeLimitFrom
         status = platform.status
-        addContainer(platform)
+        setFromAny(platform)
     }
 
     val allLinkedIds: List<Int>
@@ -64,38 +64,6 @@ class PlatformContainers(platform: Platform) : Platform() {
             }
             return all
         }
-
-    override val isEmpty: Boolean
-        get() {
-            if (!super.isEmpty) {
-                return false
-            }
-            containers.forEach {
-                if (!it.isEmpty) {
-                    return false
-                }
-            }
-            return true
-        }
-
-    /**
-     * It may be important to keep the original [containerVolume] and [containerCount] values
-     */
-    override fun addContainer(container: Container?) {
-        if (container is Platform?) {
-            addContainer(container)
-        } else {
-            throw IllegalAccessException("Should not be called as is")
-        }
-    }
-
-    fun addContainer(platform: Platform?) {
-        platform?.let {
-            containers.forEach { container ->
-                container.addContainer(it)
-            }
-        }
-    }
 
     fun addError(error: String) {
         if (!errors.contains(error)) {

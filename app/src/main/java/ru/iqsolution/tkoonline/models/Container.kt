@@ -13,7 +13,7 @@ interface Container {
         containerCount = 0
     }
 
-    fun setFromSame(container: Container?) {
+    fun setFromEqual(container: Container?) {
         container?.let {
             if (toContainerType() == it.toContainerType()) {
                 containerVolume = it.containerVolume

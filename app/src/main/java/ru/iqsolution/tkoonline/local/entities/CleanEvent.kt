@@ -89,7 +89,7 @@ class CleanEvent() : Container, SendEvent {
 
     fun toSimpleContainer(): SimpleContainer {
         return SimpleContainer(toContainerType()).also {
-            it.setFromSame(this)
+            it.setFromAny(this)
         }
     }
 }
