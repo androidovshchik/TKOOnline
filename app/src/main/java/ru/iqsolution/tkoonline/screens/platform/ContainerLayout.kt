@@ -22,15 +22,17 @@ import kotlin.math.min
 
 class ContainerLayout : LinearLayout {
 
-    private var containerType = ContainerType.UNKNOWN
+    var containerType = ContainerType.UNKNOWN
 
     var container: SimpleContainer? = null
         set(value) {
-            field = value
             value?.let {
-                updateVolumeText()
-                updateCountText()
-                visibility = View.VISIBLE
+                if (containerType == it.toContainerType()) {
+                    field = value
+                    updateVolumeText()
+                    updateCountText()
+                    visibility = View.VISIBLE
+                }
             }
         }
 

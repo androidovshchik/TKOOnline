@@ -21,9 +21,9 @@ import ru.iqsolution.tkoonline.models.PhotoType
 
 class GalleryLayout : RelativeLayout {
 
-    private val photoEvents = arrayListOf<PhotoEvent>()
-
     private var photoType = PhotoType.Default.OTHER
+
+    private val photoEvents = arrayListOf<PhotoEvent>()
 
     private var enableShoot = false
 

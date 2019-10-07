@@ -31,7 +31,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
 
     private var preFinishing = false
 
-    private var mHasChanges = false
+    private var hasPhoto = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,12 +97,25 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         }
     }
 
+    /**
+     * Called once after create
+     */
     override fun onCleanEvents(event: CleanEventRelated?) {
-        platform_regular.setFrom(event)
-        platform_bunker.setFrom(event)
-        platform_bulk.setFrom(event)
-        platform_special.setFrom(event)
-        platform_unknown.setFrom(event)
+        event?.run {
+            platform.containers.forEach {
+                it.setFromEqual(clean)
+                events.forEach { event ->
+                    it.setFromEqual(event)
+                }
+            }
+        }
+        platform.containers.forEach {
+            platform_regular.container = it
+            platform_bunker.container = it
+            platform_bulk.container = it
+            platform_special.container = it
+            platform_unknown.container = it
+        }
     }
 
     override fun onPhotoEvents(events: List<PhotoEvent>) {
@@ -120,14 +133,13 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         )
     }
 
-    override fun closeDetails(hasChanges: Boolean) {
-        if (mHasChanges || hasChanges) {
-
+    override fun closeDetails(hasClean: Boolean) {
+        if (hasPhoto || hasClean) {
+            SendWorker.launch(applicationContext, platform.kpId)
+            setResult(RESULT_OK)
         } else {
-
+            setResult(RESULT_CANCELED)
         }
-        SendWorker.launch(applicationContext, platform.kpId)
-        setResult(if (mHasChanges || hasChanges) RESULT_OK else RESULT_CANCELED)
         finish()
     }
 
@@ -140,7 +152,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         when (requestCode) {
             REQUEST_PHOTO, REQUEST_PROBLEM -> {
                 if (resultCode == RESULT_OK) {
-                    mHasChanges = true
+                    hasPhoto = true
                     presenter.loadPhotoEvents(platform.kpId)
                 }
             }
@@ -153,23 +165,6 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         confirmDialog?.dismiss()
         platform_map.release()
         super.onDestroy()
-    }
-
-    private fun ContainerLayout.setFrom(event: CleanEventRelated?) {
-        event?.run {
-            platform.containers.forEach {
-                it.setFromSame(clean)
-                events.forEach { event ->
-                    it.setFromSame(event)
-                }
-            }
-        } ?: run {
-            platform_regular.container = platform.containers.getOrNull(0)
-            platform_bunker.container = platform.containers.getOrNull(1)
-            platform_bulk.container = platform.containers.getOrNull(2)
-            platform_special.container = platform.containers.getOrNull(3)
-            platform_unknown.container = platform.containers.getOrNull(4)
-        }
     }
 
     companion object {
