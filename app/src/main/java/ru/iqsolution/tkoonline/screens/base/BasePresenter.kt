@@ -42,12 +42,8 @@ open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, Corout
         }
     }
 
-    override fun toJson(instance: Collection<Any>): String {
+    override fun toJson(instance: Any): String {
         return gson.toJson(instance)
-    }
-
-    override fun <T> toJson(instance: T, tClass: Class<out T>): String {
-        return gson.toJson(tClass)
     }
 
     override fun <T> fromJson(json: String, tClass: Class<out T>): T {

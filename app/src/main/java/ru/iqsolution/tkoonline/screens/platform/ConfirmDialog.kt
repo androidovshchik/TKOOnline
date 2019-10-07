@@ -20,7 +20,7 @@ class ConfirmDialog(activity: Activity) : BaseDialog(activity) {
             }
         }
         dialog_continue.setOnClickListener {
-            hide()
+            dismiss()
         }
     }
 }

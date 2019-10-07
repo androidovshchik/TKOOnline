@@ -87,7 +87,7 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
     }
 
     override fun updateCloud(allCount: Int, photoCount: Int) {
-        statusBar?.onCloudChanged(allCount <= 0, photoCount)
+        statusBar?.onCloudChanged(allCount > 0, photoCount)
     }
 
     override fun showError(message: CharSequence?) {

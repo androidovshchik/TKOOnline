@@ -10,7 +10,7 @@ import kotlin.math.sin
  * NOTICE containers also include platform [containerVolume] and [containerCount] values
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class PlatformContainers(platform: Platform) : Platform() {
+class PlatformContainers() : Platform() {
 
     var containers = arrayListOf(
         SimpleContainer(ContainerType.REGULAR),
@@ -36,7 +36,7 @@ class PlatformContainers(platform: Platform) : Platform() {
      */
     var timestamp = 0L
 
-    init {
+    constructor(platform: Platform) : this() {
         kpId = platform.kpId
         linkedKpId = platform.kpId
         address = platform.address

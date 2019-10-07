@@ -139,7 +139,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             }
         }
         platform_map.apply {
-            setMarkers("[${presenter.toJson(platform, platform.javaClass)}]")
+            setMarkers("[${presenter.toJson(platform)}]")
             moveTo(platform.latitude, platform.longitude)
         }
     }
@@ -155,6 +155,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     }
 
     override fun closeDetails(hasClean: Boolean) {
+        preFinishing = true
         if (hasPhoto || hasClean) {
             SendWorker.launch(applicationContext, platform.kpId)
             setResult(RESULT_OK)
