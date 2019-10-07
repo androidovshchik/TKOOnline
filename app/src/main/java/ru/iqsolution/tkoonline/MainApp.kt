@@ -33,7 +33,6 @@ import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
-import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.services.workers.MidnightWorker
 import timber.log.Timber
@@ -71,8 +70,6 @@ class MainApp : Application(), KodeinAware {
                 .setExclusionStrategies(SerializedNameStrategy())
                 .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
                 .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
-                .registerTypeAdapter(PlatformStatus::class.java, PlatformStatusSerializer())
-                .registerTypeAdapter(PlatformStatus::class.java, PlatformStatusDeserializer())
                 .create()
         }
 

@@ -4,7 +4,6 @@ import com.google.gson.*
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.PATTERN_TIME
-import ru.iqsolution.tkoonline.models.PlatformStatus
 import java.lang.reflect.Type
 
 class DateTimeSerializer : JsonSerializer<DateTime> {
@@ -28,19 +27,5 @@ class DateTimeDeserializer : JsonDeserializer<DateTime> {
             value.contains("T") -> DateTime.parse(json.asString, PATTERN_DATETIME)
             else -> DateTime.parse(json.asString, PATTERN_TIME)
         }
-    }
-}
-
-class PlatformStatusSerializer : JsonSerializer<PlatformStatus> {
-
-    override fun serialize(src: PlatformStatus, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return JsonPrimitive(src.id)
-    }
-}
-
-class PlatformStatusDeserializer : JsonDeserializer<PlatformStatus> {
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): PlatformStatus {
-        return PlatformStatus.fromId(json.asInt)
     }
 }

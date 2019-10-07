@@ -57,15 +57,19 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                             maxLon = it.longitude
                         }
                         when (it.status) {
-                            PlatformStatus.PENDING, PlatformStatus.NOT_VISITED -> primary.add(PlatformContainers(it))
+                            PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(
+                                PlatformContainers(
+                                    it
+                                )
+                            )
                             else -> secondary.add(PlatformContainers(it))
                         }
                     } else {
-                        when (it.toContainerType()) {
-                            ContainerType.REGULAR -> regulars.put(it.linkedKpId, it)
-                            ContainerType.BUNKER -> bunkers.put(it.linkedKpId, it)
-                            ContainerType.BULK1, ContainerType.BULK2 -> bulks.put(it.linkedKpId, it)
-                            ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> specials.put(it.linkedKpId, it)
+                        when (it.containerType) {
+                            ContainerType.REGULAR.id -> regulars.put(it.linkedKpId, it)
+                            ContainerType.BUNKER.id -> bunkers.put(it.linkedKpId, it)
+                            ContainerType.BULK1.id, ContainerType.BULK2.id -> bulks.put(it.linkedKpId, it)
+                            ContainerType.SPECIAL1.id, ContainerType.SPECIAL2.id -> specials.put(it.linkedKpId, it)
                             else -> unknown.put(it.linkedKpId, it)
                         }
                     }

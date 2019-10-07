@@ -59,7 +59,7 @@ open class Platform : Serializable, Container, Location<Double> {
     lateinit var timeLimitTo: DateTime
 
     @SerializedName("status")
-    var status = 0
+    var status = PlatformStatus.NO_TASK.id
 
     val isValid: Boolean
         get() = BuildConfig.DEBUG || status != PlatformStatus.NO_TASK.id

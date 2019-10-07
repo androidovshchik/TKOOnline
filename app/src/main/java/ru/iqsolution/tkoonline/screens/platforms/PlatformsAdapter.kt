@@ -70,7 +70,7 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
                     height = size
                     width = size
                 }
-                backgroundDrawable = ContextCompat.getDrawable(appContext, item.status.drawable)
+                backgroundDrawable = ContextCompat.getDrawable(appContext, item.toPlatformStatus().drawable)
             }
         }
     }

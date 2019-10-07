@@ -42,8 +42,8 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         setContentView(R.layout.activity_platform)
         presenter = PlatformPresenter().also {
             it.attachView(this)
-            platform = it.fromJson(intent.getStringExtra(EXTRA_PLATFORM_PLATFORM), PlatformContainers::class.java)
         }
+        platform = intent.getSerializableExtra(EXTRA_PLATFORM_PLATFORM) as PlatformContainers
         photoTypes.apply {
             addAll(intent.getSerializableExtra(EXTRA_PROBLEM_PHOTO_TYPES) as ArrayList<PhotoType>)
             forEach {

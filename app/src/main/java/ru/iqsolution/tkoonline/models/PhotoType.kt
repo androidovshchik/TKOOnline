@@ -6,7 +6,7 @@ import java.io.Serializable
 class PhotoType : Serializable {
 
     @SerializedName("id")
-    var id = 0
+    var id = Default.OTHER.id
 
     @SerializedName("description")
     lateinit var description: String

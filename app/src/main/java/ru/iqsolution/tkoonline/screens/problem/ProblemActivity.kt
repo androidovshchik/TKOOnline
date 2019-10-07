@@ -29,8 +29,8 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
         setContentView(R.layout.activity_problem)
         presenter = ProblemPresenter().also {
             it.attachView(this)
-            platform = it.fromJson(intent.getStringExtra(EXTRA_PROBLEM_PLATFORM), PlatformContainers::class.java)
         }
+        platform = intent.getSerializableExtra(EXTRA_PLATFORM_PLATFORM) as PlatformContainers
         toolbar_back.setOnClickListener {
             setResult(RESULT_CANCELED)
             finish()
