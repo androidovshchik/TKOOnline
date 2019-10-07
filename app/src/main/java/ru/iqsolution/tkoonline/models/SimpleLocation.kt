@@ -4,7 +4,7 @@ import org.joda.time.DateTime
 import java.io.Serializable
 import kotlin.math.roundToInt
 
-class SimpleLocation : Location<Double>, Serializable {
+class SimpleLocation : Serializable, Location<Double> {
 
     override var latitude = 0.0
 

@@ -82,7 +82,6 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
     private val gnssCallback = object : GnssStatus.Callback() {
 
         override fun onSatelliteStatusChanged(status: GnssStatus) {
-            Timber.d("onSatelliteStatusChanged ${status.satelliteCount}")
             satellitesCount = status.satelliteCount
         }
     }

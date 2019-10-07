@@ -3,8 +3,9 @@ package ru.iqsolution.tkoonline.models
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
+import java.io.Serializable
 
-open class Platform : Container, Location<Double> {
+open class Platform : Serializable, Container, Location<Double> {
 
     @SerializedName("kp_id")
     var kpId = 0
@@ -58,8 +59,10 @@ open class Platform : Container, Location<Double> {
     lateinit var timeLimitTo: DateTime
 
     @SerializedName("status")
-    lateinit var status: PlatformStatus
+    var status = 0
 
     val isValid: Boolean
-        get() = BuildConfig.DEBUG || status != PlatformStatus.NO_TASK
+        get() = BuildConfig.DEBUG || status != PlatformStatus.NO_TASK.id
+
+    fun toPlatformStatus() = PlatformStatus.fromId(status)
 }

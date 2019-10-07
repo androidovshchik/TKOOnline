@@ -27,7 +27,7 @@ class ContainerLayout : LinearLayout {
     var container: SimpleContainer? = null
         set(value) {
             value?.let {
-                if (containerType == it.toContainerType()) {
+                if (containerType.id == it.containerType) {
                     field = value
                     updateVolumeText()
                     updateCountText()

@@ -1,11 +1,12 @@
 package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 /**
  * Special class for linked platforms
  */
-class SimpleContainer(type: ContainerType) : Container {
+class SimpleContainer(type: ContainerType) : Serializable, Container {
 
     @SerializedName("l")
     var linkedIds = arrayListOf<Int>()

@@ -109,9 +109,10 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
+        val location = preferences.location
         platformsAdapter.apply {
-            primaryItems.notifyItems(primary)
-            items.notifyItems(secondary)
+            primaryItems.notifyItems(primary, location)
+            items.notifyItems(secondary, location)
             notifyDataSetChanged()
         }
         presenter.loadPhotoCleanEvents()
