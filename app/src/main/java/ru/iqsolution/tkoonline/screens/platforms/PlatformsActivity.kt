@@ -3,10 +3,12 @@ package ru.iqsolution.tkoonline.screens.platforms
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.collection.SimpleArrayMap
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_platforms.*
+import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
@@ -20,6 +22,7 @@ import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 import ru.iqsolution.tkoonline.services.workers.SendWorker
+import java.util.*
 
 class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View, WaitListener,
     AdapterListener<PlatformContainers> {
@@ -29,6 +32,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     private lateinit var platformsAdapter: PlatformsAdapter
 
     private val photoTypes = arrayListOf<PhotoType>()
+
+    private val photoErrors = SimpleArrayMap<Int, String>()
 
     private var waitDialog: WaitDialog? = null
 
@@ -91,47 +96,36 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             clear()
             addAll(types)
         }
+        photoErrors.clear()
+        types.forEach {
+            if (it.isError == 1) {
+                photoErrors.put(it.id, it.shortName)
+            }
+        }
     }
 
     override fun changeMapPosition(latitude: Double, longitude: Double) {
         platforms_map.moveTo(latitude, longitude)
     }
 
-    override fun onReceivedPrimary(platforms: List<PlatformContainers>) {
+    override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
         platformsAdapter.apply {
-            notifyPrimaryItems(preferences.location, platforms)
+            notifyPrimaryItems(primary)
             notifyDataSetChanged()
         }
-        platforms_refresh.isRefreshing = false
-    }
-
-    /**
-     * NOTICE primary platforms will overlay secondary in such order
-     */
-    override fun updateMapMarkers(primary: String, secondary: String) {
-        platforms_map.setMarkers(secondary, primary)
-    }
-
-    override fun onReceivedSecondary(platforms: List<PlatformContainers>) {
         platformsAdapter.apply {
-            notifySecondaryItems(preferences.location, platforms)
+            notifySecondaryItems(secondary)
             notifyDataSetChanged()
         }
         presenter.loadPhotoCleanEvents()
     }
 
     override fun onPhotoCleanEvents(photo: List<PhotoEvent>, clean: List<CleanEvent>) {
-        val errorNames = SimpleArrayMap<Int, String>()
         val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-        responseTypes.data.forEach {
-            if (it.isError == 1) {
-                errorNames.put(it.id, it.shortName)
-            }
-        }
         secondary.apply {
             sortByDescending { it.timestamp }
         }
-        for (platform in secondary) {
+        for (platform in photo) {
             if (it.kpId == platform.kpId) {
                 if (platform.timestamp == 0L) {
                     platform.timestamp = it.whenTime.withZone(timeZone).millis
@@ -141,7 +135,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 }
             }
         }
-        for (platform in secondary) {
+        for (platform in clean) {
             if (it.kpId == platform.kpId) {
                 val millis = it.whenTime.withZone(timeZone).millis
                 if (platform.timestamp < millis) {
@@ -150,13 +144,16 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 break
             }
         }
+        // primary platforms will overlay secondary in such order
+        platforms_map.setMarkers(secondary, primary)
+        platforms_refresh.isRefreshing = false
     }
 
     override fun onLocationResult(location: SimpleLocation) {
         platforms_map.setLocation(location)
         platformsAdapter.apply {
-            notifyPrimaryItems(location)
-            notifySecondaryItems(location)
+            notifyPrimaryItems(null, location)
+            notifySecondaryItems(null, location)
             notifyDataSetChanged()
         }
     }
@@ -207,8 +204,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     private fun PlatformsAdapter.notifyPrimaryItems(
-        location: SimpleLocation?,
-        platforms: List<PlatformContainers>? = null
+        platforms: List<PlatformContainers>?,
+        location: SimpleLocation? = null
     ) {
         platforms?.let {
             primaryItems.apply {
@@ -225,8 +222,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     private fun PlatformsAdapter.notifySecondaryItems(
-        location: SimpleLocation?,
-        platforms: List<PlatformContainers>? = null
+        platforms: List<PlatformContainers>?,
+        location: SimpleLocation? = null
     ) {
         platforms?.let {
             items.apply {
