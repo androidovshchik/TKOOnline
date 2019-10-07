@@ -68,7 +68,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             photo_save.isEnabled = false
         }
         if (photoEvent.id != null) {
-            showPhoto(photoEvent)
+            showPhoto(photoEvent.toFile())
         } else {
             takePhoto()
         }
@@ -80,9 +80,9 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         finish()
     }
 
-    private fun showPhoto(instance: Any) {
+    private fun showPhoto(file: File) {
         GlideApp.with(applicationContext)
-            .load(instance)
+            .load(file)
             .signature(ObjectKey(System.currentTimeMillis()))
             .into(photo_preview)
     }

@@ -120,7 +120,7 @@ class GalleryLayout : RelativeLayout {
     private fun ImageView.updatePhoto(photoEvent: PhotoEvent?) {
         background = photoEvent?.let {
             GlideApp.with(context)
-                .load(it)
+                .load(it.toFile())
                 .apply(RequestOptions.circleCropTransform())
                 .into(this)
             ContextCompat.getDrawable(context, R.drawable.photo_oval_dark)

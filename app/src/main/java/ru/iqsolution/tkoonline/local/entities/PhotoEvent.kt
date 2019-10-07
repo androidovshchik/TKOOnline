@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.local.entities
 
 import androidx.room.*
 import org.joda.time.DateTime
+import java.io.File
 import java.io.Serializable
 
 @Entity(
@@ -88,4 +89,6 @@ class PhotoEvent() : Serializable, SendEvent {
     constructor(kp: Int, typeId: Int) : this(typeId) {
         kpId = kp
     }
+
+    fun toFile() = File(path)
 }
