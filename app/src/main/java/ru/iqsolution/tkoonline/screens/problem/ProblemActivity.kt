@@ -4,9 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.activity_problem.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
+import org.jetbrains.anko.dip
+import org.jetbrains.anko.matchParent
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
@@ -55,6 +58,9 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
     private fun addButton(photoType: PhotoType) {
         val button = View.inflate(applicationContext, R.layout.item_problem, null) as Button
         problem_content.addView(button.apply {
+            layoutParams = LinearLayout.LayoutParams(matchParent, dip(53)).also {
+                it.setMargins(dip(20), 0, dip(20), dip(20))
+            }
             text = photoType.description
             setOnClickListener {
                 startActivityNoop<PhotoActivity>(
