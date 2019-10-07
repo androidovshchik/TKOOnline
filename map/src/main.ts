@@ -1,6 +1,8 @@
 import {Platform} from "./platform.interface";
 import {getColor} from "./status.enum";
 
+declare const Android;
+
 declare const ymaps;
 
 let id, map, markersCollection, locationCollection;
@@ -23,6 +25,7 @@ function init() {
     map.geoObjects
         .add(markersCollection)
         .add(locationCollection);
+    Android.onReady();
 }
 
 const script = document.createElement('script');

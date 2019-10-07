@@ -2,18 +2,15 @@ package ru.iqsolution.tkoonline.screens.map
 
 import android.annotation.TargetApi
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.JavascriptInterface
 import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.merge_map.view.*
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.models.SimpleLocation
-import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
 class MapLayout : FrameLayout {
@@ -25,6 +22,16 @@ class MapLayout : FrameLayout {
     private var isReady = false
 
     private val calls = arrayListOf<String>()
+
+    private val readyRunnable = Runnable {
+        isReady = true
+        map_tools.visibility = VISIBLE
+        val js = TextUtils.join(";", calls)
+        calls.clear()
+        if (!TextUtils.isEmpty(js)) {
+            map_web.loadUrl("javascript:$js")
+        }
+    }
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -44,7 +51,7 @@ class MapLayout : FrameLayout {
 
     init {
         View.inflate(context, R.layout.merge_map, this)
-        map.webViewClient = Client()
+        map_web.addJavascriptInterface(IJavaScript(), "Android")
         map_plus.setOnClickListener {
             zoomIn()
         }
@@ -60,8 +67,14 @@ class MapLayout : FrameLayout {
         }
     }
 
+    /**
+     * IMPORTANT should be called with urls only
+     */
     fun loadUrl(url: String) {
-        map.loadUrl(url)
+        isReady = false
+        map_tools.visibility = GONE
+        calls.clear()
+        map_web.loadUrl(url)
     }
 
     fun zoomIn(duration: Int = 500) {
@@ -121,10 +134,10 @@ class MapLayout : FrameLayout {
     }
 
     private fun runCall(call: String) {
-        // NOTICE currently supports only 1 digit, don't use split because of large text
         if (isReady) {
-            loadUrl("javascript:$call")
+            map_web.loadUrl("javascript:$call")
         } else {
+            // NOTICE currently supports only 1 digit, don't use split because of large text is some cases
             calls.apply {
                 removeAll { it[1] == call[1] }
                 add(call)
@@ -133,29 +146,17 @@ class MapLayout : FrameLayout {
     }
 
     fun release() {
-        map.destroy()
+        map_web.destroy()
     }
 
     override fun hasOverlappingRendering() = false
 
-    inner class Client : WebViewClient() {
+    @Suppress("unused")
+    inner class IJavaScript {
 
-        override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-            Timber.d("onPageStarted: $url")
-            isReady = false
-            map_tools.visibility = GONE
-            calls.clear()
-        }
-
-        override fun onPageFinished(view: WebView, url: String) {
-            Timber.d("onPageFinished: $url")
-            isReady = true
-            map_tools.visibility = VISIBLE
-            val js = TextUtils.join(";", calls)
-            calls.clear()
-            if (!TextUtils.isEmpty(js)) {
-                loadUrl("javascript:$js")
-            }
+        @JavascriptInterface
+        fun onReady() {
+            map_web.post(readyRunnable)
         }
     }
 }
