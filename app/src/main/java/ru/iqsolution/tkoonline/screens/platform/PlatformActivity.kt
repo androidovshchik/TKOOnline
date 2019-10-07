@@ -56,6 +56,10 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             if (preFinishing) {
                 return@setOnClickListener
             }
+            if (!hasPhoto) {
+                closeDetails(false)
+                return@setOnClickListener
+            }
             if (confirmDialog == null) {
                 confirmDialog = ConfirmDialog(this)
             }
