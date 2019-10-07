@@ -60,7 +60,6 @@ class StatusFragment : BaseFragment(), SyncListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         status_number.text = preferences.vehicleNumber ?: ""
-        onTimeChanged()
         onLocationChanged(false)
         onNetworkChanged(false)
         onCloudChanged(true, 0)
@@ -68,6 +67,7 @@ class StatusFragment : BaseFragment(), SyncListener {
 
     override fun onStart() {
         super.onStart()
+        onTimeChanged()
         syncManager.register(context)
     }
 

@@ -2,12 +2,9 @@ package ru.iqsolution.tkoonline.services
 
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.UserManager
 import org.jetbrains.anko.devicePolicyManager
 import ru.iqsolution.tkoonline.receivers.AdminReceiver
-import ru.iqsolution.tkoonline.screens.LockActivity
 
 @Suppress("MemberVisibilityCanBePrivate")
 class AdminManager(context: Context) {
@@ -28,7 +25,6 @@ class AdminManager(context: Context) {
     fun setKioskMode(enable: Boolean): Boolean {
         if (isDeviceOwner) {
             setRestrictions(enable)
-            setAsHomeApp(enable)
             setKeyGuardEnabled(enable)
             setLockTask(enable)
             return true
@@ -51,22 +47,6 @@ class AdminManager(context: Context) {
             } else {
                 deviceManager.clearUserRestriction(adminComponent, it)
             }
-        }
-    }
-
-    /**
-     * @throws SecurityException if {@code admin} is not a device or profile owner.
-     */
-    private fun setAsHomeApp(enable: Boolean) {
-        if (enable) {
-            val intentFilter = IntentFilter(Intent.ACTION_MAIN).apply {
-                addCategory(Intent.CATEGORY_HOME)
-                addCategory(Intent.CATEGORY_DEFAULT)
-            }
-            val activityComponent = ComponentName(packageName, LockActivity::class.java.name)
-            deviceManager.addPersistentPreferredActivity(adminComponent, intentFilter, activityComponent)
-        } else {
-            deviceManager.clearPackagePersistentPreferredActivities(adminComponent, packageName)
         }
     }
 

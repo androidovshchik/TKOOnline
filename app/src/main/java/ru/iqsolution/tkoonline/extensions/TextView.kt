@@ -24,10 +24,9 @@ fun TextView.setOnlyNumbers() {
 
 fun TextView.setTextBoldSpan(text: CharSequence, vararg array: Int) {
     require(array.size % 2 == 0)
-    val boldStyle = StyleSpan(Typeface.BOLD)
     setText(SpannableStringBuilder(text).apply {
         for (i in array.indices step 2) {
-            setSpan(boldStyle, array[i], array[i + 1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(StyleSpan(Typeface.BOLD), array[i], array[i + 1], Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
     })
 }

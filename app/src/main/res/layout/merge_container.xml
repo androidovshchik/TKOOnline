@@ -56,13 +56,15 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="0dp"
                 android:adjustViewBounds="true"
-                tools:src="@drawable/ic_arrow_up"/>
+                android:src="@drawable/ic_arrow_up"/>
 
             <TextView
                 android:id="@+id/volume_value"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:paddingStart="2dp"
+                android:paddingEnd="0dp"
                 android:gravity="center"
                 android:textSize="30sp"
                 android:textColor="@color/colorTextGrayLight"
@@ -79,7 +81,7 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
                 android:adjustViewBounds="true"
-                tools:src="@drawable/ic_arrow_down"/>
+                android:src="@drawable/ic_arrow_down"/>
 
         </LinearLayout>
 
@@ -97,13 +99,15 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="0dp"
                 android:adjustViewBounds="true"
-                tools:src="@drawable/ic_arrow_up"/>
+                android:src="@drawable/ic_arrow_up"/>
 
             <TextView
                 android:id="@+id/count_value"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:paddingStart="2dp"
+                android:paddingEnd="0dp"
                 android:gravity="center"
                 android:textSize="30sp"
                 android:textColor="@color/colorTextGrayLight"
@@ -120,7 +124,7 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
                 android:adjustViewBounds="true"
-                tools:src="@drawable/ic_arrow_down"/>
+                android:src="@drawable/ic_arrow_down"/>
 
         </LinearLayout>
 
