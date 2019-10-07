@@ -128,6 +128,9 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
             WorkInfo.State.SUCCEEDED -> {
                 reference.get()?.onLoggedOut()
             }
+            WorkInfo.State.CANCELLED -> {
+                observer?.removeObserver(this)
+            }
             else -> {
             }
         }

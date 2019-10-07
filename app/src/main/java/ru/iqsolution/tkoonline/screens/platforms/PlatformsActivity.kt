@@ -19,6 +19,7 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
+import ru.iqsolution.tkoonline.services.workers.SendWorker
 
 class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View, WaitListener,
     AdapterListener<PlatformContainers> {
@@ -57,6 +58,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             adapter = platformsAdapter
         }
         platforms_complete.setOnClickListener {
+            showLoading()
+            telemetryService?.stopTelemetry()
             presenter.logout(applicationContext)
         }
         if (preferences.allowPhotoRefKp) {
@@ -90,17 +93,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
     }
 
-    private fun showLoading() {
-        if (waitDialog == null) {
-            waitDialog = WaitDialog(this)
-        }
-        waitDialog?.let {
-            if (!it.isShowing) {
-                it.show()
-            }
-        }
-    }
-
     override fun changeMapPosition(latitude: Double, longitude: Double) {
         platforms_map.moveTo(latitude, longitude)
     }
@@ -125,6 +117,15 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
      */
     override fun updateMapMarkers(primary: String, secondary: String) {
         platforms_map.setMarkers(secondary, primary)
+    }
+
+    override fun onLocationResult(location: SimpleLocation) {
+        platforms_map.setLocation(location)
+        platformsAdapter.apply {
+            notifyPrimaryItems(location)
+            notifySecondaryItems(location)
+            notifyDataSetChanged()
+        }
     }
 
     override fun onPhotoEvents(events: List<PhotoEvent>) {
@@ -162,17 +163,24 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
     }
 
+    override fun cancelWork() {
+        SendWorker.cancel(applicationContext)
+        telemetryService?.startTelemetry()
+    }
+
     override fun onLoggedOut() {
         startActivityNoop<LoginActivity>()
         finish()
     }
 
-    override fun onLocationResult(location: SimpleLocation) {
-        platforms_map.setLocation(location)
-        platformsAdapter.apply {
-            notifyPrimaryItems(location)
-            notifySecondaryItems(location)
-            notifyDataSetChanged()
+    private fun showLoading() {
+        if (waitDialog == null) {
+            waitDialog = WaitDialog(this)
+        }
+        waitDialog?.let {
+            if (!it.isShowing) {
+                it.show()
+            }
         }
     }
 
@@ -181,7 +189,12 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         when (requestCode) {
             REQUEST_PLATFORM -> {
                 if (resultCode == RESULT_OK) {
-                    presenter.sortSecondary()
+                    presenter.loadPhotoCleanEvents()
+                }
+            }
+            REQUEST_PHOTO -> {
+                if (resultCode == RESULT_OK) {
+                    SendWorker.launch(applicationContext, -1, true)
                 }
             }
         }
@@ -233,6 +246,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     companion object {
 
         private const val REQUEST_PLATFORM = 300
+
+        private const val REQUEST_PHOTO = 310
 
         private const val URL = "file:///android_asset/platforms.html"
     }

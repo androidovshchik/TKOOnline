@@ -14,12 +14,13 @@ class ConfirmDialog(activity: Activity) : BaseDialog(activity) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.dialog_confirm)
         dialog_exit.setOnClickListener {
+            dismiss()
             makeCallback<ConfirmListener> {
                 closeDetails(false)
             }
         }
         dialog_continue.setOnClickListener {
-            dismiss()
+            hide()
         }
     }
 }
