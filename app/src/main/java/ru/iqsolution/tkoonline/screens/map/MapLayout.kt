@@ -6,14 +6,14 @@ import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
-import android.webkit.JavascriptInterface
 import android.widget.FrameLayout
+import androidx.annotation.WorkerThread
 import kotlinx.android.synthetic.main.merge_map.view.*
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
 @Suppress("MemberVisibilityCanBePrivate")
-class MapLayout : FrameLayout {
+class MapLayout : FrameLayout, MapListener {
 
     private var mLatitude: Double? = null
 
@@ -51,7 +51,7 @@ class MapLayout : FrameLayout {
 
     init {
         View.inflate(context, R.layout.merge_map, this)
-        map_web.addJavascriptInterface(IJavaScript(), "Android")
+        map_web.addJavascriptInterface(MapJavaScript(this), "Android")
         map_plus.setOnClickListener {
             zoomIn()
         }
@@ -65,6 +65,11 @@ class MapLayout : FrameLayout {
                 }
             }
         }
+    }
+
+    @WorkerThread
+    override fun onReady() {
+        map_web.post(readyRunnable)
     }
 
     /**
@@ -150,13 +155,4 @@ class MapLayout : FrameLayout {
     }
 
     override fun hasOverlappingRendering() = false
-
-    @Suppress("unused")
-    inner class IJavaScript {
-
-        @JavascriptInterface
-        fun onReady() {
-            map_web.post(readyRunnable)
-        }
-    }
 }

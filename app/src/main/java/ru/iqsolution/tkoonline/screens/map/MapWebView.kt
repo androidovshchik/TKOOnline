@@ -30,6 +30,7 @@ class MapWebView : WebView {
 
     init {
         isNestedScrollingEnabled = true
+        webViewClient = MapWebClient()
         settings.apply {
             @SuppressLint("SetJavaScriptEnabled")
             javaScriptEnabled = true
