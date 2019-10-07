@@ -2,7 +2,6 @@ package ru.iqsolution.tkoonline.screens.platform
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
@@ -17,6 +16,7 @@ import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
+import ru.iqsolution.tkoonline.services.workers.SendWorker
 
 /**
  * Returns [android.app.Activity.RESULT_OK] if there were changes
@@ -67,9 +67,6 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
                 platform.timeLimitTo.toString(FORMAT_TIME)
             ), 2, 7, 11, 16
         )
-        if (platform.isEmpty) {
-            platform_divider.visibility = View.VISIBLE
-        }
         platform_report.setOnClickListener {
             if (preFinishing) {
                 return@setOnClickListener
@@ -100,6 +97,19 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         }
     }
 
+    override fun onCleanEvents(event: CleanEventRelated?) {
+        platform_regular.setFrom(event)
+        platform_bunker.setFrom(event)
+        platform_bulk.setFrom(event)
+        platform_special.setFrom(event)
+        platform_unknown.setFrom(event)
+    }
+
+    override fun onPhotoEvents(events: List<PhotoEvent>) {
+        gallery_before.updatePhotos(events)
+        gallery_after.updatePhotos(events)
+    }
+
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {
         val event = photoEvent ?: PhotoEvent(platform.kpId, photoType.id)
         startActivityNoop<PhotoActivity>(
@@ -110,27 +120,13 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         )
     }
 
-    override fun onCleanEvents(event: CleanEventRelated?) {
-        if (platform.isEmpty) {
-            platform_divider.visibility = View.VISIBLE
-        } else {
-            platform.containers.forEach {
-                addContainer(it)
-            }
-        }
-        event?.apply {
-
-        } ?: run {
-
-        }
-    }
-
-    override fun onPhotoEvents(events: List<PhotoEvent>) {
-        gallery_before.updatePhotos(events)
-        gallery_after.updatePhotos(events)
-    }
-
     override fun closeDetails(hasChanges: Boolean) {
+        if (mHasChanges || hasChanges) {
+
+        } else {
+
+        }
+        SendWorker.launch(applicationContext, platform.kpId)
         setResult(if (mHasChanges || hasChanges) RESULT_OK else RESULT_CANCELED)
         finish()
     }
@@ -157,6 +153,23 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         confirmDialog?.dismiss()
         platform_map.release()
         super.onDestroy()
+    }
+
+    private fun ContainerLayout.setFrom(event: CleanEventRelated?) {
+        event?.run {
+            platform.containers.forEach {
+                it.setFromSame(clean)
+                events.forEach { event ->
+                    it.setFromSame(event)
+                }
+            }
+        } ?: run {
+            platform_regular.container = platform.containers.getOrNull(0)
+            platform_bunker.container = platform.containers.getOrNull(1)
+            platform_bulk.container = platform.containers.getOrNull(2)
+            platform_special.container = platform.containers.getOrNull(3)
+            platform_unknown.container = platform.containers.getOrNull(4)
+        }
     }
 
     companion object {

@@ -83,7 +83,7 @@ class GalleryLayout : RelativeLayout {
                         onPhotoClick(photoType, null)
                     }
                 } else {
-                    context.toast("Доступно только 3 фото")
+                    context.toast("Доступно не более 3 фото")
                 }
             }
         }

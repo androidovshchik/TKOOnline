@@ -22,12 +22,16 @@ import kotlin.math.min
 
 class ContainerLayout : LinearLayout {
 
+    private var containerType = ContainerType.UNKNOWN
+
     var container: SimpleContainer? = null
         set(value) {
             field = value
-            updateVolumeText()
-            updateCountText()
-            visibility = View.VISIBLE
+            value?.let {
+                updateVolumeText()
+                updateCountText()
+                visibility = View.VISIBLE
+            }
         }
 
     @JvmOverloads
@@ -53,10 +57,9 @@ class ContainerLayout : LinearLayout {
     @SuppressLint("Recycle")
     private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_container, this)
-        var type = ContainerType.UNKNOWN
         attrs?.let {
             context.obtainStyledAttributes(it, R.styleable.ContainerLayout).use { a ->
-                type = ContainerType.fromId(a.getString(R.styleable.ContainerLayout_containerType))
+                containerType = ContainerType.fromId(a.getString(R.styleable.ContainerLayout_containerType))
             }
         }
         arrow_up_volume.setOnClickListener {
@@ -91,25 +94,25 @@ class ContainerLayout : LinearLayout {
                 }
             }
         }
-        if (type == ContainerType.BULK1 || type == ContainerType.BULK2) {
+        if (containerType == ContainerType.BULK1 || containerType == ContainerType.BULK2) {
             arrow_up_volume.visibility = INVISIBLE
             arrow_down_volume.visibility = INVISIBLE
             arrow_up_count.visibility = INVISIBLE
             arrow_down_count.visibility = INVISIBLE
             count_value.visibility = INVISIBLE
         }
-        icon_type.setImageResource(type.icon)
-        text_type.text = type.shortName
+        icon_type.setImageResource(containerType.icon)
+        text_type.text = containerType.shortName
     }
 
     private fun updateVolumeText() {
-        container?.apply {
+        container?.run {
             volume_value.setValueText(context.getString(R.string.platform_volume, containerVolume))
         }
     }
 
     private fun updateCountText() {
-        container?.apply {
+        container?.run {
             count_value.setValueText(context.getString(R.string.platform_count, containerCount))
         }
     }
