@@ -90,6 +90,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
 
     override fun enterKioskMode() {
         hasPrompted = false
+        preferences.enableLock = true
         settingsDialog.setAsLocked(true)
         transact {
             remove(passwordDialog)
@@ -99,6 +100,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
     }
 
     override fun exitKioskMode() {
+        preferences.enableLock = false
         startActivityNoop<LockActivity>()
     }
 

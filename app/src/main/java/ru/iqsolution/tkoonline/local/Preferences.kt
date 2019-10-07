@@ -30,6 +30,9 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     var enableLock by booleanPref(false, "0x06")
 
+    /**
+     * Only numbers
+     */
     var lockPassword by nullableStringPref(null, "0x07")
 
     /**
