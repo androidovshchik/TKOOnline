@@ -10,8 +10,6 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.EXTRA_WORKER_MESSAGE
-import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.*
@@ -19,13 +17,11 @@ import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 
-class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsContract.Presenter, Observer<WorkInfo?> {
+class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsContract.Presenter, Observer<WorkInfo> {
 
     val server: Server by instance()
 
-    val db: Database by instance()
-
-    private var observer: LiveData<WorkInfo?>? = null
+    private var observer: LiveData<WorkInfo>? = null
 
     override fun loadPlatformsTypes(refresh: Boolean) {
         baseJob.cancelChildren()
@@ -39,7 +35,7 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
             var maxLon = Double.MIN_VALUE
             val regulars = SimpleArrayMap<Int, Container>()
             val bunkers = SimpleArrayMap<Int, Container>()
-            val bunks = SimpleArrayMap<Int, Container>()
+            val bulks = SimpleArrayMap<Int, Container>()
             val specials = SimpleArrayMap<Int, Container>()
             val unknown = SimpleArrayMap<Int, Container>()
             val primary = arrayListOf<PlatformContainers>()
@@ -65,7 +61,7 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                         when (it.toContainerType()) {
                             ContainerType.REGULAR -> regulars.putLinked(it)
                             ContainerType.BUNKER -> bunkers.putLinked(it)
-                            ContainerType.BULK1, ContainerType.BULK2 -> bunks.putLinked(it)
+                            ContainerType.BULK1, ContainerType.BULK2 -> bulks.putLinked(it)
                             ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> specials.putLinked(it)
                             else -> unknown.putLinked(it)
                         }
@@ -83,7 +79,7 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
             }
             reference.get()?.apply {
                 if (!refresh && responsePlatforms.data.isNotEmpty()) {
-                    changeMapPosition(SimpleLocation((maxLat + minLat) / 2, (maxLon + minLon) / 2))
+                    changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
                 }
                 onReceivedPrimary(primary)
             }
@@ -121,9 +117,8 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
     }
 
     override fun logout(context: Context) {
-        reference.get()?.showLoading()
-        observer = SendWorker.launch(context, true).also {
-            it.observeForever(this)
+        observer = SendWorker.launch(context).also {
+            it?.observeForever(this)
         }
     }
 
@@ -131,18 +126,6 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
         when (t?.state) {
             WorkInfo.State.SUCCEEDED -> {
                 reference.get()?.onLoggedOut()
-            }
-            WorkInfo.State.FAILED -> {
-                reference.get()?.apply {
-                    hideLoading()
-                    showError(t.outputData.getString(EXTRA_WORKER_MESSAGE))
-                }
-            }
-            null, WorkInfo.State.BLOCKED -> {
-                reference.get()?.apply {
-                    hideLoading()
-                    showError("Попробуйте позже")
-                }
             }
             else -> {
             }
@@ -155,8 +138,6 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
     }
 
     private fun SimpleArrayMap<Int, Container>.putLinked(item: Platform) {
-        get(item.linkedKpId)?.addContainer(item) ?: run {
-            put(item.linkedKpId, item)
-        }
+        put(item.linkedKpId, item)
     }
 }
