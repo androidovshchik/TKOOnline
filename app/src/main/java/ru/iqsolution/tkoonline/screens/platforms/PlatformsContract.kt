@@ -5,7 +5,6 @@ import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
-import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 
 interface PlatformsContract {
@@ -23,7 +22,7 @@ interface PlatformsContract {
 
         fun onReceivedTypes(types: List<PhotoType>)
 
-        fun changeMapPosition(location: SimpleLocation)
+        fun changeMapPosition(latitude: Double, longitude: Double)
 
         fun onReceivedPrimary(platforms: List<PlatformContainers>)
 

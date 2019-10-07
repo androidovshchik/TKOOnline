@@ -14,7 +14,6 @@ import org.jetbrains.anko.topPadding
 import ru.iqsolution.tkoonline.GlideApp
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
-import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
@@ -47,15 +46,18 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             login_shadow.topPadding = it
         }
         login_menu.setOnClickListener {
-            openDialog(preferences)
+            openDialog()
         }
     }
 
+    /**
+     * Here permissions are granted
+     */
     override fun onQrCode(value: String) {
         presenter.login(value)
     }
 
-    override fun openDialog(preferences: Preferences) {
+    override fun openDialog() {
         transact {
             remove(passwordDialog)
             remove(settingsDialog)
@@ -88,11 +90,11 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
 
     override fun enterKioskMode() {
         hasPrompted = false
+        settingsDialog.setAsLocked(true)
         transact {
             remove(passwordDialog)
             commit()
         }
-        settingsDialog.setLocked(true, null)
         startActivityNoop<LockActivity>()
     }
 
@@ -114,14 +116,14 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             return 0
         }
 
-    @SuppressLint("CommitTransaction")
-    private inline fun transact(action: FragmentTransaction.() -> Unit) {
-        fragmentManager.beginTransaction().apply(action)
-    }
-
     override fun onBackPressed() {
         if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
             finishAffinity()
         }
+    }
+
+    @SuppressLint("CommitTransaction")
+    private inline fun transact(action: FragmentTransaction.() -> Unit) {
+        fragmentManager.beginTransaction().apply(action)
     }
 }
