@@ -12,7 +12,10 @@ import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.*
+import ru.iqsolution.tkoonline.models.Container
+import ru.iqsolution.tkoonline.models.ContainerType
+import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.services.workers.SendWorker
@@ -59,22 +62,22 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                         }
                     } else {
                         when (it.toContainerType()) {
-                            ContainerType.REGULAR -> regulars.putLinked(it)
-                            ContainerType.BUNKER -> bunkers.putLinked(it)
-                            ContainerType.BULK1, ContainerType.BULK2 -> bulks.putLinked(it)
-                            ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> specials.putLinked(it)
-                            else -> unknown.putLinked(it)
+                            ContainerType.REGULAR -> regulars.put(it.linkedKpId, it)
+                            ContainerType.BUNKER -> bunkers.put(it.linkedKpId, it)
+                            ContainerType.BULK1, ContainerType.BULK2 -> bulks.put(it.linkedKpId, it)
+                            ContainerType.SPECIAL1, ContainerType.SPECIAL2 -> specials.put(it.linkedKpId, it)
+                            else -> unknown.put(it.linkedKpId, it)
                         }
                     }
                 }
             }
             primary.forEach {
                 it.apply {
-                    addContainer(regulars.get(it.kpId))
-                    addContainer(bunkers.get(it.kpId))
-                    addContainer(bunks.get(it.kpId))
-                    addContainer(specials.get(it.kpId))
-                    addContainer(unknown.get(it.kpId))
+                    setFromEqual(regulars.get(it.kpId))
+                    setFromEqual(bunkers.get(it.kpId))
+                    setFromEqual(bulks.get(it.kpId))
+                    setFromEqual(specials.get(it.kpId))
+                    setFromEqual(unknown.get(it.kpId))
                 }
             }
             reference.get()?.apply {
@@ -83,15 +86,13 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                 }
                 onReceivedPrimary(primary)
             }
-            secondary.apply {
-                forEach {
-                    it.apply {
-                        addContainer(regulars.get(it.kpId))
-                        addContainer(bunkers.get(it.kpId))
-                        addContainer(bunks.get(it.kpId))
-                        addContainer(specials.get(it.kpId))
-                        addContainer(unknown.get(it.kpId))
-                    }
+            secondary.forEach {
+                it.apply {
+                    setFromEqual(regulars.get(it.kpId))
+                    setFromEqual(bunkers.get(it.kpId))
+                    setFromEqual(bulks.get(it.kpId))
+                    setFromEqual(specials.get(it.kpId))
+                    setFromEqual(unknown.get(it.kpId))
                 }
             }
             reference.get()?.apply {
@@ -135,9 +136,5 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
     override fun detachView() {
         observer?.removeObserver(this)
         super.detachView()
-    }
-
-    private fun SimpleArrayMap<Int, Container>.putLinked(item: Platform) {
-        put(item.linkedKpId, item)
     }
 }

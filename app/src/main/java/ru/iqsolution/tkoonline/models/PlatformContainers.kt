@@ -65,6 +65,38 @@ class PlatformContainers(platform: Platform) : Platform() {
             return all
         }
 
+    override fun setFromEqual(container: Container?) {
+        if (container is Platform?) {
+            setFromEqual(container)
+        } else {
+            throw IllegalAccessException("Should not be called as is")
+        }
+    }
+
+    fun setFromEqual(platform: Platform?) {
+        platform?.let {
+            containers.forEach { container ->
+                container.setFromEqual(it)
+            }
+        }
+    }
+
+    override fun setFromAny(container: Container?) {
+        if (container is Platform?) {
+            setFromAny(container)
+        } else {
+            throw IllegalAccessException("Should not be called as is")
+        }
+    }
+
+    fun setFromAny(platform: Platform?) {
+        platform?.let {
+            containers.forEach { container ->
+                container.setFromAny(it)
+            }
+        }
+    }
+
     fun addError(error: String) {
         if (!errors.contains(error)) {
             errors.add(error)
