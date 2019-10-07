@@ -30,7 +30,7 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
         presenter = ProblemPresenter().also {
             it.attachView(this)
         }
-        platform = intent.getSerializableExtra(EXTRA_PLATFORM_PLATFORM) as PlatformContainers
+        platform = intent.getSerializableExtra(EXTRA_PROBLEM_PLATFORM) as PlatformContainers
         toolbar_back.setOnClickListener {
             setResult(RESULT_CANCELED)
             finish()

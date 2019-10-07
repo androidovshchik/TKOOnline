@@ -20,7 +20,7 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
             val internalPhoto = File(photoEvent.path)
             return File(fileManager.externalDir, internalPhoto.name)
         }
-        return fileManager.getRandomFile()
+        return File(fileManager.externalDir, fileManager.getRandomName())
     }
 
     /**

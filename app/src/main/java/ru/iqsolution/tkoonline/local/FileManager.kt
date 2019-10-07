@@ -24,8 +24,8 @@ class FileManager(context: Context) {
         mkdirs()
     }
 
-    fun getRandomFile(): File {
-        return File("${UUID.randomUUID()}.jpg")
+    fun getRandomName(): String {
+        return "${UUID.randomUUID()}.jpg"
     }
 
     fun copyFile(src: String, dist: String) {
