@@ -73,6 +73,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/gallery_height"
         android:layout_below="@+id/subtitle"
+        android:layout_marginBottom="26dp"
         android:adjustViewBounds="true"
         tools:src="@drawable/ic_rect_green"/>
 
@@ -80,7 +81,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@+id/mark"
-        android:layout_marginTop="26dp"
         android:background="@color/colorDivider"/>
 
 </merge>

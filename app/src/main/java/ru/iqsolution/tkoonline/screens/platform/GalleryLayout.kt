@@ -93,8 +93,8 @@ class GalleryLayout : RelativeLayout {
         )
         mark.background = ContextCompat.getDrawable(
             context, when (photoType) {
-                PhotoType.Default.BEFORE -> R.drawable.ic_rect_green
-                PhotoType.Default.AFTER -> R.drawable.ic_rect_red
+                PhotoType.Default.BEFORE -> R.drawable.ic_rect_red
+                PhotoType.Default.AFTER -> R.drawable.ic_rect_green
                 else -> 0
             }
         )
