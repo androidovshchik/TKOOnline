@@ -110,50 +110,35 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
         platformsAdapter.apply {
-            notifyPrimaryItems(primary)
-            notifyDataSetChanged()
-        }
-        platformsAdapter.apply {
-            notifySecondaryItems(secondary)
+            primaryItems.notifyItems(primary)
+            items.notifyItems(secondary)
             notifyDataSetChanged()
         }
         presenter.loadPhotoCleanEvents()
     }
 
     override fun onPhotoCleanEvents(photo: List<PhotoEvent>, clean: List<CleanEvent>) {
-        val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-        secondary.apply {
-            sortByDescending { it.timestamp }
-        }
-        for (platform in photo) {
-            if (it.kpId == platform.kpId) {
-                if (platform.timestamp == 0L) {
-                    platform.timestamp = it.whenTime.withZone(timeZone).millis
-                }
-                errorNames.get(it.type)?.run {
-                    platform.addError(this)
-                }
+        platformsAdapter.apply {
+            primaryItems.notifyItems(null, null, photo, clean)
+            items.apply {
+                notifyItems(null, null, photo, clean)
+                sortByDescending { it.timestamp }
             }
+            notifyDataSetChanged()
+            // primary platforms will overlay secondary in such order
+            platforms_map.setMarkers(presenter.toJson(items), presenter.toJson(primaryItems))
         }
-        for (platform in clean) {
-            if (it.kpId == platform.kpId) {
-                val millis = it.whenTime.withZone(timeZone).millis
-                if (platform.timestamp < millis) {
-                    platform.timestamp = millis
-                }
-                break
-            }
-        }
-        // primary platforms will overlay secondary in such order
-        platforms_map.setMarkers(secondary, primary)
         platforms_refresh.isRefreshing = false
     }
 
     override fun onLocationResult(location: SimpleLocation) {
         platforms_map.setLocation(location)
         platformsAdapter.apply {
-            notifyPrimaryItems(null, location)
-            notifySecondaryItems(null, location)
+            primaryItems.apply {
+                notifyItems(null, location)
+                sortBy { it.meters }
+            }
+            items.notifyItems(null, location)
             notifyDataSetChanged()
         }
     }
@@ -203,27 +188,11 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         super.onDestroy()
     }
 
-    private fun PlatformsAdapter.notifyPrimaryItems(
-        platforms: List<PlatformContainers>?,
-        location: SimpleLocation? = null
-    ) {
-        platforms?.let {
-            primaryItems.apply {
-                clear()
-                addAll(it)
-            }
-        }
-        if (location != null) {
-            primaryItems.forEach {
-                it.setDistanceTo(location)
-            }
-            primaryItems.sortBy { it.meters }
-        }
-    }
-
-    private fun PlatformsAdapter.notifySecondaryItems(
-        platforms: List<PlatformContainers>?,
-        location: SimpleLocation? = null
+    private fun List<PlatformContainers>.notifyItems(
+        platforms: List<PlatformContainers>? = null,
+        location: SimpleLocation? = null,
+        photo: List<PhotoEvent>? = null,
+        clean: List<CleanEvent>? = null
     ) {
         platforms?.let {
             items.apply {
@@ -234,6 +203,26 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         if (location != null) {
             items.forEach {
                 it.setDistanceTo(location)
+            }
+        }
+        val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
+        for (platform in photo) {
+            if (it.kpId == platform.kpId) {
+                if (platform.timestamp == 0L) {
+                    platform.timestamp = it.whenTime.withZone(timeZone).millis
+                }
+                photoErrors.get(it.type)?.run {
+                    platform.addError(this)
+                }
+            }
+        }
+        for (platform in clean) {
+            if (it.kpId == platform.kpId) {
+                val millis = it.whenTime.withZone(timeZone).millis
+                if (platform.timestamp < millis) {
+                    platform.timestamp = millis
+                }
+                break
             }
         }
     }
