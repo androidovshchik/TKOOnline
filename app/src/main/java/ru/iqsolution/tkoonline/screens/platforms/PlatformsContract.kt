@@ -26,13 +26,11 @@ interface PlatformsContract {
 
         fun onReceivedPrimary(platforms: List<PlatformContainers>)
 
-        fun onReceivedSecondary(platforms: List<PlatformContainers>)
-
         fun updateMapMarkers(primary: String, secondary: String)
 
-        fun onPhotoEvents(events: List<PhotoEvent>)
+        fun onReceivedSecondary(platforms: List<PlatformContainers>)
 
-        fun onCleanEvents(events: List<CleanEvent>)
+        fun onPhotoCleanEvents(photo: List<PhotoEvent>, clean: List<CleanEvent>)
 
         fun onLoggedOut()
     }

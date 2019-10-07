@@ -35,12 +35,11 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platforms)
-        platformsAdapter = PlatformsAdapter(applicationContext).apply {
-            setListener(this@PlatformsActivity)
+        presenter = PlatformsPresenter().also {
+            it.attachView(this)
         }
-        presenter = PlatformsPresenter().apply {
-            attachView(this@PlatformsActivity)
-            loadPlatformsTypes(false)
+        platformsAdapter = PlatformsAdapter(applicationContext).also {
+            it.setListener(this)
         }
         platforms_map.apply {
             loadUrl(URL)
@@ -69,13 +68,14 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 setOnClickListener {
                     val photoType = PhotoType.Default.OTHER
                     startActivityNoop<PhotoActivity>(
-                        null,
+                        REQUEST_PHOTO,
                         EXTRA_PHOTO_TITLE to photoType.description,
                         EXTRA_PHOTO_EVENT to PhotoEvent(photoType.id)
                     )
                 }
             }
         }
+        presenter.loadPlatformsTypes(false)
     }
 
     override fun onAdapterEvent(position: Int, item: PlatformContainers, param: Any?) {
@@ -105,13 +105,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platforms_refresh.isRefreshing = false
     }
 
-    override fun onReceivedSecondary(platforms: List<PlatformContainers>) {
-        platformsAdapter.apply {
-            notifySecondaryItems(preferences.location, platforms)
-            notifyDataSetChanged()
-        }
-    }
-
     /**
      * NOTICE primary platforms will overlay secondary in such order
      */
@@ -119,16 +112,15 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platforms_map.setMarkers(secondary, primary)
     }
 
-    override fun onLocationResult(location: SimpleLocation) {
-        platforms_map.setLocation(location)
+    override fun onReceivedSecondary(platforms: List<PlatformContainers>) {
         platformsAdapter.apply {
-            notifyPrimaryItems(location)
-            notifySecondaryItems(location)
+            notifySecondaryItems(preferences.location, platforms)
             notifyDataSetChanged()
         }
+        presenter.loadPhotoCleanEvents()
     }
 
-    override fun onPhotoEvents(events: List<PhotoEvent>) {
+    override fun onPhotoCleanEvents(photo: List<PhotoEvent>, clean: List<CleanEvent>) {
         val errorNames = SimpleArrayMap<Int, String>()
         val timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
         responseTypes.data.forEach {
@@ -149,9 +141,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 }
             }
         }
-    }
-
-    override fun onCleanEvents(events: List<CleanEvent>) {
         for (platform in secondary) {
             if (it.kpId == platform.kpId) {
                 val millis = it.whenTime.withZone(timeZone).millis
@@ -160,6 +149,15 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 }
                 break
             }
+        }
+    }
+
+    override fun onLocationResult(location: SimpleLocation) {
+        platforms_map.setLocation(location)
+        platformsAdapter.apply {
+            notifyPrimaryItems(location)
+            notifySecondaryItems(location)
+            notifyDataSetChanged()
         }
     }
 
@@ -220,7 +218,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
         if (location != null) {
             primaryItems.forEach {
-                it.meters = it.getDistance(location)
+                it.setDistanceTo(location)
             }
             primaryItems.sortBy { it.meters }
         }
@@ -238,7 +236,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
         if (location != null) {
             items.forEach {
-                it.meters = it.getDistance(location)
+                it.setDistanceTo(location)
             }
         }
     }

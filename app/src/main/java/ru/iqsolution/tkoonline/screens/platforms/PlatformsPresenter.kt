@@ -96,8 +96,8 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                 }
             }
             reference.get()?.apply {
-                onReceivedSecondary(secondary)
                 updateMapMarkers(gson.toJson(primary), gson.toJson(secondary))
+                onReceivedSecondary(secondary)
             }
         }
     }
@@ -110,10 +110,7 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                 photoEvents.addAll(db.photoDao().getDayEvents(preferences.serverDay))
                 cleanEvents.addAll(db.cleanDao().getDayEvents(preferences.serverDay))
             }
-            reference.get()?.apply {
-                onPhotoEvents(photoEvents)
-                onCleanEvents(cleanEvents)
-            }
+            reference.get()?.onPhotoCleanEvents(photoEvents, cleanEvents)
         }
     }
 

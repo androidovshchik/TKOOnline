@@ -91,6 +91,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
         if (sendAll) {
+            val locationCount = db.locationDao().getSendCount()
+            if (locationCount > 0) {
+                // awaiting telemetry service
+                return@coroutineScope Result.retry()
+            }
             try {
                 server.logout(preferences.authHeader).execute()
             } catch (e: Throwable) {
