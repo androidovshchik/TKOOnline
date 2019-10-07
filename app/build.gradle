@@ -37,9 +37,9 @@ android {
             //buildConfigField("String", "BASE_URL", "\"https://msknt2.iqsolution.ru/mobile/v1/\"")
         }
         release {
-            minifyEnabled false
-            //useProguard true
-            //shrinkResources true
+            minifyEnabled true
+            useProguard true
+            shrinkResources true
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             //buildConfigField("String", "BASE_URL", "\"https://msknt.iqsolution.ru/mobile/v1/\"")
