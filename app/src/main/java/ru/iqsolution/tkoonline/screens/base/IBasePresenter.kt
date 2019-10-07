@@ -8,6 +8,8 @@ interface IBasePresenter<V : IBaseView> {
 
     fun calculateSend()
 
+    fun toJson(instance: Collection<Any>): String
+
     fun <T> toJson(instance: T, tClass: Class<out T>): String
 
     fun <T> fromJson(json: String, tClass: Class<out T>): T

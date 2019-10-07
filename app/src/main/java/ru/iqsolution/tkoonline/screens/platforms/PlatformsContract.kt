@@ -24,11 +24,7 @@ interface PlatformsContract {
 
         fun changeMapPosition(latitude: Double, longitude: Double)
 
-        fun onReceivedPrimary(platforms: List<PlatformContainers>)
-
-        fun updateMapMarkers(primary: String, secondary: String)
-
-        fun onReceivedSecondary(platforms: List<PlatformContainers>)
+        fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>)
 
         fun onPhotoCleanEvents(photo: List<PhotoEvent>, clean: List<CleanEvent>)
 

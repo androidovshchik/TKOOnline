@@ -80,12 +80,6 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                     setFromEqual(unknown.get(it.kpId))
                 }
             }
-            reference.get()?.apply {
-                if (!refresh && responsePlatforms.data.isNotEmpty()) {
-                    changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
-                }
-                onReceivedPrimary(primary)
-            }
             secondary.forEach {
                 it.apply {
                     setFromEqual(regulars.get(it.kpId))
@@ -96,8 +90,10 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                 }
             }
             reference.get()?.apply {
-                updateMapMarkers(gson.toJson(primary), gson.toJson(secondary))
-                onReceivedSecondary(secondary)
+                if (!refresh && responsePlatforms.data.isNotEmpty()) {
+                    changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
+                }
+                onReceivedPlatforms(primary, secondary)
             }
         }
     }

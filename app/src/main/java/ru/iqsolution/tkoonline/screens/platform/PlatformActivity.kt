@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.platform
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.collection.SimpleArrayMap
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
@@ -27,18 +28,29 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
 
     private val photoTypes = arrayListOf<PhotoType>()
 
+    private val photoErrors = SimpleArrayMap<Int, String>()
+
     private var confirmDialog: ConfirmDialog? = null
 
     private var preFinishing = false
 
     private var hasPhoto = false
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform)
         presenter = PlatformPresenter().also {
             it.attachView(this)
             platform = it.fromJson(intent.getStringExtra(EXTRA_PLATFORM_PLATFORM), PlatformContainers::class.java)
+        }
+        photoTypes.apply {
+            addAll(intent.getSerializableExtra(EXTRA_PROBLEM_PHOTO_TYPES) as ArrayList<PhotoType>)
+            forEach {
+                if (it.isError == 1) {
+                    photoErrors.put(it.id, it.shortName)
+                }
+            }
         }
         toolbar_back.setOnClickListener {
             if (preFinishing) {
@@ -57,7 +69,6 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         platform_map.apply {
             loadUrl(URL)
             setLocation(preferences.location)
-            moveTo(platform.latitude, platform.longitude)
         }
         platform_id.setTextBoldSpan(getString(R.string.platform_id, platform.kpId), 0, 3)
         platform_range.setTextBoldSpan(
@@ -121,6 +132,16 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     override fun onPhotoEvents(events: List<PhotoEvent>) {
         gallery_before.updatePhotos(events)
         gallery_after.updatePhotos(events)
+        platform.errors.clear()
+        events.forEach {
+            photoErrors.get(it.type)?.let { error ->
+                platform.addError(error)
+            }
+        }
+        platform_map.apply {
+            setMarkers("[${presenter.toJson(platform, platform.javaClass)}]")
+            moveTo(platform.latitude, platform.longitude)
+        }
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {
