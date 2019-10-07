@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="10dp"
+    android:paddingStart="15dp"
     android:paddingEnd="0dp"
     tools:ignore="MissingPrefix">
 
@@ -33,7 +33,7 @@
         android:textSize="16sp"
         android:textColor="#89000000"
         android:lineSpacingExtra="8sp"
-        fontPath="fonts/Roboto-Bold.ttf"/>
+        fontPath="fonts/Roboto-Medium.ttf"/>
 
     <Button
         android:id="@+id/dialog_exit"
@@ -59,7 +59,7 @@
         android:layout_alignParentEnd="true"
         android:paddingStart="15dp"
         android:paddingEnd="0dp"
-        android:text="Продолжить"
+        android:text="Отмена"
         android:textSize="14sp"
         android:textColor="@color/colorAccent"
         android:lineSpacingExtra="2sp"

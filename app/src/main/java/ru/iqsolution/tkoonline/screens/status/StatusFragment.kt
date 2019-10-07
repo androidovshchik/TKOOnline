@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline.screens.status
 
 import android.annotation.SuppressLint
+import android.location.LocationManager
 import android.os.BatteryManager
 import android.os.Bundle
 import android.os.Looper
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.include_status.*
+import org.jetbrains.anko.locationManager
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.FORMAT_TIME
@@ -22,7 +24,6 @@ import ru.iqsolution.tkoonline.screens.base.IBaseView
 import ru.iqsolution.tkoonline.services.LocationListener
 import timber.log.Timber
 import java.util.*
-import kotlin.math.min
 
 /**
  * NOTICE should have an id [R.id.status_fragment]
@@ -60,7 +61,7 @@ class StatusFragment : BaseFragment(), SyncListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         status_number.text = preferences.vehicleNumber ?: ""
-        onLocationChanged(false)
+        onLocationChanged(context.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
         onNetworkChanged(false)
         onCloudChanged(true, 0)
     }
@@ -122,7 +123,9 @@ class StatusFragment : BaseFragment(), SyncListener {
         )
         if (photoCount > 0) {
             status_count.apply {
-                text = min(9, photoCount).toString()
+                text = if (photoCount < 10) {
+                    photoCount.toString()
+                } else "!"
                 visibility = View.VISIBLE
             }
         } else {
