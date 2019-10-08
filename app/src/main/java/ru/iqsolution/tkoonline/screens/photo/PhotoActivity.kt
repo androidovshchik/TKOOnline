@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.screens.photo
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.widget.RelativeLayout
 import androidx.core.content.FileProvider
 import coil.api.load
 import kotlinx.android.synthetic.main.activity_photo.*
@@ -44,7 +45,14 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             }
             closePreview(RESULT_CANCELED)
         }
-        toolbar_title.text = intent.getStringExtra(EXTRA_PHOTO_TITLE) ?: PhotoType.Default.OTHER.description
+        toolbar_title.apply {
+            (layoutParams as RelativeLayout.LayoutParams).apply {
+                removeRule(RelativeLayout.ALIGN_PARENT_END)
+                removeRule(RelativeLayout.END_OF)
+                addRule(RelativeLayout.CENTER_HORIZONTAL)
+            }
+            text = intent.getStringExtra(EXTRA_PHOTO_TITLE) ?: PhotoType.Default.OTHER.description
+        }
         photo_delete.setOnClickListener {
             if (preFinishing) {
                 return@setOnClickListener
