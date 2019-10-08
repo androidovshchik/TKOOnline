@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.local
 import android.content.Context
 import android.graphics.*
 import androidx.annotation.WorkerThread
+import androidx.exifinterface.media.ExifInterface
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -10,11 +11,8 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.*
-import android.graphics.Bitmap.CompressFormat
-import androidx.exifinterface.media.ExifInterface
 import java.io.IOException
-
+import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
 class FileManager(context: Context) {
@@ -60,35 +58,24 @@ class FileManager(context: Context) {
         }
     }
 
-    fun compressImage(
-        imageFile: File,
-        reqWidth: Float,
-        reqHeight: Float,
-        compressFormat: Bitmap.CompressFormat,
-        quality: Int,
-        destinationPath: String
-    ): File {
-        var fileOutputStream: FileOutputStream? = null
-        val file = File(destinationPath).parentFile
+    fun compressImage(path: String) {
+        compressImage(File(path))
+    }
+
+    fun compressImage(file: File) {
         if (!file.exists()) {
-            file.mkdirs()
+            return
         }
         try {
-            fileOutputStream = FileOutputStream(destinationPath)
-            // write the compressed bitmap at the destination specified by destinationPath.
-            decodeSampledBitmapFromFile(imageFile, reqWidth, reqHeight).compress(
-                compressFormat,
-                quality,
-                fileOutputStream
-            )
-        } finally {
-            if (fileOutputStream != null) {
-                fileOutputStream.flush()
-                fileOutputStream.close()
-            }
-        }
+            FileOutputStream(file).use { output ->
+                file.readBitmap()
+                    ?.compress(Bitmap.CompressFormat.JPEG, 80, output)
 
-        return File(destinationPath)
+            }
+        } catch (e: Throwable) {
+            Timber.e(e)
+            file.delete()
+        }
     }
 
     fun readFile(path: String): MultipartBody.Part? {
@@ -97,17 +84,18 @@ class FileManager(context: Context) {
 
     @WorkerThread
     fun readFile(file: File): MultipartBody.Part? {
-        try {
-            if (file.exists()) {
-                return MultipartBody.Part.createFormData(
-                    "file", file.name,
-                    file.asRequestBody(IMAGE_TYPE)
-                )
-            }
+        if (!file.exists()) {
+            return null
+        }
+        return try {
+            MultipartBody.Part.createFormData(
+                "file", file.name,
+                file.asRequestBody(IMAGE_TYPE)
+            )
         } catch (e: Throwable) {
             Timber.e(e)
+            null
         }
-        return null
     }
 
     fun deleteFile(path: String) {
@@ -142,7 +130,8 @@ class FileManager(context: Context) {
         }
     }
 
-    private fun File.decodeSampledBitmapFromFile(reqWidth: Float, reqHeight: Float): Bitmap? {
+    @Suppress("DEPRECATION")
+    private fun File.readBitmap(): Bitmap? {
         // First decode with inJustDecodeBounds=true to check dimensions
         var scaledBitmap: Bitmap? = null
         var bmp: Bitmap? = null
@@ -215,12 +204,10 @@ class FileManager(context: Context) {
             exif = ExifInterface(imageFile.absolutePath)
             val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)
             val matrix = Matrix()
-            if (orientation == 6) {
-                matrix.postRotate(90)
-            } else if (orientation == 3) {
-                matrix.postRotate(180)
-            } else if (orientation == 8) {
-                matrix.postRotate(270)
+            when (orientation) {
+                6 -> matrix.postRotate(90)
+                3 -> matrix.postRotate(180)
+                8 -> matrix.postRotate(270)
             }
             scaledBitmap = Bitmap.createBitmap(
                 scaledBitmap, 0, 0, scaledBitmap!!.getWidth(),
