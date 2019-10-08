@@ -3,12 +3,14 @@ package ru.iqsolution.tkoonline.screens.map
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.webkit.WebSettings
 import android.webkit.WebView
+import androidx.core.content.ContextCompat
 import ru.iqsolution.tkoonline.BuildConfig
+import ru.iqsolution.tkoonline.R
 
 class MapWebView : WebView {
 
@@ -38,7 +40,8 @@ class MapWebView : WebView {
             databaseEnabled = true
             setAppCacheEnabled(true)
             setAppCachePath(context.cacheDir.path)
-            setBackgroundColor(Color.parseColor("#fafafa"))
+            cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+            setBackgroundColor(ContextCompat.getColor(context, R.color.colorBackground))
         }
     }
 

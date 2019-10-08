@@ -29,7 +29,7 @@ function init() {
 }
 
 const script = document.createElement('script');
-script.src = "https://api-maps.yandex.ru/2.1/?apikey=a92bd5d3-176f-40b5-8213-844995d832ab&lang=ru_RU";
+script.src = `https://api-maps.yandex.ru/2.1/?apikey=a92bd5d3-176f-40b5-8213-844995d832ab&lang=ru_RU&_today=${new Date().toJSON().slice(0, 10)}`;
 script.type = "text/javascript";
 script.onload = function () {
     ymaps.ready(init);

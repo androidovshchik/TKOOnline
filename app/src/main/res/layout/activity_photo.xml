@@ -29,7 +29,7 @@
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
         android:src="@drawable/login_background"
-        android:background="#fafafa"/>
+        android:background="@color/colorBackground"/>
 
     <LinearLayout
         android:id="@+id/photo_buttons"
