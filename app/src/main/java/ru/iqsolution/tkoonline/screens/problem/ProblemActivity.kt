@@ -85,8 +85,6 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
         }
     }
 
-    override fun onBackPressed() {}
-
     companion object {
 
         private const val REQUEST_PHOTO = 500

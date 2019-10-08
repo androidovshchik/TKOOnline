@@ -186,8 +186,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
     }
 
-    override fun onBackPressed() {}
-
     override fun onDestroy() {
         waitDialog?.dismiss()
         platforms_map.release()

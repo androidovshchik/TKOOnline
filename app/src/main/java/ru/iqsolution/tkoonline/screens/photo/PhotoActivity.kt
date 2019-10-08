@@ -118,8 +118,6 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         }
     }
 
-    override fun onBackPressed() {}
-
     override fun onDestroy() {
         try {
             externalPhoto.delete()

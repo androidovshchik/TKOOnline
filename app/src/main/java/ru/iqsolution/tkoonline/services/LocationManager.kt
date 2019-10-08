@@ -48,7 +48,6 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
     }
 
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle?) {
-        Timber.d("onStatusChanged $provider $status")
         if (LocationManager.GPS_PROVIDER != provider) {
             return
         }

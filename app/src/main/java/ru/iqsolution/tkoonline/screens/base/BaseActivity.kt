@@ -190,6 +190,8 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onBackPressed() {}
+
     override fun onDestroy() {
         presenter.detachView()
         super.onDestroy()
