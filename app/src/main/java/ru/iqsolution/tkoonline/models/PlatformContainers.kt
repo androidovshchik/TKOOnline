@@ -38,7 +38,7 @@ class PlatformContainers() : Platform() {
 
     constructor(platform: Platform) : this() {
         kpId = platform.kpId
-        linkedKpId = platform.kpId
+        linkedKpId = platform.linkedKpId
         address = platform.address
         latitude = platform.latitude
         longitude = platform.longitude
@@ -52,7 +52,7 @@ class PlatformContainers() : Platform() {
         timeLimitTo = platform.timeLimitTo
         timeLimitFrom = platform.timeLimitFrom
         status = platform.status
-        setFromAny(platform)
+        setFromEqual(platform)
     }
 
     val allLinkedIds: List<Int>
