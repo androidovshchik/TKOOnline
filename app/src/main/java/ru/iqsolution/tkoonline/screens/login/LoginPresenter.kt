@@ -29,45 +29,45 @@ class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presen
             Timber.e(e)
             return
         }
-        Timber.d("QrCodeJson: $data")
+        Timber.d("QrCode: $data")
         qrCodeJson = data
         baseJob.cancelChildren()
         launch {
-            try {
-                val responseAuth = server.login(
-                    qrCode.carId.toString(),
-                    qrCode.pass,
-                    preferences.lockPassword?.toInt()
-                )
-                preferences.bulk {
-                    accessToken = responseAuth.accessKey
-                    expiresWhen = responseAuth.expireTime
-                    allowPhotoRefKp = responseAuth.noKpPhoto == 1
-                    serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
-                    elapsedTime = SystemClock.elapsedRealtime()
-                    vehicleNumber = qrCode.regNum
-                    queName = responseAuth.queName
-                    carId = qrCode.carId
-                    tokenId = withContext(Dispatchers.IO) {
-                        db.tokenDao().insert(AccessToken().apply {
-                            token = responseAuth.accessKey
-                            queName = responseAuth.queName
-                            carId = qrCode.carId
-                            expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME)
-                        })
-                    }
+            val responseAuth = server.login(
+                qrCode.carId.toString(),
+                qrCode.pass,
+                preferences.lockPassword?.toInt()
+            )
+            preferences.bulk {
+                accessToken = responseAuth.accessKey
+                expiresWhen = responseAuth.expireTime
+                allowPhotoRefKp = responseAuth.noKpPhoto == 1
+                serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
+                elapsedTime = SystemClock.elapsedRealtime()
+                vehicleNumber = qrCode.regNum
+                queName = responseAuth.queName
+                carId = qrCode.carId
+                tokenId = withContext(Dispatchers.IO) {
+                    db.tokenDao().insert(AccessToken().apply {
+                        token = responseAuth.accessKey
+                        queName = responseAuth.queName
+                        carId = qrCode.carId
+                        expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME)
+                    })
                 }
-                reference.get()?.onLoggedIn()
-            } catch (e: CancellationException) {
-            } catch (e: Throwable) {
-                try {
-                    // short toast time
-                    delay(2000)
-                } catch (e: CancellationException) {
-                }
-                qrCodeJson = null
-                throw e
             }
+            reference.get()?.onLoggedIn()
+        }
+    }
+
+    override fun reset() {
+        launch {
+            try {
+                // short toast time
+                delay(2000)
+            } catch (e: CancellationException) {
+            }
+            qrCodeJson = null
         }
     }
 }

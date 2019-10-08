@@ -16,6 +16,7 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStates
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import org.jetbrains.anko.*
+import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -88,6 +89,16 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
     override fun updateCloud(allCount: Int, photoCount: Int) {
         statusBar?.onCloudChanged(allCount > 0, photoCount)
+    }
+
+    override fun showError(e: Throwable?) {
+        showError(
+            if (BuildConfig.DEBUG) {
+                e.toString()
+            } else {
+                e?.localizedMessage
+            }
+        )
     }
 
     override fun showError(message: CharSequence?) {

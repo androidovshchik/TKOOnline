@@ -7,6 +7,8 @@ interface LoginContract {
     interface Presenter {
 
         fun login(data: String)
+
+        fun reset()
     }
 
     interface View : IBaseView {

@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.MainApp
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
@@ -60,13 +59,7 @@ open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, Corout
     override val coroutineContext = Dispatchers.Main + baseJob + CoroutineExceptionHandler { _, e ->
         Timber.e(e)
         if (e !is CancellationException) {
-            reference.get()?.showError(
-                if (BuildConfig.DEBUG) {
-                    e.toString()
-                } else {
-                    e.localizedMessage
-                }
-            )
+            reference.get()?.showError(e)
         }
     }
 }

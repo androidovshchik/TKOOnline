@@ -107,6 +107,11 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
         finish()
     }
 
+    override fun showError(e: Throwable?) {
+        super.showError(e)
+        presenter.reset()
+    }
+
     private val statusBarHeight: Int
         get() {
             val id = resources.getIdentifier("status_bar_height", "dimen", "android")

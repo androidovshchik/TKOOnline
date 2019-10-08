@@ -6,5 +6,7 @@ interface IBaseView {
 
     fun updateCloud(allCount: Int, photoCount: Int)
 
+    fun showError(e: Throwable?)
+
     fun showError(message: CharSequence?)
 }
