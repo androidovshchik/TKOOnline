@@ -99,6 +99,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
 
     override fun exitKioskMode() {
         preferences.enableLock = false
+        settingsDialog.setAsLocked(false)
         startActivityNoop<LockActivity>()
     }
 
