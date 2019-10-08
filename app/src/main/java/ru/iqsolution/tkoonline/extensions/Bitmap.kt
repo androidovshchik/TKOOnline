@@ -2,10 +2,10 @@
 
 package ru.iqsolution.tkoonline.extensions
 
-import android.content.res.TypedArray
+import android.graphics.Bitmap
 import timber.log.Timber
 
-inline fun <T> TypedArray.use(block: TypedArray.() -> T): T {
+inline fun <T> Bitmap.use(block: Bitmap.() -> T): T {
     try {
         return block()
     } finally {

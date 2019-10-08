@@ -1,17 +1,19 @@
 package ru.iqsolution.tkoonline.local
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import androidx.annotation.WorkerThread
 import androidx.exifinterface.media.ExifInterface
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import ru.iqsolution.tkoonline.extensions.use
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.IOException
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -39,10 +41,7 @@ class FileManager(context: Context) {
      * @return new path of file
      */
     @WorkerThread
-    fun copyFile(src: File?, dist: File?) {
-        if (src == null || dist == null) {
-            return
-        }
+    fun copyFile(src: File, dist: File) {
         if (!src.exists()) {
             return
         }
@@ -68,9 +67,9 @@ class FileManager(context: Context) {
         }
         try {
             FileOutputStream(file).use { output ->
-                file.readBitmap()
-                    ?.compress(Bitmap.CompressFormat.JPEG, 80, output)
-
+                file.readBitmap()?.use {
+                    compress(Bitmap.CompressFormat.JPEG, 75, output)
+                }
             }
         } catch (e: Throwable) {
             Timber.e(e)
@@ -88,10 +87,7 @@ class FileManager(context: Context) {
             return null
         }
         return try {
-            MultipartBody.Part.createFormData(
-                "file", file.name,
-                file.asRequestBody(IMAGE_TYPE)
-            )
+            MultipartBody.Part.createFormData("file", file.name, file.asRequestBody(IMAGE_TYPE))
         } catch (e: Throwable) {
             Timber.e(e)
             null
@@ -132,107 +128,22 @@ class FileManager(context: Context) {
 
     @Suppress("DEPRECATION")
     private fun File.readBitmap(): Bitmap? {
-        // First decode with inJustDecodeBounds=true to check dimensions
-        var scaledBitmap: Bitmap? = null
-        var bmp: Bitmap? = null
-
-        val options = BitmapFactory.Options()
-        options.inJustDecodeBounds = true
-        bmp = BitmapFactory.decodeFile(absolutePath, options)
-
-        var actualHeight = options.outHeight
-        var actualWidth = options.outWidth
-
-        var imgRatio = actualWidth.toFloat() / actualHeight.toFloat()
-        val maxRatio = reqWidth / reqHeight
-
-        if (actualHeight > reqHeight || actualWidth > reqWidth) {
-            //If Height is greater
-            if (imgRatio < maxRatio) {
-                imgRatio = reqHeight / actualHeight
-                actualWidth = (imgRatio * actualWidth).toInt()
-                actualHeight = reqHeight.toInt()
-
-            }  //If Width is greater
-            else if (imgRatio > maxRatio) {
-                imgRatio = reqWidth / actualWidth
-                actualHeight = (imgRatio * actualHeight).toInt()
-                actualWidth = reqWidth.toInt()
-            } else {
-                actualHeight = reqHeight.toInt()
-                actualWidth = reqWidth.toInt()
-            }
-        }
-        // Calculate inSampleSize
-        options.inSampleSize = options.calculateInSampleSize(actualWidth, actualHeight)
-        options.inJustDecodeBounds = false
-        options.inDither = false
-        options.inPurgeable = true
-        options.inInputShareable = true
-        options.inTempStorage = ByteArray(16 * 1024)
-
+        val bitmap = BitmapFactory.decodeFile(path)
         try {
-            bmp = BitmapFactory.decodeFile(absolutePath, options)
-        } catch (exception: OutOfMemoryError) {
-            exception.printStackTrace()
-
-        }
-
-        try {
-            scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888)
-        } catch (exception: OutOfMemoryError) {
-            exception.printStackTrace()
-        }
-
-        val ratioX = actualWidth / options.outWidth.toFloat()
-        val ratioY = actualHeight / options.outHeight.toFloat()
-        val middleX = actualWidth / 2.0f
-        val middleY = actualHeight / 2.0f
-
-        val scaleMatrix = Matrix()
-        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY)
-
-        val canvas = Canvas(scaledBitmap)
-        canvas.setMatrix(scaleMatrix)
-        canvas.drawBitmap(
-            bmp, middleX - bmp!!.getWidth() / 2,
-            middleY - bmp!!.getHeight() / 2, Paint(Paint.FILTER_BITMAP_FLAG)
-        )
-        bmp!!.recycle()
-        val exif: ExifInterface
-        try {
-            exif = ExifInterface(imageFile.absolutePath)
-            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)
+            val exif = ExifInterface(this)
+            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
             val matrix = Matrix()
             when (orientation) {
-                6 -> matrix.postRotate(90)
-                3 -> matrix.postRotate(180)
-                8 -> matrix.postRotate(270)
+                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                else -> return bitmap
             }
-            scaledBitmap = Bitmap.createBitmap(
-                scaledBitmap, 0, 0, scaledBitmap!!.getWidth(),
-                scaledBitmap!!.getHeight(), matrix, true
-            )
-        } catch (e: IOException) {
-            e.printStackTrace()
+            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
+        } catch (e: Throwable) {
+            Timber.e(e)
         }
-        return scaledBitmap
-    }
-
-    private fun BitmapFactory.Options.calculateInSampleSize(reqWidth: Int, reqHeight: Int): Int {
-        // Raw height and width of image
-        var inSampleSize = 1
-        if (outHeight > reqHeight || outWidth > reqWidth) {
-            inSampleSize *= 2
-            val halfHeight = outHeight / 2
-            val halfWidth = outWidth / 2
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-                inSampleSize *= 2
-            }
-        }
-        return inSampleSize
+        return bitmap
     }
 
     companion object {
