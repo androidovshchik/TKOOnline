@@ -141,6 +141,11 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         telemetryService = null
     }
 
+    override fun onPause() {
+        super.onPause()
+        overridePendingTransition(0, 0)
+    }
+
     override fun onStop() {
         if (telemetryService != null) {
             unbindService(this)

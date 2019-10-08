@@ -37,6 +37,7 @@
                 android:id="@+id/platform_regular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="9dp"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:containerType="ТБО"
@@ -46,6 +47,7 @@
                 android:id="@+id/platform_bunker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="9dp"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:containerType="КГМ"
@@ -55,6 +57,7 @@
                 android:id="@+id/platform_bulk"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="9dp"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:containerType="БТ"
@@ -64,6 +67,7 @@
                 android:id="@+id/platform_special"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="9dp"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:containerType="СПЕЦИАЛЬНЫЙ"
@@ -73,6 +77,7 @@
                 android:id="@+id/platform_unknown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="9dp"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:containerType="НЕИЗВЕСТНЫЙ"
@@ -81,13 +86,14 @@
             <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
                 android:id="@+id/gallery_before"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/gallery_height"
+                android:layout_height="wrap_content"
                 app:photoType="0"/>
 
             <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
                 android:id="@+id/gallery_after"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/gallery_height"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="9dp"
                 app:photoType="1"/>
 
             <Button
