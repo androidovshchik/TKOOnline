@@ -96,6 +96,16 @@ class FileManager(context: Context) {
         }
     }
 
+    /**
+     * For debug purposes only
+     */
+    @WorkerThread
+    fun deleteAllFiles() {
+        photosDir.listFiles().forEach {
+            deleteFile(it)
+        }
+    }
+
     companion object {
 
         private const val LIFETIME = 4 * 24 * 60 * 60 * 1000L

@@ -151,6 +151,9 @@ class MainApp : Application(), KodeinAware {
                 )
                 .build()
         )
+        //FileManager(applicationContext).deleteAllFiles()
+        //preferences.clear()
+        //deleteDatabase("app.db")
     }
 
     companion object {
