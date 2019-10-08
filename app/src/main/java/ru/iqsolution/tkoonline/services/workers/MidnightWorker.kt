@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.services.workers
 
+import android.app.ActivityManager
 import android.content.Context
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -7,12 +8,14 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.chibatching.kotpref.blockingBulk
 import kotlinx.coroutines.coroutineScope
-import org.jetbrains.anko.activityManager
+import org.jetbrains.anko.*
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.extensions.getActivities
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.Server
+import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.services.BaseWorker
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -31,8 +34,16 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
         preferences.blockingBulk {
             logout()
         }
-        applicationContext.activityManager.apply {
-            // todo may be start login activity from here
+        applicationContext.apply {
+            if (activityManager.getActivities(packageName) > 0) {
+                startActivity(intentFor<LockActivity>().apply {
+                    if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
+                        clearTask()
+                    } else {
+                        clearTop()
+                    }
+                }.newTask())
+            }
         }
         try {
             server.logout(header).execute()

@@ -3,7 +3,6 @@ package ru.iqsolution.tkoonline.screens
 import android.app.Activity
 import android.app.ActivityManager
 import android.os.Bundle
-import android.view.View
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.toast
 import org.kodein.di.KodeinAware
@@ -22,12 +21,9 @@ class LockActivity : Activity(), KodeinAware {
 
     private lateinit var adminManager: AdminManager
 
-    private lateinit var content: View
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adminManager = AdminManager(applicationContext)
-        content = findViewById<View>(android.R.id.content)
     }
 
     override fun onStart() {
@@ -36,10 +32,6 @@ class LockActivity : Activity(), KodeinAware {
             ActivityManager.LOCK_TASK_MODE_NONE -> {
                 if (preferences.enableLock) {
                     if (adminManager.setKioskMode(true)) {
-                        content.post {
-                            startLockTask()
-                            startActivityNoop<LoginActivity>()
-                        }
                         return
                     } else {
                         toast("Требуются права владельца устройства")
@@ -58,6 +50,14 @@ class LockActivity : Activity(), KodeinAware {
         }
         startActivityNoop<LoginActivity>()
         finish()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!isFinishing) {
+            startLockTask()
+            startActivityNoop<LoginActivity>()
+        }
     }
 
     override fun onBackPressed() {}

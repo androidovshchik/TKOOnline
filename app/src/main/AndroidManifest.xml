@@ -93,7 +93,7 @@
         <receiver
             android:name=".receivers.RebootReceiver"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
-            <intent-filter android:priority="999">
+            <intent-filter android:priority="9999">
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
