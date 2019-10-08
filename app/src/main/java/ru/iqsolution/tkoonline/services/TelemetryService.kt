@@ -7,10 +7,12 @@ import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.stopService
+import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.areGranted
@@ -89,6 +91,11 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
     }
 
     override fun onLocationResult(location: SimpleLocation) {
+        preferences.bulk {
+            latitude = location.latitude.toFloat()
+            longitude = location.longitude.toFloat()
+            locationTime = DateTime.now().toString(PATTERN_DATETIME)
+        }
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_TELEMETRY_LOCATION, location)
         })
