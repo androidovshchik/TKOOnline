@@ -12,7 +12,6 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import ru.iqsolution.tkoonline.extensions.use
 import timber.log.Timber
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.*
 
@@ -33,22 +32,22 @@ class FileManager(context: Context) {
         return "${UUID.randomUUID()}.jpg"
     }
 
-    fun copyFile(src: String, dist: String) {
-        copyFile(File(src), File(dist))
+    fun copyImage(src: String, dist: String) {
+        copyImage(File(src), File(dist))
     }
 
     /**
      * @return new path of file
      */
     @WorkerThread
-    fun copyFile(src: File, dist: File) {
+    fun copyImage(src: File, dist: File) {
         if (!src.exists()) {
             return
         }
         try {
-            FileInputStream(src).use { input ->
-                FileOutputStream(dist).use { output ->
-                    input.copyTo(output)
+            FileOutputStream(dist).use { output ->
+                readBitmap(src)?.use {
+                    compress(Bitmap.CompressFormat.JPEG, 75, output)
                 }
             }
         } catch (e: Throwable) {
@@ -57,24 +56,29 @@ class FileManager(context: Context) {
         }
     }
 
-    fun compressImage(path: String) {
-        compressImage(File(path))
+    fun readBitmap(path: String): Bitmap? {
+        return readBitmap(File(path))
     }
 
-    fun compressImage(file: File) {
+    fun readBitmap(file: File): Bitmap? {
         if (!file.exists()) {
-            return
+            return null
         }
+        val bitmap = BitmapFactory.decodeFile(file.path)
         try {
-            FileOutputStream(file).use { output ->
-                file.readBitmap()?.use {
-                    compress(Bitmap.CompressFormat.JPEG, 75, output)
-                }
+            val exif = ExifInterface(file)
+            val matrix = Matrix()
+            when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                else -> return bitmap
             }
+            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
         } catch (e: Throwable) {
             Timber.e(e)
-            file.delete()
         }
+        return bitmap
     }
 
     fun readFile(path: String): MultipartBody.Part? {
@@ -124,26 +128,6 @@ class FileManager(context: Context) {
         photosDir.listFiles().forEach {
             deleteFile(it)
         }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun File.readBitmap(): Bitmap? {
-        val bitmap = BitmapFactory.decodeFile(path)
-        try {
-            val exif = ExifInterface(this)
-            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
-            val matrix = Matrix()
-            when (orientation) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
-                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
-                else -> return bitmap
-            }
-            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
-        } catch (e: Throwable) {
-            Timber.e(e)
-        }
-        return bitmap
     }
 
     companion object {
