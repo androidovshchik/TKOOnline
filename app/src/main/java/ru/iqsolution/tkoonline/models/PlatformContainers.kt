@@ -114,6 +114,14 @@ class PlatformContainers() : Platform() {
         meters = R * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dLon))
     }
 
+    override fun toString(): String {
+        return "PlatformContainers(" +
+                "containers=$containers, " +
+                "errors=$errors, " +
+                ")" +
+                " ${super.toString()}"
+    }
+
     companion object {
 
         /**

@@ -40,7 +40,7 @@ open class Platform : Serializable, Container, Location<Double> {
     @SerializedName("container_type")
     override lateinit var containerType: String
 
-    @SerializedName("container_type_volume")
+    @SerializedName("container_volume")
     override var containerVolume = 0f
 
     @SerializedName("container_count")
@@ -65,4 +65,17 @@ open class Platform : Serializable, Container, Location<Double> {
         get() = BuildConfig.DEBUG || status != PlatformStatus.NO_TASK.id
 
     fun toPlatformStatus() = PlatformStatus.fromId(status)
+
+    override fun toString(): String {
+        return "Platform(" +
+                "kpId=$kpId, " +
+                "linkedKpId=$linkedKpId, " +
+                "latitude=$latitude, " +
+                "longitude=$longitude, " +
+                "containerType='$containerType', " +
+                "containerVolume=$containerVolume, " +
+                "containerCount=$containerCount, " +
+                "status=$status" +
+                ")"
+    }
 }
