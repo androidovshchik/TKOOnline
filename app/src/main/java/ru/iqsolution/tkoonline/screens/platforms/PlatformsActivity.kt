@@ -154,6 +154,11 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         finish()
     }
 
+    override fun showError(e: Throwable?) {
+        super.showError(e)
+        platforms_refresh.isRefreshing = false
+    }
+
     private fun showLoading() {
         if (waitDialog == null) {
             waitDialog = WaitDialog(this)
