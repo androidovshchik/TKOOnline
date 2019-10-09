@@ -43,7 +43,7 @@ open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, Corout
                     TelemetryService.start(context)
                     attempts = -1
                 } catch (e: Throwable) {
-                    delay(1000L + attempts * 500L)
+                    delay(2000L + attempts * 500L)
                     attempts++
                 }
             }

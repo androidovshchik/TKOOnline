@@ -37,6 +37,10 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
             whenTime = DateTime.now()
         }
         launch {
+            reference.get()?.apply {
+                updateCloud()
+                closePreview(Activity.RESULT_OK)
+            }
             withContext(Dispatchers.IO) {
                 fileManager.apply {
                     copyImage(externalFile, internalPhoto)
@@ -52,10 +56,6 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
                     // NOTICE events without kp id have no updates
                     db.photoDao().updateMultiple(photoEvent)
                 }
-            }
-            reference.get()?.apply {
-                updateCloud()
-                closePreview(Activity.RESULT_OK)
             }
         }
     }
