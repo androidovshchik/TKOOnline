@@ -98,14 +98,23 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
                 return@setOnClickListener
             }
             preFinishing = true
-            presenter.saveCleanEvents(platform)
+            presenter.saveCleanEvents(platform.apply {
+                reset()
+                containers.forEach {
+                    it.reset()
+                }
+            })
         }
         platform_cleaned.setOnClickListener {
             if (preFinishing) {
                 return@setOnClickListener
             }
             preFinishing = true
-            presenter.saveCleanEvents(platform)
+            presenter.saveCleanEvents(platform.apply {
+                containers.forEach {
+                    setFromEqual(it)
+                }
+            })
         }
         onCleanEvents(null)
         presenter.apply {

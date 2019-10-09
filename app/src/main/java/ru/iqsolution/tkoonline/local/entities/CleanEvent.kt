@@ -92,4 +92,19 @@ class CleanEvent() : Container, SendEvent {
             it.setFromEqual(this)
         }
     }
+
+    override fun toString(): String {
+        return "CleanEvent(" +
+                "id=$id, " +
+                "tokenId=$tokenId, " +
+                "kpId=$kpId, " +
+                "linkedId=$linkedId, " +
+                "relatedId=$relatedId, " +
+                "whenTime=$whenTime, " +
+                "containerType='$containerType', " +
+                "containerVolume=$containerVolume, " +
+                "containerCount=$containerCount, " +
+                "sent=$sent" +
+                ")"
+    }
 }

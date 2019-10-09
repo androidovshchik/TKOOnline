@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
-import ru.iqsolution.tkoonline.models.SimpleContainer
+import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
 class PlatformPresenter : BasePresenter<PlatformContract.View>(), PlatformContract.Presenter {
@@ -29,15 +29,19 @@ class PlatformPresenter : BasePresenter<PlatformContract.View>(), PlatformContra
         }
     }
 
-    override fun saveCleanEvents(cleanEvent: CleanEvent, containers: List<SimpleContainer>) {
+    override fun saveCleanEvents(platform: PlatformContainers) {
         val day = preferences.serverDay
+        val cleanEvent = CleanEvent(platform.kpId).apply {
+            tokenId = preferences.tokenId
+            setFromAny(platform)
+        }
         launch {
+            withContext(Dispatchers.IO) {
+                db.cleanDao().insertMultiple(day, cleanEvent, platform.containers)
+            }
             reference.get()?.apply {
                 updateCloud()
                 closeDetails(true)
-            }
-            withContext(Dispatchers.IO) {
-                db.cleanDao().insertMultiple(day, cleanEvent, containers)
             }
         }
     }

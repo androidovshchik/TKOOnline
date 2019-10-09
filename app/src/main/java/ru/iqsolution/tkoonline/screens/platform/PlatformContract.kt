@@ -1,9 +1,8 @@
 package ru.iqsolution.tkoonline.screens.platform
 
-import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.SimpleContainer
+import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 
 interface PlatformContract {
@@ -14,7 +13,7 @@ interface PlatformContract {
 
         fun loadPhotoEvents(kpId: Int)
 
-        fun saveCleanEvents(cleanEvent: CleanEvent, containers: List<SimpleContainer>)
+        fun saveCleanEvents(platform: PlatformContainers)
     }
 
     interface View : IBaseView {

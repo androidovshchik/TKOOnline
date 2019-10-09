@@ -37,6 +37,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     private var waitDialog: WaitDialog? = null
 
+    private var platformClicked = false
+
     private var locationCount = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +66,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             adapter = platformsAdapter
         }
         platforms_complete.setOnClickListener {
+            if (platformClicked) {
+                return@setOnClickListener
+            }
             showLoading()
             telemetryService?.stopTelemetry()
             presenter.logout(applicationContext)
@@ -73,6 +78,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             platforms_photo.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
+                    if (platformClicked) {
+                        return@setOnClickListener
+                    }
                     val photoType = PhotoType.Default.OTHER
                     startActivityNoop<PhotoActivity>(
                         REQUEST_PHOTO,
@@ -85,7 +93,16 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         presenter.loadPlatformsTypes(false)
     }
 
+    override fun onStart() {
+        super.onStart()
+        platformClicked = false
+    }
+
     override fun onAdapterEvent(position: Int, item: PlatformContainers, param: Any?) {
+        if (platformClicked) {
+            return
+        }
+        platformClicked = true
         startActivityNoop<PlatformActivity>(
             REQUEST_PLATFORM,
             EXTRA_PLATFORM_PLATFORM to item,
