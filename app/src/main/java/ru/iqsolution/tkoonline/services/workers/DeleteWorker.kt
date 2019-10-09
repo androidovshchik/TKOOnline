@@ -20,6 +20,7 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
     val fileManager: FileManager by instance()
 
     override suspend fun doWork(): Result = coroutineScope {
+        fileManager.deleteOldFiles()
         val now = DateTime.now()
         val allTokens = db.tokenDao().getTokens()
         val expiredTokens = arrayListOf<AccessToken>()
@@ -33,7 +34,6 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
         if (expiredTokens.isNotEmpty()) {
             db.tokenDao().delete(expiredTokens)
         }
-        fileManager.deleteOldFiles()
         Result.success()
     }
 

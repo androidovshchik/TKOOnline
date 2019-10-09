@@ -138,6 +138,9 @@ class FileManager(context: Context) {
     @WorkerThread
     fun deleteOldFiles() {
         val now = System.currentTimeMillis()
+        externalDir?.listFiles()?.forEach {
+            deleteFile(it)
+        }
         photosDir.listFiles().forEach {
             if (now - it.lastModified() >= LIFETIME) {
                 deleteFile(it)

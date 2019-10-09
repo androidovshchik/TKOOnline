@@ -73,10 +73,10 @@ class PlatformContainers() : Platform() {
     }
 
     override fun setFromEqual(container: Container?): Boolean {
-        if (container is Platform?) {
-            return setFromEqual(container)
+        return if (container is Platform?) {
+            setFromEqual(container)
         } else {
-            throw IllegalAccessException("Should not be called as is")
+            super.setFromEqual(container)
         }
     }
 
@@ -94,10 +94,10 @@ class PlatformContainers() : Platform() {
     }
 
     override fun setFromAny(container: Container?): Boolean {
-        if (container is Platform?) {
-            return setFromAny(container)
+        return if (container is Platform?) {
+            setFromAny(container)
         } else {
-            throw IllegalAccessException("Should not be called as is")
+            super.setFromAny(container)
         }
     }
 
