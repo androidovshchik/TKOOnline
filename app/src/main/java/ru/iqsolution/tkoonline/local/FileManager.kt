@@ -14,7 +14,6 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
-import kotlin.math.roundToInt
 
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -72,25 +71,16 @@ class FileManager(context: Context) {
                 BitmapFactory.decodeFile(file.path, this)
                 // Calculate inSampleSize
                 inSampleSize = calculateInSampleSize(MAX_SIZE, MAX_SIZE)
-                if (outHeight < MAX_SIZE && outWidth < MAX_SIZE) {
-                    inSampleSize /= 2
-                }
-                // Decode bitmap with inSampleSize set
                 inJustDecodeBounds = false
+                // Decode bitmap with inSampleSize set
                 BitmapFactory.decodeFile(file.path, this)
             }
-            val originalWidth = bitmap.width
-            val originalHeight = bitmap.height
-            val ratio = originalWidth.toFloat() / originalHeight
-            var width = MAX_SIZE.toFloat()
-            var height = MAX_SIZE.toFloat()
-            if (ratio < 1) {
-                width = MAX_SIZE * ratio
-            } else {
-                height = MAX_SIZE / ratio
-            }
+            val width = bitmap.width
+            val height = bitmap.height
+            val ratio = width.toFloat() / height
+            val newWidth = if (ratio < 1) MAX_SIZE * ratio else MAX_SIZE.toFloat()
+            val scale = newWidth / width
             val matrix = Matrix()
-            val scale = width / originalWidth
             matrix.preScale(scale, scale)
             val exif = ExifInterface(file)
             val rotation = when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)) {
@@ -102,9 +92,7 @@ class FileManager(context: Context) {
             if (rotation % 360 != 0) {
                 matrix.postRotate(rotation.toFloat())
             }
-            val finalWidth = if (rotation % 180 == 0) width.roundToInt() else height.roundToInt()
-            val finalHeight = if (rotation % 180 == 0) height.roundToInt() else width.roundToInt()
-            val mBitmap = Bitmap.createBitmap(bitmap, 0, 0, finalWidth, finalHeight, matrix, true)
+            val mBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true)
             if (mBitmap != bitmap) {
                 try {
                     bitmap.recycle()
