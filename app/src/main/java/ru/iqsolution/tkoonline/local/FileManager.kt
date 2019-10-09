@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.graphics.Matrix.ScaleToFit
-import android.graphics.RectF
 import androidx.annotation.WorkerThread
 import androidx.exifinterface.media.ExifInterface
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -16,6 +14,8 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
+import kotlin.math.roundToInt
+
 
 @Suppress("MemberVisibilityCanBePrivate")
 class FileManager(context: Context) {
@@ -71,27 +71,46 @@ class FileManager(context: Context) {
                 inJustDecodeBounds = true
                 BitmapFactory.decodeFile(file.path, this)
                 // Calculate inSampleSize
-                inSampleSize = calculateInSampleSize(MAX_SIZE, MAX_SIZE) / 2
+                inSampleSize = calculateInSampleSize(MAX_SIZE, MAX_SIZE)
+                if (outHeight < MAX_SIZE && outWidth < MAX_SIZE) {
+                    inSampleSize /= 2
+                }
                 // Decode bitmap with inSampleSize set
                 inJustDecodeBounds = false
                 BitmapFactory.decodeFile(file.path, this)
             }
-            val exif = ExifInterface(file)
+            val width = bitmap.width
+            val height = bitmap.height
+            val ratio = width.toFloat() / height
+            var finalWidth = MAX_SIZE.toFloat()
+            var finalHeight = MAX_SIZE.toFloat()
+            if (ratio < 1) {
+                finalWidth = MAX_SIZE * ratio
+            } else {
+                finalHeight = MAX_SIZE / ratio
+            }
             val matrix = Matrix()
-            matrix.setRectToRect(
-                RectF(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat()),
-                RectF(0f, 0f, MAX_SIZE.toFloat(), MAX_SIZE.toFloat()),
-                ScaleToFit.CENTER
-            )
+            val scale = finalWidth / width
+            matrix.preScale(scale, scale)
+            val exif = ExifInterface(file)
             when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                ExifInterface.ORIENTATION_ROTATE_90 -> {
+                    matrix.postRotate(90f)
+                }
                 ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> {
+                    matrix.postRotate(270f)
+                }
                 else -> return bitmap
             }
-            val mBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-            if (mBitmap == bitmap) {
-                bitmap.recycle()
+            val mBitmap =
+                Bitmap.createBitmap(bitmap, 0, 0, finalWidth.roundToInt(), finalHeight.roundToInt(), matrix, true)
+            if (mBitmap != bitmap) {
+                try {
+                    bitmap.recycle()
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                }
             }
             return mBitmap
         } catch (e: Throwable) {
