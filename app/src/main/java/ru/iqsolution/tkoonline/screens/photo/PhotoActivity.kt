@@ -77,6 +77,10 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             photo_delete.isEnabled = false
             photo_retake.isEnabled = false
             photo_save.isEnabled = false
+            (photo_preview.layoutParams as RelativeLayout.LayoutParams).apply {
+                removeRule(RelativeLayout.ABOVE)
+                addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+            }
         }
         if (photoEvent.id != null) {
             photo_preview.load(photoEvent.toFile())

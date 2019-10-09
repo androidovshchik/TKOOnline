@@ -19,23 +19,12 @@
         android:layout_height="@dimen/toolbar_height"
         android:layout_below="@+id/status_fragment"/>
 
-    <ImageView
-        android:id="@+id/photo_preview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/photo_toolbar"
-        android:layout_above="@+id/photo_buttons"
-        android:layout_marginBottom="10dp"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/login_background"
-        android:background="@color/colorBackground"/>
-
     <LinearLayout
         android:id="@+id/photo_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/photo_save"
+        android:layout_marginTop="10dp"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:orientation="horizontal">
@@ -86,6 +75,17 @@
         android:background="@drawable/button_green"
         android:foreground="?android:attr/selectableItemBackground"
         fontPath="fonts/Roboto-Medium.ttf"/>
+
+    <ImageView
+        android:id="@+id/photo_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/photo_toolbar"
+        android:layout_above="@+id/photo_buttons"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_background"
+        android:background="@color/colorBackground"/>
 
     <View
         android:layout_width="match_parent"
