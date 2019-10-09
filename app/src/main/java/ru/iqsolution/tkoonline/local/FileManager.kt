@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.graphics.Matrix.ScaleToFit
+import android.graphics.RectF
 import androidx.annotation.WorkerThread
 import androidx.exifinterface.media.ExifInterface
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -64,16 +66,31 @@ class FileManager(context: Context) {
         if (!file.exists()) {
             return null
         }
-        val bitmap = BitmapFactory.decodeFile(file.path)
         try {
+            val bitmap = BitmapFactory.Options().run {
+                inJustDecodeBounds = true
+                BitmapFactory.decodeFile(file.path, this)
+                // Calculate inSampleSize
+                inSampleSize = calculateInSampleSize(MAX_SIZE, MAX_SIZE)
+                // Decode bitmap with inSampleSize set
+                inJustDecodeBounds = false
+                BitmapFactory.decodeFile(file.path, this)
+            }
             val exif = ExifInterface(file)
             val matrix = Matrix()
+            matrix.setRectToRect(
+                RectF(0f, 0f, targetBmp.getWidth(), targetBmp.getHeight()),
+                RectF(0f, 0f, MAX_SIZE, MAX_SIZE),
+                ScaleToFit.CENTER
+            )
             when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)) {
                 ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
                 ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
                 ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
                 else -> return bitmap
             }
+            val mBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
+            mBitmap.equals(bitmap)
             return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
         } catch (e: Throwable) {
             Timber.e(e)
@@ -133,7 +150,25 @@ class FileManager(context: Context) {
         }
     }
 
+    private fun BitmapFactory.Options.calculateInSampleSize(reqWidth: Int, reqHeight: Int): Int {
+        // Raw height and width of image
+        val (height: Int, width: Int) = run { outHeight to outWidth }
+        var inSampleSize = 1
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight: Int = height / 2
+            val halfWidth: Int = width / 2
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
+    }
+
     companion object {
+
+        private const val MAX_SIZE = 1600
 
         private const val LIFETIME = 4 * 24 * 60 * 60 * 1000L
 

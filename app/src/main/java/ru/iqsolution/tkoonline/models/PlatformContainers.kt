@@ -53,7 +53,9 @@ class PlatformContainers() : Platform() {
         timeLimitTo = platform.timeLimitTo
         timeLimitFrom = platform.timeLimitFrom
         status = platform.status
-        setFromEqual(platform)
+        containers.forEach {
+            it.setFromEqual(platform)
+        }
     }
 
     val allLinkedIds: List<Int>
