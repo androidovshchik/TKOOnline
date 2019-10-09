@@ -37,6 +37,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     private var waitDialog: WaitDialog? = null
 
+    private var locationCount = 0L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platforms)
@@ -112,6 +114,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platformsAdapter.apply {
             primaryItems.notifyItems(primary)
             items.notifyItems(secondary)
+            notifyDataSetChanged()
         }
         presenter.loadPhotoCleanEvents()
     }
@@ -119,7 +122,12 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>) {
         val location = preferences.location
         platformsAdapter.apply {
-            primaryItems.notifyItems(null, location, photoEvents, null)
+            primaryItems.apply {
+                notifyItems(null, location, photoEvents, null)
+                if (location != null) {
+                    sortBy { it.meters }
+                }
+            }
             items.apply {
                 notifyItems(null, location, photoEvents, cleanEvents)
                 sortByDescending { it.timestamp }
@@ -133,6 +141,10 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     override fun onLocationResult(location: SimpleLocation) {
         platforms_map.setLocation(location)
+        locationCount++
+        if (locationCount % 2 == 0L) {
+            return
+        }
         platformsAdapter.apply {
             primaryItems.apply {
                 notifyItems(null, location)
@@ -212,7 +224,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 for (event in photoEvents) {
                     if (it.kpId == event.kpId) {
                         if (cleanEvents != null) {
-                            // only for secondary
+                            // only for secondary items
                             if (it.timestamp == 0L) {
                                 it.timestamp = event.whenTime.withZone(zone).millis
                             }

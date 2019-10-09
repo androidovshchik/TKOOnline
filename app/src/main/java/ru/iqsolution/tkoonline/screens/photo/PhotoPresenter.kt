@@ -38,7 +38,10 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
         }
         launch {
             withContext(Dispatchers.IO) {
-                fileManager.copyImage(externalFile, internalPhoto)
+                fileManager.apply {
+                    copyImage(externalFile, internalPhoto)
+                    deleteFile(externalFile)
+                }
                 if (photoEvent.id == null) {
                     if (photoEvent.kpId == null) {
                         db.photoDao().insert(photoEvent)
