@@ -125,6 +125,9 @@ class FileManager(context: Context) {
      */
     @WorkerThread
     fun deleteAllFiles() {
+        externalDir?.listFiles()?.forEach {
+            deleteFile(it)
+        }
         photosDir.listFiles().forEach {
             deleteFile(it)
         }

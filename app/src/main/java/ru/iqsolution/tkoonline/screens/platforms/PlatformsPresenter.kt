@@ -44,35 +44,48 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
             val primary = arrayListOf<PlatformContainers>()
             val secondary = arrayListOf<PlatformContainers>()
             responsePlatforms.data.forEach {
-                if (it.isValid) {
-                    if (it.linkedKpId == null) {
-                        if (it.latitude < minLat) {
-                            minLat = it.latitude
-                        } else if (it.latitude > maxLat) {
-                            maxLat = it.latitude
-                        }
-                        if (it.longitude < minLon) {
-                            minLon = it.longitude
-                        } else if (it.longitude > maxLon) {
-                            maxLon = it.longitude
-                        }
-                        when (it.status) {
-                            PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(
-                                PlatformContainers(
-                                    it
-                                )
-                            )
-                            else -> secondary.add(PlatformContainers(it))
-                        }
-                    } else {
-                        when (it.containerType) {
-                            ContainerType.REGULAR.id -> regulars.put(it.linkedKpId, it)
-                            ContainerType.BUNKER.id -> bunkers.put(it.linkedKpId, it)
-                            ContainerType.BULK1.id, ContainerType.BULK2.id -> bulks.put(it.linkedKpId, it)
-                            ContainerType.SPECIAL1.id, ContainerType.SPECIAL2.id -> specials.put(it.linkedKpId, it)
-                            else -> unknown.put(it.linkedKpId, it)
-                        }
+                if (!it.isValid) {
+                    return@forEach
+                }
+                if (it.linkedKpId != null) {
+                    return@forEach
+                }
+                if (!refresh) {
+                    if (it.latitude < minLat) {
+                        minLat = it.latitude
+                    } else if (it.latitude > maxLat) {
+                        maxLat = it.latitude
                     }
+                    if (it.longitude < minLon) {
+                        minLon = it.longitude
+                    } else if (it.longitude > maxLon) {
+                        maxLon = it.longitude
+                    }
+                }
+                when (it.status) {
+                    PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(it))
+                    else -> secondary.add(PlatformContainers(it))
+                }
+            }
+            responsePlatforms.data.forEach { item ->
+                if (!item.isValid) {
+                    return@forEach
+                }
+                if (item.linkedKpId == null) {
+                    return@forEach
+                }
+                if (primary.indexOfFirst { it.kpId == item.linkedKpId } < 0) {
+                    return@forEach
+                }
+                if (secondary.indexOfFirst { it.kpId == item.linkedKpId } < 0) {
+                    return@forEach
+                }
+                when (item.containerType) {
+                    ContainerType.REGULAR.id -> regulars.put(item.linkedKpId, item)
+                    ContainerType.BUNKER.id -> bunkers.put(item.linkedKpId, item)
+                    ContainerType.BULK1.id, ContainerType.BULK2.id -> bulks.put(item.linkedKpId, item)
+                    ContainerType.SPECIAL1.id, ContainerType.SPECIAL2.id -> specials.put(item.linkedKpId, item)
+                    else -> unknown.put(item.linkedKpId, item)
                 }
             }
             primary.forEach {
