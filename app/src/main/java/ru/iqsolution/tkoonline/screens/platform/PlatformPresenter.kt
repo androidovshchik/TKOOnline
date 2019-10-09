@@ -31,9 +31,8 @@ class PlatformPresenter : BasePresenter<PlatformContract.View>(), PlatformContra
 
     override fun saveCleanEvents(platform: PlatformContainers) {
         val day = preferences.serverDay
-        val cleanEvent = CleanEvent(platform.kpId).apply {
+        val cleanEvent = CleanEvent(platform.kpId, platform.containerType).apply {
             tokenId = preferences.tokenId
-            setFromAny(platform)
         }
         launch {
             withContext(Dispatchers.IO) {

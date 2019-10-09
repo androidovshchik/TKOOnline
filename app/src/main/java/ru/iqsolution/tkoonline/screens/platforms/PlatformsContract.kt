@@ -26,7 +26,7 @@ interface PlatformsContract {
 
         fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>)
 
-        fun onPhotoCleanEvents(photo: List<PhotoEvent>, clean: List<CleanEvent>)
+        fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>)
 
         fun onLoggedOut()
     }
