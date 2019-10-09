@@ -79,32 +79,32 @@ class FileManager(context: Context) {
                 inJustDecodeBounds = false
                 BitmapFactory.decodeFile(file.path, this)
             }
-            val width = bitmap.width
-            val height = bitmap.height
-            val ratio = width.toFloat() / height
-            var finalWidth = MAX_SIZE.toFloat()
-            var finalHeight = MAX_SIZE.toFloat()
+            val originalWidth = bitmap.width
+            val originalHeight = bitmap.height
+            val ratio = originalWidth.toFloat() / originalHeight
+            var width = MAX_SIZE.toFloat()
+            var height = MAX_SIZE.toFloat()
             if (ratio < 1) {
-                finalWidth = MAX_SIZE * ratio
+                width = MAX_SIZE * ratio
             } else {
-                finalHeight = MAX_SIZE / ratio
+                height = MAX_SIZE / ratio
             }
             val matrix = Matrix()
-            val scale = finalWidth / width
+            val scale = width / originalWidth
             matrix.preScale(scale, scale)
             val exif = ExifInterface(file)
-            when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> {
-                    matrix.postRotate(90f)
-                }
-                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-                ExifInterface.ORIENTATION_ROTATE_270 -> {
-                    matrix.postRotate(270f)
-                }
-                else -> return bitmap
+            val rotation = when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                else -> 0
             }
-            val mBitmap =
-                Bitmap.createBitmap(bitmap, 0, 0, finalWidth.roundToInt(), finalHeight.roundToInt(), matrix, true)
+            if (rotation % 360 != 0) {
+                matrix.postRotate(rotation.toFloat())
+            }
+            val finalWidth = if (rotation % 180 == 0) width.roundToInt() else height.roundToInt()
+            val finalHeight = if (rotation % 180 == 0) height.roundToInt() else width.roundToInt()
+            val mBitmap = Bitmap.createBitmap(bitmap, 0, 0, finalWidth, finalHeight, matrix, true)
             if (mBitmap != bitmap) {
                 try {
                     bitmap.recycle()
