@@ -70,7 +70,7 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
             withContext(Dispatchers.IO) {
                 db.photoDao().delete(photoEvent)
             }
-            reference.get()?.closePreview(Activity.RESULT_CANCELED)
+            reference.get()?.closePreview(Activity.RESULT_OK)
         }
     }
 

@@ -168,8 +168,10 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
 
     override fun closeDetails(hasCleanChanges: Boolean) {
         preFinishing = true
-        if (hasCleanChanges) {
-            SendWorker.launch(applicationContext, platform.kpId)
+        if (hasPhotoChanges || hasCleanChanges) {
+            if (hasCleanChanges) {
+                SendWorker.launch(applicationContext, platform.kpId)
+            }
             setResult(RESULT_OK)
         } else {
             setResult(RESULT_CANCELED)
