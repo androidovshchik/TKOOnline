@@ -22,10 +22,9 @@ class PlatformContainers() : Platform() {
 
     /**
      * It's needed only for map
-     * NOTICE the serialization of HashSet is almost as for List
      */
     @SerializedName("_e")
-    var errors = hashSetOf<String>()
+    var errors = arrayListOf<String>()
 
     /**
      * It's needed for sorting primary items and sizing ovals in list
@@ -66,6 +65,12 @@ class PlatformContainers() : Platform() {
             }
             return all
         }
+
+    fun addError(error: String, position: Int = errors.size) {
+        if (!errors.contains(error)) {
+            errors.add(position, error)
+        }
+    }
 
     override fun setFromEqual(container: Container?): Boolean {
         if (container is Platform?) {

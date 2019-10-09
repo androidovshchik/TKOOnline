@@ -26,14 +26,9 @@ class ContainerLayout : LinearLayout {
 
     var container: SimpleContainer? = null
         set(value) {
-            value?.let {
-                if (containerType.id == it.containerType) {
-                    field = value
-                    updateVolumeText()
-                    updateCountText()
-                    visibility = View.VISIBLE
-                }
-            }
+            field = value
+            updateVolumeText()
+            updateCountText()
         }
 
     @JvmOverloads
@@ -60,14 +55,14 @@ class ContainerLayout : LinearLayout {
     private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_container, this)
         attrs?.let {
-            context.obtainStyledAttributes(it, R.styleable.ContainerLayout).use { a ->
-                containerType = ContainerType.fromId(a.getString(R.styleable.ContainerLayout_containerType))
+            context.obtainStyledAttributes(it, R.styleable.ContainerLayout).use {
+                containerType = ContainerType.fromId(getString(R.styleable.ContainerLayout_containerType))
             }
         }
         arrow_up_volume.setOnClickListener {
             container?.apply {
-                if (containerVolume < 9.9f) {
-                    containerVolume = min(9.999f, containerVolume + 0.1f)
+                if (containerVolume < 99.9f) {
+                    containerVolume = min(99.999f, containerVolume + 0.1f)
                     updateVolumeText()
                 }
             }
@@ -107,16 +102,26 @@ class ContainerLayout : LinearLayout {
         text_type.text = containerType.shortName
     }
 
-    private fun updateVolumeText() {
-        container?.run {
-            volume_value.setValueText(context.getString(R.string.platform_volume, containerVolume))
+    fun updateContainer(containers: List<SimpleContainer>) {
+        containers.forEach {
+            if (containerType.id == it.containerType) {
+                if (it.linkedIds.isNotEmpty()) {
+                    visibility = View.VISIBLE
+                } else {
+                    visibility = View.GONE
+                }
+                return
+            }
         }
+        visibility = View.GONE
+    }
+
+    private fun updateVolumeText() {
+        volume_value.setValueText(context.getString(R.string.platform_volume, container?.containerVolume ?: 0f))
     }
 
     private fun updateCountText() {
-        container?.run {
-            count_value.setValueText(context.getString(R.string.platform_count, containerCount))
-        }
+        volume_value.setValueText(context.getString(R.string.platform_volume, container?.containerCount ?: 0))
     }
 
     override fun hasOverlappingRendering() = false

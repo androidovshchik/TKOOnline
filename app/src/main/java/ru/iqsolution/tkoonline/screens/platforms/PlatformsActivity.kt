@@ -230,7 +230,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                             }
                         }
                         photoErrors.get(event.type)?.run {
-                            it.errors.add(this)
+                            it.addError(this, 0)
                         }
                     }
                 }
