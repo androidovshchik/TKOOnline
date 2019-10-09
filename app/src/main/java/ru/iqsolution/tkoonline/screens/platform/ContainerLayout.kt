@@ -102,10 +102,11 @@ class ContainerLayout : LinearLayout {
         text_type.text = containerType.shortName
     }
 
-    fun updateContainer(containers: List<SimpleContainer>) {
+    fun updateContainer(type: String, containers: List<SimpleContainer>) {
         containers.forEach {
             if (containerType.id == it.containerType) {
-                if (it.linkedIds.isNotEmpty()) {
+                if (it.linkedIds.isNotEmpty() || containerType.id == type) {
+                    container = it
                     visibility = View.VISIBLE
                 } else {
                     visibility = View.GONE
@@ -121,7 +122,7 @@ class ContainerLayout : LinearLayout {
     }
 
     private fun updateCountText() {
-        volume_value.setValueText(context.getString(R.string.platform_volume, container?.containerCount ?: 0))
+        count_value.setValueText(context.getString(R.string.platform_count, container?.containerCount ?: 0))
     }
 
     override fun hasOverlappingRendering() = false
