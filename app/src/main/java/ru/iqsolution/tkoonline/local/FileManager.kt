@@ -71,7 +71,7 @@ class FileManager(context: Context) {
                 inJustDecodeBounds = true
                 BitmapFactory.decodeFile(file.path, this)
                 // Calculate inSampleSize
-                inSampleSize = calculateInSampleSize(MAX_SIZE, MAX_SIZE)
+                inSampleSize = calculateInSampleSize(MAX_SIZE, MAX_SIZE) / 2
                 // Decode bitmap with inSampleSize set
                 inJustDecodeBounds = false
                 BitmapFactory.decodeFile(file.path, this)
@@ -79,8 +79,8 @@ class FileManager(context: Context) {
             val exif = ExifInterface(file)
             val matrix = Matrix()
             matrix.setRectToRect(
-                RectF(0f, 0f, targetBmp.getWidth(), targetBmp.getHeight()),
-                RectF(0f, 0f, MAX_SIZE, MAX_SIZE),
+                RectF(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat()),
+                RectF(0f, 0f, MAX_SIZE.toFloat(), MAX_SIZE.toFloat()),
                 ScaleToFit.CENTER
             )
             when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)) {
@@ -89,13 +89,15 @@ class FileManager(context: Context) {
                 ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
                 else -> return bitmap
             }
-            val mBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
-            mBitmap.equals(bitmap)
-            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
+            val mBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            if (mBitmap == bitmap) {
+                bitmap.recycle()
+            }
+            return mBitmap
         } catch (e: Throwable) {
             Timber.e(e)
+            return null
         }
-        return bitmap
     }
 
     fun readFile(path: String): MultipartBody.Part? {
