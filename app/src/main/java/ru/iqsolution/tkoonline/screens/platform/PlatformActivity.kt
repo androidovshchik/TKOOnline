@@ -18,7 +18,6 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
 import ru.iqsolution.tkoonline.services.workers.SendWorker
-import timber.log.Timber
 
 /**
  * Returns [android.app.Activity.RESULT_OK] if there were changes
@@ -45,7 +44,6 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             it.attachView(this)
         }
         platform = intent.getSerializableExtra(EXTRA_PLATFORM_PLATFORM) as PlatformContainers
-        Timber.d(platform.toString())
         photoTypes.apply {
             addAll(intent.getSerializableExtra(EXTRA_PLATFORM_PHOTO_TYPES) as ArrayList<PhotoType>)
             forEach {
@@ -75,6 +73,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         platform_map.apply {
             loadUrl(URL)
             setLocation(preferences.location)
+            moveTo(platform.latitude, platform.longitude)
         }
         platform_id.setTextBoldSpan(getString(R.string.platform_id, platform.kpId), 0, 3)
         platform_range.setTextBoldSpan(
@@ -141,14 +140,11 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         gallery_after.updatePhotos(events)
         platform.errors.clear()
         events.forEach {
-            photoErrors.get(it.type)?.let { error ->
-                platform.errors.add(error)
+            photoErrors.get(it.type)?.run {
+                platform.addError(this)
             }
         }
-        platform_map.apply {
-            setMarkers("[${presenter.toJson(platform)}]")
-            moveTo(platform.latitude, platform.longitude)
-        }
+        platform_map.setMarkers("[${presenter.toJson(platform)}]")
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {

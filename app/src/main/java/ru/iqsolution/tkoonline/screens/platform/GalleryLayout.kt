@@ -51,8 +51,8 @@ class GalleryLayout : RelativeLayout {
     private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_gallery, this)
         attrs?.let {
-            context.obtainStyledAttributes(it, R.styleable.GalleryLayout).use { a ->
-                photoType = PhotoType.Default.fromId(a.getInt(R.styleable.GalleryLayout_photoType, -1))
+            context.obtainStyledAttributes(it, R.styleable.GalleryLayout).use {
+                photoType = PhotoType.Default.fromId(getInt(R.styleable.GalleryLayout_photoType, -1))
             }
         }
         photo1.setOnClickListener {
@@ -110,9 +110,9 @@ class GalleryLayout : RelativeLayout {
             }
         }
         enableShoot = true
-        (photo1 as ImageView).updatePhoto(events.getOrNull(0))
-        (photo2 as ImageView).updatePhoto(events.getOrNull(1))
-        (photo3 as ImageView).updatePhoto(events.getOrNull(2))
+        (photo1 as ImageView).updatePhoto(photoEvents.getOrNull(0))
+        (photo2 as ImageView).updatePhoto(photoEvents.getOrNull(1))
+        (photo3 as ImageView).updatePhoto(photoEvents.getOrNull(2))
     }
 
     override fun hasOverlappingRendering() = false
