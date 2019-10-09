@@ -22,9 +22,10 @@ class PlatformContainers() : Platform() {
 
     /**
      * It's needed only for map
+     * NOTICE the serialization of HashSet is almost as for List
      */
     @SerializedName("_e")
-    var errors = arrayListOf<String>()
+    var errors = hashSetOf<String>()
 
     /**
      * It's needed for sorting primary items and sizing ovals in list
@@ -64,42 +65,48 @@ class PlatformContainers() : Platform() {
             return all
         }
 
-    override fun setFromEqual(container: Container?) {
+    override fun setFromEqual(container: Container?): Boolean {
         if (container is Platform?) {
-            setFromEqual(container)
+            return setFromEqual(container)
         } else {
             throw IllegalAccessException("Should not be called as is")
         }
     }
 
-    fun setFromEqual(platform: Platform?) {
-        platform?.let {
-            containers.forEach { container ->
-                container.setFromEqual(it)
+    fun setFromEqual(platform: Platform?): Boolean {
+        if (platform == null) {
+            return false
+        }
+        containers.forEach {
+            it.apply {
+                if (setFromEqual(platform)) {
+                    linkedIds.add(platform.linkedKpId ?: return@forEach)
+                }
             }
         }
+        return false
     }
 
-    override fun setFromAny(container: Container?) {
+    override fun setFromAny(container: Container?): Boolean {
         if (container is Platform?) {
-            setFromAny(container)
+            return setFromAny(container)
         } else {
             throw IllegalAccessException("Should not be called as is")
         }
     }
 
-    fun setFromAny(platform: Platform?) {
-        platform?.let {
-            containers.forEach { container ->
-                container.setFromAny(it)
+    fun setFromAny(platform: Platform?): Boolean {
+        if (platform == null) {
+            return false
+        }
+        containers.forEach {
+            it.apply {
+                if (setFromAny(platform)) {
+                    linkedIds.add(platform.linkedKpId ?: return@forEach)
+                }
             }
         }
-    }
-
-    fun addError(error: String) {
-        if (!errors.contains(error)) {
-            errors.add(error)
-        }
+        return false
     }
 
     /**

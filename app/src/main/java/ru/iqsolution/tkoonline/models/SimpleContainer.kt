@@ -7,7 +7,7 @@ import java.io.Serializable
  */
 class SimpleContainer(type: ContainerType) : Serializable, Container {
 
-    var linkedIds = arrayListOf<Int>()
+    var linkedIds = hashSetOf<Int>()
 
     override var containerType: String = type.id
 
