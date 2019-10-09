@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
 import android.content.Context
-import androidx.collection.SimpleArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
@@ -12,7 +11,6 @@ import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
@@ -36,35 +34,36 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
             var maxLat = Double.MIN_VALUE
             var minLon = Double.MAX_VALUE
             var maxLon = Double.MIN_VALUE
-            val regulars = SimpleArrayMap<Int, Container>()
-            val bunkers = SimpleArrayMap<Int, Container>()
-            val bulks = SimpleArrayMap<Int, Container>()
-            val specials = SimpleArrayMap<Int, Container>()
-            val unknown = SimpleArrayMap<Int, Container>()
             val primary = arrayListOf<PlatformContainers>()
             val secondary = arrayListOf<PlatformContainers>()
-            responsePlatforms.data.forEach {
-                if (!it.isValid) {
+            responsePlatforms.data.forEach { item ->
+                if (!item.isValid) {
                     return@forEach
                 }
-                if (it.linkedKpId != null) {
+                if (item.linkedKpId != null) {
                     return@forEach
                 }
                 if (!refresh) {
-                    if (it.latitude < minLat) {
-                        minLat = it.latitude
-                    } else if (it.latitude > maxLat) {
-                        maxLat = it.latitude
+                    if (item.latitude < minLat) {
+                        minLat = item.latitude
+                    } else if (item.latitude > maxLat) {
+                        maxLat = item.latitude
                     }
-                    if (it.longitude < minLon) {
-                        minLon = it.longitude
-                    } else if (it.longitude > maxLon) {
-                        maxLon = it.longitude
+                    if (item.longitude < minLon) {
+                        minLon = item.longitude
+                    } else if (item.longitude > maxLon) {
+                        maxLon = item.longitude
                     }
                 }
-                when (it.status) {
-                    PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(it))
-                    else -> secondary.add(PlatformContainers(it))
+                if (primary.indexOfFirst { it.kpId == item.kpId } >= 0) {
+                    return@forEach
+                }
+                if (secondary.indexOfFirst { it.kpId == item.kpId } >= 0) {
+                    return@forEach
+                }
+                when (item.status) {
+                    PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(item))
+                    else -> secondary.add(PlatformContainers(item))
                 }
             }
             responsePlatforms.data.forEach { item ->
@@ -74,11 +73,11 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                 if (item.linkedKpId == null) {
                     return@forEach
                 }
+                val platform = primary.fir { it.kpId == item.linkedKpId }
                 if (primary.indexOfFirst { it.kpId == item.linkedKpId } < 0) {
-                    return@forEach
-                }
-                if (secondary.indexOfFirst { it.kpId == item.linkedKpId } < 0) {
-                    return@forEach
+                    if (secondary.indexOfFirst { it.kpId == item.linkedKpId } < 0) {
+                        return@forEach
+                    }
                 }
                 when (item.containerType) {
                     ContainerType.REGULAR.id -> regulars.put(item.linkedKpId, item)
@@ -107,8 +106,10 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                 }
             }
             reference.get()?.apply {
-                if (!refresh && responsePlatforms.data.isNotEmpty()) {
-                    changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
+                if (!refresh) {
+                    if (responsePlatforms.data.isNotEmpty()) {
+                        changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
+                    }
                 }
                 onReceivedPlatforms(primary, secondary)
             }
