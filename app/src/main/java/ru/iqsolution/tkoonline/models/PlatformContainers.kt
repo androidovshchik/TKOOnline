@@ -77,11 +77,10 @@ class PlatformContainers() : Platform() {
         if (platform == null) {
             return false
         }
+        val linkedId = platform.linkedKpId ?: return false
         containers.forEach {
-            it.apply {
-                if (setFromEqual(platform)) {
-                    linkedIds.add(platform.linkedKpId ?: return@forEach)
-                }
+            if (it.setFromEqual(platform)) {
+                it.linkedIds.add(linkedId)
             }
         }
         return false
@@ -99,11 +98,10 @@ class PlatformContainers() : Platform() {
         if (platform == null) {
             return false
         }
+        val linkedId = platform.linkedKpId ?: return false
         containers.forEach {
-            it.apply {
-                if (setFromAny(platform)) {
-                    linkedIds.add(platform.linkedKpId ?: return@forEach)
-                }
+            if (it.setFromAny(platform)) {
+                it.linkedIds.add(linkedId)
             }
         }
         return false

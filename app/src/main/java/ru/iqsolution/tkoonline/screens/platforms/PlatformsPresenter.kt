@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.ContainerType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.Server
@@ -36,7 +35,8 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
             var maxLon = Double.MIN_VALUE
             val primary = arrayListOf<PlatformContainers>()
             val secondary = arrayListOf<PlatformContainers>()
-            responsePlatforms.data.forEach { item ->
+            val allPlatforms = responsePlatforms.data.distinctBy { it.kpId }
+            allPlatforms.forEach { item ->
                 if (!item.isValid) {
                     return@forEach
                 }
@@ -55,54 +55,22 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                         maxLon = item.longitude
                     }
                 }
-                if (primary.indexOfFirst { it.kpId == item.kpId } >= 0) {
-                    return@forEach
-                }
-                if (secondary.indexOfFirst { it.kpId == item.kpId } >= 0) {
-                    return@forEach
-                }
                 when (item.status) {
                     PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(item))
                     else -> secondary.add(PlatformContainers(item))
                 }
             }
-            responsePlatforms.data.forEach { item ->
+            allPlatforms.forEach { item ->
                 if (!item.isValid) {
                     return@forEach
                 }
                 if (item.linkedKpId == null) {
                     return@forEach
                 }
-                val platform = primary.fir { it.kpId == item.linkedKpId }
-                if (primary.indexOfFirst { it.kpId == item.linkedKpId } < 0) {
-                    if (secondary.indexOfFirst { it.kpId == item.linkedKpId } < 0) {
-                        return@forEach
-                    }
-                }
-                when (item.containerType) {
-                    ContainerType.REGULAR.id -> regulars.put(item.linkedKpId, item)
-                    ContainerType.BUNKER.id -> bunkers.put(item.linkedKpId, item)
-                    ContainerType.BULK1.id, ContainerType.BULK2.id -> bulks.put(item.linkedKpId, item)
-                    ContainerType.SPECIAL1.id, ContainerType.SPECIAL2.id -> specials.put(item.linkedKpId, item)
-                    else -> unknown.put(item.linkedKpId, item)
-                }
-            }
-            primary.forEach {
-                it.apply {
-                    setFromEqual(regulars.get(it.kpId))
-                    setFromEqual(bunkers.get(it.kpId))
-                    setFromEqual(bulks.get(it.kpId))
-                    setFromEqual(specials.get(it.kpId))
-                    setFromEqual(unknown.get(it.kpId))
-                }
-            }
-            secondary.forEach {
-                it.apply {
-                    setFromEqual(regulars.get(it.kpId))
-                    setFromEqual(bunkers.get(it.kpId))
-                    setFromEqual(bulks.get(it.kpId))
-                    setFromEqual(specials.get(it.kpId))
-                    setFromEqual(unknown.get(it.kpId))
+                val platform = primary.firstOrNull { it.kpId == item.linkedKpId }
+                    ?: secondary.firstOrNull { it.kpId == item.linkedKpId }
+                platform?.apply {
+                    setFromEqual(item)
                 }
             }
             reference.get()?.apply {
