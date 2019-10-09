@@ -4,6 +4,7 @@ import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.models.Container
+import ru.iqsolution.tkoonline.models.ContainerType
 import ru.iqsolution.tkoonline.models.SimpleContainer
 
 @Entity(
@@ -78,16 +79,17 @@ class CleanEvent() : Container, SendEvent {
     @ColumnInfo(name = "ce_sent")
     override var sent = false
 
-    constructor(kp: Int, type: String) : this() {
+    constructor(kp: Int) : this() {
         kpId = kp
-        containerType = type
         // time is correct here
         whenTime = DateTime.now()
+        // required for initialization only
+        containerType = ContainerType.UNKNOWN.id
     }
 
     fun toSimpleContainer(): SimpleContainer {
         return SimpleContainer(toContainerType()).also {
-            it.setFromAny(this)
+            it.setFromEqual(this)
         }
     }
 }
