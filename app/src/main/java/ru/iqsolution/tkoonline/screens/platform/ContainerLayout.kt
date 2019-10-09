@@ -108,12 +108,11 @@ class ContainerLayout : LinearLayout {
                 if (it.linkedIds.isNotEmpty() || containerType.id == type) {
                     container = it
                     visibility = View.VISIBLE
-                } else {
-                    visibility = View.GONE
+                    return
                 }
-                return
             }
         }
+        container = null
         visibility = View.GONE
     }
 
@@ -126,6 +125,10 @@ class ContainerLayout : LinearLayout {
     }
 
     override fun hasOverlappingRendering() = false
+
+    fun clear() {
+        container = null
+    }
 
     private fun TextView.setValueText(text: CharSequence) {
         val smallStyle = RelativeSizeSpan(0.6f)

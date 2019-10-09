@@ -18,6 +18,7 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
 import ru.iqsolution.tkoonline.services.workers.SendWorker
+import timber.log.Timber
 
 /**
  * Returns [android.app.Activity.RESULT_OK] if there were changes
@@ -32,9 +33,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
 
     private var confirmDialog: ConfirmDialog? = null
 
-    private var preFinishing = false
+    private var hasPhotoChanges = false
 
-    private var hasPhoto = false
+    private var preFinishing = false
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +45,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             it.attachView(this)
         }
         platform = intent.getSerializableExtra(EXTRA_PLATFORM_PLATFORM) as PlatformContainers
+        Timber.d(platform.toString())
         photoTypes.apply {
             addAll(intent.getSerializableExtra(EXTRA_PLATFORM_PHOTO_TYPES) as ArrayList<PhotoType>)
             forEach {
@@ -56,7 +58,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             if (preFinishing) {
                 return@setOnClickListener
             }
-            if (!hasPhoto) {
+            if (!hasPhotoChanges) {
                 closeDetails(false)
                 return@setOnClickListener
             }
@@ -106,6 +108,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             preFinishing = true
             presenter.saveCleanEvents(platform)
         }
+        onCleanEvents(null)
         presenter.apply {
             loadCleanEvents(platform.kpId)
             loadPhotoEvents(platform.kpId)
@@ -124,12 +127,12 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
                 }
             }
         }
-        platform.containers.forEach {
-            platform_regular.container = it
-            platform_bunker.container = it
-            platform_bulk.container = it
-            platform_special.container = it
-            platform_unknown.container = it
+        platform.apply {
+            platform_regular.updateContainer(containerType, containers)
+            platform_bunker.updateContainer(containerType, containers)
+            platform_bulk.updateContainer(containerType, containers)
+            platform_special.updateContainer(containerType, containers)
+            platform_unknown.updateContainer(containerType, containers)
         }
     }
 
@@ -139,7 +142,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         platform.errors.clear()
         events.forEach {
             photoErrors.get(it.type)?.let { error ->
-                platform.addError(error)
+                platform.errors.add(error)
             }
         }
         platform_map.apply {
@@ -158,9 +161,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         )
     }
 
-    override fun closeDetails(hasClean: Boolean) {
+    override fun closeDetails(hasCleanChanges: Boolean) {
         preFinishing = true
-        if (hasPhoto || hasClean) {
+        if (hasPhotoChanges || hasCleanChanges) {
             SendWorker.launch(applicationContext, platform.kpId)
             setResult(RESULT_OK)
         } else {
@@ -178,18 +181,21 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         when (requestCode) {
             REQUEST_PHOTO, REQUEST_PROBLEM -> {
                 if (resultCode == RESULT_OK) {
-                    hasPhoto = true
+                    hasPhotoChanges = true
                     presenter.loadPhotoEvents(platform.kpId)
                 }
             }
         }
     }
 
-    override fun onBackPressed() {}
-
     override fun onDestroy() {
         confirmDialog?.dismiss()
         platform_map.release()
+        platform_regular.clear()
+        platform_bunker.clear()
+        platform_bulk.clear()
+        platform_special.clear()
+        platform_unknown.clear()
         super.onDestroy()
     }
 
