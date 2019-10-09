@@ -15,7 +15,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
-
 @Suppress("MemberVisibilityCanBePrivate")
 class FileManager(context: Context) {
 
@@ -92,15 +91,15 @@ class FileManager(context: Context) {
             if (rotation % 360 != 0) {
                 matrix.postRotate(rotation.toFloat())
             }
-            val mBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true)
-            if (mBitmap != bitmap) {
+            val newBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true)
+            if (newBitmap != bitmap) {
                 try {
                     bitmap.recycle()
                 } catch (e: Throwable) {
                     Timber.e(e)
                 }
             }
-            return mBitmap
+            return newBitmap
         } catch (e: Throwable) {
             Timber.e(e)
             return null
