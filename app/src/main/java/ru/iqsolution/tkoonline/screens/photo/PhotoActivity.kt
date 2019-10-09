@@ -87,13 +87,6 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
 
     override fun closePreview(result: Int) {
         preFinishing = true
-        if (result != RESULT_OK) {
-            try {
-                externalPhoto.delete()
-            } catch (e: Throwable) {
-                Timber.e(e)
-            }
-        }
         setResult(result)
         finish()
     }
@@ -123,6 +116,15 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        try {
+            externalPhoto.delete()
+        } catch (e: Throwable) {
+            Timber.e(e)
+        }
+        super.onDestroy()
     }
 
     companion object {

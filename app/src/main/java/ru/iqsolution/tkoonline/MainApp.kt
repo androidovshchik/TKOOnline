@@ -152,7 +152,7 @@ class MainApp : Application(), KodeinAware {
                 .build()
         )
         /*FileManager(applicationContext).deleteAllFiles()
-        preferences.clear()
+        //preferences.clear()
         deleteDatabase("app.db")*/
     }
 
