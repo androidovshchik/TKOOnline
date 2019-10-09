@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.base
 
+import android.content.Context
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.kodein.di.KodeinAware
@@ -7,6 +8,7 @@ import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.MainApp
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.services.TelemetryService
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -28,6 +30,24 @@ open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, Corout
 
     override fun attachView(view: V) {
         reference = WeakReference(view)
+    }
+
+    override fun launchTelemetry(context: Context) {
+        GlobalScope.launch(Dispatchers.Main) {
+            var attempts = 0
+            repeat(5) {
+                if (attempts < 0) {
+                    return@repeat
+                }
+                try {
+                    TelemetryService.start(context)
+                    attempts = -1
+                } catch (e: Throwable) {
+                    delay(1000L + attempts * 500L)
+                    attempts++
+                }
+            }
+        }
     }
 
     override fun calculateSend() {

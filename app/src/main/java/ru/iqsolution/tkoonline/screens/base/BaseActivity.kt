@@ -2,7 +2,6 @@ package ru.iqsolution.tkoonline.screens.base
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.*
 import android.location.LocationManager
 import android.os.Bundle
@@ -15,12 +14,13 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStates
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
-import org.jetbrains.anko.*
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.locationManager
+import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
-import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
 import ru.iqsolution.tkoonline.services.LocationListener
@@ -45,31 +45,19 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         preferences = Preferences(applicationContext)
-        if (this !is LoginActivity) {
-            TelemetryService.start(applicationContext)
-        }
     }
 
     @Suppress("DEPRECATION")
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        statusBar = fragmentManager.findFragmentById(R.id.status_fragment) as StatusFragment?
+        if (this !is LoginActivity) {
+            statusBar = fragmentManager.findFragmentById(R.id.status_fragment) as StatusFragment?
+            presenter.launchTelemetry(applicationContext)
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        if (this !is LoginActivity) {
-            if (!preferences.isLoggedIn) {
-                startActivity(intentFor<LockActivity>().apply {
-                    if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
-                        clearTask()
-                    } else {
-                        clearTop()
-                    }
-                })
-                return
-            }
-        }
         if (attachService) {
             bindService(intentFor<TelemetryService>(), this, Context.BIND_AUTO_CREATE)
         }

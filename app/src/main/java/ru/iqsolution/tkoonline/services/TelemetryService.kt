@@ -126,16 +126,13 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
         /**
          * @return true if service is running
          */
+        @Throws(SecurityException::class)
         fun start(context: Context): Boolean = context.run {
             if (!areGranted(*DANGER_PERMISSIONS)) {
                 return false
             }
             return if (!activityManager.isRunning<TelemetryService>()) {
-                try {
-                    startForegroundService<TelemetryService>() != null
-                } catch (e: SecurityException) {
-                    false
-                }
+                startForegroundService<TelemetryService>() != null
             } else {
                 true
             }
