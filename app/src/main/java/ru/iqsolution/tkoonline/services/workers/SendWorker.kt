@@ -5,10 +5,9 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
+import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
 import ru.iqsolution.tkoonline.MainApp
@@ -21,7 +20,7 @@ import ru.iqsolution.tkoonline.remote.api.RequestClean
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class SendWorker(context: Context, params: WorkerParameters) : Worker(context, params), KodeinAware {
+class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
     val db: Database by instance()
 
@@ -29,13 +28,11 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
 
     val preferences: Preferences by instance()
 
-    val client: OkHttpClient by instance()
-
     val server: Server by instance()
 
     private val broadcastManager = LocalBroadcastManager.getInstance(context)
 
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result = coroutineScope {
         val kpId = inputData.getInt(PARAM_KP_ID, -1)
         val photoNoKp = inputData.getBoolean(PARAM_PHOTO_NO_KP, false)
         val sendAll = kpId < 0 && !photoNoKp
@@ -56,8 +53,9 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
                         RequestClean(it.clean)
                     ).execute()
                     require(!isStopped)
-                    if (responseClean.code() in 200..299) {
-                        db.cleanDao().markAsSent(it.clean.id ?: 0L)
+                    when {
+                        responseClean.code() in 200..299 -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
+                        responseClean.code() == 401 -> return@coroutineScope Result.success()
                     }
                 } catch (e: Throwable) {
                     Timber.e(e)
@@ -90,8 +88,9 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
                     photo
                 ).execute()
                 require(!isStopped)
-                if (responsePhoto.code() in 200..299) {
-                    db.photoDao().markAsSent(it.photo.id ?: 0L)
+                when {
+                    responsePhoto.code() in 200..299 -> db.photoDao().markAsSent(it.photo.id ?: 0L)
+                    responsePhoto.code() == 401 -> return@coroutineScope Result.success()
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
@@ -102,12 +101,12 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
         if (photoEvents.isNotEmpty()) {
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
-        return if (sendAll) {
+        if (sendAll) {
             require(!isStopped)
             val locationCount = db.locationDao().getSendCount()
             if (locationCount > 0) {
                 // awaiting telemetry service
-                return Result.retry()
+                return@coroutineScope Result.retry()
             }
             require(!isStopped)
             try {
@@ -127,11 +126,6 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
                 else -> Result.success()
             }
         }
-    }
-
-    override fun onStopped() {
-        super.onStopped()
-        client.dispatcher.cancelAll()
     }
 
     override val kodein = MainApp.instance.kodein
