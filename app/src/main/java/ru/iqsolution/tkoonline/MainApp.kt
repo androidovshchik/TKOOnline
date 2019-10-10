@@ -38,14 +38,30 @@ import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.services.workers.MidnightWorker
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 @Suppress("unused")
 class MainApp : Application(), KodeinAware {
 
     override val kodein by Kodein.lazy {
 
-        bind<OkHttpClient>() with provider {
+        bind<Preferences>() with provider {
+            Preferences(applicationContext)
+        }
+
+        bind<FileManager>() with provider {
+            FileManager(applicationContext)
+        }
+
+        bind<Gson>() with provider {
+            GsonBuilder()
+                .setLenient()
+                .setExclusionStrategies(SerializedNameStrategy())
+                .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
+                .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
+                .create()
+        }
+
+        bind<OkHttpClient>() with singleton {
             OkHttpClient.Builder().apply {
                 addInterceptor(DomainInterceptor(applicationContext))
                 if (BuildConfig.DEBUG) {
@@ -60,27 +76,7 @@ class MainApp : Application(), KodeinAware {
                     })
                     addNetworkInterceptor(StethoInterceptor())
                 }
-            }.connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(0, TimeUnit.SECONDS)
-                .readTimeout(0, TimeUnit.SECONDS)
-                .build()
-        }
-
-        bind<Gson>() with provider {
-            GsonBuilder()
-                .setLenient()
-                .setExclusionStrategies(SerializedNameStrategy())
-                .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
-                .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
-                .create()
-        }
-
-        bind<Preferences>() with provider {
-            Preferences(applicationContext)
-        }
-
-        bind<FileManager>() with provider {
-            FileManager(applicationContext)
+            }.build()
         }
 
         bind<Server>() with singleton {

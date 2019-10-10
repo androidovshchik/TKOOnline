@@ -125,7 +125,7 @@ class StatusFragment : BaseFragment(), SyncListener {
             status_count.apply {
                 text = if (photoCount < 10) {
                     photoCount.toString()
-                } else "!"
+                } else "*"
                 visibility = View.VISIBLE
             }
         } else {

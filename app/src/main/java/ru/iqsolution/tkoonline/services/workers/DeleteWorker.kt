@@ -11,7 +11,6 @@ import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
-import ru.iqsolution.tkoonline.services.BaseWorker
 
 class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 

@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.services
+package ru.iqsolution.tkoonline.services.workers
 
 import android.content.Context
 import androidx.work.CoroutineWorker
