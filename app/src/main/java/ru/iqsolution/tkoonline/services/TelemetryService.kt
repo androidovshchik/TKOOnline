@@ -9,6 +9,10 @@ import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
+import com.google.gson.Gson
+import com.rabbitmq.client.Channel
+import com.rabbitmq.client.Connection
+import com.rabbitmq.client.ConnectionFactory
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.startService
@@ -34,11 +38,14 @@ import java.util.concurrent.TimeUnit
  * · Для состояния стоянка - 5 минут
  * · Для состояния движения и остановка - 1 минута
  */
+// https://www.rabbitmq.com/api-guide.html
 class TelemetryService : BaseService(), TelemetryListener, LocationListener {
 
     val db: Database by instance()
 
     val preferences: Preferences by instance()
+
+    val gson: Gson by instance()
 
     private lateinit var locationManager: LocationManager
 
@@ -47,6 +54,12 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
     private var wakeLock: PowerManager.WakeLock? = null
 
     private var timer: ScheduledFuture<*>? = null
+
+    private val factory = ConnectionFactory()
+
+    private val connection: Connection? = null
+
+    private val channel: Channel? = null
 
     @Volatile
     private var isRunning = false
@@ -87,24 +100,18 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
         }
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
+            // background thread
             if (activityManager.getActivities(packageName) <= 0) {
                 stopTelemetry()
                 stopForeground(true)
                 stopSelf()
             }
-            /*val factory = ConnectionFactory().apply {
-                this.isAutomaticRecoveryEnabled
-            }
-            factory.host = "localhost"
-            factory.newConnection("").use { connection ->
-                connection.createChannel().use { channel ->
-                    channel.basicPublish()
-                    channel.queueDeclare(QUEUE_NAME, false, false, false, null)
-                    val message = "Hello World!"
-                    channel.basicPublish("", QUEUE_NAME, null, message.toByteArray())
-                    println(" [x] Sent '$message'")
-                }
-            }*/
+            preferences.isLoggedIn
+            factory.setUri(preferences.telemetryUri)
+            factory.newConnection()
+            factory.newConnection().createChannel()
+            channel.exchangeDeclare("cars", "direct", true)
+            channel.basicPublish("", QUEUE_NAME, null,)
         }, 0L, 3000L, TimeUnit.MILLISECONDS)
     }
 
@@ -169,8 +176,8 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
     }
 
     override fun onDestroy() {
-        //channel.close()
-        //conn.close()
+        channel?.close()
+        connection?.close()
         timer?.cancel(true)
         locationManager.removeUpdates()
         releaseWakeLock()

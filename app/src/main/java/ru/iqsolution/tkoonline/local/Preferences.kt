@@ -76,6 +76,9 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
     val authHeader: String
         get() = "Bearer $accessToken"
 
+    val telemetryUri: String
+        get() = "amqp://$carId:$accessToken@$mainTelemetryAddress/"
+
     val serverDay: String
         get() = serverTime?.split("T")?.get(0).toString()
 

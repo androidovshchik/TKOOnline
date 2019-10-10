@@ -11,13 +11,16 @@ import coil.api.load
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
+import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 import ru.iqsolution.tkoonline.screens.qrcode.ScannerListener
+import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.DeleteWorker
 
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, SettingsListener {
@@ -52,6 +55,10 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
      * Here permissions are granted
      */
     override fun onQrCode(value: String) {
+        if (activityManager.isRunning<TelemetryService>()) {
+            toast("Требуется завершение работы сервиса")
+            return
+        }
         presenter.login(value)
     }
 
