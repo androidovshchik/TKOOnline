@@ -84,6 +84,7 @@ open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, Corout
     override val coroutineContext = Dispatchers.Main + baseJob + CoroutineExceptionHandler { _, e ->
         Timber.e(e)
         if (e !is CancellationException) {
+            //todo logout
             reference.get()?.showError(e)
         }
     }

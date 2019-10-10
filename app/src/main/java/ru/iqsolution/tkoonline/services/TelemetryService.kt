@@ -56,9 +56,9 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
 
     private val factory = ConnectionFactory()
 
-    private val connection: Connection? = null
+    private var connection: Connection? = null
 
-    private val channel: Channel? = null
+    private var channel: Channel? = null
 
     @Volatile
     private var isRunning = false
@@ -77,6 +77,11 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
      * km/h
      */
     var speed = 0
+
+    /**
+     * Уникальный ИД Постоянно возрастающий внутри сессии с 0
+     */
+    var packageId = 0L
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -97,6 +102,7 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
         locationManager = LocationManager(applicationContext, this).also {
             it.requestUpdates()
         }
+        factory.setUri(preferences.telemetryUri)
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
             // background thread
@@ -106,18 +112,31 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
                 stopSelf()
             }
             preferences.isLoggedIn
-            factory.setUri(preferences.telemetryUri)
-            val lastEvents = db.locationDao().getSendEvents()
-            try {
+            val lastEvents = db.locationDao().getSendEvents().toMutableList()
+            if (isRunning) {
+                if () {
+                    lastEvents.add()
+                }
+            } else {
+                if (lastEvents.isEmpty()) {
 
-            } catch (e: Throwable) {
-                Timber.e(e)
+                }
             }
-            factory.newConnection()
-            factory.newConnection().createChannel()
-            channel.exchangeDeclare("cars", "direct", true)
-            channel.basicPublish("", QUEUE_NAME, null,)
-            channel.basicConsume()
+            lastEvents.forEach {
+                try {
+                    factory.apply {
+                        username = it.token.carId.toString()
+                        password = it.token.token
+                    }
+                    connection = factory.newConnection()
+                    channel = connection?.createChannel()
+                    channel.exchangeDeclare("cars", "direct", true)
+                    channel.basicPublish("", QUEUE_NAME, null,)
+                    channel.basicConsume()
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                }
+            }
         }, 0L, 3000L, TimeUnit.MILLISECONDS)
     }
 
@@ -127,15 +146,15 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
         properties: AMQP.BasicProperties?,
         body: ByteArray?
     ) {
-        Timber.e("handleRecoverOk $consumerTag")
+        Timber.d("handleDelivery $consumerTag")
     }
 
     override fun handleRecoverOk(consumerTag: String?) {
-        Timber.e("handleRecoverOk $consumerTag")
+        Timber.d("handleRecoverOk $consumerTag")
     }
 
     override fun handleConsumeOk(consumerTag: String?) {
-        Timber.e("handleConsumeOk $consumerTag")
+        Timber.d("handleConsumeOk $consumerTag")
     }
 
     override fun handleShutdownSignal(consumerTag: String?, sig: ShutdownSignalException?) {
@@ -195,10 +214,22 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
         }
     }
 
+    private fun closeConnection() {
+        try {
+            channel?.close()
+        } catch (e: Throwable) {
+            Timber.e(e)
+        }
+        try {
+            connection?.close()
+        } catch (e: Throwable) {
+            Timber.e(e)
+        }
+    }
+
     override fun onDestroy() {
-        channel?.close()
-        connection?.close()
         timer?.cancel(true)
+        closeConnection()
         locationManager.removeUpdates()
         releaseWakeLock()
         super.onDestroy()
