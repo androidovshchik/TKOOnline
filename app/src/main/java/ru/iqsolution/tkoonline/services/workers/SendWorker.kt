@@ -40,6 +40,7 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
         val photoNoKp = inputData.getBoolean(PARAM_PHOTO_NO_KP, false)
         val sendAll = kpId < 0 && !photoNoKp
         var hasErrors = false
+        require(!isStopped)
         if (!photoNoKp) {
             val cleanEvents = if (sendAll) {
                 db.cleanDao().getSendEvents()
@@ -47,6 +48,7 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
                 db.cleanDao().getSendKpIdEvents(kpId)
             }
             cleanEvents.forEach {
+                require(!isStopped)
                 try {
                     val responseClean = server.sendClean(
                         it.token.authHeader,
@@ -61,17 +63,21 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
                     hasErrors = sendAll
                 }
             }
+            require(!isStopped)
             if (cleanEvents.isNotEmpty()) {
                 broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
             }
         }
+        require(!isStopped)
         val photoEvents = when {
             photoNoKp -> db.photoDao().getSendNoKpEvents()
             sendAll -> db.photoDao().getSendEvents()
             else -> db.photoDao().getSendKpIdEvents(kpId)
         }
         photoEvents.forEach {
+            require(!isStopped)
             val photo = fileManager.readFile(it.photo.path) ?: return@forEach
+            require(!isStopped)
             try {
                 val responsePhoto = server.sendPhoto(
                     it.token.authHeader,
@@ -90,34 +96,39 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
                 hasErrors = sendAll
             }
         }
+        require(!isStopped)
         if (photoEvents.isNotEmpty()) {
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
         return if (sendAll) {
+            require(!isStopped)
             val locationCount = db.locationDao().getSendCount()
             if (locationCount > 0) {
                 // awaiting telemetry service
                 return Result.retry()
             }
+            require(!isStopped)
             try {
                 server.logout(preferences.authHeader).execute()
             } catch (e: Throwable) {
                 Timber.e(e)
                 hasErrors = true
             }
-            if (hasErrors) {
-                Result.retry()
-            } else {
-                Result.success()
+            when {
+                hasErrors -> Result.retry()
+                isStopped -> Result.failure()
+                else -> Result.success()
             }
         } else {
-            Result.success()
+            when {
+                isStopped -> Result.failure()
+                else -> Result.success()
+            }
         }
     }
 
     override fun onStopped() {
         super.onStopped()
-        Timber.d("*** CANCELL")
         client.dispatcher.cancelAll()
     }
 
