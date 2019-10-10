@@ -11,6 +11,7 @@ import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
+import org.jetbrains.anko.startService
 import org.jetbrains.anko.stopService
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
@@ -87,7 +88,20 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
                     println(" [x] Sent '$message'")
                 }
             }*/
-        }, LOCATION_INTERVAL, LOCATION_INTERVAL, TimeUnit.MILLISECONDS)
+        }, 0, LOCATION_INTERVAL, TimeUnit.MILLISECONDS)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            if (it.hasExtra(EXTRA_TELEMETRY_TASK)) {
+                if (it.getBooleanExtra(EXTRA_TELEMETRY_TASK, false)) {
+                    startTelemetry()
+                } else {
+                    stopTelemetry()
+                }
+            }
+        }
+        return START_STICKY
     }
 
     @SuppressLint("WakelockTimeout")
@@ -97,10 +111,6 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
                 acquire()
             }
         }
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return START_STICKY
     }
 
     override fun startTelemetry() {
@@ -115,7 +125,7 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
 
     override fun onLocationAvailability(available: Boolean) {
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
-            putExtra(EXTRA_TELEMETRY_AVAILABILITY, available)
+            putExtra(EXTRA_SYNC_AVAILABILITY, available)
         })
     }
 
@@ -126,7 +136,7 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
             locationTime = DateTime.now().toString(PATTERN_DATETIME)
         }
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
-            putExtra(EXTRA_TELEMETRY_LOCATION, location)
+            putExtra(EXTRA_SYNC_LOCATION, location)
         })
     }
 
@@ -186,14 +196,14 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
          * @return true if service is running
          */
         @Throws(SecurityException::class)
-        fun start(context: Context): Boolean = context.run {
+        fun start(context: Context, vararg params: Pair<String, Any?>): Boolean = context.run {
             if (!areGranted(*DANGER_PERMISSIONS)) {
                 return false
             }
             return if (!activityManager.isRunning<TelemetryService>()) {
-                startForegroundService<TelemetryService>() != null
+                startForegroundService<TelemetryService>(*params) != null
             } else {
-                true
+                startService<TelemetryService>(*params) != null
             }
         }
 
@@ -202,11 +212,10 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
          * @return true if service is stopped
          */
         private fun stop(context: Context): Boolean = context.run {
-            return if (activityManager.isRunning<TelemetryService>()) {
-                stopService<TelemetryService>()
-            } else {
-                true
+            if (activityManager.isRunning<TelemetryService>()) {
+                return stopService<TelemetryService>()
             }
+            return true
         }
     }
 }
