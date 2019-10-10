@@ -5,22 +5,23 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
-import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
+import ru.iqsolution.tkoonline.MainApp
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.remote.api.RequestClean
-import ru.iqsolution.tkoonline.services.BaseWorker
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
+class SendWorker(context: Context, params: WorkerParameters) : Worker(context, params), KodeinAware {
 
     val db: Database by instance()
 
@@ -28,11 +29,13 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
     val preferences: Preferences by instance()
 
+    val client: OkHttpClient by instance()
+
     val server: Server by instance()
 
     private val broadcastManager = LocalBroadcastManager.getInstance(context)
 
-    override suspend fun doWork(): Result = coroutineScope {
+    override fun doWork(): Result {
         val kpId = inputData.getInt(PARAM_KP_ID, -1)
         val photoNoKp = inputData.getBoolean(PARAM_PHOTO_NO_KP, false)
         val sendAll = kpId < 0 && !photoNoKp
@@ -90,11 +93,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         if (photoEvents.isNotEmpty()) {
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
-        if (sendAll) {
+        return if (sendAll) {
             val locationCount = db.locationDao().getSendCount()
             if (locationCount > 0) {
                 // awaiting telemetry service
-                return@coroutineScope Result.retry()
+                return Result.retry()
             }
             try {
                 server.logout(preferences.authHeader).execute()
@@ -111,6 +114,14 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             Result.success()
         }
     }
+
+    override fun onStopped() {
+        super.onStopped()
+        Timber.d("*** CANCELL")
+        client.dispatcher.cancelAll()
+    }
+
+    override val kodein = MainApp.instance.kodein
 
     companion object {
 
