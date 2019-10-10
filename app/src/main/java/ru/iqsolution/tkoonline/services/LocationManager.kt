@@ -8,18 +8,10 @@ import android.location.LocationManager
 import android.location.LocationProvider
 import android.os.Bundle
 import org.jetbrains.anko.locationManager
-import ru.iqsolution.tkoonline.LOCATION_INTERVAL
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
-/**
- * МП должно исключать генерацию более одного события в одну секунду.
- * Данные события должны генерироваться по факту прохождения дистанции в 200 метров, повороте, остановке или начале движения,
- * а также по времени не реже чем:
- * · Для состояния стоянка - 5 минут
- * · Для состояния движения и остановка - 1 минута
- */
 @Suppress("MemberVisibilityCanBePrivate")
 @SuppressLint("MissingPermission")
 class LocationManager(context: Context, listener: LocationListener) : android.location.LocationListener {
@@ -42,7 +34,7 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
     }
 
     fun requestUpdates() {
-        locationClient.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, 0f, this)
+        locationClient.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000L, 0f, this)
         locationClient.registerGnssStatusCallback(gnssCallback)
     }
 

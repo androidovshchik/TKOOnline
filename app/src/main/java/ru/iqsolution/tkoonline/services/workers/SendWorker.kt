@@ -55,6 +55,7 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
                         it.clean.kpId,
                         RequestClean(it.clean)
                     ).execute()
+                    require(!isStopped)
                     if (responseClean.code() in 200..299) {
                         db.cleanDao().markAsSent(it.clean.id ?: 0L)
                     }
@@ -88,6 +89,7 @@ class SendWorker(context: Context, params: WorkerParameters) : Worker(context, p
                     it.photo.longitude.toString().toRequestBody(TEXT_TYPE),
                     photo
                 ).execute()
+                require(!isStopped)
                 if (responsePhoto.code() in 200..299) {
                     db.photoDao().markAsSent(it.photo.id ?: 0L)
                 }

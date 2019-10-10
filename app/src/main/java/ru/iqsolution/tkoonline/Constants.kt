@@ -6,8 +6,6 @@ import org.joda.time.format.DateTimeFormatter
 
 const val CHANNEL_DEFAULT = "default_channel"
 
-const val LOCATION_INTERVAL = 5_000L
-
 // for password
 const val WAIT_TIME = 5 * 60 * 1000L
 
