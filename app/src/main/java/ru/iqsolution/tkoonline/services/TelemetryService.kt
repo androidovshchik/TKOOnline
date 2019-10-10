@@ -20,14 +20,23 @@ import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.getActivities
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startForegroundService
+import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
-import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
+/**
+ * МП должно исключать генерацию более одного события в одну секунду.
+ * Данные события должны генерироваться по факту прохождения дистанции в 200 метров, повороте, остановке или начале движения,
+ * а также по времени не реже чем:
+ * · Для состояния стоянка - 5 минут
+ * · Для состояния движения и остановка - 1 минута
+ */
 class TelemetryService : BaseService(), TelemetryListener, LocationListener {
+
+    val db: Database by instance()
 
     val preferences: Preferences by instance()
 
@@ -41,6 +50,21 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
 
     @Volatile
     private var isRunning = false
+
+    /**
+     * Base dot and direction
+     */
+    private var baseLocation: SimpleLocation? = null
+
+    /**
+     * In meters
+     */
+    var mileage = 0
+
+    /**
+     * km/h
+     */
+    var speed = 0
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -63,7 +87,6 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
         }
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
-            Timber.d(">>>>> scheduleAtFixedRate ${activityManager.getActivities(packageName)}")
             if (activityManager.getActivities(packageName) <= 0) {
                 stopTelemetry()
                 stopForeground(true)
@@ -82,7 +105,11 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
                     println(" [x] Sent '$message'")
                 }
             }*/
-        }, 0, LOCATION_INTERVAL, TimeUnit.MILLISECONDS)
+        }, 0L, 3000L, TimeUnit.MILLISECONDS)
+    }
+
+    private fun sendLocationEvent() {
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

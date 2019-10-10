@@ -241,8 +241,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                     if (it.kpId == event.kpId) {
                         if (cleanEvents != null) {
                             // only for secondary items
-                            if (it.timestamp == 0L) {
-                                it.timestamp = event.whenTime.withZone(zone).millis
+                            val millis = event.whenTime.withZone(zone).millis
+                            if (it.timestamp < millis) {
+                                it.timestamp = millis
                             }
                         }
                         photoErrors.get(event.type)?.run {

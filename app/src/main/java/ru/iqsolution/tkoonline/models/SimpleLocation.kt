@@ -24,6 +24,11 @@ class SimpleLocation : Serializable, Location<Double> {
     var direction = 0
 
     /**
+     * It's only the fixed mileage at location time
+     */
+    var distance = 0
+
+    /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
     val locationTime: DateTime
@@ -35,7 +40,7 @@ class SimpleLocation : Serializable, Location<Double> {
     val validity: Int
         get() {
             val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-            if (accuracy <= 30 && System.currentTimeMillis() - locationTime.withZone(zone).millis <= 5000) {
+            if (accuracy <= 30 && System.currentTimeMillis() - locationTime.withZone(zone).millis <= 5000L) {
                 return 1
             }
             return 0
