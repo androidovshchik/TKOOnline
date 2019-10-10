@@ -2,10 +2,11 @@ package ru.iqsolution.tkoonline.screens.base
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.*
+import android.content.Context
+import android.content.Intent
+import android.content.IntentSender
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.IBinder
 import android.view.MenuItem
 import android.view.WindowManager
 import com.google.android.gms.common.api.ResolvableApiException
@@ -14,7 +15,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStates
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.locationManager
 import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.BuildConfig
@@ -24,20 +24,15 @@ import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
 import ru.iqsolution.tkoonline.services.LocationListener
-import ru.iqsolution.tkoonline.services.TelemetryService
 import timber.log.Timber
 
 @SuppressLint("Registered")
 @Suppress("MemberVisibilityCanBePrivate")
-open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseView, ServiceConnection, LocationListener {
-
-    open val attachService = false
+open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseView, LocationListener {
 
     protected lateinit var presenter: T
 
     protected lateinit var preferences: Preferences
-
-    protected var telemetryService: TelemetryService? = null
 
     private var statusBar: StatusFragment? = null
 
@@ -58,9 +53,6 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
     override fun onStart() {
         super.onStart()
-        if (attachService) {
-            bindService(intentFor<TelemetryService>(), this, Context.BIND_AUTO_CREATE)
-        }
         updateCloud()
     }
 
@@ -132,24 +124,9 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
      */
     override fun onLocationResult(location: SimpleLocation) {}
 
-    override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-        telemetryService = (binder as TelemetryService.Binder).service
-    }
-
-    override fun onServiceDisconnected(name: ComponentName) {
-        telemetryService = null
-    }
-
     override fun onPause() {
         super.onPause()
         overridePendingTransition(0, 0)
-    }
-
-    override fun onStop() {
-        if (telemetryService != null) {
-            unbindService(this)
-        }
-        super.onStop()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
