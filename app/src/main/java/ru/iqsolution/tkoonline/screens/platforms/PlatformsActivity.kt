@@ -21,13 +21,12 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
+import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 import java.util.*
 
 class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View, WaitListener,
     AdapterListener<PlatformContainers> {
-
-    override val attachService = true
 
     private lateinit var platformsAdapter: PlatformsAdapter
 
@@ -70,7 +69,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 return@setOnClickListener
             }
             showLoading()
-            telemetryService?.stopTelemetry()
+            TelemetryService.start(applicationContext, EXTRA_TELEMETRY_TASK to false)
             presenter.logout(applicationContext)
         }
         if (preferences.allowPhotoRefKp) {
@@ -174,7 +173,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     override fun cancelWork() {
         SendWorker.cancel(applicationContext)
-        telemetryService?.startTelemetry()
+        TelemetryService.start(applicationContext, EXTRA_TELEMETRY_TASK to true)
     }
 
     override fun onLoggedOut() {

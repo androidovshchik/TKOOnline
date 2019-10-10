@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_login.*
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.setTextSelection
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.base.BaseDialogFragment
 
@@ -21,8 +22,8 @@ class SettingsDialog : BaseDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val preferences = Preferences(context).apply {
-            dialog_main_server.setText(mainServerAddress)
-            dialog_telemetry_server.setText(mainTelemetryAddress)
+            dialog_main_server.setTextSelection(mainServerAddress)
+            dialog_telemetry_server.setTextSelection(mainTelemetryAddress)
             setAsLocked(enableLock)
         }
         dialog_unlock.setOnClickListener {
@@ -34,8 +35,8 @@ class SettingsDialog : BaseDialogFragment() {
                 .replace(slashRegex, "")
             val telemetryAddress = dialog_telemetry_server.text.toString().trim()
                 .replace(slashRegex, "")
-            dialog_main_server.setText(serverAddress)
-            dialog_telemetry_server.setText(telemetryAddress)
+            dialog_main_server.setTextSelection(serverAddress)
+            dialog_telemetry_server.setTextSelection(telemetryAddress)
             preferences.bulk {
                 mainServerAddress = serverAddress
                 mainTelemetryAddress = telemetryAddress
