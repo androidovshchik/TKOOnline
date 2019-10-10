@@ -39,17 +39,11 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
 
     private var timer: ScheduledFuture<*>? = null
 
-    private val binder = Binder()
-
     @Volatile
     private var isRunning = false
 
     override fun onBind(intent: Intent): IBinder? {
-        return binder
-    }
-
-    override fun onUnbind(intent: Intent): Boolean {
-        return true
+        return null
     }
 
     @SuppressLint("MissingPermission")
@@ -154,13 +148,6 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
         locationManager.removeUpdates()
         releaseWakeLock()
         super.onDestroy()
-    }
-
-    @Suppress("unused")
-    inner class Binder : android.os.Binder() {
-
-        val service: TelemetryService
-            get() = this@TelemetryService
     }
 
     companion object {
