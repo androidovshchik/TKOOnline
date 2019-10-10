@@ -103,6 +103,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
                     MediaStore.EXTRA_OUTPUT,
                     FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", externalPhoto)
                 )
+                putExtra("android.intent.extra.quickCapture", true)
             }, REQUEST_PHOTO)
         } else {
             toast("Не найдено приложение для фото")
