@@ -66,7 +66,15 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
     /**
      * Base dot and direction
      */
+    @Volatile
+    private var lastLocation: SimpleLocation? = null
+
     private var baseLocation: SimpleLocation? = null
+
+    /**
+     * Уникальный ИД Постоянно возрастающий внутри сессии с 0
+     */
+    var packageId = 0L
 
     /**
      * In meters
@@ -77,11 +85,6 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
      * km/h
      */
     var speed = 0
-
-    /**
-     * Уникальный ИД Постоянно возрастающий внутри сессии с 0
-     */
-    var packageId = 0L
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -112,7 +115,11 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
                 stopSelf()
             }
             preferences.isLoggedIn
-            val lastEvents = db.locationDao().getSendEvents().toMutableList()
+            val lastEvents = arrayListOf<>()
+            val lastEvent = db.locationDao().getLastSendEvent()
+            lastEvent?.let {
+
+            }
             if (isRunning) {
                 if () {
                     lastEvents.add()
@@ -129,6 +136,7 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
                         password = it.token.token
                     }
                     connection = factory.newConnection()
+                    connection?.isOpen
                     channel = connection?.createChannel()
                     channel.exchangeDeclare("cars", "direct", true)
                     channel.basicPublish("", QUEUE_NAME, null,)
@@ -137,7 +145,7 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
                     Timber.e(e)
                 }
             }
-        }, 0L, 3000L, TimeUnit.MILLISECONDS)
+        }, 0L, 2000L, TimeUnit.MILLISECONDS)
     }
 
     override fun handleDelivery(
@@ -205,6 +213,7 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_LOCATION, location)
         })
+        lastLocation = location
     }
 
     private fun releaseWakeLock() {

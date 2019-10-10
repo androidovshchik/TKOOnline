@@ -22,11 +22,12 @@ interface LocationDao {
         """
         SELECT location_events.*, tokens.* FROM location_events 
         INNER JOIN tokens ON location_events.le_token_id = tokens.t_id
+        WHERE location_events.le_sent = 0
         ORDER BY location_events.le_id DESC
-        LIMIT 3
+        LIMIT 1
     """
     )
-    fun getSendEvents(): List<LocationEventToken>
+    fun getLastSendEvent(): LocationEventToken?
 
     @Insert
     fun insert(item: LocationEvent)
@@ -42,5 +43,5 @@ interface LocationDao {
      * Lifetime is less than 48 hours
      */
     @Delete
-    fun delete(items: List<LocationEvent>)
+    fun delete(items: LocationEvent)
 }
