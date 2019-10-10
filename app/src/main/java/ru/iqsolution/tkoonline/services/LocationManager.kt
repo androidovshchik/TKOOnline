@@ -28,7 +28,6 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
 
     private val locationClient = context.locationManager
 
-    @Volatile
     private var satellitesCount = 0
 
     init {
@@ -47,6 +46,9 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
         locationClient.registerGnssStatusCallback(gnssCallback)
     }
 
+    /**
+     * NOTICE UI thread
+     */
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle?) {
         if (LocationManager.GPS_PROVIDER != provider) {
             return
@@ -59,6 +61,9 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
         )
     }
 
+    /**
+     * NOTICE UI thread
+     */
     override fun onLocationChanged(location: Location) {
         reference.get()?.onLocationResult(SimpleLocation(location).apply {
             satellites = satellitesCount
@@ -80,6 +85,9 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
 
     private val gnssCallback = object : GnssStatus.Callback() {
 
+        /**
+         * NOTICE UI thread
+         */
         override fun onSatelliteStatusChanged(status: GnssStatus) {
             satellitesCount = status.satelliteCount
         }
