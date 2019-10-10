@@ -16,10 +16,15 @@ import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.areGranted
+import ru.iqsolution.tkoonline.extensions.getActivities
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startForegroundService
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import timber.log.Timber
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 
 class TelemetryService : BaseService(), TelemetryListener, LocationListener {
 
@@ -30,6 +35,8 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
     private lateinit var broadcastManager: LocalBroadcastManager
 
     private var wakeLock: PowerManager.WakeLock? = null
+
+    private var timer: ScheduledFuture<*>? = null
 
     private val binder = Binder()
 
@@ -59,6 +66,28 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
         locationManager = LocationManager(applicationContext, this).also {
             it.requestUpdates()
         }
+        val executor = Executors.newScheduledThreadPool(1)
+        timer = executor.scheduleAtFixedRate({
+            Timber.d(">>>>> scheduleAtFixedRate ${activityManager.getActivities(packageName)}")
+            if (activityManager.getActivities(packageName) <= 0) {
+                stopTelemetry()
+                stopForeground(true)
+                stopSelf()
+            }
+            /*val factory = ConnectionFactory().apply {
+                this.isAutomaticRecoveryEnabled
+            }
+            factory.host = "localhost"
+            factory.newConnection("").use { connection ->
+                connection.createChannel().use { channel ->
+                    channel.basicPublish()
+                    channel.queueDeclare(QUEUE_NAME, false, false, false, null)
+                    val message = "Hello World!"
+                    channel.basicPublish("", QUEUE_NAME, null, message.toByteArray())
+                    println(" [x] Sent '$message'")
+                }
+            }*/
+        }, LOCATION_INTERVAL, LOCATION_INTERVAL, TimeUnit.MILLISECONDS)
     }
 
     @SuppressLint("WakelockTimeout")
@@ -109,6 +138,9 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
     }
 
     override fun onDestroy() {
+        //channel.close()
+        //conn.close()
+        timer?.cancel(true)
         locationManager.removeUpdates()
         releaseWakeLock()
         super.onDestroy()
@@ -122,6 +154,33 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
     }
 
     companion object {
+
+        // Для состояния стоянка - 5 минут
+        private const val PARKING_DELAY = 5 * 60_000L
+
+        // Для состояния движения и остановка - 1 минута
+        private const val MOVING_DELAY = 60_000L
+
+        /**
+         * Событие стоянка
+         * Данное событие генерируется в состоянии остановка если данное состояние не изменено в течение 2 минут
+         */
+        private const val PARKING_TIME = 2 * 60_000L
+
+        // Направление движения отклоняется от базового на величину 5 градусов
+        private const val BASE_DEGREE = 5
+
+        // Скорость выше параметра минимальной скорости (10км/ч)
+        private const val MIN_SPEED = 10
+
+        // минимальное время - 30 секунд
+        private const val MIN_TIME = 30
+
+        /**
+         * Событие пройдена дистанция
+         * Данное событие генерируется только в состоянии движения при перемещении автомобиля от базовой точки на расстояние больше 200 метров.
+         */
+        private const val BASE_DISTANCE = 200
 
         /**
          * @return true if service is running

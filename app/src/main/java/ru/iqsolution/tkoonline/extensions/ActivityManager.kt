@@ -20,5 +20,5 @@ fun ActivityManager.getActivities(packageName: String): Int {
             return task.numActivities
         }
     }
-    return 0
+    return -1
 }
