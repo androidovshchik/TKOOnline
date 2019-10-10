@@ -85,7 +85,6 @@
             android:visibility="invisible"/>
 
         <TextView
-            android:id="@+id/status_datetime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
@@ -120,7 +119,6 @@
                 android:layout_marginEnd="@dimen/barcode_container_padding"/>
 
             <View
-                android:id="@+id/barcode_line"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_centerVertical="true"
