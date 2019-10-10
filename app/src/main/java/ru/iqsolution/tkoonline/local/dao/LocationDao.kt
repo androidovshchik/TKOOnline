@@ -23,6 +23,7 @@ interface LocationDao {
         SELECT location_events.*, tokens.* FROM location_events 
         INNER JOIN tokens ON location_events.le_token_id = tokens.t_id
         ORDER BY location_events.le_id DESC
+        LIMIT 3
     """
     )
     fun getSendEvents(): List<LocationEventToken>

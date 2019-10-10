@@ -10,9 +10,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
-import com.rabbitmq.client.Channel
-import com.rabbitmq.client.Connection
-import com.rabbitmq.client.ConnectionFactory
+import com.rabbitmq.client.*
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.startService
@@ -27,6 +25,7 @@ import ru.iqsolution.tkoonline.extensions.startForegroundService
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -39,7 +38,7 @@ import java.util.concurrent.TimeUnit
  * · Для состояния движения и остановка - 1 минута
  */
 // https://www.rabbitmq.com/api-guide.html
-class TelemetryService : BaseService(), TelemetryListener, LocationListener {
+class TelemetryService : BaseService(), Consumer, LocationListener {
 
     val db: Database by instance()
 
@@ -102,31 +101,60 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
         timer = executor.scheduleAtFixedRate({
             // background thread
             if (activityManager.getActivities(packageName) <= 0) {
-                stopTelemetry()
+                isRunning = false
                 stopForeground(true)
                 stopSelf()
             }
             preferences.isLoggedIn
             factory.setUri(preferences.telemetryUri)
+            val lastEvents = db.locationDao().getSendEvents()
+            try {
+
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
             factory.newConnection()
             factory.newConnection().createChannel()
             channel.exchangeDeclare("cars", "direct", true)
             channel.basicPublish("", QUEUE_NAME, null,)
+            channel.basicConsume()
         }, 0L, 3000L, TimeUnit.MILLISECONDS)
     }
 
-    private fun sendLocationEvent() {
+    override fun handleDelivery(
+        consumerTag: String?,
+        envelope: Envelope?,
+        properties: AMQP.BasicProperties?,
+        body: ByteArray?
+    ) {
+        Timber.e("handleRecoverOk $consumerTag")
+    }
 
+    override fun handleRecoverOk(consumerTag: String?) {
+        Timber.e("handleRecoverOk $consumerTag")
+    }
+
+    override fun handleConsumeOk(consumerTag: String?) {
+        Timber.e("handleConsumeOk $consumerTag")
+    }
+
+    override fun handleShutdownSignal(consumerTag: String?, sig: ShutdownSignalException?) {
+        Timber.e("handleShutdownSignal $consumerTag")
+        Timber.e(sig)
+    }
+
+    override fun handleCancel(consumerTag: String?) {
+        Timber.d("handleCancel $consumerTag")
+    }
+
+    override fun handleCancelOk(consumerTag: String?) {
+        Timber.d("handleCancelOk $consumerTag")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             if (it.hasExtra(EXTRA_TELEMETRY_TASK)) {
-                if (it.getBooleanExtra(EXTRA_TELEMETRY_TASK, false)) {
-                    startTelemetry()
-                } else {
-                    stopTelemetry()
-                }
+                isRunning = it.getBooleanExtra(EXTRA_TELEMETRY_TASK, false)
             }
         }
         return START_STICKY
@@ -139,14 +167,6 @@ class TelemetryService : BaseService(), TelemetryListener, LocationListener {
                 acquire()
             }
         }
-    }
-
-    override fun startTelemetry() {
-        isRunning = true
-    }
-
-    override fun stopTelemetry() {
-        isRunning = false
     }
 
     override fun onLocationState(state: LocationSettingsStates?) {}
