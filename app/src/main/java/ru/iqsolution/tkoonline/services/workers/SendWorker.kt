@@ -33,46 +33,34 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
     private val broadcastManager = LocalBroadcastManager.getInstance(context)
 
     override suspend fun doWork(): Result = coroutineScope {
-        val kpId = inputData.getInt(PARAM_KP_ID, -1)
-        val photoNoKp = inputData.getBoolean(PARAM_PHOTO_NO_KP, false)
-        val sendAll = kpId < 0 && !photoNoKp
+        val retry = inputData.getBoolean(PARAM_RETRY, false)
         var hasErrors = false
         require(!isStopped)
-        if (!photoNoKp) {
-            val cleanEvents = if (sendAll) {
-                db.cleanDao().getSendEvents()
-            } else {
-                db.cleanDao().getSendKpIdEvents(kpId)
-            }
-            cleanEvents.forEach {
-                require(!isStopped)
-                try {
-                    val responseClean = server.sendClean(
-                        it.token.authHeader,
-                        it.clean.kpId,
-                        RequestClean(it.clean)
-                    ).execute()
-                    require(!isStopped)
-                    when {
-                        responseClean.code() in 200..299 -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
-                        responseClean.code() == 401 -> return@coroutineScope Result.success()
-                    }
-                } catch (e: Throwable) {
-                    Timber.e(e)
-                    hasErrors = sendAll
-                }
-            }
+        val cleanEvents = db.cleanDao().getSendEvents()
+        cleanEvents.forEach {
             require(!isStopped)
-            if (cleanEvents.isNotEmpty()) {
-                broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+            try {
+                val responseClean = server.sendClean(
+                    it.token.authHeader,
+                    it.clean.kpId,
+                    RequestClean(it.clean)
+                ).execute()
+                require(!isStopped)
+                when {
+                    responseClean.code() in 200..299 -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
+                    responseClean.code() == 401 -> return@coroutineScope Result.success()
+                }
+            } catch (e: Throwable) {
+                Timber.e(e)
+                hasErrors = true
             }
         }
         require(!isStopped)
-        val photoEvents = when {
-            photoNoKp -> db.photoDao().getSendNoKpEvents()
-            sendAll -> db.photoDao().getSendEvents()
-            else -> db.photoDao().getSendKpIdEvents(kpId)
+        if (cleanEvents.isNotEmpty()) {
+            broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
+        require(!isStopped)
+        val photoEvents = db.photoDao().getSendEvents()
         photoEvents.forEach {
             require(!isStopped)
             val photo = fileManager.readFile(it.photo.path) ?: return@forEach
@@ -94,14 +82,14 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
-                hasErrors = sendAll
+                hasErrors = true
             }
         }
         require(!isStopped)
         if (photoEvents.isNotEmpty()) {
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
-        if (sendAll) {
+        if (retry) {
             require(!isStopped)
             val locationCount = db.locationDao().getSendCount()
             if (locationCount > 0) {
@@ -134,33 +122,30 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
         private const val NAME = "SEND"
 
-        private const val PARAM_KP_ID = "kp_id"
+        private const val PARAM_RETRY = "retry"
 
         private const val PARAM_PHOTO_NO_KP = "photo_no_kp"
 
         private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
 
-        fun launch(context: Context, kp: Int = -1, photoNoKp: Boolean = false): LiveData<WorkInfo>? {
-            val sendAll = kp < 0 && !photoNoKp
+        fun launch(context: Context, retry: Boolean = false): LiveData<WorkInfo>? {
             val request = OneTimeWorkRequestBuilder<SendWorker>()
                 .setInputData(
                     Data.Builder()
-                        .putInt(PARAM_KP_ID, kp)
-                        .putBoolean(PARAM_PHOTO_NO_KP, photoNoKp)
+                        .putBoolean(PARAM_RETRY, retry)
                         .build()
                 )
                 .apply {
-                    if (sendAll) {
+                    if (retry) {
                         setBackoffCriteria(BackoffPolicy.LINEAR, WorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
                     }
                 }
                 .build()
             WorkManager.getInstance(context).apply {
-                return if (sendAll) {
-                    enqueueUniqueWork(NAME, ExistingWorkPolicy.REPLACE, request)
+                enqueueUniqueWork(NAME, ExistingWorkPolicy.REPLACE, request)
+                return if (retry) {
                     getWorkInfoByIdLiveData(request.id)
                 } else {
-                    enqueueUniqueWork(NAME, ExistingWorkPolicy.KEEP, request)
                     null
                 }
             }

@@ -49,15 +49,6 @@ abstract class CleanDao {
     )
     abstract fun getSendEvents(): List<CleanEventToken>
 
-    @Query(
-        """
-        SELECT clean_events.*, tokens.* FROM clean_events 
-        INNER JOIN tokens ON clean_events.ce_token_id = tokens.t_id
-        WHERE (clean_events.ce_kp_id = :kpId OR clean_events.ce_linked_id = :kpId) AND clean_events.ce_sent = 0
-    """
-    )
-    abstract fun getSendKpIdEvents(kpId: Int): List<CleanEventToken>
-
     @Insert
     abstract fun insert(item: CleanEvent): Long
 
