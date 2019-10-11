@@ -9,16 +9,15 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.children
 import coil.api.load
 import coil.transform.CircleCropTransformation
 import kotlinx.android.synthetic.main.merge_gallery.view.*
-import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.makeCallback
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
+import kotlin.math.max
 
 class GalleryLayout : RelativeLayout {
 
@@ -58,12 +57,10 @@ class GalleryLayout : RelativeLayout {
         }
         photo_add.setOnClickListener {
             if (enableShoot) {
-                if (photoEvents.size < 3) {
+                if (photoEvents.size < 4) {
                     makeCallback<GalleryListener> {
                         onPhotoClick(photoType, null)
                     }
-                } else {
-                    context.toast("Доступно не более 3 фото")
                 }
             }
         }
@@ -90,26 +87,25 @@ class GalleryLayout : RelativeLayout {
             }
         }
         enableShoot = true
-        gallery.children.forEachIndexed { i, view ->
-            (photo1 as ImageView).updatePhoto(photoEvents.getOrNull(0))
-        }
-        photo3.setOnClickListener {
-            photoEvents.getOrNull(2)?.let {
-                makeCallback<GalleryListener> {
-                    onPhotoClick(photoType, it)
+        gallery.apply {
+            for (i in 0..max(photoEvents.size, childCount - 1)) {
+                photoEvents.getOrNull(i)?.let {
+                    val child = getChildAt(i) ?: View.inflate(context, R.layout.item_photo, null).apply {
+                        setOnClickListener { _ ->
+                            makeCallback<GalleryListener> {
+                                onPhotoClick(photoType, it)
+                            }
+                        }
+                    }
+                    (child as ImageView).load(it.toFile()) {
+                        transformations(CircleCropTransformation())
+                    }
+                } ?: run {
+                    removeViewAt(i)
                 }
             }
         }
     }
 
     override fun hasOverlappingRendering() = false
-
-    private fun ImageView.updatePhoto(photoEvent: PhotoEvent?) {
-        photoEvent?.let {
-            load(it.toFile()) {
-                transformations(CircleCropTransformation())
-            }
-            ContextCompat.getDrawable(context, R.drawable.photo_oval_dark)
-        }
-    }
 }
