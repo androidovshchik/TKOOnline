@@ -19,7 +19,6 @@ import ru.iqsolution.tkoonline.extensions.makeCallback
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
-import timber.log.Timber
 import kotlin.math.max
 
 class GalleryLayout : RelativeLayout {
@@ -92,14 +91,16 @@ class GalleryLayout : RelativeLayout {
             }
         }
         enableShoot = true
+        photo_add.apply {
+            (layoutParams as MarginLayoutParams).marginStart = if (photoEvents.size > 0) dip(3) else dip(25)
+            visibility = if (photoEvents.size >= 4) GONE else VISIBLE
+        }
         gallery.apply {
-            Timber.e("qqqqq ${photoEvents.size} ${childCount - 1}")
             for (i in 0 until max(photoEvents.size, childCount - 1)) {
                 photoEvents.getOrNull(i)?.let {
-                    Timber.e("ssssss $i")
                     val child = getChildAt(i - 1) ?: View.inflate(context, R.layout.item_photo, null).apply {
                         layoutParams = LinearLayout.LayoutParams(photoSize, photoSize).also { params ->
-                            params.marginEnd = dip(10)
+                            params.marginStart = if (i == 0) dip(25) else dip(10)
                         }
                         setOnClickListener { _ ->
                             makeCallback<GalleryListener> {
@@ -112,7 +113,6 @@ class GalleryLayout : RelativeLayout {
                         transformations(CircleCropTransformation())
                     }
                 } ?: run {
-                    Timber.e("..... $i")
                     removeViewAt(i)
                 }
             }
