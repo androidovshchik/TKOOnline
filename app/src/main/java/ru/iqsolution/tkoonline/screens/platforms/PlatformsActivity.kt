@@ -15,6 +15,7 @@ import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.AdapterListener
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
@@ -128,24 +129,24 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
         platformsAdapter.apply {
-            primaryItems.notifyItems(primary)
-            items.notifyItems(secondary)
+            primaryItems.notifyItems(true, primary)
+            items.notifyItems(false, secondary)
             notifyDataSetChanged()
         }
-        presenter.loadPhotoCleanEvents()
+        presenter.loadPhotoCleanEvents(true)
     }
 
-    override fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>) {
+    override fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>, afterLoad: Boolean) {
         val location = preferences.location
         platformsAdapter.apply {
             primaryItems.apply {
-                notifyItems(null, location, photoEvents, null)
+                notifyItems(true, null, location, photoEvents, cleanEvents, afterLoad)
                 if (location != null) {
                     sortBy { it.meters }
                 }
             }
             items.apply {
-                notifyItems(null, location, photoEvents, cleanEvents)
+                notifyItems(false, null, location, photoEvents, cleanEvents, afterLoad)
                 sortByDescending { it.timestamp }
             }
             notifyDataSetChanged()
@@ -163,10 +164,10 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
         platformsAdapter.apply {
             primaryItems.apply {
-                notifyItems(null, location)
+                notifyItems(true, null, location)
                 sortBy { it.meters }
             }
-            items.notifyItems(null, location)
+            items.notifyItems(false, null, location)
             notifyDataSetChanged()
         }
     }
@@ -202,7 +203,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         when (requestCode) {
             REQUEST_PLATFORM -> {
                 if (resultCode == RESULT_OK) {
-                    presenter.loadPhotoCleanEvents()
+                    presenter.loadPhotoCleanEvents(false)
                 }
             }
             REQUEST_PHOTO -> {
@@ -220,10 +221,12 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     private fun ArrayList<PlatformContainers>.notifyItems(
+        isPrimary: Boolean,
         platforms: List<PlatformContainers>? = null,
         location: SimpleLocation? = null,
         photoEvents: List<PhotoEvent>? = null,
-        cleanEvents: List<CleanEvent>? = null
+        cleanEvents: List<CleanEvent>? = null,
+        isNewData: Boolean = true
     ) {
         platforms?.let {
             clear()
@@ -239,8 +242,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             forEach {
                 for (event in photoEvents) {
                     if (it.kpId == event.kpId) {
-                        if (cleanEvents != null) {
-                            // only for secondary items
+                        if (!isPrimary) {
                             val millis = event.whenTime.withZone(zone).millis
                             if (it.timestamp < millis) {
                                 it.timestamp = millis
@@ -257,9 +259,16 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             forEach {
                 for (event in cleanEvents) {
                     if (it.kpId == event.kpId) {
-                        val millis = event.whenTime.withZone(zone).millis
-                        if (it.timestamp < millis) {
-                            it.timestamp = millis
+                        if (!isNewData) {
+                            if (event.isEmpty) {
+                                it.status = PlatformStatus.NOT_CLEANED.id
+                            }
+                        }
+                        if (!isPrimary) {
+                            val millis = event.whenTime.withZone(zone).millis
+                            if (it.timestamp < millis) {
+                                it.timestamp = millis
+                            }
                         }
                         break
                     }

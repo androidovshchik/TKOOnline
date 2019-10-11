@@ -8,6 +8,9 @@ interface Container {
 
     var containerCount: Int
 
+    val isEmpty: Boolean
+        get() = containerVolume < 0.1f && containerCount <= 0
+
     fun reset() {
         containerVolume = 0f
         containerCount = 0
