@@ -14,6 +14,7 @@ import coil.api.load
 import coil.transform.CircleCropTransformation
 import kotlinx.android.synthetic.main.merge_gallery.view.*
 import org.jetbrains.anko.dip
+import org.jetbrains.anko.leftPadding
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.makeCallback
 import ru.iqsolution.tkoonline.extensions.use
@@ -90,18 +91,15 @@ class GalleryLayout : RelativeLayout {
             }
         }
         enableShoot = true
-        photo_add.apply {
-            (layoutParams as MarginLayoutParams).marginStart = if (photoEvents.size > 0) dip(3) else dip(25)
-            visibility = if (photoEvents.size > 3) GONE else VISIBLE
-        }
         gallery.apply {
+            leftPadding = if (photoEvents.size > 0) dip(16) else dip(8)
             var count = childCount
             for (i in 0 until photoEvents.size) {
                 var child: ImageView? = null
                 if (i == count - 1) {
                     child = View.inflate(context, R.layout.item_photo, null).apply {
                         layoutParams = LinearLayout.LayoutParams(photoSize, photoSize).also { params ->
-                            params.marginStart = if (i == 0) dip(25) else dip(10)
+                            params.marginStart = if (i == 0) 0 else dip(10)
                         }
                         setOnClickListener {
                             photoEvents.getOrNull(i)?.let {
@@ -122,8 +120,7 @@ class GalleryLayout : RelativeLayout {
             if (diff > 0) {
                 removeViews(photoEvents.size, diff)
             }
-            requestLayout()
-            invalidate()
+            photo_add.visibility = if (photoEvents.size > 3) GONE else VISIBLE
         }
     }
 

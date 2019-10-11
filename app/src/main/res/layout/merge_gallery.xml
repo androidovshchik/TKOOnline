@@ -31,13 +31,14 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:animateLayoutChanges="true">
+            android:animateLayoutChanges="true"
+            tools:paddingStart="8dp">
 
             <ImageView
                 android:id="@+id/photo_add"
                 android:layout_width="@dimen/gallery_height"
                 android:layout_height="@dimen/gallery_height"
-                android:layout_marginStart="25dp"
+                android:layout_marginStart="8dp"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_camera_add"
