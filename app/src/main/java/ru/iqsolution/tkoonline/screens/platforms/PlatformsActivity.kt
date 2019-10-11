@@ -262,15 +262,16 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             forEach {
                 for (event in cleanEvents) {
                     if (it.kpId == event.kpId) {
-                        if (!isNewData) {
-                            if (event.isEmpty) {
-                                it.status = PlatformStatus.PENDING.id
-                            }
-                        }
+                        val eventTime = event.whenTime.withZone(zone)
                         if (!isPrimary) {
-                            val millis = event.whenTime.withZone(zone).millis
+                            val millis = eventTime.millis
                             if (it.timestamp < millis) {
                                 it.timestamp = millis
+                            }
+                        }
+                        if (refreshTime?.withZone(zone)?.isBefore(eventTime) == true) {
+                            if (event.isEmpty) {
+                                it.status = PlatformStatus.PENDING.id
                             }
                         }
                         break

@@ -80,8 +80,9 @@ class StatusFragment : BaseFragment(), SyncListener {
             return
         }
         serverTime?.let {
+            val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
             status_time.text = it.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
-                .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
+                .withZone(zone)
                 .toString(FORMAT_TIME)
         }
     }
