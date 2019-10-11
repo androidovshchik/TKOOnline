@@ -1,9 +1,7 @@
 package ru.iqsolution.tkoonline.models
 
 import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
 import java.io.Serializable
-import java.util.*
 import kotlin.math.roundToInt
 
 class SimpleLocation : Serializable, Location<Double> {
@@ -39,8 +37,8 @@ class SimpleLocation : Serializable, Location<Double> {
      */
     val validity: Int
         get() {
-            val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-            if (accuracy <= 30 && System.currentTimeMillis() - locationTime.withZone(zone).millis <= 5000L) {
+            val now = DateTime.now()
+            if (accuracy <= 30 && now.millis - locationTime.withZone(now.zone).millis <= 5000L) {
                 return 1
             }
             return 0

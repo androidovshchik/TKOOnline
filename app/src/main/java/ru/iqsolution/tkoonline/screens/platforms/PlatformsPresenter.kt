@@ -84,7 +84,7 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
         }
     }
 
-    override fun loadPhotoCleanEvents(afterLoad: Boolean) {
+    override fun loadPhotoCleanEvents() {
         launch {
             val photoEvents = arrayListOf<PhotoEvent>()
             val cleanEvents = arrayListOf<CleanEvent>()
@@ -92,7 +92,7 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
                 photoEvents.addAll(db.photoDao().getDayEvents(preferences.serverDay))
                 cleanEvents.addAll(db.cleanDao().getDayEvents(preferences.serverDay))
             }
-            reference.get()?.onPhotoCleanEvents(photoEvents, cleanEvents, afterLoad)
+            reference.get()?.onPhotoCleanEvents(photoEvents, cleanEvents)
         }
     }
 

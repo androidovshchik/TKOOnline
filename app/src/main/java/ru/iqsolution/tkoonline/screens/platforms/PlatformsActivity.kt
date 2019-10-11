@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_platforms.*
+import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
@@ -36,6 +37,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     private val photoErrors = SimpleArrayMap<Int, String>()
 
     private var waitDialog: WaitDialog? = null
+
+    private var refreshTime: DateTime? = null
 
     private var platformClicked = false
 
@@ -128,25 +131,26 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
+        refreshTime = DateTime.now()
         platformsAdapter.apply {
             primaryItems.notifyItems(true, primary)
             items.notifyItems(false, secondary)
             notifyDataSetChanged()
         }
-        presenter.loadPhotoCleanEvents(true)
+        presenter.loadPhotoCleanEvents()
     }
 
-    override fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>, afterLoad: Boolean) {
+    override fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>) {
         val location = preferences.location
         platformsAdapter.apply {
             primaryItems.apply {
-                notifyItems(true, null, location, photoEvents, cleanEvents, afterLoad)
+                notifyItems(true, null, location, photoEvents, cleanEvents)
                 if (location != null) {
                     sortBy { it.meters }
                 }
             }
             items.apply {
-                notifyItems(false, null, location, photoEvents, cleanEvents, afterLoad)
+                notifyItems(false, null, location, photoEvents, cleanEvents)
                 sortByDescending { it.timestamp }
             }
             notifyDataSetChanged()
@@ -203,7 +207,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         when (requestCode) {
             REQUEST_PLATFORM -> {
                 if (resultCode == RESULT_OK) {
-                    presenter.loadPhotoCleanEvents(false)
+                    presenter.loadPhotoCleanEvents()
                 }
             }
             REQUEST_PHOTO -> {
@@ -225,8 +229,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platforms: List<PlatformContainers>? = null,
         location: SimpleLocation? = null,
         photoEvents: List<PhotoEvent>? = null,
-        cleanEvents: List<CleanEvent>? = null,
-        isNewData: Boolean = true
+        cleanEvents: List<CleanEvent>? = null
     ) {
         platforms?.let {
             clear()
@@ -261,7 +264,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                     if (it.kpId == event.kpId) {
                         if (!isNewData) {
                             if (event.isEmpty) {
-                                it.status = PlatformStatus.NOT_CLEANED.id
+                                it.status = PlatformStatus.PENDING.id
                             }
                         }
                         if (!isPrimary) {

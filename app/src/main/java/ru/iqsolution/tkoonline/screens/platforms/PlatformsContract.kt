@@ -13,7 +13,7 @@ interface PlatformsContract {
 
         fun loadPlatformsTypes(refresh: Boolean)
 
-        fun loadPhotoCleanEvents(afterLoad: Boolean)
+        fun loadPhotoCleanEvents()
 
         fun logout(context: Context)
     }
@@ -26,7 +26,7 @@ interface PlatformsContract {
 
         fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>)
 
-        fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>, afterLoad: Boolean)
+        fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>)
 
         fun onLoggedOut()
     }
