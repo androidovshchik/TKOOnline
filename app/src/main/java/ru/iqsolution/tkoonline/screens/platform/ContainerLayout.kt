@@ -10,7 +10,7 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.util.AttributeSet
 import android.view.View
-import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import kotlinx.android.synthetic.main.merge_container.view.*
 import ru.iqsolution.tkoonline.R
@@ -20,7 +20,7 @@ import ru.iqsolution.tkoonline.models.SimpleContainer
 import kotlin.math.max
 import kotlin.math.min
 
-class ContainerLayout : LinearLayout {
+class ContainerLayout : RelativeLayout {
 
     var containerType = ContainerType.UNKNOWN
 

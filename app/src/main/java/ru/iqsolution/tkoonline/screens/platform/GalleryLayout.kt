@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import coil.api.load
 import coil.transform.CircleCropTransformation
 import kotlinx.android.synthetic.main.merge_gallery.view.*
@@ -55,27 +56,6 @@ class GalleryLayout : RelativeLayout {
                 photoType = PhotoType.Default.fromId(getInt(R.styleable.GalleryLayout_photoType, -1))
             }
         }
-        photo1.setOnClickListener {
-            photoEvents.getOrNull(0)?.let {
-                makeCallback<GalleryListener> {
-                    onPhotoClick(photoType, it)
-                }
-            }
-        }
-        photo2.setOnClickListener {
-            photoEvents.getOrNull(1)?.let {
-                makeCallback<GalleryListener> {
-                    onPhotoClick(photoType, it)
-                }
-            }
-        }
-        photo3.setOnClickListener {
-            photoEvents.getOrNull(2)?.let {
-                makeCallback<GalleryListener> {
-                    onPhotoClick(photoType, it)
-                }
-            }
-        }
         photo_add.setOnClickListener {
             if (enableShoot) {
                 if (photoEvents.size < 3) {
@@ -110,22 +90,26 @@ class GalleryLayout : RelativeLayout {
             }
         }
         enableShoot = true
-        (photo1 as ImageView).updatePhoto(photoEvents.getOrNull(0))
-        (photo2 as ImageView).updatePhoto(photoEvents.getOrNull(1))
-        (photo3 as ImageView).updatePhoto(photoEvents.getOrNull(2))
+        gallery.children.forEachIndexed { i, view ->
+            (photo1 as ImageView).updatePhoto(photoEvents.getOrNull(0))
+        }
+        photo3.setOnClickListener {
+            photoEvents.getOrNull(2)?.let {
+                makeCallback<GalleryListener> {
+                    onPhotoClick(photoType, it)
+                }
+            }
+        }
     }
 
     override fun hasOverlappingRendering() = false
 
     private fun ImageView.updatePhoto(photoEvent: PhotoEvent?) {
-        background = photoEvent?.let {
+        photoEvent?.let {
             load(it.toFile()) {
                 transformations(CircleCropTransformation())
             }
             ContextCompat.getDrawable(context, R.drawable.photo_oval_dark)
-        } ?: run {
-            setImageResource(R.drawable.ic_camera_white)
-            ContextCompat.getDrawable(context, R.drawable.photo_oval_light)
         }
     }
 }
