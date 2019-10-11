@@ -5,6 +5,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
@@ -35,6 +36,9 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
         }
         Result.success()
     }
+
+    @Suppress("OverridingDeprecatedMember")
+    override val coroutineContext = Dispatchers.IO
 
     companion object {
 

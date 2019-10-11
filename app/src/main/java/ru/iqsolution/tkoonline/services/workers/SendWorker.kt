@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -59,7 +60,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         if (cleanEvents.isNotEmpty()) {
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
-        require(!isStopped)
         val photoEvents = db.photoDao().getSendEvents()
         photoEvents.forEach {
             require(!isStopped)
@@ -90,13 +90,12 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
         if (retry) {
-            require(!isStopped)
             val locationCount = db.locationDao().getSendCount()
+            require(!isStopped)
             if (locationCount > 0) {
                 // awaiting telemetry service
                 return@coroutineScope Result.retry()
             }
-            require(!isStopped)
             try {
                 server.logout(preferences.authHeader).execute()
             } catch (e: Throwable) {
@@ -116,6 +115,9 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         }
     }
 
+    @Suppress("OverridingDeprecatedMember")
+    override val coroutineContext = Dispatchers.IO
+
     override val kodein = MainApp.instance.kodein
 
     companion object {
@@ -123,8 +125,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         private const val NAME = "SEND"
 
         private const val PARAM_RETRY = "retry"
-
-        private const val PARAM_PHOTO_NO_KP = "photo_no_kp"
 
         private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
 
