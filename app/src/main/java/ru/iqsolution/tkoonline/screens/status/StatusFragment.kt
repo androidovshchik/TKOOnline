@@ -30,7 +30,7 @@ import java.util.*
  */
 class StatusFragment : BaseFragment(), SyncListener {
 
-    private val syncManager = SyncManager(this)
+    private lateinit var syncManager: SyncManager
 
     private lateinit var preferences: Preferences
 
@@ -47,6 +47,7 @@ class StatusFragment : BaseFragment(), SyncListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        syncManager = SyncManager(context, this)
         preferences = Preferences(context)
         try {
             serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME)

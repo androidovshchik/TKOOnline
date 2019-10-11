@@ -97,7 +97,7 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
     }
 
     override fun logout(context: Context) {
-        observer = SendWorker.launch(context).also {
+        observer = SendWorker.launch(context, true).also {
             it?.observeForever(this)
         }
     }

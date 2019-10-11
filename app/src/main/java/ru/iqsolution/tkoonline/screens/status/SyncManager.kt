@@ -22,9 +22,11 @@ import java.lang.ref.WeakReference
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
-class SyncManager(listener: SyncListener) {
+class SyncManager(context: Context, listener: SyncListener) {
 
     private val reference = WeakReference(listener)
+
+    private val connectivity = context.connectivityManager
 
     @SuppressLint("MissingPermission")
     fun register(context: Context) = context.run {
@@ -60,12 +62,12 @@ class SyncManager(listener: SyncListener) {
 
         override fun onAvailable(network: Network) {
             Timber.d("Network on available")
-            reference.get()?.onNetworkChanged(true)
+            reference.get()?.onNetworkChanged(connectivity.activeNetworkInfo?.isConnected == true)
         }
 
         override fun onLost(network: Network) {
             Timber.d("Network on lost")
-            reference.get()?.onNetworkChanged(false)
+            reference.get()?.onNetworkChanged(connectivity.activeNetworkInfo?.isConnected == true)
         }
     }
 

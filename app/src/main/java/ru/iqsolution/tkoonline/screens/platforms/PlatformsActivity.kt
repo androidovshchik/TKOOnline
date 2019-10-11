@@ -214,7 +214,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             }
             REQUEST_PHOTO -> {
                 if (resultCode == RESULT_OK) {
-                    SendWorker.launch(applicationContext, -1, true)
+                    SendWorker.launch(applicationContext)
                 }
             }
         }

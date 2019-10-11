@@ -170,7 +170,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         preFinishing = true
         if (hasPhotoChanges || hasCleanChanges) {
             if (hasCleanChanges) {
-                SendWorker.launch(applicationContext, platform.kpId)
+                SendWorker.launch(applicationContext)
             }
             setResult(RESULT_OK)
         } else {

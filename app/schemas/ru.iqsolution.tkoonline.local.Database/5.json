@@ -1,0 +1,432 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 5,
+    "identityHash": "c4c709de870aad32c447de188f9dc661",
+    "entities": [
+      {
+        "tableName": "tokens",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`t_id` INTEGER PRIMARY KEY AUTOINCREMENT, `t_token` TEXT NOT NULL, `t_que_name` TEXT NOT NULL, `t_car_id` INTEGER NOT NULL, `t_expires` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "t_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "token",
+            "columnName": "t_token",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "queName",
+            "columnName": "t_que_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "carId",
+            "columnName": "t_car_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expires",
+            "columnName": "t_expires",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "t_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_tokens_t_token",
+            "unique": true,
+            "columnNames": [
+              "t_token"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_tokens_t_token` ON `${TABLE_NAME}` (`t_token`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "photo_events",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pe_id` INTEGER PRIMARY KEY AUTOINCREMENT, `pe_token_id` INTEGER NOT NULL, `pe_kp_id` INTEGER, `pe_linked_id` INTEGER, `pe_related_id` INTEGER, `pe_type` INTEGER NOT NULL, `pe_path` TEXT NOT NULL, `pe_latitude` REAL NOT NULL, `pe_longitude` REAL NOT NULL, `pe_when_time` TEXT NOT NULL, `pe_ready` INTEGER NOT NULL, `pe_sent` INTEGER NOT NULL, FOREIGN KEY(`pe_token_id`) REFERENCES `tokens`(`t_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`pe_related_id`) REFERENCES `photo_events`(`pe_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "pe_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tokenId",
+            "columnName": "pe_token_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kpId",
+            "columnName": "pe_kp_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "linkedId",
+            "columnName": "pe_linked_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "relatedId",
+            "columnName": "pe_related_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "pe_type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "path",
+            "columnName": "pe_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "pe_latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "pe_longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whenTime",
+            "columnName": "pe_when_time",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ready",
+            "columnName": "pe_ready",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sent",
+            "columnName": "pe_sent",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "pe_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_photo_events_pe_token_id",
+            "unique": false,
+            "columnNames": [
+              "pe_token_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_photo_events_pe_token_id` ON `${TABLE_NAME}` (`pe_token_id`)"
+          },
+          {
+            "name": "index_photo_events_pe_related_id",
+            "unique": false,
+            "columnNames": [
+              "pe_related_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_photo_events_pe_related_id` ON `${TABLE_NAME}` (`pe_related_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "tokens",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "pe_token_id"
+            ],
+            "referencedColumns": [
+              "t_id"
+            ]
+          },
+          {
+            "table": "photo_events",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "pe_related_id"
+            ],
+            "referencedColumns": [
+              "pe_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "clean_events",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ce_id` INTEGER PRIMARY KEY AUTOINCREMENT, `ce_token_id` INTEGER NOT NULL, `ce_kp_id` INTEGER NOT NULL, `ce_linked_id` INTEGER, `ce_related_id` INTEGER, `ce_when_time` TEXT NOT NULL, `ce_container_type` TEXT NOT NULL, `ce_container_volume` REAL NOT NULL, `ce_container_count` INTEGER NOT NULL, `ce_sent` INTEGER NOT NULL, FOREIGN KEY(`ce_token_id`) REFERENCES `tokens`(`t_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`ce_related_id`) REFERENCES `clean_events`(`ce_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "ce_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tokenId",
+            "columnName": "ce_token_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kpId",
+            "columnName": "ce_kp_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "linkedId",
+            "columnName": "ce_linked_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "relatedId",
+            "columnName": "ce_related_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "whenTime",
+            "columnName": "ce_when_time",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "containerType",
+            "columnName": "ce_container_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "containerVolume",
+            "columnName": "ce_container_volume",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "containerCount",
+            "columnName": "ce_container_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sent",
+            "columnName": "ce_sent",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "ce_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_clean_events_ce_token_id",
+            "unique": false,
+            "columnNames": [
+              "ce_token_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_clean_events_ce_token_id` ON `${TABLE_NAME}` (`ce_token_id`)"
+          },
+          {
+            "name": "index_clean_events_ce_related_id",
+            "unique": false,
+            "columnNames": [
+              "ce_related_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_clean_events_ce_related_id` ON `${TABLE_NAME}` (`ce_related_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "tokens",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "ce_token_id"
+            ],
+            "referencedColumns": [
+              "t_id"
+            ]
+          },
+          {
+            "table": "clean_events",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "ce_related_id"
+            ],
+            "referencedColumns": [
+              "ce_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "location_events",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`le_id` INTEGER PRIMARY KEY AUTOINCREMENT, `le_token_id` INTEGER NOT NULL, `le_package_id` INTEGER NOT NULL, `le_version` INTEGER NOT NULL, `le_sent` INTEGER NOT NULL, `le_when_time` TEXT NOT NULL, `le_location_time` TEXT NOT NULL, `le_latitude` REAL NOT NULL, `le_longitude` REAL NOT NULL, `le_height` INTEGER NOT NULL, `le_validity` INTEGER NOT NULL, `le_satellites` INTEGER NOT NULL, `le_speed` INTEGER NOT NULL, `le_direction` INTEGER NOT NULL, `le_mileage` INTEGER NOT NULL, FOREIGN KEY(`le_token_id`) REFERENCES `tokens`(`t_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "le_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tokenId",
+            "columnName": "le_token_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageId",
+            "columnName": "le_package_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "version",
+            "columnName": "le_version",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sent",
+            "columnName": "le_sent",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.whenTime",
+            "columnName": "le_when_time",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.locationTime",
+            "columnName": "le_location_time",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.latitude",
+            "columnName": "le_latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.longitude",
+            "columnName": "le_longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.height",
+            "columnName": "le_height",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.validity",
+            "columnName": "le_validity",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.satellites",
+            "columnName": "le_satellites",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.speed",
+            "columnName": "le_speed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.direction",
+            "columnName": "le_direction",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.mileage",
+            "columnName": "le_mileage",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "le_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_location_events_le_token_id",
+            "unique": false,
+            "columnNames": [
+              "le_token_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_location_events_le_token_id` ON `${TABLE_NAME}` (`le_token_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "tokens",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "le_token_id"
+            ],
+            "referencedColumns": [
+              "t_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c4c709de870aad32c447de188f9dc661')"
+    ]
+  }
+}
