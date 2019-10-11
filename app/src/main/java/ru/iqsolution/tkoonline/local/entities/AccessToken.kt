@@ -36,5 +36,5 @@ class AccessToken {
     val authHeader: String
         get() = "Bearer $token"
 
-    fun getTelemetryUri(address: String) = "amqp://$carId:$token@$address/"
+    fun getTelemetryUri(address: String) = "amqp://$carId:$token@$address"
 }

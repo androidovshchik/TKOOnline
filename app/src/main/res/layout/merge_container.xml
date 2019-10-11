@@ -2,9 +2,9 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:layout_width="match_parent"
-    tools:layout_height="wrap_content"
+    tools:layout_height="98dp"
     tools:orientation="vertical"
-    tools:parentTag="LinearLayout"
+    tools:parentTag="RelativeLayout"
     tools:ignore="MissingPrefix">
 
     <View
@@ -12,128 +12,126 @@
         android:layout_height="1dp"
         android:background="@color/colorDivider"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="96dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="0dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        tools:ignore="MissingPrefix">
+    <ImageView
+        android:id="@+id/icon_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="16dp"
+        android:adjustViewBounds="true"
+        tools:src="@drawable/ic_trash_can"/>
 
-        <ImageView
-            android:id="@+id/icon_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:adjustViewBounds="true"
-            tools:src="@drawable/ic_trash_can"/>
+    <TextView
+        android:id="@+id/text_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/icon_type"
+        android:textSize="30sp"
+        android:textColor="@color/colorTextGrayDark"
+        android:lineSpacingExtra="5sp"
+        tools:text="ТБО"
+        tools:textStyle="bold"
+        fontPath="fonts/Roboto-Bold.ttf"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="96dp"
+        android:layout_toStartOf="@+id/block2"
+        android:layout_marginEnd="-4dp"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/text_type"
-            android:layout_width="0dp"
+            android:id="@+id/volume_value"
+            android:layout_width="96dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_centerVertical="true"
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
+            android:gravity="center_vertical"
             android:textSize="30sp"
-            android:textColor="@color/colorTextGrayDark"
+            android:textColor="@color/colorTextGrayLight"
             android:lineSpacingExtra="5sp"
-            tools:text="ТБО"
-            tools:textStyle="bold"
-            fontPath="fonts/Roboto-Bold.ttf"/>
+            tools:text="0,8м3"
+            fontPath="fonts/Roboto-Regular.ttf"/>
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/arrow_up_volume"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="10dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_arrow_up"/>
 
-            <ImageView
-                android:id="@+id/arrow_up_volume"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="0dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_arrow_up"/>
-
-            <TextView
-                android:id="@+id/volume_value"
-                android:layout_width="90dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:paddingStart="2dp"
-                android:paddingEnd="0dp"
-                android:gravity="center_vertical"
-                android:textSize="30sp"
-                android:textColor="@color/colorTextGrayLight"
-                android:lineSpacingExtra="5sp"
-                tools:text="0,8м3"
-                fontPath="fonts/Roboto-Regular.ttf"/>
-
-            <ImageView
-                android:id="@+id/arrow_down_volume"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="0dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="10dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_arrow_down"/>
-
-        </LinearLayout>
-
-        <LinearLayout
+        <ImageView
+            android:id="@+id/arrow_down_volume"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingTop="10dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="10dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_arrow_down"/>
 
-            <ImageView
-                android:id="@+id/arrow_up_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="0dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_arrow_up"/>
+    </RelativeLayout>
 
-            <TextView
-                android:id="@+id/count_value"
-                android:layout_width="70dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:paddingStart="2dp"
-                android:paddingEnd="0dp"
-                android:gravity="center_vertical"
-                android:textSize="30sp"
-                android:textColor="@color/colorTextGrayLight"
-                android:lineSpacingExtra="5sp"
-                tools:text="5шт"
-                fontPath="fonts/Roboto-Regular.ttf"/>
+    <RelativeLayout
+        android:id="@+id/block2"
+        android:layout_width="wrap_content"
+        android:layout_height="96dp"
+        android:layout_marginEnd="12dp"
+        android:layout_alignParentEnd="true"
+        android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/arrow_down_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="0dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="10dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_arrow_down"/>
+        <TextView
+            android:id="@+id/count_value"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
+            android:gravity="center_vertical"
+            android:textSize="30sp"
+            android:textColor="@color/colorTextGrayLight"
+            android:lineSpacingExtra="5sp"
+            tools:text="5шт"
+            fontPath="fonts/Roboto-Regular.ttf"/>
 
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/arrow_up_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="10dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_arrow_up"/>
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/arrow_down_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingTop="10dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="10dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_arrow_down"/>
+
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
         android:background="@color/colorDivider"/>
 
 </merge>
