@@ -224,6 +224,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         super.onDestroy()
     }
 
+    /**
+     * The order of notification (primary) -> (secondary) is important
+     */
     private fun ArrayList<PlatformContainers>.notifyItems(
         isPrimary: Boolean,
         platforms: List<PlatformContainers>? = null,
@@ -259,19 +262,25 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             }
         }
         if (cleanEvents != null) {
-            forEach {
+            val iterator = listIterator()
+            for (item in iterator) {
                 for (event in cleanEvents) {
-                    if (it.kpId == event.kpId) {
+                    if (item.kpId == event.kpId) {
                         val eventTime = event.whenTime.withZone(zone)
                         if (!isPrimary) {
                             val millis = eventTime.millis
-                            if (it.timestamp < millis) {
-                                it.timestamp = millis
+                            if (item.timestamp < millis) {
+                                item.timestamp = millis
                             }
                         }
                         if (refreshTime?.withZone(zone)?.isBefore(eventTime) == true) {
                             if (event.isEmpty) {
-                                it.status = PlatformStatus.NOT_CLEANED.id
+                                item.status = PlatformStatus.NOT_CLEANED.id
+                                if (isPrimary) {
+                                    // because of this status the primary item should be in secondary items
+                                    platformsAdapter.items.add(item)
+                                    iterator.remove()
+                                }
                             }
                         }
                         break
