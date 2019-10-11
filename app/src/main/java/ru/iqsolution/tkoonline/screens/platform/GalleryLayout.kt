@@ -7,16 +7,19 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import coil.api.load
 import coil.transform.CircleCropTransformation
 import kotlinx.android.synthetic.main.merge_gallery.view.*
+import org.jetbrains.anko.dip
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.makeCallback
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
+import timber.log.Timber
 import kotlin.math.max
 
 class GalleryLayout : RelativeLayout {
@@ -26,6 +29,8 @@ class GalleryLayout : RelativeLayout {
     private val photoEvents = arrayListOf<PhotoEvent>()
 
     private var enableShoot = false
+
+    private val photoSize = context.resources.getDimensionPixelSize(R.dimen.gallery_height)
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -88,19 +93,26 @@ class GalleryLayout : RelativeLayout {
         }
         enableShoot = true
         gallery.apply {
-            for (i in 0..max(photoEvents.size, childCount - 1)) {
+            Timber.e("qqqqq ${photoEvents.size} ${childCount - 1}")
+            for (i in 0 until max(photoEvents.size, childCount - 1)) {
                 photoEvents.getOrNull(i)?.let {
-                    val child = getChildAt(i) ?: View.inflate(context, R.layout.item_photo, null).apply {
+                    Timber.e("ssssss $i")
+                    val child = getChildAt(i - 1) ?: View.inflate(context, R.layout.item_photo, null).apply {
+                        layoutParams = LinearLayout.LayoutParams(photoSize, photoSize).also { params ->
+                            params.marginEnd = dip(10)
+                        }
                         setOnClickListener { _ ->
                             makeCallback<GalleryListener> {
                                 onPhotoClick(photoType, it)
                             }
                         }
+                        addView(this, 0)
                     }
                     (child as ImageView).load(it.toFile()) {
                         transformations(CircleCropTransformation())
                     }
                 } ?: run {
+                    Timber.e("..... $i")
                     removeViewAt(i)
                 }
             }
