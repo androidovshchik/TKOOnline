@@ -24,9 +24,9 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
      */
     var serverTime by nullableStringPref(null, "0x03")
 
-    var mainServerAddress by stringPref("msknt.iqsolution.ru:4567", "0x04")
+    var mainServerAddress by stringPref("msknt.iqsolution.ru", "0x04")
 
-    var mainTelemetryAddress by stringPref("msknt.iqsolution.ru:4568", "0x05")
+    var mainTelemetryAddress by stringPref("msknt.iqsolution.ru:5672", "0x05")
 
     var enableLock by booleanPref(false, "0x06")
 
