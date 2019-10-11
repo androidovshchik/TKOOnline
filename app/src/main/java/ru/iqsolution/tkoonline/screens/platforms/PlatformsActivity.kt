@@ -271,7 +271,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                         }
                         if (refreshTime?.withZone(zone)?.isBefore(eventTime) == true) {
                             if (event.isEmpty) {
-                                it.status = PlatformStatus.PENDING.id
+                                it.status = PlatformStatus.NOT_CLEANED.id
                             }
                         }
                         break
