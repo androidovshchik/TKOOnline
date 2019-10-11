@@ -19,7 +19,6 @@ import ru.iqsolution.tkoonline.extensions.makeCallback
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
-import kotlin.math.max
 
 class GalleryLayout : RelativeLayout {
 
@@ -93,29 +92,38 @@ class GalleryLayout : RelativeLayout {
         enableShoot = true
         photo_add.apply {
             (layoutParams as MarginLayoutParams).marginStart = if (photoEvents.size > 0) dip(3) else dip(25)
-            visibility = if (photoEvents.size >= 4) GONE else VISIBLE
+            visibility = if (photoEvents.size > 3) GONE else VISIBLE
         }
         gallery.apply {
-            for (i in 0 until max(photoEvents.size, childCount - 1)) {
-                photoEvents.getOrNull(i)?.let {
-                    val child = getChildAt(i - 1) ?: View.inflate(context, R.layout.item_photo, null).apply {
+            var count = childCount
+            for (i in 0 until photoEvents.size) {
+                var child: ImageView? = null
+                if (i == count - 1) {
+                    child = View.inflate(context, R.layout.item_photo, null).apply {
                         layoutParams = LinearLayout.LayoutParams(photoSize, photoSize).also { params ->
                             params.marginStart = if (i == 0) dip(25) else dip(10)
                         }
-                        setOnClickListener { _ ->
-                            makeCallback<GalleryListener> {
-                                onPhotoClick(photoType, it)
+                        setOnClickListener {
+                            photoEvents.getOrNull(i)?.let {
+                                makeCallback<GalleryListener> {
+                                    onPhotoClick(photoType, it)
+                                }
                             }
                         }
-                        addView(this, 0)
-                    }
-                    (child as ImageView).load(it.toFile()) {
-                        transformations(CircleCropTransformation())
-                    }
-                } ?: run {
-                    removeViewAt(i)
+                        addView(this, i)
+                    } as ImageView
+                    count++
+                }
+                (child ?: getChildAt(i) as ImageView).load(photoEvents[i].toFile()) {
+                    transformations(CircleCropTransformation())
                 }
             }
+            val diff = count - 1 - photoEvents.size
+            if (diff > 0) {
+                removeViews(photoEvents.size, diff)
+            }
+            requestLayout()
+            invalidate()
         }
     }
 
