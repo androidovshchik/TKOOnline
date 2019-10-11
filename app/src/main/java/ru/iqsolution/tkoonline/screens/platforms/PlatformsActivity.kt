@@ -88,7 +88,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                     startActivityNoop<PhotoActivity>(
                         REQUEST_PHOTO,
                         EXTRA_PHOTO_TITLE to photoType.description,
-                        EXTRA_PHOTO_EVENT to PhotoEvent(photoType.id)
+                        EXTRA_PHOTO_EVENT to PhotoEvent(photoType.id).apply {
+                            ready = true
+                        }
                     )
                 }
             }

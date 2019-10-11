@@ -76,6 +76,12 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_when_time")
     lateinit var whenTime: DateTime
 
+    /**
+     * This is ready only after platform's clean event was triggered
+     */
+    @ColumnInfo(name = "pe_ready")
+    var ready = false
+
     @ColumnInfo(name = "pe_sent")
     override var sent = false
 

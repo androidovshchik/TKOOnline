@@ -38,6 +38,7 @@ class PlatformPresenter : BasePresenter<PlatformContract.View>(), PlatformContra
         launch {
             withContext(Dispatchers.IO) {
                 db.cleanDao().insertMultiple(day, cleanEvent, platform.containers)
+                db.photoDao().markAsReady(day, cleanEvent.kpId)
             }
             reference.get()?.closeDetails(true)
         }

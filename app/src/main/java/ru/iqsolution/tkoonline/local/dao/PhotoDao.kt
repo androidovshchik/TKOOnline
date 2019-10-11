@@ -11,7 +11,7 @@ abstract class PhotoDao {
     @Query(
         """
         SELECT COUNT(*) FROM photo_events
-        WHERE pe_sent = 0
+        WHERE pe_ready = 1 AND pe_sent = 0
     """
     )
     abstract fun getSendCount(): Int
@@ -37,7 +37,7 @@ abstract class PhotoDao {
         """
         SELECT photo_events.*, tokens.* FROM photo_events 
         INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
-        WHERE photo_events.pe_sent = 0
+        WHERE photo_events.pe_ready = 1 AND photo_events.pe_sent = 0
     """
     )
     abstract fun getSendEvents(): List<PhotoEventToken>
@@ -114,6 +114,15 @@ abstract class PhotoDao {
             item.whenTime.toString(PATTERN_DATETIME)
         )
     }
+
+    @Query(
+        """
+        UPDATE photo_events
+        SET pe_ready = 1
+        WHERE pe_kp_id = :kpId AND pe_when_time LIKE :day || '%'
+    """
+    )
+    abstract fun markAsReady(day: String, kpId: Int)
 
     @Query(
         """

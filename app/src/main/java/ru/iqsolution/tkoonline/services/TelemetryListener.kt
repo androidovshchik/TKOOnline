@@ -4,5 +4,5 @@ import android.location.Location
 
 interface TelemetryListener : LocationListener {
 
-    fun onLocationChanged(location: Location, satellites: Int)
+    fun onLocationChanged(location: Location, satellitesCount: Int)
 }

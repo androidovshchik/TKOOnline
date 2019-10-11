@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.services
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
@@ -38,7 +39,7 @@ import java.util.concurrent.TimeUnit
  * · Для состояния движения и остановка - 1 минута
  */
 // https://www.rabbitmq.com/api-guide.html
-class TelemetryService : BaseService(), Consumer, LocationListener {
+class TelemetryService : BaseService(), Consumer, TelemetryListener {
 
     val db: Database by instance()
 
@@ -105,7 +106,7 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
         locationManager = LocationManager(applicationContext, this).also {
             it.requestUpdates()
         }
-        factory.setUri(preferences.telemetryUri)
+        //factory.setUri(preferences.telemetryUri)
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
             // background thread
@@ -114,8 +115,8 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
                 stopForeground(true)
                 stopSelf()
             }
-            preferences.isLoggedIn
-            val lastEvents = arrayListOf<>()
+            /*preferences.isLoggedIn
+            val lastEvents = arrayListOf<LocationEvent>()
             val lastEvent = db.locationDao().getLastSendEvent()
             lastEvent?.let {
 
@@ -144,7 +145,7 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
                 } catch (e: Throwable) {
                     Timber.e(e)
                 }
-            }
+            }*/
         }, 0L, 2000L, TimeUnit.MILLISECONDS)
     }
 
@@ -204,6 +205,14 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
         })
     }
 
+    override fun onLocationChanged(location: Location, satellitesCount: Int) {
+        val simpleLocation = SimpleLocation(location).apply {
+            satellites = satellitesCount
+        }
+        onLocationResult(simpleLocation)
+        lastLocation = simpleLocation
+    }
+
     override fun onLocationResult(location: SimpleLocation) {
         preferences.bulk {
             latitude = location.latitude.toFloat()
@@ -213,7 +222,6 @@ class TelemetryService : BaseService(), Consumer, LocationListener {
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_LOCATION, location)
         })
-        lastLocation = location
     }
 
     private fun releaseWakeLock() {
