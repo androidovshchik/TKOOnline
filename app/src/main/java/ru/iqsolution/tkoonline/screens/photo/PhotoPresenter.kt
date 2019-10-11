@@ -53,10 +53,7 @@ class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presen
                     db.photoDao().updateMultiple(photoEvent)
                 }
             }
-            reference.get()?.apply {
-                updateCloud()
-                closePreview(Activity.RESULT_OK)
-            }
+            reference.get()?.closePreview(Activity.RESULT_OK)
         }
     }
 

@@ -8,13 +8,12 @@ import android.location.LocationManager
 import android.location.LocationProvider
 import android.os.Bundle
 import org.jetbrains.anko.locationManager
-import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
 @SuppressLint("MissingPermission")
-class LocationManager(context: Context, listener: LocationListener) : android.location.LocationListener {
+class LocationManager(context: Context, listener: TelemetryListener) : android.location.LocationListener {
 
     private val reference = WeakReference(listener)
 
@@ -26,9 +25,7 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
         listener.apply {
             onLocationAvailability(locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
             locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
-                onLocationResult(SimpleLocation(it).apply {
-                    satellites = satellitesCount
-                })
+                onLocationChanged(it, satellitesCount)
             }
         }
     }
@@ -57,9 +54,7 @@ class LocationManager(context: Context, listener: LocationListener) : android.lo
      * NOTICE UI thread
      */
     override fun onLocationChanged(location: Location) {
-        reference.get()?.onLocationResult(SimpleLocation(location).apply {
-            satellites = satellitesCount
-        })
+        reference.get()?.onLocationChanged(location, satellitesCount)
     }
 
     override fun onProviderEnabled(provider: String) {

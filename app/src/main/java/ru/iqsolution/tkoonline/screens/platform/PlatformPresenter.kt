@@ -39,10 +39,7 @@ class PlatformPresenter : BasePresenter<PlatformContract.View>(), PlatformContra
             withContext(Dispatchers.IO) {
                 db.cleanDao().insertMultiple(day, cleanEvent, platform.containers)
             }
-            reference.get()?.apply {
-                updateCloud()
-                closeDetails(true)
-            }
+            reference.get()?.closeDetails(true)
         }
     }
 
