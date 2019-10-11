@@ -27,30 +27,12 @@
         android:layout_below="@+id/subtitle">
 
         <LinearLayout
+            android:id="@+id/gallery"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:paddingStart="25dp"
+            android:paddingEnd="0dp"
             android:orientation="horizontal">
-
-            <include
-                android:id="@+id/photo1"
-                layout="@layout/item_photo"
-                android:layout_width="@dimen/gallery_height"
-                android:layout_height="match_parent"
-                android:layout_marginStart="25dp"/>
-
-            <include
-                android:id="@+id/photo2"
-                layout="@layout/item_photo"
-                android:layout_width="@dimen/gallery_height"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"/>
-
-            <include
-                android:id="@+id/photo3"
-                layout="@layout/item_photo"
-                android:layout_width="@dimen/gallery_height"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"/>
 
             <ImageView
                 android:id="@+id/photo_add"

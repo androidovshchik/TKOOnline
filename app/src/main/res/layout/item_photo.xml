@@ -2,8 +2,7 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/gallery_height"
     android:layout_height="@dimen/gallery_height"
-    android:src="@drawable/ic_camera_white"
     android:padding="5dp"
     android:scaleType="center"
     android:adjustViewBounds="true"
-    android:background="@drawable/photo_oval_light"/>
+    android:background="@drawable/photo_oval_dark"/>
