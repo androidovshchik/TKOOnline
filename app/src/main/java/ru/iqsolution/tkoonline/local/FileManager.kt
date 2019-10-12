@@ -163,7 +163,7 @@ class FileManager(context: Context) {
 
     private fun BitmapFactory.Options.calculateInSampleSize(reqWidth: Int, reqHeight: Int): Int {
         // Raw height and width of image
-        val (height: Int, width: Int) = run { outHeight to outWidth }
+        val (height: Int, width: Int) = outHeight to outWidth
         var inSampleSize = 1
         if (height > reqHeight || width > reqWidth) {
             val halfHeight: Int = height / 2

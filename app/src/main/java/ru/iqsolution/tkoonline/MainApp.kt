@@ -33,7 +33,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
-import ru.iqsolution.tkoonline.local.PopulateTask
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.services.workers.MidnightWorker
@@ -95,14 +94,14 @@ class MainApp : Application(), KodeinAware {
 
                     override fun onCreate(sqliteDatabase: SupportSQLiteDatabase) {
                         // may be put initial data here etc.
-                        PopulateTask().execute(db)
+                        // PopulateTask().execute(db)
                     }
                 })
                 .build()
         }
     }
 
-    val db: Database by instance()
+    // val db: Database by instance()
 
     val preferences: Preferences by instance()
 
