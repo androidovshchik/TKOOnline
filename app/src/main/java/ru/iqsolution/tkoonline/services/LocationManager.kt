@@ -11,8 +11,8 @@ import org.jetbrains.anko.locationManager
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
-@Suppress("MemberVisibilityCanBePrivate")
 @SuppressLint("MissingPermission")
+@Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
 class LocationManager(context: Context, listener: TelemetryListener) : android.location.LocationListener {
 
     private val reference = WeakReference(listener)
@@ -22,6 +22,8 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
     private var satellitesCount = 0
 
     init {
+        satellitesCount = locationClient.getGpsStatus(null)
+            .satellites.map { it.usedInFix() }.size
         listener.apply {
             onLocationAvailability(locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
             locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {

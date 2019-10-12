@@ -4,7 +4,8 @@ import org.joda.time.DateTime
 import java.io.Serializable
 import kotlin.math.roundToInt
 
-class SimpleLocation : Serializable, Location<Double> {
+@Suppress("LeakingThis")
+open class SimpleLocation : Serializable, Location<Double> {
 
     override var latitude = 0.0
 
@@ -18,13 +19,6 @@ class SimpleLocation : Serializable, Location<Double> {
      * In meters
      */
     var accuracy = 0f
-
-    var direction = 0
-
-    /**
-     * It's only the fixed mileage at location time
-     */
-    var distance = 0
 
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
