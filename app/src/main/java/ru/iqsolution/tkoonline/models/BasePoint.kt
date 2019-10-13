@@ -30,7 +30,7 @@ class BasePoint(
     /**
      * Will be the same as [baseDirection] on first value
      */
-    var currentDirection: Int? = null
+    var currentDirection = 0
 
     /**
      * It's not a session mileage, it's a distance between this (as base) and [lastLocation] (as current)
@@ -90,24 +90,18 @@ class BasePoint(
         if (distance >= 200) {
             return TelemetryState.MOVING
         }
-        val now = DateTime.now()
-        val seconds = (now.millis - locationTime.withZone(now.zone).millis) / 1000
-        if (seconds <= 0) {
-            return 0 to 0
-        }
-        seconds.toInt() to (distance / seconds * 3.6).roundToInt()
-        if (v > 10) {
-
+        getMinSpeed(30)?.let {
+            if (it > 10) {
+                return TelemetryState.MOVING
+            }
         }
         when (state) {
             TelemetryState.UNKNOWN -> {
             }
             TelemetryState.MOVING -> {
-                currentDirection?.let { c ->
-                    baseDirection?.let { b ->
-                        if ((c - b).absoluteValue >= 5) {
-                            return TelemetryState.MOVING
-                        }
+                baseDirection?.let {
+                    if ((currentDirection - it).absoluteValue >= 5) {
+                        return TelemetryState.MOVING
                     }
                 }
             }
@@ -122,9 +116,20 @@ class BasePoint(
                 return null
             }
         }
-        if (v < 10) {
-
+        getMinSpeed(30)?.let {
+            if (it < 10) {
+                return TelemetryState.STOPPING
+            }
         }
         return null
+    }
+
+    private fun getMinSpeed(seconds: Int): Int? {
+        val now = DateTime.now()
+        val seconds = (now.millis - locationTime.withZone(now.zone).millis) / 1000
+        if (seconds <= 0) {
+            return 0 to 0
+        }
+        seconds.toInt() to (distance / seconds * 3.6).roundToInt()
     }
 }
