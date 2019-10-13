@@ -17,10 +17,7 @@ import kotlin.math.roundToInt
 @Suppress("unused")
 class BasePoint(
     location: Location,
-    /**
-     * Should be changed only once
-     */
-    var state: TelemetryState = TelemetryState.UNKNOWN
+    private val state: TelemetryState = TelemetryState.UNKNOWN
 ) : SimpleLocation(location) {
 
     var lastLocation: SimpleLocation = this
@@ -30,36 +27,42 @@ class BasePoint(
      */
     private var baseDirection: Int? = null
 
+    /**
+     * Will be the same as [baseDirection] on first value
+     */
     var currentDirection: Int? = null
 
     /**
-     * It's not a session mileage, it's a distance between this (as base) and current location
+     * It's not a session mileage, it's a distance between this (as base) and [lastLocation] (as current)
      */
     private var distance = 0f
 
+    /**
+     * Max average of keys [0, 24] days as milliseconds
+     */
     private val speedMap = SparseIntArray()
 
     /**
      * @return time (seconds) + speed (km/h)
      */
-    val speed: Pair<Int, Int>
-        get() {
-            val now = DateTime.now()
-            val seconds = (now.millis - locationTime.withZone(now.zone).millis) / 1000
-            if (seconds <= 0) {
-                return 0 to 0
-            }
-            return seconds.toInt() to (distance / seconds * 3.6).roundToInt()
+    val lastSpeed: Int
+        get() = speedMap.run {
+            if (size() > 0) {
+                valueAt(size() - 1)
+            } else 0
         }
 
+    /**
+     * @return distance traveled
+     */
     fun updateFrom(location: Location): Float {
         val result = FloatArray(2)
         // getting only distance
         Location.distanceBetween(
             lastLocation.latitude,
             lastLocation.longitude,
-            newLocation.latitude,
-            newLocation.longitude,
+            location.latitude,
+            location.longitude,
             result
         )
         val space = result[0]
@@ -70,7 +73,7 @@ class BasePoint(
         } ?: run {
             direction =
         }
-        Location.distanceBetween(latitude, longitude, newLocation.latitude, newLocation.longitude, result)
+        Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, result)
         speedMap.apply {
             for (index in 0 until size()) {
                 action(keyAt(index), valueAt(index))
@@ -80,10 +83,19 @@ class BasePoint(
         return space
     }
 
-    fun replaceWith(state: TelemetryState): TelemetryState? {
+    /**
+     * Should be called after [updateFrom]
+     */
+    fun replaceWith(): TelemetryState? {
         if (distance >= 200) {
             return TelemetryState.MOVING
         }
+        val now = DateTime.now()
+        val seconds = (now.millis - locationTime.withZone(now.zone).millis) / 1000
+        if (seconds <= 0) {
+            return 0 to 0
+        }
+        seconds.toInt() to (distance / seconds * 3.6).roundToInt()
         if (v > 10) {
 
         }
@@ -105,7 +117,10 @@ class BasePoint(
                     return TelemetryState.PARKING
                 }
             }
-            TelemetryState.PARKING -> return null
+            TelemetryState.PARKING -> {
+                // ignoring next conditions
+                return null
+            }
         }
         if (v < 10) {
 
