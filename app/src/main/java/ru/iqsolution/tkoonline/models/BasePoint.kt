@@ -14,7 +14,6 @@ import kotlin.math.roundToInt
  * - за 30 секунд пройдет 83,3334 метра
  * - 200 метров пройдет за 72 секунды
  */
-@Suppress("unused")
 class BasePoint(
     location: Location,
     private val state: TelemetryState = TelemetryState.UNKNOWN
@@ -25,12 +24,12 @@ class BasePoint(
     /**
      * Направление движения в градусах от направления на север
      */
-    private var baseDirection: Int? = null
+    private var baseDirection: Float? = null
 
     /**
      * Will be the same as [baseDirection] on first value
      */
-    var currentDirection = 0
+    var currentDirection = 0f
 
     /**
      * It's not a session mileage, it's a distance between this (as base) and [lastLocation] (as current)
@@ -87,38 +86,39 @@ class BasePoint(
      * Should be called after [updateFrom]
      */
     fun replaceWith(): TelemetryState? {
-        if (distance >= 200) {
+        if (distance >= BASE_DISTANCE) {
             return TelemetryState.MOVING
         }
-        getMinSpeed(30)?.let {
-            if (it > 10) {
-                return TelemetryState.MOVING
+        getMinSpeed(MIN_TIME)?.let {
+            if (state != TelemetryState.MOVING) {
+                if (it > MIN_SPEED) {
+                    return TelemetryState.MOVING
+                }
+            }
+            // parking cannot be replaced with stopping
+            if (state != TelemetryState.STOPPING && state != TelemetryState.PARKING) {
+                if (it < MIN_SPEED) {
+                    return TelemetryState.STOPPING
+                }
             }
         }
         when (state) {
-            TelemetryState.UNKNOWN -> {
-            }
             TelemetryState.MOVING -> {
                 baseDirection?.let {
-                    if ((currentDirection - it).absoluteValue >= 5) {
-                        return TelemetryState.MOVING
+                    if ((currentDirection - it).absoluteValue >= BASE_DEGREE) {
+                        if (lastSpeed >= MIN_SPEED) {
+                            return TelemetryState.MOVING
+                        }
                     }
                 }
             }
             TelemetryState.STOPPING -> {
                 val now = DateTime.now()
-                if (now.millis - locationTime.withZone(now.zone).millis >= 2 * 60_000L) {
+                if (now.millis - locationTime.withZone(now.zone).millis >= PARKING_TIME) {
                     return TelemetryState.PARKING
                 }
             }
-            TelemetryState.PARKING -> {
-                // ignoring next conditions
-                return null
-            }
-        }
-        getMinSpeed(30)?.let {
-            if (it < 10) {
-                return TelemetryState.STOPPING
+            else -> {
             }
         }
         return null
@@ -131,5 +131,29 @@ class BasePoint(
             return 0 to 0
         }
         seconds.toInt() to (distance / seconds * 3.6).roundToInt()
+    }
+
+    companion object {
+
+        /**
+         * Событие стоянка
+         * Данное событие генерируется в состоянии остановка если данное состояние не изменено в течение 2 минут
+         */
+        private const val PARKING_TIME = 2 * 60_000L
+
+        // Направление движения отклоняется от базового на величину 5 градусов
+        private const val BASE_DEGREE = 5
+
+        // Скорость выше параметра минимальной скорости (10км/ч)
+        private const val MIN_SPEED = 10
+
+        // минимальное время - 30 секунд
+        private const val MIN_TIME = 30
+
+        /**
+         * Событие пройдена дистанция
+         * Данное событие генерируется только в состоянии движения при перемещении автомобиля от базовой точки на расстояние больше 200 метров.
+         */
+        private const val BASE_DISTANCE = 200
     }
 }
