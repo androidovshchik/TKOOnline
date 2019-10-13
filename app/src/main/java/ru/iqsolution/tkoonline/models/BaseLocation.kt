@@ -42,22 +42,43 @@ class BaseLocation : SimpleLocation {
             return seconds.toInt() to (distance / seconds * 3.6).roundToInt()
         }
 
-    fun updateFrom(newLocation: SimpleLocation, lastLocation: SimpleLocation = this): Boolean {
+    private var lastLocation: SimpleLocation = this
+
+    fun updateFrom(newLocation: SimpleLocation): Boolean {
         speedMap.apply {
             for (index in 0 until size()) {
                 action(keyAt(index), valueAt(index))
             }
         }
         val result = FloatArray(2)
-        lastLocation?.let {
-            // getting only distance
-            Location.distanceBetween(it.latitude, it.longitude, newLocation.latitude, newLocation.longitude, result)
-        }
+        // getting only distance
+        Location.distanceBetween(
+            lastLocation.latitude,
+            lastLocation.longitude,
+            newLocation.latitude,
+            newLocation.longitude,
+            result
+        )
+        distance += result[0].roundToInt()
         // getting only angle
         direction?.let {
 
         }
         Location.distanceBetween(latitude, longitude, newLocation.latitude, newLocation.longitude, result)
+        lastLocation = newLocation
+    }
+
+    fun sdfsdf(state: TelemetryState) {
+        when (state) {
+            TelemetryState.UNKNOWN -> {
+            }
+            TelemetryState.MOVING -> {
+            }
+            TelemetryState.STOPPING -> {
+            }
+            TelemetryState.PARKING -> {
+            }
+        }
     }
 
     constructor(lat: Double, lon: Double) : super(lat, lon)
