@@ -16,16 +16,20 @@ import kotlin.math.roundToInt
 @Suppress("unused")
 class BaseLocation : SimpleLocation {
 
+    var lastLocation: SimpleLocation = this
+
     /**
      * Направление движения в градусах от направления на север
      */
-    var direction: Int? = null
+    private var baseDirection: Int? = null
+
+    var currentDirection: Int? = null
 
     /**
-     * In meters
+     * It's not a session mileage, it's a distance between this base point and current location
      * After 200 meters this should be replaced
      */
-    var distance = 0
+    private var distance = 0f
 
     private val speedMap = SparseIntArray()
 
@@ -42,14 +46,7 @@ class BaseLocation : SimpleLocation {
             return seconds.toInt() to (distance / seconds * 3.6).roundToInt()
         }
 
-    private var lastLocation: SimpleLocation = this
-
-    fun updateFrom(newLocation: SimpleLocation): Boolean {
-        speedMap.apply {
-            for (index in 0 until size()) {
-                action(keyAt(index), valueAt(index))
-            }
-        }
+    fun updateFrom(newLocation: SimpleLocation): Float {
         val result = FloatArray(2)
         // getting only distance
         Location.distanceBetween(
@@ -59,16 +56,25 @@ class BaseLocation : SimpleLocation {
             newLocation.longitude,
             result
         )
-        distance += result[0].roundToInt()
+        val space = result[0]
+        distance += space
         // getting only angle
         direction?.let {
 
+        } ?: run {
+            direction =
         }
         Location.distanceBetween(latitude, longitude, newLocation.latitude, newLocation.longitude, result)
+        speedMap.apply {
+            for (index in 0 until size()) {
+                action(keyAt(index), valueAt(index))
+            }
+        }
         lastLocation = newLocation
+        return space
     }
 
-    fun sdfsdf(state: TelemetryState) {
+    fun shouldBeReplaced(state: TelemetryState): Boolean {
         when (state) {
             TelemetryState.UNKNOWN -> {
             }

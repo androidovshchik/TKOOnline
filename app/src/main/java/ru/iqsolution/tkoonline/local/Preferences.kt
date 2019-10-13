@@ -70,6 +70,8 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     var tokenId by longPref(0L, "0x10")
 
+    var mileage by longPref(0L, "0x11")
+
     val isLoggedIn: Boolean
         get() = accessToken != null
 
@@ -101,5 +103,6 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
         carId = 0
         locationTime = null
         tokenId = 0L
+        mileage = 0L
     }
 }
