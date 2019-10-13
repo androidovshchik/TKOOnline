@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.models
 import android.location.Location
 import android.util.SparseIntArray
 import org.joda.time.DateTime
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 // todo thread safe?
@@ -14,9 +15,13 @@ import kotlin.math.roundToInt
  * - 200 метров пройдет за 72 секунды
  */
 @Suppress("unused")
-class BasePoint : SimpleLocation {
-
-    private val state: TelemetryState
+class BasePoint(
+    location: Location,
+    /**
+     * Should be changed only once
+     */
+    var state: TelemetryState = TelemetryState.UNKNOWN
+) : SimpleLocation(location) {
 
     var lastLocation: SimpleLocation = this
 
@@ -34,16 +39,6 @@ class BasePoint : SimpleLocation {
 
     private val speedMap = SparseIntArray()
 
-    constructor(lat: Double, lon: Double) : super(lat, lon)
-
-    constructor(lat: Float, lon: Float) : this(lat.toDouble(), lon.toDouble())
-
-    constructor(location: Location) : super(location)
-
-    constructor(location: SimpleLocation) : super(location)
-
-    constructor(state: TelemetryState, location: SimpleLocation) : super(location)
-
     /**
      * @return time (seconds) + speed (km/h)
      */
@@ -57,7 +52,7 @@ class BasePoint : SimpleLocation {
             return seconds.toInt() to (distance / seconds * 3.6).roundToInt()
         }
 
-    fun updateFrom(newLocation: SimpleLocation): Float {
+    fun updateFrom(location: Location): Float {
         val result = FloatArray(2)
         // getting only distance
         Location.distanceBetween(
@@ -89,21 +84,31 @@ class BasePoint : SimpleLocation {
         if (distance >= 200) {
             return TelemetryState.MOVING
         }
+        if (v > 10) {
+
+        }
         when (state) {
             TelemetryState.UNKNOWN -> {
-                if (isExpired(TelemetryState.MOVING)) {
-                    return isExpired(TelemetryState.STOPPING)
-                }
             }
             TelemetryState.MOVING -> {
-            }
-            TelemetryState.STOPPING -> {
-                if (locationTime.millis >= 2 * 60_000L) {
-                    return true
+                currentDirection?.let { c ->
+                    baseDirection?.let { b ->
+                        if ((c - b).absoluteValue >= 5) {
+                            return TelemetryState.MOVING
+                        }
+                    }
                 }
             }
-            TelemetryState.PARKING -> {
+            TelemetryState.STOPPING -> {
+                val now = DateTime.now()
+                if (now.millis - locationTime.withZone(now.zone).millis >= 2 * 60_000L) {
+                    return TelemetryState.PARKING
+                }
             }
+            TelemetryState.PARKING -> return null
+        }
+        if (v < 10) {
+
         }
         return null
     }
