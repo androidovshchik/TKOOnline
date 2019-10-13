@@ -14,7 +14,9 @@ import kotlin.math.roundToInt
  * - 200 метров пройдет за 72 секунды
  */
 @Suppress("unused")
-class BaseLocation : SimpleLocation {
+class BasePoint : SimpleLocation {
+
+    private val state: TelemetryState
 
     var lastLocation: SimpleLocation = this
 
@@ -26,12 +28,21 @@ class BaseLocation : SimpleLocation {
     var currentDirection: Int? = null
 
     /**
-     * It's not a session mileage, it's a distance between this base point and current location
-     * After 200 meters this should be replaced
+     * It's not a session mileage, it's a distance between this (as base) and current location
      */
     private var distance = 0f
 
     private val speedMap = SparseIntArray()
+
+    constructor(lat: Double, lon: Double) : super(lat, lon)
+
+    constructor(lat: Float, lon: Float) : this(lat.toDouble(), lon.toDouble())
+
+    constructor(location: Location) : super(location)
+
+    constructor(location: SimpleLocation) : super(location)
+
+    constructor(state: TelemetryState, location: SimpleLocation) : super(location)
 
     /**
      * @return time (seconds) + speed (km/h)
@@ -74,22 +85,26 @@ class BaseLocation : SimpleLocation {
         return space
     }
 
-    fun shouldBeReplaced(state: TelemetryState): Boolean {
+    fun replaceWith(state: TelemetryState): TelemetryState? {
+        if (distance >= 200) {
+            return TelemetryState.MOVING
+        }
         when (state) {
             TelemetryState.UNKNOWN -> {
+                if (isExpired(TelemetryState.MOVING)) {
+                    return isExpired(TelemetryState.STOPPING)
+                }
             }
             TelemetryState.MOVING -> {
             }
             TelemetryState.STOPPING -> {
+                if (locationTime.millis >= 2 * 60_000L) {
+                    return true
+                }
             }
             TelemetryState.PARKING -> {
             }
         }
+        return null
     }
-
-    constructor(lat: Double, lon: Double) : super(lat, lon)
-
-    constructor(lat: Float, lon: Float) : this(lat.toDouble(), lon.toDouble())
-
-    constructor(location: Location) : super(location)
 }
