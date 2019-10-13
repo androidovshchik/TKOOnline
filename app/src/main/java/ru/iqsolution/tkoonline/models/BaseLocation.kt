@@ -1,5 +1,7 @@
 package ru.iqsolution.tkoonline.models
 
+import android.location.Location
+import android.util.SparseIntArray
 import org.joda.time.DateTime
 import kotlin.math.roundToInt
 
@@ -17,13 +19,15 @@ class BaseLocation : SimpleLocation {
     /**
      * Направление движения в градусах от направления на север
      */
-    var direction = 0
+    var direction: Int? = null
 
     /**
      * In meters
      * After 200 meters this should be replaced
      */
     var distance = 0
+
+    private val speedMap = SparseIntArray()
 
     /**
      * @return time (seconds) + speed (km/h)
@@ -38,9 +42,27 @@ class BaseLocation : SimpleLocation {
             return seconds.toInt() to (distance / seconds * 3.6).roundToInt()
         }
 
+    fun updateFrom(newLocation: SimpleLocation, lastLocation: SimpleLocation = this): Boolean {
+        speedMap.apply {
+            for (index in 0 until size()) {
+                action(keyAt(index), valueAt(index))
+            }
+        }
+        val result = FloatArray(2)
+        lastLocation?.let {
+            // getting only distance
+            Location.distanceBetween(it.latitude, it.longitude, newLocation.latitude, newLocation.longitude, result)
+        }
+        // getting only angle
+        direction?.let {
+
+        }
+        Location.distanceBetween(latitude, longitude, newLocation.latitude, newLocation.longitude, result)
+    }
+
     constructor(lat: Double, lon: Double) : super(lat, lon)
 
     constructor(lat: Float, lon: Float) : this(lat.toDouble(), lon.toDouble())
 
-    constructor(location: android.location.Location) : super(location)
+    constructor(location: Location) : super(location)
 }
