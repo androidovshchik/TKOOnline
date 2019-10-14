@@ -8,6 +8,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.chibatching.kotpref.blockingBulk
 import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
@@ -191,25 +192,28 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         onLocationResult(newLocation)
         launch {
             withContext(Dispatchers.IO) {
+                var event: LocationEvent? = null
                 synchronized(lock) {
                     if (!isRunning) {
                         basePoint = null
-                        return@synchronized
+                        return@withContext
                     }
-                    db.locationDao().insert(event)
                     basePoint?.let { point ->
-                        preferences.mileage += point.updateLocation(newLocation)
-                        point.replaceWith()?.let {
-                            lastEventTime = DateTime.now()
-                            val event = preferences.run {
-                                LocationEvent(point, tokenId, packageId, mileage.roundToInt())
+                        preferences.blockingBulk {
+                            mileage += point.updateLocation(newLocation)
+                            point.replaceWith()?.let {
+                                event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).apply {
+                                    lastEventTime = data.whenTime
+                                }
+                                basePoint = BasePoint(newLocation, it)
                             }
-                            lastEventTime = event.data.whenTime
-                            basePoint = BasePoint(newLocation, it)
                         }
                     } ?: run {
                         basePoint = BasePoint(newLocation)
                     }
+                }
+                event?.let {
+                    db.locationDao().insert(it)
                 }
             }
         }
@@ -219,7 +223,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         preferences.bulk {
             latitude = location.latitude.toFloat()
             longitude = location.longitude.toFloat()
-            locationTime = DateTime.now().toString(PATTERN_DATETIME)
+            locationTime = location.locationTime.toString(PATTERN_DATETIME)
         }
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_LOCATION, location)
