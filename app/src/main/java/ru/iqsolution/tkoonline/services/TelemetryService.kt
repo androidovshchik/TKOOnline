@@ -12,6 +12,9 @@ import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import com.rabbitmq.client.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.startService
@@ -25,6 +28,7 @@ import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startForegroundService
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.BasePoint
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
@@ -179,11 +183,18 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             satellites = satellitesCount
         }
         onLocationResult(newLocation)
-        basePoint?.updateLocation(newLocation) ?: run {
+        basePoint?.apply {
+            updateLocation(newLocation)
+            replaceWith()?.let {
+                launch {
+                    withContext(Dispatchers.IO) {
+                        db.locationDao().insert(LocationEvent())
+                    }
+                }
+            }
+        } ?: run {
             basePoint = BasePoint(location)
         }
-        basePoint?.replaceWith()
-        //add to db
     }
 
     override fun onLocationResult(location: SimpleLocation) {
