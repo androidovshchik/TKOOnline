@@ -159,6 +159,18 @@ class BasePoint(
         return minSpeed
     }
 
+    override fun toString(): String {
+        return "BasePoint(" +
+                "state=$state, " +
+                "lastLocation=${if (this == lastLocation) "this" else lastLocation}, " +
+                "baseDirection=$baseDirection, " +
+                "currentDirection=$currentDirection, " +
+                "speedMap=$speedMap, " +
+                "distance=$distance" +
+                ")" +
+                " ${super.toString()}"
+    }
+
     companion object {
 
         private const val MS2KMH = 3.6f

@@ -92,6 +92,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                 .build()
         )
         acquireWakeLock()
+        isRunning = true
         broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
         locationManager = LocationManager(applicationContext, this).also {
             it.requestUpdates()
@@ -214,6 +215,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                 event?.let {
                     db.locationDao().insert(it)
                 }
+                Timber.d(basePoint?.toString())
             }
         }
     }
@@ -276,7 +278,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                 return false
             }
             return if (!activityManager.isRunning<TelemetryService>()) {
-                startForegroundService<TelemetryService>(*params) != null
+                startForegroundService<TelemetryService>() != null
             } else {
                 startService<TelemetryService>(*params) != null
             }

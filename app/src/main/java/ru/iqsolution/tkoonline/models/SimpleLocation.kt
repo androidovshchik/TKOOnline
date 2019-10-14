@@ -50,4 +50,15 @@ open class SimpleLocation : Serializable, Location<Double> {
         accuracy = location.accuracy
         locationTime = DateTime.now()
     }
+
+    override fun toString(): String {
+        return "SimpleLocation(" +
+                "latitude=$latitude, " +
+                "longitude=$longitude, " +
+                "altitude=$altitude, " +
+                "satellites=$satellites, " +
+                "accuracy=$accuracy, " +
+                "locationTime=$locationTime" +
+                ")"
+    }
 }
