@@ -8,7 +8,6 @@ import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-// todo thread safe?
 /**
  * Базовая точка + базовое направление
  * 10 km/h = 2,77778 м/s
@@ -16,10 +15,8 @@ import kotlin.math.roundToInt
  * - за 30 секунд пройдет 83,3334 метра
  * - 200 метров пройдет за 72 секунды
  */
-class BasePoint(
-    location: Location,
-    private val state: TelemetryState = TelemetryState.UNKNOWN
-) : SimpleLocation(location) {
+class BasePoint(location: SimpleLocation, private val state: TelemetryState = TelemetryState.UNKNOWN) :
+    SimpleLocation(location.latitude, location.longitude) {
 
     /**
      * Last known location
@@ -52,6 +49,11 @@ class BasePoint(
      * It's not a session mileage, it's a distance between this (as base) and [lastLocation] (as current)
      */
     private var distance = 0f
+
+    init {
+        altitude = location.altitude
+        accuracy = location.accuracy
+    }
 
     /**
      * Shouldn't be called on class init
