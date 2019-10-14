@@ -70,7 +70,7 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     var tokenId by longPref(0L, "0x10")
 
-    var mileage by intPref(0, "0x11")
+    var mileage by floatPref(0f, "0x11")
 
     var packageId by intPref(0, "0x12")
 
@@ -105,7 +105,7 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
         carId = 0
         locationTime = null
         tokenId = 0L
-        mileage = 0
+        mileage = 0f
         packageId = 0
     }
 }

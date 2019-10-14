@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.LOCATION_INTERVAL
 import ru.iqsolution.tkoonline.models.BasePoint
 import kotlin.math.roundToInt
 
@@ -93,9 +94,22 @@ class LocationEvent() : SendEvent {
         @SerializedName("height")
         var altitude = 0
 
+        /**
+         * Не валидные считаются координаты полученные более 5 секунд назад или с погрешностью более 30 метров
+         */
         @ColumnInfo(name = "le_validity")
         @SerializedName("valid")
-        var validity = 0
+        var validity: Int = 0
+            get() {
+                if (field == 0) {
+                    return 0
+                }
+                val now = DateTime.now()
+                if (now.millis - locationTime.withZone(now.zone).millis <= LOCATION_INTERVAL) {
+                    return 1
+                }
+                return 0
+            }
 
         @ColumnInfo(name = "le_satellites")
         @SerializedName("sat_cnt")

@@ -31,13 +31,7 @@ open class SimpleLocation : Serializable, Location<Double> {
      * Не валидные считаются координаты полученные более 5 секунд назад или с погрешностью более 30 метров
      */
     val validity: Int
-        get() {
-            val now = DateTime.now()
-            if (accuracy <= 30 && now.millis - locationTime.withZone(now.zone).millis <= 5000L) {
-                return 1
-            }
-            return 0
-        }
+        get() = if (accuracy <= 30) 1 else 0
 
     constructor(lat: Double, lon: Double, datetime: DateTime) {
         latitude = lat
