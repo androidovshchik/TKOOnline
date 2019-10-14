@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
  */
 class BasePoint(
     location: SimpleLocation,
-    private val state: TelemetryState = TelemetryState.UNKNOWN
+    val state: TelemetryState = TelemetryState.UNKNOWN
 ) : SimpleLocation(location.latitude, location.longitude, location.locationTime) {
 
     /**

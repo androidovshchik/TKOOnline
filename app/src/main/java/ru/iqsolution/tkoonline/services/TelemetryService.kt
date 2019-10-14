@@ -71,6 +71,8 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
 
     private var basePoint: BasePoint? = null
 
+    private var lastEventTime: DateTime? = null
+
     private val lock = Any()
 
     override fun onBind(intent: Intent): IBinder? {
@@ -190,15 +192,18 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         basePoint?.let { point ->
             point.updateLocation(newLocation)
             point.replaceWith()?.let {
-                preferences.apply {
-                    val locationEvent = LocationEvent(point, tokenId, packageId, mileage)
-                    launch {
-                        withContext(Dispatchers.IO) {
-                            db.locationDao().insert(locationEvent)
-                        }
+                val event = synchronized(lock) {
+                    lastEventTime = DateTime.now()
+                    preferences.run {
+                        LocationEvent(point, tokenId, packageId, mileage)
                     }
                 }
                 basePoint = BasePoint(newLocation, it)
+                launch {
+                    withContext(Dispatchers.IO) {
+                        db.locationDao().insert(event)
+                    }
+                }
             }
         } ?: run {
             basePoint = BasePoint(newLocation)
