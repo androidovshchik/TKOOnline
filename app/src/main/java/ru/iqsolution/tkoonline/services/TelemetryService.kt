@@ -35,6 +35,7 @@ import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 /**
  * МП должно исключать генерацию более одного события в одну секунду.
@@ -103,8 +104,8 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                 stopForeground(true)
                 stopSelf()
             }
-            /*preferences.isLoggedIn
             val lastEvent = db.locationDao().getLastSendEvent()
+            /*preferences.isLoggedIn
             lastEvents.forEach {
                 try {
                     factory.apply {
@@ -180,33 +181,37 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         })
     }
 
+    /**
+     * Should synchronize packageId and [lastEventTime]
+     */
     override fun onLocationChanged(location: Location, satellitesCount: Int) {
         val newLocation = SimpleLocation(location).apply {
             satellites = satellitesCount
         }
         onLocationResult(newLocation)
-        if (!isRunning) {
-            basePoint = null
-            return
-        }
-        basePoint?.let { point ->
-            point.updateLocation(newLocation)
-            point.replaceWith()?.let {
-                val event = synchronized(lock) {
-                    lastEventTime = DateTime.now()
-                    preferences.run {
-                        LocationEvent(point, tokenId, packageId, mileage)
+        launch {
+            withContext(Dispatchers.IO) {
+                synchronized(lock) {
+                    if (!isRunning) {
+                        basePoint = null
+                        return@synchronized
                     }
-                }
-                basePoint = BasePoint(newLocation, it)
-                launch {
-                    withContext(Dispatchers.IO) {
-                        db.locationDao().insert(event)
+                    db.locationDao().insert(event)
+                    basePoint?.let { point ->
+                        preferences.mileage += point.updateLocation(newLocation)
+                        point.replaceWith()?.let {
+                            lastEventTime = DateTime.now()
+                            val event = preferences.run {
+                                LocationEvent(point, tokenId, packageId, mileage.roundToInt())
+                            }
+                            lastEventTime = event.data.whenTime
+                            basePoint = BasePoint(newLocation, it)
+                        }
+                    } ?: run {
+                        basePoint = BasePoint(newLocation)
                     }
                 }
             }
-        } ?: run {
-            basePoint = BasePoint(newLocation)
         }
     }
 
