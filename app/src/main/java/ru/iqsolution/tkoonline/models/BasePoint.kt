@@ -55,7 +55,7 @@ class BasePoint(
 
     /**
      * Shouldn't be called on class init
-     * @return distance traveled
+     * @return distance traveled in meters
      */
     fun updateLocation(location: SimpleLocation): Float {
         val output = FloatArray(2)
@@ -78,12 +78,13 @@ class BasePoint(
             baseDirection = angle
             currentDirection = angle
         }
-        val seconds = Duration(locationTime, location.locationTime.withZone(locationTime.zone)).standardSeconds.toInt()
+        val seconds =
+            Duration(locationTime, location.locationTime.withZone(locationTime.zone)).standardSeconds.absoluteValue
         val speed = MS2KMH * space / Duration(
             lastLocation.locationTime,
             location.locationTime.withZone(lastLocation.locationTime.zone)
-        ).standardSeconds
-        speedMap.put(seconds, speed.roundToInt())
+        ).standardSeconds.absoluteValue
+        speedMap.put(seconds.toInt(), speed.roundToInt())
         lastLocation = location
         return space
     }
