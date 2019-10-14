@@ -8,18 +8,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
+import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 
 class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsContract.Presenter, Observer<WorkInfo> {
 
     val server: Server by instance()
+
+    val client: OkHttpClient by instance()
 
     private var observer: LiveData<WorkInfo>? = null
 
@@ -97,9 +102,16 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
     }
 
     override fun logout(context: Context) {
+        TelemetryService.start(context, EXTRA_TELEMETRY_TASK to false)
         observer = SendWorker.launch(context, true).also {
             it?.observeForever(this)
         }
+    }
+
+    override fun cancelExit(context: Context) {
+        client.dispatcher.cancelAll()
+        SendWorker.cancel(context)
+        TelemetryService.start(context, EXTRA_TELEMETRY_TASK to true)
     }
 
     override fun onChanged(t: WorkInfo?) {

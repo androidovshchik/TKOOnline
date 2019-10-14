@@ -16,6 +16,8 @@ interface PlatformsContract {
         fun loadPhotoCleanEvents()
 
         fun logout(context: Context)
+
+        fun cancelExit(context: Context)
     }
 
     interface View : IBaseView {

@@ -23,7 +23,6 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
-import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 import java.util.*
 
@@ -73,7 +72,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 return@setOnClickListener
             }
             showLoading()
-            TelemetryService.start(applicationContext, EXTRA_TELEMETRY_TASK to false)
             presenter.logout(applicationContext)
         }
         if (preferences.allowPhotoRefKp) {
@@ -179,8 +177,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     override fun cancelWork() {
-        SendWorker.cancel(applicationContext)
-        TelemetryService.start(applicationContext, EXTRA_TELEMETRY_TASK to true)
+        presenter.cancelExit(applicationContext)
     }
 
     override fun onLoggedOut() {
