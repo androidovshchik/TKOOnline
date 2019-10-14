@@ -4,8 +4,8 @@ import android.location.Location
 import android.util.SparseIntArray
 import org.joda.time.DateTime
 import org.joda.time.Duration
-import ru.iqsolution.tkoonline.LOCATION_INTERVAL
 import kotlin.math.absoluteValue
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 // todo thread safe?
@@ -55,39 +55,35 @@ class BasePoint(
      * @return distance traveled
      */
     fun updateLocation(location: SimpleLocation): Float {
-        val result = FloatArray(2)
+        val output = FloatArray(2)
         // getting only distance
         Location.distanceBetween(
             lastLocation.latitude,
             lastLocation.longitude,
             location.latitude,
             location.longitude,
-            result
+            output
         )
-        val space = result[0]
+        val space = output[0]
         distance += space
         // getting only angle
-        direction?.let {
-
+        Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, output)
+        val angle = if (output[1] < 0) 360 - output[1] else output[1]
+        baseDirection?.let {
+            currentDirection = angle
         } ?: run {
-            direction =
-        }
-        Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, result)
-        speedMap.apply {
-            for (index in 0 until size()) {
-                action(keyAt(index), valueAt(index))
-            }
+            baseDirection = angle
+            currentDirection = angle
         }
         val now = DateTime.now()
         val seconds = (now.millis - locationTime.withZone(now.zone).millis) / 1000
         if (seconds <= 0) {
             return 0 to 0
         }
-        seconds.toInt() to (distance / seconds * 3.6).roundToInt()
+        seconds.toInt() to (distance / seconds * MS2KMH).roundToInt()
         val now = DateTime.now()
         val delay = Duration(locationTime, location.locationTime).standardSeconds
-        val delay = Duration(locationTime, location.locationTime).standardSeconds
-        val speed = space / LOCATION_INTERVAL
+        val speed = space / Duration(lastLocation.locationTime, location.locationTime).standardSeconds
         lastLocation = location
         return space
     }
@@ -134,19 +130,27 @@ class BasePoint(
         return null
     }
 
-    private fun getMinSpeed(seconds: Int): Int? {
+    private fun getMinSpeed(range: Int): Int? {
+        var minSpeed: Int? = null
         speedMap.apply {
-            for (i in size() - 1 downTo 0) {
-                action(keyAt(i), valueAt(i))
+            if (size() > 0) {
+                val lastIndex = size() - 1
+                val maxSeconds = keyAt(lastIndex)
+                if (maxSeconds < range) {
+                    return null
+                }
+                for (i in lastIndex downTo 0) {
+                    if (keyAt(i) in (maxSeconds - range)..maxSeconds) {
+                        minSpeed = minSpeed?.let {
+                            min(it, valueAt(i))
+                        } ?: valueAt(i)
+                    } else {
+                        break
+                    }
+                }
             }
         }
-        val now = DateTime.now()
-        val seconds = (now.millis - locationTime.withZone(now.zone).millis) / 1000
-        if (seconds <= 0) {
-            return 0 to 0
-        }
-        seconds.toInt() to (distance / seconds * 3.6).roundToInt()
-        return null
+        return minSpeed
     }
 
     companion object {
