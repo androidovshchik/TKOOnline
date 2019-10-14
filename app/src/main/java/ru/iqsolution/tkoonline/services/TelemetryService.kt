@@ -25,6 +25,7 @@ import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startForegroundService
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.models.BasePoint
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 import java.util.concurrent.Executors
@@ -64,28 +65,9 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
     @Volatile
     private var isRunning = false
 
-    /**
-     * Base dot and direction
-     */
-    @Volatile
-    private var lastLocation: SimpleLocation? = null
+    private var basePoint: BasePoint? = null
 
-    private var baseLocation: SimpleLocation? = null
-
-    /**
-     * Уникальный ИД Постоянно возрастающий внутри сессии с 0
-     */
-    var packageId = 0L
-
-    /**
-     * In meters
-     */
-    var mileage = 0
-
-    /**
-     * km/h
-     */
-    var speed = 0
+    private val lock = Any()
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -116,20 +98,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                 stopSelf()
             }
             /*preferences.isLoggedIn
-            val lastEvents = arrayListOf<LocationEvent>()
             val lastEvent = db.locationDao().getLastSendEvent()
-            lastEvent?.let {
-
-            }
-            if (isRunning) {
-                if () {
-                    lastEvents.add()
-                }
-            } else {
-                if (lastEvents.isEmpty()) {
-
-                }
-            }
             lastEvents.forEach {
                 try {
                     factory.apply {
@@ -146,7 +115,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                     Timber.e(e)
                 }
             }*/
-        }, 0L, 2000L, TimeUnit.MILLISECONDS)
+        }, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS)
     }
 
     override fun handleDelivery(
@@ -206,11 +175,15 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
     }
 
     override fun onLocationChanged(location: Location, satellitesCount: Int) {
-        val simpleLocation = SimpleLocation(location).apply {
+        val newLocation = SimpleLocation(location).apply {
             satellites = satellitesCount
         }
-        onLocationResult(simpleLocation)
-        lastLocation = simpleLocation
+        onLocationResult(newLocation)
+        basePoint?.updateLocation(newLocation) ?: run {
+            basePoint = BasePoint(location)
+        }
+        basePoint?.replaceWith()
+        //add to db
     }
 
     override fun onLocationResult(location: SimpleLocation) {
@@ -254,32 +227,13 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
 
     companion object {
 
+        private const val TIMER_INTERVAL = 2000L
+
         // Для состояния стоянка - 5 минут
         private const val PARKING_DELAY = 5 * 60_000L
 
         // Для состояния движения и остановка - 1 минута
         private const val MOVING_DELAY = 60_000L
-
-        /**
-         * Событие стоянка
-         * Данное событие генерируется в состоянии остановка если данное состояние не изменено в течение 2 минут
-         */
-        private const val PARKING_TIME = 2 * 60_000L
-
-        // Направление движения отклоняется от базового на величину 5 градусов
-        private const val BASE_DEGREE = 5
-
-        // Скорость выше параметра минимальной скорости (10км/ч)
-        private const val MIN_SPEED = 10
-
-        // минимальное время - 30 секунд
-        private const val MIN_TIME = 30
-
-        /**
-         * Событие пройдена дистанция
-         * Данное событие генерируется только в состоянии движения при перемещении автомобиля от базовой точки на расстояние больше 200 метров.
-         */
-        private const val BASE_DISTANCE = 200
 
         /**
          * @return true if service is running
