@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.dialog_password.*
+import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.WAIT_TIME
 import ru.iqsolution.tkoonline.extensions.setMaxLength
 import ru.iqsolution.tkoonline.extensions.setOnlyNumbers
 import ru.iqsolution.tkoonline.local.Preferences
@@ -34,14 +34,14 @@ class PasswordDialog : BaseDialogFragment() {
                 inputType = inputType or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             }
         }
-        if (SystemClock.elapsedRealtime() - time < WAIT_TIME) {
+        if (SystemClock.elapsedRealtime() - time < PASSWORD_RETRY) {
             retryLater()
         }
         dialog_accept.setOnClickListener {
             val input = dialog_password.text.toString()
             dialog_error.text = ""
             when {
-                SystemClock.elapsedRealtime() - time < WAIT_TIME -> retryLater()
+                SystemClock.elapsedRealtime() - time < PASSWORD_RETRY -> retryLater()
                 input.length == 4 -> when (password) {
                     null -> {
                         preferences.lockPassword = input

@@ -6,8 +6,9 @@ import org.joda.time.format.DateTimeFormatter
 
 const val CHANNEL_DEFAULT = "default_channel"
 
-// for password
-const val WAIT_TIME = 5 * 60 * 1000L
+const val PASSWORD_RETRY = 5 * 60 * 1000L
+
+const val LOCATION_INTERVAL = 5000L
 
 val DANGER_PERMISSIONS = arrayOf(
     Manifest.permission.CAMERA,

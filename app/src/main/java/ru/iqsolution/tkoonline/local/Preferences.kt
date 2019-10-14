@@ -2,7 +2,7 @@ package ru.iqsolution.tkoonline.local
 
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel
-import ru.iqsolution.tkoonline.WAIT_TIME
+import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
@@ -38,7 +38,7 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
     /**
      * Boot time (milliseconds)
      */
-    var blockTime by longPref(-WAIT_TIME, "0x08")
+    var blockTime by longPref(-PASSWORD_RETRY, "0x08")
 
     var vehicleNumber by nullableStringPref(null, "0x09")
 

@@ -8,6 +8,7 @@ import android.location.LocationManager
 import android.location.LocationProvider
 import android.os.Bundle
 import org.jetbrains.anko.locationManager
+import ru.iqsolution.tkoonline.LOCATION_INTERVAL
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -33,7 +34,7 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
     }
 
     fun requestUpdates() {
-        locationClient.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000L, 0f, this)
+        locationClient.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, 0f, this)
         locationClient.registerGnssStatusCallback(gnssCallback)
     }
 

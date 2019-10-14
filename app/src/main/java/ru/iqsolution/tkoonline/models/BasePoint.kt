@@ -3,6 +3,8 @@ package ru.iqsolution.tkoonline.models
 import android.location.Location
 import android.util.SparseIntArray
 import org.joda.time.DateTime
+import org.joda.time.Duration
+import ru.iqsolution.tkoonline.LOCATION_INTERVAL
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
@@ -32,18 +34,10 @@ class BasePoint(
     var currentDirection = 0f
 
     /**
-     * It's not a session mileage, it's a distance between this (as base) and [lastLocation] (as current)
-     */
-    private var distance = 0f
-
-    /**
-     * Max average of keys [0, 24] days as milliseconds
+     * Keys are duration in seconds, values are speed in km/h
      */
     private val speedMap = SparseIntArray()
 
-    /**
-     * @return time (seconds) + speed (km/h)
-     */
     val lastSpeed: Int
         get() = speedMap.run {
             if (size() > 0) {
@@ -52,9 +46,15 @@ class BasePoint(
         }
 
     /**
+     * It's not a session mileage, it's a distance between this (as base) and [lastLocation] (as current)
+     */
+    private var distance = 0f
+
+    /**
+     * Shouldn't be called on class init
      * @return distance traveled
      */
-    fun updateFrom(location: Location): Float {
+    fun updateLocation(location: SimpleLocation): Float {
         val result = FloatArray(2)
         // getting only distance
         Location.distanceBetween(
@@ -78,12 +78,22 @@ class BasePoint(
                 action(keyAt(index), valueAt(index))
             }
         }
-        lastLocation = newLocation
+        val now = DateTime.now()
+        val seconds = (now.millis - locationTime.withZone(now.zone).millis) / 1000
+        if (seconds <= 0) {
+            return 0 to 0
+        }
+        seconds.toInt() to (distance / seconds * 3.6).roundToInt()
+        val now = DateTime.now()
+        val delay = Duration(locationTime, location.locationTime).standardSeconds
+        val delay = Duration(locationTime, location.locationTime).standardSeconds
+        val speed = space / LOCATION_INTERVAL
+        lastLocation = location
         return space
     }
 
     /**
-     * Should be called after [updateFrom]
+     * Should be called after [updateLocation]
      */
     fun replaceWith(): TelemetryState? {
         if (distance >= BASE_DISTANCE) {
@@ -125,15 +135,23 @@ class BasePoint(
     }
 
     private fun getMinSpeed(seconds: Int): Int? {
+        speedMap.apply {
+            for (i in size() - 1 downTo 0) {
+                action(keyAt(i), valueAt(i))
+            }
+        }
         val now = DateTime.now()
         val seconds = (now.millis - locationTime.withZone(now.zone).millis) / 1000
         if (seconds <= 0) {
             return 0 to 0
         }
         seconds.toInt() to (distance / seconds * 3.6).roundToInt()
+        return null
     }
 
     companion object {
+
+        private const val MS2KMH = 3.6f
 
         /**
          * Событие стоянка
