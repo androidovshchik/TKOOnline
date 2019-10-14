@@ -182,9 +182,6 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         })
     }
 
-    /**
-     * Should synchronize packageId and [lastEventTime]
-     */
     override fun onLocationChanged(location: Location, satellitesCount: Int) {
         val newLocation = SimpleLocation(location).apply {
             satellites = satellitesCount
@@ -199,14 +196,16 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                         return@withContext
                     }
                     basePoint?.let { point ->
-                        preferences.blockingBulk {
-                            mileage += point.updateLocation(newLocation)
-                            point.replaceWith()?.let {
-                                event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).apply {
+                        val space = point.updateLocation(newLocation)
+                        point.replaceWith()?.let {
+                            preferences.blockingBulk {
+                                event = LocationEvent(point, tokenId, packageId, (mileage + space).roundToInt()).apply {
                                     lastEventTime = data.whenTime
                                 }
-                                basePoint = BasePoint(newLocation, it)
+                                packageId++
+                                mileage += space
                             }
+                            basePoint = BasePoint(newLocation, it)
                         }
                     } ?: run {
                         basePoint = BasePoint(newLocation)
