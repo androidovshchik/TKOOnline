@@ -32,6 +32,7 @@ import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.BasePoint
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import ru.iqsolution.tkoonline.models.TelemetryState
 import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -105,6 +106,31 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                 isRunning = false
                 stopForeground(true)
                 stopSelf()
+            }
+            var event: LocationEvent? = null
+            synchronized(lock) {
+                lastEventTime?.let {
+                    basePoint?.let { point ->
+                        var insert = false
+                        when (point.state) {
+                            TelemetryState.MOVING, TelemetryState.STOPPING -> insert = true
+                            TelemetryState.PARKING -> insert = true
+                            else -> {
+                            }
+                        }
+                        if (insert) {
+                            preferences.blockingBulk {
+                                event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).apply {
+                                    lastEventTime = data.whenTime
+                                }
+                                packageId++
+                            }
+                        }
+                    }
+                }
+            }
+            event?.let {
+                db.locationDao().insert(it)
             }
             val lastEvent = db.locationDao().getLastSendEvent()
             /*preferences.isLoggedIn

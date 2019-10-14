@@ -76,7 +76,7 @@ class BasePoint(
         distance += space
         // getting only angle
         Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, output)
-        val angle = if (output[1] < 0) 360 - output[1] else output[1]
+        val angle = if (output[1] < 0) 360 + output[1] else output[1]
         baseDirection?.let {
             currentDirection = angle
         } ?: run {
