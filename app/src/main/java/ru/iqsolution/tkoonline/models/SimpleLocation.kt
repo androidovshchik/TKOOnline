@@ -16,6 +16,7 @@ open class SimpleLocation : Serializable, Location<Double> {
     var satellites = 0
 
     /**
+     * It's only needed for map
      * In meters
      */
     var accuracy = 0f

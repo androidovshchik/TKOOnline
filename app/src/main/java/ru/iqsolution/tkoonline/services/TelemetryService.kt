@@ -183,17 +183,25 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             satellites = satellitesCount
         }
         onLocationResult(newLocation)
-        basePoint?.apply {
-            updateLocation(newLocation)
-            replaceWith()?.let {
-                launch {
-                    withContext(Dispatchers.IO) {
-                        db.locationDao().insert(LocationEvent())
+        if (!isRunning) {
+            basePoint = null
+            return
+        }
+        basePoint?.let { point ->
+            point.updateLocation(newLocation)
+            point.replaceWith()?.let {
+                preferences.apply {
+                    val locationEvent = LocationEvent(point, tokenId, packageId, mileage)
+                    launch {
+                        withContext(Dispatchers.IO) {
+                            db.locationDao().insert(locationEvent)
+                        }
                     }
                 }
+                basePoint = BasePoint(newLocation, it)
             }
         } ?: run {
-            basePoint = BasePoint(location)
+            basePoint = BasePoint(newLocation)
         }
     }
 
