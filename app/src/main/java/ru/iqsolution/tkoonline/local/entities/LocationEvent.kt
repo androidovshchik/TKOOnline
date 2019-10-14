@@ -3,8 +3,9 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.models.BasePoint
+import kotlin.math.roundToInt
 
-// todo careful with initialization
 @Entity(
     tableName = "location_events",
     foreignKeys = [
@@ -20,7 +21,7 @@ import org.joda.time.DateTime
         Index(value = ["le_token_id"])
     ]
 )
-class LocationEvent : SendEvent {
+class LocationEvent() : SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "le_id")
@@ -44,12 +45,25 @@ class LocationEvent : SendEvent {
     @ColumnInfo(name = "le_sent")
     override var sent = false
 
-    /**
-     * Duplicates access token value
-     */
-    @Ignore
-    @SerializedName("auth_key")
-    var authKey: String? = null
+    constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Int) : this() {
+        tokenId = token
+        packageId = pckg
+        data = Data().apply {
+            // time is correct here
+            whenTime = DateTime.now()
+            basePoint.lastLocation.let {
+                locationTime = it.locationTime
+                latitude = it.latitude
+                longitude = it.longitude
+                altitude = it.altitude
+                validity = it.validity
+                satellites = it.satellites
+            }
+            speed = basePoint.lastSpeed
+            direction = basePoint.currentDirection.roundToInt()
+            mileage = distance
+        }
+    }
 
     class Data {
 
@@ -75,9 +89,9 @@ class LocationEvent : SendEvent {
         @SerializedName("lon")
         var longitude = 0.0
 
-        @ColumnInfo(name = "le_height")
+        @ColumnInfo(name = "le_altitude")
         @SerializedName("height")
-        var height = 0
+        var altitude = 0
 
         @ColumnInfo(name = "le_validity")
         @SerializedName("valid")
