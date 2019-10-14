@@ -101,11 +101,12 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         //factory.setUri(preferences.telemetryUri)
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
-            // background thread
+            // background thread here
             if (activityManager.getActivities(packageName) <= 0) {
                 isRunning = false
                 stopForeground(true)
                 stopSelf()
+                return@scheduleAtFixedRate
             }
             var event: LocationEvent? = null
             synchronized(lock) {
@@ -120,8 +121,8 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                         }
                         if (insert) {
                             preferences.blockingBulk {
-                                event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).apply {
-                                    lastEventTime = data.whenTime
+                                event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
+                                    lastEventTime = it.data.whenTime
                                 }
                                 packageId++
                             }
@@ -132,7 +133,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             event?.let {
                 db.locationDao().insert(it)
             }
-            val lastEvent = db.locationDao().getLastSendEvent()
+            val lastEvent = event ?: db.locationDao().getLastSendEvent()
             /*preferences.isLoggedIn
             lastEvents.forEach {
                 try {
@@ -210,6 +211,11 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
     }
 
     override fun onLocationChanged(location: Location, satellitesCount: Int) {
+        if (!BuildConfig.DEBUG) {
+            if (location.isFromMockProvider) {
+                isRunning = false
+            }
+        }
         val newLocation = SimpleLocation(location).apply {
             satellites = satellitesCount
         }
@@ -224,15 +230,15 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                     }
                     basePoint?.let { point ->
                         val space = point.updateLocation(newLocation)
-                        point.replaceWith()?.let {
+                        point.replaceWith()?.let { state ->
                             preferences.blockingBulk {
-                                event = LocationEvent(point, tokenId, packageId, (mileage + space).roundToInt()).apply {
-                                    lastEventTime = data.whenTime
+                                event = LocationEvent(point, tokenId, packageId, (mileage + space).roundToInt()).also {
+                                    lastEventTime = it.data.whenTime
                                 }
                                 packageId++
                                 mileage += space
                             }
-                            basePoint = BasePoint(newLocation, it)
+                            basePoint = BasePoint(newLocation, state)
                         }
                     } ?: run {
                         basePoint = BasePoint(newLocation)
@@ -241,7 +247,6 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                 event?.let {
                     db.locationDao().insert(it)
                 }
-                Timber.d(basePoint?.toString())
             }
         }
     }
@@ -287,7 +292,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
 
     companion object {
 
-        private const val TIMER_INTERVAL = 2000L
+        private const val TIMER_INTERVAL = 1000L
 
         // Для состояния стоянка - 5 минут
         private const val PARKING_DELAY = 5 * 60_000L
