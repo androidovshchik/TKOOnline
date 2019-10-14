@@ -38,11 +38,13 @@ open class SimpleLocation : Serializable, Location<Double> {
             return 0
         }
 
-    constructor(lat: Double, lon: Double) {
+    constructor(lat: Double, lon: Double, datetime: DateTime) {
         latitude = lat
         longitude = lon
-        locationTime = DateTime.now()
+        locationTime = datetime
     }
+
+    constructor(lat: Double, lon: Double) : this(lat, lon, DateTime.now())
 
     constructor(lat: Float, lon: Float) : this(lat.toDouble(), lon.toDouble())
 

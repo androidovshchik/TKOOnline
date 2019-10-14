@@ -15,8 +15,10 @@ import kotlin.math.roundToInt
  * - за 30 секунд пройдет 83,3334 метра
  * - 200 метров пройдет за 72 секунды
  */
-class BasePoint(location: SimpleLocation, private val state: TelemetryState = TelemetryState.UNKNOWN) :
-    SimpleLocation(location.latitude, location.longitude) {
+class BasePoint(
+    location: SimpleLocation,
+    private val state: TelemetryState = TelemetryState.UNKNOWN
+) : SimpleLocation(location.latitude, location.longitude, location.locationTime) {
 
     /**
      * Last known location
@@ -52,6 +54,7 @@ class BasePoint(location: SimpleLocation, private val state: TelemetryState = Te
 
     init {
         altitude = location.altitude
+        satellites = location.satellites
         accuracy = location.accuracy
     }
 
