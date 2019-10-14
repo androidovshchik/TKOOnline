@@ -21,6 +21,9 @@ class BasePoint(
     private val state: TelemetryState = TelemetryState.UNKNOWN
 ) : SimpleLocation(location) {
 
+    /**
+     * Last known location
+     */
     var lastLocation: SimpleLocation = this
 
     /**
@@ -75,15 +78,12 @@ class BasePoint(
             baseDirection = angle
             currentDirection = angle
         }
-        val now = DateTime.now()
-        val seconds = (now.millis - locationTime.withZone(now.zone).millis) / 1000
-        if (seconds <= 0) {
-            return 0 to 0
-        }
-        seconds.toInt() to (distance / seconds * MS2KMH).roundToInt()
-        val now = DateTime.now()
-        val delay = Duration(locationTime, location.locationTime).standardSeconds
-        val speed = space / Duration(lastLocation.locationTime, location.locationTime).standardSeconds
+        val seconds = Duration(locationTime, location.locationTime.withZone(locationTime.zone)).standardSeconds.toInt()
+        val speed = MS2KMH * space / Duration(
+            lastLocation.locationTime,
+            location.locationTime.withZone(lastLocation.locationTime.zone)
+        ).standardSeconds
+        speedMap.put(seconds, speed.roundToInt())
         lastLocation = location
         return space
     }
