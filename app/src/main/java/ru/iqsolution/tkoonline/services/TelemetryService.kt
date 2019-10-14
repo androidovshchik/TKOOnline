@@ -16,10 +16,7 @@ import com.rabbitmq.client.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.activityManager
-import org.jetbrains.anko.powerManager
-import org.jetbrains.anko.startService
-import org.jetbrains.anko.stopService
+import org.jetbrains.anko.*
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
@@ -102,7 +99,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
             // background thread here
-            if (activityManager.getActivities(packageName) <= 0) {
+            if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
                 isRunning = false
                 stopForeground(true)
                 stopSelf()
@@ -137,13 +134,17 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                         }
                     }
                 } else {
+                    lastEventTime = null
                     basePoint = null
                 }
             }
             event?.let {
                 db.locationDao().insert(it)
+                //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
             }
-            val lastEvent = event ?: db.locationDao().getLastSendEvent()
+            db.locationDao().getLastSendEvent()?.let {
+
+            }
             /*preferences.isLoggedIn
             lastEvents.forEach {
                 try {
@@ -221,15 +222,16 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
     }
 
     override fun onLocationChanged(location: Location, satellitesCount: Int) {
-        if (!BuildConfig.DEBUG) {
-            if (location.isFromMockProvider) {
-                isRunning = false
-            }
-        }
         val newLocation = SimpleLocation(location).apply {
             satellites = satellitesCount
         }
         onLocationResult(newLocation)
+        if (!BuildConfig.DEBUG) {
+            if (location.isFromMockProvider) {
+                toast("Отключите эмуляцию местоположения")
+                return
+            }
+        }
         launch {
             withContext(Dispatchers.IO) {
                 var event: LocationEvent? = null
@@ -238,6 +240,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                         basePoint?.let { point ->
                             val space = point.updateLocation(newLocation)
                             point.replaceWith()?.let { state ->
+                                Timber.d("Current state is $state")
                                 preferences.blockingBulk {
                                     val distance = if (state != TelemetryState.PARKING) mileage + space else mileage
                                     event = LocationEvent(point, tokenId, packageId, distance.roundToInt()).also {
@@ -254,6 +257,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                             basePoint = BasePoint(newLocation)
                         }
                     } else {
+                        lastEventTime = null
                         basePoint = null
                     }
                 }
@@ -305,7 +309,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
 
     companion object {
 
-        private const val TIMER_INTERVAL = 1000L
+        private const val TIMER_INTERVAL = 1500L
 
         // Для состояния стоянка - 5 минут
         private const val PARKING_DELAY = 5 * 60_000L
