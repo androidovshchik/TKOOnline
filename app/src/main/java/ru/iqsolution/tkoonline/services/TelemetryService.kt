@@ -110,30 +110,34 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             }
             var event: LocationEvent? = null
             synchronized(lock) {
-                lastEventTime?.let { lastTime ->
-                    basePoint?.let { point ->
-                        var addEvent = false
-                        when (point.state) {
-                            TelemetryState.MOVING, TelemetryState.STOPPING -> {
-                                val now = DateTime.now()
-                                addEvent = now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY
-                            }
-                            TelemetryState.PARKING -> {
-                                val now = DateTime.now()
-                                addEvent = now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY
-                            }
-                            else -> {
-                            }
-                        }
-                        if (addEvent) {
-                            preferences.blockingBulk {
-                                event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
-                                    lastEventTime = it.data.whenTime
+                if (isRunning) {
+                    lastEventTime?.let { lastTime ->
+                        basePoint?.let { point ->
+                            var addEvent = false
+                            when (point.state) {
+                                TelemetryState.MOVING, TelemetryState.STOPPING -> {
+                                    val now = DateTime.now()
+                                    addEvent = now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY
                                 }
-                                packageId++
+                                TelemetryState.PARKING -> {
+                                    val now = DateTime.now()
+                                    addEvent = now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY
+                                }
+                                else -> {
+                                }
+                            }
+                            if (addEvent) {
+                                preferences.blockingBulk {
+                                    event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
+                                        lastEventTime = it.data.whenTime
+                                    }
+                                    packageId++
+                                }
                             }
                         }
                     }
+                } else {
+                    basePoint = null
                 }
             }
             event?.let {
@@ -230,27 +234,27 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             withContext(Dispatchers.IO) {
                 var event: LocationEvent? = null
                 synchronized(lock) {
-                    if (!isRunning) {
-                        basePoint = null
-                        return@withContext
-                    }
-                    basePoint?.let { point ->
-                        val space = point.updateLocation(newLocation)
-                        point.replaceWith()?.let { state ->
-                            preferences.blockingBulk {
-                                val distance = if (state != TelemetryState.PARKING) mileage + space else mileage
-                                event = LocationEvent(point, tokenId, packageId, distance.roundToInt()).also {
-                                    lastEventTime = it.data.whenTime
+                    if (isRunning) {
+                        basePoint?.let { point ->
+                            val space = point.updateLocation(newLocation)
+                            point.replaceWith()?.let { state ->
+                                preferences.blockingBulk {
+                                    val distance = if (state != TelemetryState.PARKING) mileage + space else mileage
+                                    event = LocationEvent(point, tokenId, packageId, distance.roundToInt()).also {
+                                        lastEventTime = it.data.whenTime
+                                    }
+                                    packageId++
+                                    if (state != TelemetryState.PARKING) {
+                                        mileage = distance
+                                    }
                                 }
-                                packageId++
-                                if (state != TelemetryState.PARKING) {
-                                    mileage = distance
-                                }
+                                basePoint = BasePoint(newLocation, state)
                             }
-                            basePoint = BasePoint(newLocation, state)
+                        } ?: run {
+                            basePoint = BasePoint(newLocation)
                         }
-                    } ?: run {
-                        basePoint = BasePoint(newLocation)
+                    } else {
+                        basePoint = null
                     }
                 }
                 event?.let {
