@@ -150,7 +150,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             db.locationDao().getLastSendEvent()?.let {
                 //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
             }
-            /*preferences.isLoggedIn
+            /*
             lastEvents.forEach {
                 try {
                     factory.apply {
@@ -250,7 +250,14 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                                 point.replaceWith()?.let { state ->
                                     Timber.i("Replace state with $state")
                                     event =
-                                        LocationEvent(point, tokenId, packageId, distance.roundToInt(), false).also {
+                                        LocationEvent(
+                                            point,
+                                            tokenId,
+                                            packageId,
+                                            distance.roundToInt(),
+                                            false,
+                                            state
+                                        ).also {
                                         lastEventTime = it.data.whenTime
                                     }
                                     packageId++

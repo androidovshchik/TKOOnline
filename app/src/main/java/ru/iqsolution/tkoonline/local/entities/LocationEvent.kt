@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.LOCATION_INTERVAL
 import ru.iqsolution.tkoonline.models.BasePoint
+import ru.iqsolution.tkoonline.models.TelemetryState
 import kotlin.math.roundToInt
 
 @Entity(
@@ -52,10 +53,17 @@ class LocationEvent() : SendEvent {
     @ColumnInfo(name = "le_sent")
     override var sent = false
 
-    constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Int, wait: Boolean) : this() {
+    constructor(
+        basePoint: BasePoint,
+        token: Long,
+        pckg: Int,
+        distance: Int,
+        wait: Boolean,
+        state: TelemetryState = basePoint.state
+    ) : this() {
         tokenId = token
         packageId = pckg
-        event = basePoint.state.name
+        event = state.name
         waiting = wait
         data = Data().apply {
             // time is correct here
