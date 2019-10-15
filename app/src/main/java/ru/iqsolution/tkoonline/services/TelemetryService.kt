@@ -107,7 +107,6 @@ class TelemetryService : BaseService(), TelemetryListener {
         timer = executor.scheduleAtFixedRate({
             // background thread here
             if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
-                stopTelemetry()
                 stopForeground(true)
                 stopSelf()
                 return@scheduleAtFixedRate
@@ -146,9 +145,6 @@ class TelemetryService : BaseService(), TelemetryListener {
                             }
                         }
                     }
-                } else {
-                    lastEventTime = null
-                    basePoint = null
                 }
             }
             event?.let {
@@ -163,48 +159,36 @@ class TelemetryService : BaseService(), TelemetryListener {
                             username = it.token.carId.toString()
                             password = it.token.token
                             closeConnection()
-                            connection = factory.newConnection()
-                            channel = connection?.createChannel()
-                            channel?.exchangeDeclare("cars", "direct", true)
-                            channel.queueBind(it.token.queName, "cars", routingKey)
-                        }
-                    }
-                    val consumer = object : DefaultConsumer() {
-
-                        override fun handleDelivery(
-                            consumerTag: String?,
-                            envelope: Envelope?,
-                            properties: AMQP.BasicProperties?,
-                            body: ByteArray?
-                        ) {
-                            Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
-                            //channel?.basicAck(envelope?.getDeliveryTag(), false)
-                            //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-                            consumerTag?.let {
-                                try {
-                                    channel?.basicCancel(it)
-                                } catch (e: Throwable) {
-                                    Timber.e(e)
+                            connection = factory.newConnection().apply {
+                                channel = createChannel().apply {
+                                    exchangeDeclare("cars", "direct", true)
+                                    queueBind(it.token.queName, "cars", "main")
                                 }
                             }
-                        }
-                    }
-                    consumerTag = channel?.basicConsume(it.token.queName, true, this)
-                    channel.basicPublish("cars", QUEUE_NAME, null, gson.toJson(it.location).toByteArray(Charsets.UTF_8))
+                            val consumer = object : DefaultConsumer() {
 
-                    consumerTag?.let {
-                        try {
-                            channel?.basicCancel(it)
-                        } catch (e: Throwable) {
-                            Timber.e(e)
+                                override fun handleDelivery(
+                                    consumerTag: String?,
+                                    envelope: Envelope?,
+                                    properties: AMQP.BasicProperties?,
+                                    body: ByteArray?
+                                ) {
+                                    Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
+                                    //channel?.basicAck(envelope?.getDeliveryTag(), false)
+                                    //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+                                    consumerTag?.let {
+                                        try {
+                                            channel?.basicCancel(it)
+                                        } catch (e: Throwable) {
+                                            Timber.e(e)
+                                        }
+                                    }
+                                }
+                            }
+                            consumerTag = channel?.basicConsume(it.token.queName, true, this)
                         }
                     }
-                    try {
-                        channel?.close()
-                    } catch (e: Throwable) {
-                        Timber.e(e)
-                    }
-                    connection?.abort()
+                    channel?.basicPublish("cars", "main", null, gson.toJson(it.location).toByteArray(Charsets.UTF_8))
                 } catch (e: Throwable) {
                     Timber.e(e)
                 }
@@ -231,8 +215,12 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun stopTelemetry() {
-        isRunning = false
         locationManager.removeUpdates()
+        synchronized(lock) {
+            isRunning = false
+            lastEventTime = null
+            basePoint = null
+        }
     }
 
     @SuppressLint("WakelockTimeout")
@@ -272,8 +260,9 @@ class TelemetryService : BaseService(), TelemetryListener {
                         if (point != null) {
                             preferences.blockingBulk {
                                 val space = point.updateLocation(newLocation)
-                                val distance = mileage + space
-                                // todo distance
+                                val distance = if (point.state != TelemetryState.PARKING) {
+                                    mileage + space
+                                } else mileage
                                 point.replaceWith()?.let { state ->
                                     Timber.i("Replace state with $state")
                                     event = LocationEvent(
@@ -296,9 +285,6 @@ class TelemetryService : BaseService(), TelemetryListener {
                         } else {
                             basePoint = BasePoint(newLocation)
                         }
-                    } else {
-                        lastEventTime = null
-                        basePoint = null
                     }
                 }
                 event?.let {
