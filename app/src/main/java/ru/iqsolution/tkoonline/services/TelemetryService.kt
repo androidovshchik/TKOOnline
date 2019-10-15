@@ -249,15 +249,14 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                                 val distance = mileage + space
                                 point.replaceWith()?.let { state ->
                                     Timber.i("Replace state with $state")
-                                    event =
-                                        LocationEvent(
-                                            point,
-                                            tokenId,
-                                            packageId,
-                                            distance.roundToInt(),
-                                            false,
-                                            state
-                                        ).also {
+                                    event = LocationEvent(
+                                        point,
+                                        tokenId,
+                                        packageId,
+                                        distance.roundToInt(),
+                                        false,
+                                        state
+                                    ).also {
                                         lastEventTime = it.data.whenTime
                                     }
                                     packageId++
