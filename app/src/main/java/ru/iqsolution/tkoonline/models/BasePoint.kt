@@ -99,20 +99,14 @@ class BasePoint(
             lastLocation.locationTime,
             location.locationTime.withZone(lastLocation.locationTime.zone)
         ).standardSeconds.absoluteValue
-        Timber.i("distance $distance")
-        Timber.i("allSeconds $allSeconds")
-        Timber.i("space $space")
-        Timber.i("lastSeconds $lastSeconds")
         speedMap.put(
             allSeconds.toInt(), if (lastSeconds > 0) {
                 (MS2KMH * space / lastSeconds).roundToInt()
             } else 0
         )
-        Timber.i(
-            "alternative speed ${if (lastSeconds > 0) {
-                (MS2KMH * distance / allSeconds).roundToInt()
-            } else 0}"
-        )
+        Timber.i("distance $distance")
+        Timber.i("space $space")
+        Timber.i("lastSeconds $lastSeconds")
         Timber.i(speedMap.toString())
         lastLocation = location
         return space
@@ -172,13 +166,9 @@ class BasePoint(
                 }
                 for (i in lastIndex downTo 0) {
                     if (keyAt(i) in (maxSeconds - limit)..maxSeconds) {
-                        val speed = valueAt(i)
-                        if (speed <= 0) {
-                            continue
-                        }
                         minSpeed = minSpeed?.let {
-                            min(it, speed)
-                        } ?: speed
+                            min(it, valueAt(i))
+                        } ?: valueAt(i)
                     } else {
                         break
                     }

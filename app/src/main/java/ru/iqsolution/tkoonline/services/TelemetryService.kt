@@ -109,7 +109,8 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             synchronized(lock) {
                 if (isRunning) {
                     lastEventTime?.let { lastTime ->
-                        basePoint?.let { point ->
+                        val point = basePoint
+                        if (point != null) {
                             var addEvent = false
                             when (point.state) {
                                 TelemetryState.MOVING, TelemetryState.STOPPING -> {
@@ -140,10 +141,9 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             }
             event?.let {
                 db.locationDao().insert(it)
-                //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
             }
             db.locationDao().getLastSendEvent()?.let {
-
+                //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
             }
             /*preferences.isLoggedIn
             lastEvents.forEach {
@@ -239,18 +239,20 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                     if (isRunning) {
                         val point = basePoint
                         if (point != null) {
-                            val space = point.updateLocation(newLocation)
-                            point.replaceWith()?.let { state ->
-                                Timber.i("Replace state with $state")
-                                preferences.blockingBulk {
-                                    val distance = mileage + space
+                            preferences.blockingBulk {
+                                val space = point.updateLocation(newLocation)
+                                val distance = mileage + space
+                                point.replaceWith()?.let { state ->
+                                    Timber.i("Replace state with $state")
                                     event = LocationEvent(point, tokenId, packageId, distance.roundToInt()).also {
                                         lastEventTime = it.data.whenTime
                                     }
                                     packageId++
+                                    basePoint = BasePoint(newLocation, state)
+                                }
+                                if (point.state != TelemetryState.PARKING) {
                                     mileage = distance
                                 }
-                                basePoint = BasePoint(newLocation, state)
                             }
                         } else {
                             basePoint = BasePoint(newLocation)
