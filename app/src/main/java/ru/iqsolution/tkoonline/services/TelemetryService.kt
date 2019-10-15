@@ -155,7 +155,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                     val user = it.token.carId.toString()
                     val pswd = it.token.token
                     factory.apply {
-                        if (username != user || password != pswd) {
+                        if (connection == null || channel == null || username != user || password != pswd) {
                             closeConnection()
                             username = it.token.carId.toString()
                             password = it.token.token
@@ -201,15 +201,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         body: ByteArray?
     ) {
         Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
-        //channel?.basicAck(envelope?.getDeliveryTag(), false)
         //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-        consumerTag?.let {
-            try {
-                channel?.basicCancel(it)
-            } catch (e: Throwable) {
-                Timber.e(e)
-            }
-        }
     }
 
     override fun handleRecoverOk(consumerTag: String?) {
