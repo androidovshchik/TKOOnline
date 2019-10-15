@@ -90,11 +90,9 @@ class TelemetryService : BaseService(), TelemetryListener {
                 .build()
         )
         acquireWakeLock()
-        isRunning = true
         broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
-        locationManager = LocationManager(applicationContext, this).also {
-            it.requestUpdates()
-        }
+        locationManager = LocationManager(applicationContext, this)
+        startTelemetry()
         factory.apply {
             val address = preferences.mainTelemetryAddress.split(":")
             host = address[0]
@@ -109,7 +107,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         timer = executor.scheduleAtFixedRate({
             // background thread here
             if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
-                isRunning = false
+                stopTelemetry()
                 stopForeground(true)
                 stopSelf()
                 return@scheduleAtFixedRate
@@ -158,18 +156,19 @@ class TelemetryService : BaseService(), TelemetryListener {
             }
             db.locationDao().getLastSendEvent()?.let {
                 try {
+                    val user = it.token.carId.toString()
+                    val pswd = it.token.token
                     factory.apply {
-                        val user = it.token.carId.toString()
-                        val pswd = it.token.token
-                        if (user != username || password != pswd) {
+                        if (username != user || password != pswd) {
                             username = it.token.carId.toString()
                             password = it.token.token
+                            closeConnection()
+                            connection = factory.newConnection()
+                            channel = connection?.createChannel()
+                            channel?.exchangeDeclare("cars", "direct", true)
+                            channel.queueBind(it.token.queName, "cars", routingKey)
                         }
                     }
-                    connection = factory.newConnection()
-                    channel = connection?.createChannel()
-                    channel?.exchangeDeclare("cars", "direct", true)
-                    channel.queueBind(it.token.queName, "cars", routingKey)
                     val consumer = object : DefaultConsumer() {
 
                         override fun handleDelivery(
@@ -216,10 +215,24 @@ class TelemetryService : BaseService(), TelemetryListener {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             if (it.hasExtra(EXTRA_TELEMETRY_TASK)) {
-                isRunning = it.getBooleanExtra(EXTRA_TELEMETRY_TASK, false)
+                if (it.getBooleanExtra(EXTRA_TELEMETRY_TASK, false)) {
+                    startTelemetry()
+                } else {
+                    stopTelemetry()
+                }
             }
         }
         return START_STICKY
+    }
+
+    override fun startTelemetry() {
+        isRunning = true
+        locationManager.requestUpdates()
+    }
+
+    override fun stopTelemetry() {
+        isRunning = false
+        locationManager.removeUpdates()
     }
 
     @SuppressLint("WakelockTimeout")
@@ -327,9 +340,9 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun onDestroy() {
+        stopTelemetry()
         timer?.cancel(true)
         closeConnection()
-        locationManager.removeUpdates()
         releaseWakeLock()
         super.onDestroy()
     }
