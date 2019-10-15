@@ -4,6 +4,7 @@ import android.location.Location
 import android.util.SparseIntArray
 import org.joda.time.DateTime
 import org.joda.time.Duration
+import timber.log.Timber
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -63,6 +64,8 @@ class BasePoint(
      * @return distance traveled in meters
      */
     fun updateLocation(location: SimpleLocation): Float {
+        Timber.i(";;;;;;;;;;;;;;;;;;;;;;")
+        Timber.i(state.toString())
         val output = FloatArray(2)
         // getting only distance
         Location.distanceBetween(
@@ -74,14 +77,19 @@ class BasePoint(
         )
         val space = output[0]
         distance += space
-        // getting only angle
-        Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, output)
-        val angle = if (output[1] < 0) 360 + output[1] else output[1]
-        baseDirection?.let {
-            currentDirection = angle
-        } ?: run {
-            baseDirection = angle
-            currentDirection = angle
+        if (state != TelemetryState.PARKING) {
+            // getting only angle
+            Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, output)
+            val angle = if (output[1] < 0) 360 + output[1] else output[1]
+            baseDirection?.let {
+                currentDirection = angle
+            } ?: run {
+                baseDirection = angle
+                currentDirection = angle
+            }
+        } else {
+            baseDirection = null
+            currentDirection = 0f
         }
         val allSeconds = Duration(
             locationTime,
@@ -91,11 +99,21 @@ class BasePoint(
             lastLocation.locationTime,
             location.locationTime.withZone(lastLocation.locationTime.zone)
         ).standardSeconds.absoluteValue
+        Timber.i("distance $distance")
+        Timber.i("allSeconds $allSeconds")
+        Timber.i("space $space")
+        Timber.i("lastSeconds $lastSeconds")
         speedMap.put(
             allSeconds.toInt(), if (lastSeconds > 0) {
                 (MS2KMH * space / lastSeconds).roundToInt()
             } else 0
         )
+        Timber.i(
+            "alternative speed ${if (lastSeconds > 0) {
+                (MS2KMH * distance / allSeconds).roundToInt()
+            } else 0}"
+        )
+        Timber.i(speedMap.toString())
         lastLocation = location
         return space
     }
@@ -108,6 +126,7 @@ class BasePoint(
             return TelemetryState.MOVING
         }
         getMinSpeed(MIN_TIME)?.let {
+            Timber.i("Min speed is $it")
             if (state != TelemetryState.MOVING) {
                 if (it > MIN_SPEED) {
                     return TelemetryState.MOVING
@@ -142,20 +161,24 @@ class BasePoint(
         return null
     }
 
-    private fun getMinSpeed(range: Int): Int? {
+    private fun getMinSpeed(limit: Int): Int? {
         var minSpeed: Int? = null
         speedMap.apply {
             if (size() > 0) {
                 val lastIndex = size() - 1
                 val maxSeconds = keyAt(lastIndex)
-                if (maxSeconds < range) {
+                if (maxSeconds < limit) {
                     return null
                 }
                 for (i in lastIndex downTo 0) {
-                    if (keyAt(i) in (maxSeconds - range)..maxSeconds) {
+                    if (keyAt(i) in (maxSeconds - limit)..maxSeconds) {
+                        val speed = valueAt(i)
+                        if (speed <= 0) {
+                            continue
+                        }
                         minSpeed = minSpeed?.let {
-                            min(it, valueAt(i))
-                        } ?: valueAt(i)
+                            min(it, speed)
+                        } ?: speed
                     } else {
                         break
                     }

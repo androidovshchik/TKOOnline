@@ -241,7 +241,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                         if (point != null) {
                             val space = point.updateLocation(newLocation)
                             point.replaceWith()?.let { state ->
-                                Timber.e("Replace state with $state")
+                                Timber.i("Replace state with $state")
                                 preferences.blockingBulk {
                                     val distance = mileage + space
                                     event = LocationEvent(point, tokenId, packageId, distance.roundToInt()).also {
