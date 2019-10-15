@@ -99,11 +99,13 @@ class BasePoint(
             lastLocation.locationTime,
             location.locationTime.withZone(lastLocation.locationTime.zone)
         ).standardSeconds.absoluteValue
-        speedMap.put(
-            allSeconds.toInt(), if (lastSeconds > 0) {
-                (MS2KMH * space / lastSeconds).roundToInt()
-            } else 0
-        )
+        if (allSeconds > 0) {
+            speedMap.put(
+                allSeconds.toInt(), if (lastSeconds > 0) {
+                    (MS2KMH * space / lastSeconds).roundToInt()
+                } else 0
+            )
+        }
         Timber.i("distance $distance")
         Timber.i("space $space")
         Timber.i("lastSeconds $lastSeconds")

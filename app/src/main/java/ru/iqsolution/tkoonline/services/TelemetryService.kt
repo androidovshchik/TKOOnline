@@ -111,20 +111,25 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                     lastEventTime?.let { lastTime ->
                         val point = basePoint
                         if (point != null) {
-                            var addEvent = false
+                            var delay = 0L
                             when (point.state) {
                                 TelemetryState.MOVING, TelemetryState.STOPPING -> {
                                     val now = DateTime.now()
-                                    addEvent = now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY
+                                    if (now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY) {
+                                        delay = MOVING_DELAY
+                                    }
                                 }
                                 TelemetryState.PARKING -> {
                                     val now = DateTime.now()
-                                    addEvent = now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY
+                                    if (now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY) {
+                                        delay = PARKING_DELAY
+                                    }
                                 }
                                 else -> {
                                 }
                             }
-                            if (addEvent) {
+                            if (delay > 0L) {
+                                Timber.i("Inserting event after delay $delay")
                                 preferences.blockingBulk {
                                     event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
                                         lastEventTime = it.data.whenTime
