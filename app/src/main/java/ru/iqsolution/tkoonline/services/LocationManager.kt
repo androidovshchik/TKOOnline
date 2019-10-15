@@ -9,7 +9,6 @@ import android.location.LocationProvider
 import android.os.Bundle
 import org.jetbrains.anko.locationManager
 import ru.iqsolution.tkoonline.LOCATION_INTERVAL
-import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @SuppressLint("MissingPermission")
@@ -60,13 +59,9 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
         reference.get()?.onLocationChanged(location, satellitesCount)
     }
 
-    override fun onProviderEnabled(provider: String) {
-        Timber.d("onProviderEnabled $provider")
-    }
+    override fun onProviderEnabled(provider: String) {}
 
-    override fun onProviderDisabled(provider: String) {
-        Timber.d("onProviderDisabled $provider")
-    }
+    override fun onProviderDisabled(provider: String) {}
 
     fun removeUpdates() {
         locationClient.unregisterGnssStatusCallback(gnssCallback)

@@ -64,8 +64,7 @@ class BasePoint(
      * @return distance traveled in meters
      */
     fun updateLocation(location: SimpleLocation): Float {
-        Timber.i(";;;;;;;;;;;;;;;;;;;;;;")
-        Timber.i(state.toString())
+        Timber.i("----- $state")
         val output = FloatArray(2)
         // getting only distance
         Location.distanceBetween(
@@ -91,24 +90,24 @@ class BasePoint(
             baseDirection = null
             currentDirection = 0f
         }
-        val allSeconds = Duration(
+        val seconds = Duration(
             locationTime,
             location.locationTime.withZone(locationTime.zone)
         ).standardSeconds.absoluteValue
-        val lastSeconds = Duration(
+        val millis = Duration(
             lastLocation.locationTime,
             location.locationTime.withZone(lastLocation.locationTime.zone)
-        ).standardSeconds.absoluteValue
-        if (allSeconds > 0) {
+        ).millis.absoluteValue
+        if (seconds > 0) {
             speedMap.put(
-                allSeconds.toInt(), if (lastSeconds > 0) {
-                    (MS2KMH * space / lastSeconds).roundToInt()
+                seconds.toInt(), if (millis > 0) {
+                    (MMS2KMH * space / millis).roundToInt()
                 } else 0
             )
         }
         Timber.i("distance $distance")
         Timber.i("space $space")
-        Timber.i("lastSeconds $lastSeconds")
+        Timber.i("millis $millis")
         Timber.i(speedMap.toString())
         lastLocation = location
         return space
@@ -172,7 +171,7 @@ class BasePoint(
                             min(it, valueAt(i))
                         } ?: valueAt(i)
                     } else {
-                        break
+                        removeAt(i)
                     }
                 }
             }
@@ -194,7 +193,7 @@ class BasePoint(
 
     companion object {
 
-        private const val MS2KMH = 3.6f
+        private const val MMS2KMH = 3600f
 
         /**
          * Событие стоянка
