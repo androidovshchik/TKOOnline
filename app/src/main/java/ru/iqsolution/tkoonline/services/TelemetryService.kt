@@ -12,7 +12,9 @@ import com.chibatching.kotpref.blockingBulk
 import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
-import com.rabbitmq.client.*
+import com.rabbitmq.client.Channel
+import com.rabbitmq.client.Connection
+import com.rabbitmq.client.ConnectionFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -44,7 +46,7 @@ import kotlin.math.roundToInt
  * · Для состояния движения и остановка - 1 минута
  */
 // https://www.rabbitmq.com/api-guide.html
-class TelemetryService : BaseService(), Consumer, TelemetryListener {
+class TelemetryService : BaseService(), TelemetryListener {
 
     val db: Database by instance()
 
@@ -161,14 +163,23 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                             password = it.token.token
                             connection = factory.newConnection().apply {
                                 channel = createChannel().apply {
-                                    exchangeDeclare("cars", "direct", true)
-                                    queueBind(it.token.queName, "cars", "main")
+                                    Timber.e(user)
+                                    Timber.e(pswd)
                                 }
                             }
-                            channel?.basicConsume(it.token.queName, true, this@TelemetryService)
                         }
                     }
-                    channel?.basicPublish("cars", "main", null, gson.toJson(it.location).toByteArray(Charsets.UTF_8))
+                    channel?.apply {
+                        txSelect()
+                        channel?.basicPublish(
+                            "cars",
+                            it.token.carId.toString(),
+                            null,
+                            gson.toJson(it.location).toByteArray(Charsets.UTF_8)
+                        )
+                        txCommit()
+                    }
+                    //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
                 } catch (e: Throwable) {
                     Timber.e(e)
                 }
@@ -192,37 +203,6 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
     override fun startTelemetry() {
         isRunning = true
         locationManager.requestUpdates()
-    }
-
-    override fun handleDelivery(
-        consumerTag: String?,
-        envelope: Envelope?,
-        properties: AMQP.BasicProperties?,
-        body: ByteArray?
-    ) {
-        Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
-        //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-    }
-
-    override fun handleRecoverOk(consumerTag: String?) {
-        Timber.d("handleRecoverOk $consumerTag")
-    }
-
-    override fun handleConsumeOk(consumerTag: String?) {
-        Timber.d("handleConsumeOk $consumerTag")
-    }
-
-    override fun handleShutdownSignal(consumerTag: String?, sig: ShutdownSignalException?) {
-        Timber.e("handleShutdownSignal $consumerTag")
-        Timber.e(sig)
-    }
-
-    override fun handleCancel(consumerTag: String?) {
-        Timber.d("handleCancel $consumerTag")
-    }
-
-    override fun handleCancelOk(consumerTag: String?) {
-        Timber.d("handleCancelOk $consumerTag")
     }
 
     override fun stopTelemetry() {
