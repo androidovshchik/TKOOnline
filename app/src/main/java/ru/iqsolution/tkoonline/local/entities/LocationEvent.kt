@@ -58,9 +58,9 @@ class LocationEvent() : SendEvent {
         token: Long,
         pckg: Int,
         distance: Int,
-        wait: Boolean = true,
         // may be another on fun call
-        state: TelemetryState = basePoint.state
+        state: TelemetryState = basePoint.state,
+        wait: Boolean = true
     ) : this() {
         tokenId = token
         packageId = pckg

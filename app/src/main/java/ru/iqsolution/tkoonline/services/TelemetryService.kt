@@ -44,7 +44,7 @@ import kotlin.math.roundToInt
  * · Для состояния движения и остановка - 1 минута
  */
 // https://www.rabbitmq.com/api-guide.html
-class TelemetryService : BaseService(), TelemetryListener {
+class TelemetryService : BaseService(), Consumer, TelemetryListener {
 
     val db: Database by instance()
 
@@ -156,36 +156,16 @@ class TelemetryService : BaseService(), TelemetryListener {
                     val pswd = it.token.token
                     factory.apply {
                         if (username != user || password != pswd) {
+                            closeConnection()
                             username = it.token.carId.toString()
                             password = it.token.token
-                            closeConnection()
                             connection = factory.newConnection().apply {
                                 channel = createChannel().apply {
                                     exchangeDeclare("cars", "direct", true)
                                     queueBind(it.token.queName, "cars", "main")
                                 }
                             }
-                            val consumer = object : DefaultConsumer() {
-
-                                override fun handleDelivery(
-                                    consumerTag: String?,
-                                    envelope: Envelope?,
-                                    properties: AMQP.BasicProperties?,
-                                    body: ByteArray?
-                                ) {
-                                    Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
-                                    //channel?.basicAck(envelope?.getDeliveryTag(), false)
-                                    //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-                                    consumerTag?.let {
-                                        try {
-                                            channel?.basicCancel(it)
-                                        } catch (e: Throwable) {
-                                            Timber.e(e)
-                                        }
-                                    }
-                                }
-                            }
-                            consumerTag = channel?.basicConsume(it.token.queName, true, this)
+                            channel?.basicConsume(it.token.queName, true, this@TelemetryService)
                         }
                     }
                     channel?.basicPublish("cars", "main", null, gson.toJson(it.location).toByteArray(Charsets.UTF_8))
@@ -214,10 +194,49 @@ class TelemetryService : BaseService(), TelemetryListener {
         locationManager.requestUpdates()
     }
 
+    override fun handleDelivery(
+        consumerTag: String?,
+        envelope: Envelope?,
+        properties: AMQP.BasicProperties?,
+        body: ByteArray?
+    ) {
+        Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
+        //channel?.basicAck(envelope?.getDeliveryTag(), false)
+        //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+        consumerTag?.let {
+            try {
+                channel?.basicCancel(it)
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
+        }
+    }
+
+    override fun handleRecoverOk(consumerTag: String?) {
+        Timber.d("handleRecoverOk $consumerTag")
+    }
+
+    override fun handleConsumeOk(consumerTag: String?) {
+        Timber.d("handleConsumeOk $consumerTag")
+    }
+
+    override fun handleShutdownSignal(consumerTag: String?, sig: ShutdownSignalException?) {
+        Timber.e("handleShutdownSignal $consumerTag")
+        Timber.e(sig)
+    }
+
+    override fun handleCancel(consumerTag: String?) {
+        Timber.d("handleCancel $consumerTag")
+    }
+
+    override fun handleCancelOk(consumerTag: String?) {
+        Timber.d("handleCancelOk $consumerTag")
+    }
+
     override fun stopTelemetry() {
+        isRunning = false
         locationManager.removeUpdates()
         synchronized(lock) {
-            isRunning = false
             lastEventTime = null
             basePoint = null
         }
@@ -270,8 +289,8 @@ class TelemetryService : BaseService(), TelemetryListener {
                                         tokenId,
                                         packageId,
                                         distance.roundToInt(),
-                                        false,
-                                        state
+                                        state,
+                                        false
                                     ).also {
                                         lastEventTime = it.data.whenTime
                                     }
