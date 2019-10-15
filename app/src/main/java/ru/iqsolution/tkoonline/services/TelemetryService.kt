@@ -162,16 +162,15 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             db.locationDao().getLastSendEvent()?.let {
                 try {
                     factory.apply {
-                        username
                         username = it.token.carId.toString()
                         password = it.token.token
                     }
                     connection = factory.newConnection()
-                    connection?.clearBlockedListeners()
                     channel = connection?.createChannel()
                     channel?.exchangeDeclare("cars", "direct", true)
+                    channel.queueBind(it.token.queName, "cars", routingKey)
                     consumerTag = channel?.basicConsume(it.token.queName, true, this)
-                    channel.basicPublish("", QUEUE_NAME, null,)
+                    channel.basicPublish("cars", QUEUE_NAME, null, gson.toJson(it.location).toByteArray(Charsets.UTF_8))
                 } catch (e: Throwable) {
                     Timber.e(e)
                 }
@@ -186,6 +185,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         body: ByteArray?
     ) {
         Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
+        channel?.basicAck(envelope?.getDeliveryTag(), false)
         //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
     }
 
