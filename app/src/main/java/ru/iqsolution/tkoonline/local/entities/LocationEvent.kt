@@ -58,7 +58,8 @@ class LocationEvent() : SendEvent {
         token: Long,
         pckg: Int,
         distance: Int,
-        wait: Boolean,
+        wait: Boolean = true,
+        // may be another on fun call
         state: TelemetryState = basePoint.state
     ) : this() {
         tokenId = token
@@ -77,7 +78,9 @@ class LocationEvent() : SendEvent {
                 satellites = it.satellites
             }
             speed = basePoint.lastSpeed
-            direction = basePoint.currentDirection.roundToInt()
+            direction = if (state != TelemetryState.PARKING) {
+                basePoint.currentDirection.roundToInt()
+            } else 0
             mileage = distance
         }
     }

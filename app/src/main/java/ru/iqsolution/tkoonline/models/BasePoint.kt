@@ -76,19 +76,14 @@ class BasePoint(
         )
         val space = output[0]
         distance += space
-        if (state != TelemetryState.PARKING) {
-            // getting only angle
-            Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, output)
-            val angle = if (output[1] < 0) 360 + output[1] else output[1]
-            baseDirection?.let {
-                currentDirection = angle
-            } ?: run {
-                baseDirection = angle
-                currentDirection = angle
-            }
-        } else {
-            baseDirection = null
-            currentDirection = 0f
+        // getting only angle
+        Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, output)
+        val angle = if (output[1] < 0) 360 + output[1] else output[1]
+        baseDirection?.let {
+            currentDirection = angle
+        } ?: run {
+            baseDirection = angle
+            currentDirection = angle
         }
         val seconds = Duration(
             locationTime,
@@ -156,17 +151,17 @@ class BasePoint(
         return null
     }
 
-    private fun getMinSpeed(limit: Int): Int? {
+    private fun getMinSpeed(interval: Int): Int? {
         var minSpeed: Int? = null
         speedMap.apply {
             if (size() > 0) {
                 val lastIndex = size() - 1
                 val maxSeconds = keyAt(lastIndex)
-                if (maxSeconds < limit) {
+                if (interval > maxSeconds) {
                     return null
                 }
                 for (i in lastIndex downTo 0) {
-                    if (keyAt(i) in (maxSeconds - limit)..maxSeconds) {
+                    if (keyAt(i) in (maxSeconds - interval)..maxSeconds) {
                         minSpeed = minSpeed?.let {
                             min(it, valueAt(i))
                         } ?: valueAt(i)

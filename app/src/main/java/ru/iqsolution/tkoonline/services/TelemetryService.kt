@@ -44,7 +44,7 @@ import kotlin.math.roundToInt
  * · Для состояния движения и остановка - 1 минута
  */
 // https://www.rabbitmq.com/api-guide.html
-class TelemetryService : BaseService(), Consumer, TelemetryListener {
+class TelemetryService : BaseService(), TelemetryListener {
 
     val db: Database by instance()
 
@@ -65,9 +65,6 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
     private var connection: Connection? = null
 
     private var channel: Channel? = null
-
-    @Volatile
-    private var consumerTag: String? = null
 
     @Volatile
     private var isRunning = false
@@ -143,7 +140,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                             if (delay > 0L) {
                                 Timber.i("Inserting event after delay $delay")
                                 preferences.blockingBulk {
-                                    event = LocationEvent(point, tokenId, packageId, mileage.roundToInt(), true).also {
+                                    event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
                                         lastEventTime = it.data.whenTime
                                     }
                                     packageId++
@@ -162,52 +159,58 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
             db.locationDao().getLastSendEvent()?.let {
                 try {
                     factory.apply {
-                        username = it.token.carId.toString()
-                        password = it.token.token
+                        val user = it.token.carId.toString()
+                        val pswd = it.token.token
+                        if (user != username || password != pswd) {
+                            username = it.token.carId.toString()
+                            password = it.token.token
+                        }
                     }
                     connection = factory.newConnection()
                     channel = connection?.createChannel()
                     channel?.exchangeDeclare("cars", "direct", true)
                     channel.queueBind(it.token.queName, "cars", routingKey)
+                    val consumer = object : DefaultConsumer() {
+
+                        override fun handleDelivery(
+                            consumerTag: String?,
+                            envelope: Envelope?,
+                            properties: AMQP.BasicProperties?,
+                            body: ByteArray?
+                        ) {
+                            Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
+                            //channel?.basicAck(envelope?.getDeliveryTag(), false)
+                            //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+                            consumerTag?.let {
+                                try {
+                                    channel?.basicCancel(it)
+                                } catch (e: Throwable) {
+                                    Timber.e(e)
+                                }
+                            }
+                        }
+                    }
                     consumerTag = channel?.basicConsume(it.token.queName, true, this)
                     channel.basicPublish("cars", QUEUE_NAME, null, gson.toJson(it.location).toByteArray(Charsets.UTF_8))
+
+                    consumerTag?.let {
+                        try {
+                            channel?.basicCancel(it)
+                        } catch (e: Throwable) {
+                            Timber.e(e)
+                        }
+                    }
+                    try {
+                        channel?.close()
+                    } catch (e: Throwable) {
+                        Timber.e(e)
+                    }
+                    connection?.abort()
                 } catch (e: Throwable) {
                     Timber.e(e)
                 }
             }
         }, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS)
-    }
-
-    override fun handleDelivery(
-        consumerTag: String?,
-        envelope: Envelope?,
-        properties: AMQP.BasicProperties?,
-        body: ByteArray?
-    ) {
-        Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
-        channel?.basicAck(envelope?.getDeliveryTag(), false)
-        //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-    }
-
-    override fun handleRecoverOk(consumerTag: String?) {
-        Timber.d("handleRecoverOk $consumerTag")
-    }
-
-    override fun handleConsumeOk(consumerTag: String?) {
-        Timber.d("handleConsumeOk $consumerTag")
-    }
-
-    override fun handleShutdownSignal(consumerTag: String?, sig: ShutdownSignalException?) {
-        Timber.e("handleShutdownSignal $consumerTag")
-        Timber.e(sig)
-    }
-
-    override fun handleCancel(consumerTag: String?) {
-        Timber.d("handleCancel $consumerTag")
-    }
-
-    override fun handleCancelOk(consumerTag: String?) {
-        Timber.d("handleCancelOk $consumerTag")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -257,6 +260,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                             preferences.blockingBulk {
                                 val space = point.updateLocation(newLocation)
                                 val distance = mileage + space
+                                // todo distance
                                 point.replaceWith()?.let { state ->
                                     Timber.i("Replace state with $state")
                                     event = LocationEvent(
@@ -310,19 +314,16 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
     }
 
     private fun closeConnection() {
-        consumerTag?.let {
-            try {
-                channel?.basicCancel(it)
-            } catch (e: Throwable) {
-                Timber.e(e)
-            }
-        }
         try {
             channel?.close()
         } catch (e: Throwable) {
             Timber.e(e)
         }
-        connection?.abort()
+        try {
+            connection?.close()
+        } catch (e: Throwable) {
+            Timber.e(e)
+        }
     }
 
     override fun onDestroy() {
