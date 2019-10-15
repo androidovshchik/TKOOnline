@@ -237,28 +237,22 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                 var event: LocationEvent? = null
                 synchronized(lock) {
                     if (isRunning) {
-                        basePoint?.let { point ->
-                            var space = 0f
-                            if (point.state != TelemetryState.PARKING) {
-                                space = point.updateLocation(newLocation)
-                            }
+                        val point = basePoint
+                        if (point != null) {
+                            val space = point.updateLocation(newLocation)
                             point.replaceWith()?.let { state ->
-                                Timber.d("Replace state with $state")
+                                Timber.e("Replace state with $state")
                                 preferences.blockingBulk {
-                                    val distance = if (state != TelemetryState.PARKING) {
-                                        mileage + space
-                                    } else mileage
+                                    val distance = mileage + space
                                     event = LocationEvent(point, tokenId, packageId, distance.roundToInt()).also {
                                         lastEventTime = it.data.whenTime
                                     }
                                     packageId++
-                                    if (state != TelemetryState.PARKING) {
-                                        mileage = distance
-                                    }
+                                    mileage = distance
                                 }
                                 basePoint = BasePoint(newLocation, state)
                             }
-                        } ?: run {
+                        } else {
                             basePoint = BasePoint(newLocation)
                         }
                     } else {
