@@ -43,12 +43,20 @@ class LocationEvent() : SendEvent {
     @SerializedName("data")
     lateinit var data: Data
 
+    @ColumnInfo(name = "le_event")
+    lateinit var event: String
+
+    @ColumnInfo(name = "le_wait")
+    var waiting = false
+
     @ColumnInfo(name = "le_sent")
     override var sent = false
 
-    constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Int) : this() {
+    constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Int, wait: Boolean) : this() {
         tokenId = token
         packageId = pckg
+        event = basePoint.state.name
+        waiting = wait
         data = Data().apply {
             // time is correct here
             whenTime = DateTime.now()

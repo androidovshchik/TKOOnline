@@ -131,7 +131,7 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                             if (delay > 0L) {
                                 Timber.i("Inserting event after delay $delay")
                                 preferences.blockingBulk {
-                                    event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
+                                    event = LocationEvent(point, tokenId, packageId, mileage.roundToInt(), true).also {
                                         lastEventTime = it.data.whenTime
                                     }
                                     packageId++
@@ -249,7 +249,8 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                                 val distance = mileage + space
                                 point.replaceWith()?.let { state ->
                                     Timber.i("Replace state with $state")
-                                    event = LocationEvent(point, tokenId, packageId, distance.roundToInt()).also {
+                                    event =
+                                        LocationEvent(point, tokenId, packageId, distance.roundToInt(), false).also {
                                         lastEventTime = it.data.whenTime
                                     }
                                     packageId++
