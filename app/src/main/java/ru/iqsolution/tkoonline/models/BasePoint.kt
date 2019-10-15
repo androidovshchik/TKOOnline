@@ -59,7 +59,7 @@ class BasePoint(
     }
 
     /**
-     * Shouldn't be called on class init
+     * Shouldn't be called on class init and in [TelemetryState.PARKING] state
      * @return distance traveled in meters
      */
     fun updateLocation(location: SimpleLocation): Float {
@@ -83,13 +83,19 @@ class BasePoint(
             baseDirection = angle
             currentDirection = angle
         }
-        val seconds =
-            Duration(locationTime, location.locationTime.withZone(locationTime.zone)).standardSeconds.absoluteValue
-        val speed = MS2KMH * space / Duration(
+        val allSeconds = Duration(
+            locationTime,
+            location.locationTime.withZone(locationTime.zone)
+        ).standardSeconds.absoluteValue
+        val lastSeconds = Duration(
             lastLocation.locationTime,
             location.locationTime.withZone(lastLocation.locationTime.zone)
         ).standardSeconds.absoluteValue
-        speedMap.put(seconds.toInt(), speed.roundToInt())
+        speedMap.put(
+            allSeconds.toInt(), if (lastSeconds > 0) {
+                (MS2KMH * space / lastSeconds).roundToInt()
+            } else 0
+        )
         lastLocation = location
         return space
     }
