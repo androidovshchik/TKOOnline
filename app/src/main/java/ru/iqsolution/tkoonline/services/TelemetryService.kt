@@ -67,6 +67,9 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
     private var channel: Channel? = null
 
     @Volatile
+    private var consumerTag: String? = null
+
+    @Volatile
     private var isRunning = false
 
     private var basePoint: BasePoint? = null
@@ -95,7 +98,16 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         locationManager = LocationManager(applicationContext, this).also {
             it.requestUpdates()
         }
-        //factory.setUri(preferences.telemetryUri)
+        factory.apply {
+            val address = preferences.mainTelemetryAddress.split(":")
+            host = address[0]
+            port = try {
+                address.getOrNull(1)?.toInt() ?: 5672
+            } catch (e: Throwable) {
+                Timber.e(e)
+                5672
+            }
+        }
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
             // background thread here
@@ -148,25 +160,22 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
                 db.locationDao().insert(it)
             }
             db.locationDao().getLastSendEvent()?.let {
-                //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-            }
-            /*
-            lastEvents.forEach {
                 try {
                     factory.apply {
+                        username
                         username = it.token.carId.toString()
                         password = it.token.token
                     }
                     connection = factory.newConnection()
-                    connection?.isOpen
+                    connection?.clearBlockedListeners()
                     channel = connection?.createChannel()
-                    channel.exchangeDeclare("cars", "direct", true)
+                    channel?.exchangeDeclare("cars", "direct", true)
+                    consumerTag = channel?.basicConsume(it.token.queName, true, this)
                     channel.basicPublish("", QUEUE_NAME, null,)
-                    channel.basicConsume()
                 } catch (e: Throwable) {
                     Timber.e(e)
                 }
-            }*/
+            }
         }, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS)
     }
 
@@ -176,7 +185,8 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
         properties: AMQP.BasicProperties?,
         body: ByteArray?
     ) {
-        Timber.d("handleDelivery $consumerTag")
+        Timber.d("handleDelivery $consumerTag ${body?.toString(Charsets.UTF_8)}")
+        //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
     }
 
     override fun handleRecoverOk(consumerTag: String?) {
@@ -300,16 +310,19 @@ class TelemetryService : BaseService(), Consumer, TelemetryListener {
     }
 
     private fun closeConnection() {
+        consumerTag?.let {
+            try {
+                channel?.basicCancel(it)
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
+        }
         try {
             channel?.close()
         } catch (e: Throwable) {
             Timber.e(e)
         }
-        try {
-            connection?.close()
-        } catch (e: Throwable) {
-            Timber.e(e)
-        }
+        connection?.abort()
     }
 
     override fun onDestroy() {
