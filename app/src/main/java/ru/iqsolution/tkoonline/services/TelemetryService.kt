@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.*
 import org.joda.time.DateTime
+import org.joda.time.Duration
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.areGranted
@@ -156,19 +157,22 @@ class TelemetryService : BaseService(), TelemetryListener {
                 db.locationDao().insert(it)
             }
             db.locationDao().getLastSendEvent()?.let {
+                val now = DateTime.now()
+                val delay = Duration(now, now.plusDays(2).withTime(0, 0, 0, 0)).millis
+                if () {
+
+                }
+                it.location.authKey = it.token.token
+                val user = it.token.carId.toString()
+                val pswd = it.token.token
                 try {
-                    val user = it.token.carId.toString()
-                    val pswd = it.token.token
                     factory.apply {
-                        if (connection?.isOpen || channel.isOpen || username != user || password != pswd) {
-                            closeConnection()
+                        if (connection?.isOpen == false || channel?.isOpen == false || username != user || password != pswd) {
+                            abortConnection()
                             username = it.token.carId.toString()
                             password = it.token.token
-                            connection = factory.newConnection().apply {
-                                channel = createChannel().apply {
-                                    Timber.e(user)
-                                    Timber.e(pswd)
-                                }
+                            connection = newConnection().apply {
+                                channel = createChannel()
                             }
                         }
                     }
@@ -182,11 +186,14 @@ class TelemetryService : BaseService(), TelemetryListener {
                         )
                         txCommit()
                     }
-                    db.locationDao().markAsSent()
-                    broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+                    db.locationDao().markAsSent(it.location.id ?: 0)
                 } catch (e: Throwable) {
                     Timber.e(e)
-                    closeConnection()
+                    abortConnection()
+                }
+            } ?: run {
+                if (isRunning) {
+                    broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
                 }
             }
         }, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS)
@@ -308,14 +315,14 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
-    private fun closeConnection() {
+    private fun abortConnection() {
         try {
-            channel?.close()
+            channel?.abort()
         } catch (e: Throwable) {
             Timber.e(e)
         }
         try {
-            connection?.close()
+            connection?.abort()
         } catch (e: Throwable) {
             Timber.e(e)
         }
@@ -324,7 +331,7 @@ class TelemetryService : BaseService(), TelemetryListener {
     override fun onDestroy() {
         stopTelemetry()
         timer?.cancel(true)
-        closeConnection()
+        abortConnection()
         releaseWakeLock()
         super.onDestroy()
     }
