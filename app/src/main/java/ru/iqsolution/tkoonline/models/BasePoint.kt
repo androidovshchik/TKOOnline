@@ -4,6 +4,7 @@ import android.location.Location
 import android.util.SparseIntArray
 import org.joda.time.DateTime
 import org.joda.time.Duration
+import ru.iqsolution.tkoonline.BuildConfig
 import timber.log.Timber
 import kotlin.math.absoluteValue
 import kotlin.math.min
@@ -34,7 +35,7 @@ class BasePoint(
     /**
      * Will be the same as [baseDirection] on first value
      */
-    var currentDirection = 0f
+    var currentDirection: Float? = null
 
     /**
      * Keys are duration in seconds, values are speed in km/h
@@ -76,14 +77,19 @@ class BasePoint(
         )
         val space = output[0]
         distance += space
-        // getting only angle
-        Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, output)
-        val angle = if (output[1] < 0) 360 + output[1] else output[1]
-        baseDirection?.let {
-            currentDirection = angle
-        } ?: run {
-            baseDirection = angle
-            currentDirection = angle
+        if (state != TelemetryState.PARKING) {
+            // getting only angle
+            Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, output)
+            val angle = if (output[1] < 0) 360 + output[1] else output[1]
+            baseDirection?.let {
+                currentDirection = angle
+            } ?: run {
+                baseDirection = angle
+                currentDirection = angle
+            }
+        } else {
+            baseDirection = null
+            currentDirection = null
         }
         val seconds = Duration(
             locationTime,
@@ -100,10 +106,13 @@ class BasePoint(
                 } else 0
             )
         }
-        Timber.i("distance $distance")
-        Timber.i("space $space")
-        Timber.i("millis $millis")
-        Timber.i(speedMap.toString())
+        if (BuildConfig.DEBUG) {
+            Timber.i("base $baseDirection current $currentDirection")
+            Timber.i("distance $distance")
+            Timber.i("space $space")
+            Timber.i("millis $millis")
+            Timber.i(speedMap.toString())
+        }
         lastLocation = location
         return space
     }
@@ -131,10 +140,12 @@ class BasePoint(
         }
         when (state) {
             TelemetryState.MOVING -> {
-                baseDirection?.let {
-                    if ((currentDirection - it).absoluteValue >= BASE_DEGREE) {
-                        if (lastSpeed >= MIN_SPEED) {
-                            return TelemetryState.MOVING
+                baseDirection?.let { b ->
+                    currentDirection?.let { c ->
+                        if ((c - b).absoluteValue >= BASE_DEGREE) {
+                            if (lastSpeed >= MIN_SPEED) {
+                                return TelemetryState.MOVING
+                            }
                         }
                     }
                 }

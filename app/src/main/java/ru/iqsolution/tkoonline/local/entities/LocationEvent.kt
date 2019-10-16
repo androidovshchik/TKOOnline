@@ -4,7 +4,6 @@ import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.models.BasePoint
-import ru.iqsolution.tkoonline.models.TelemetryState
 import kotlin.math.roundToInt
 
 @Entity(
@@ -63,15 +62,10 @@ class LocationEvent() : SendEvent {
         basePoint: BasePoint,
         token: Long,
         pckg: Int,
-        distance: Int,
-        // may be another on fun call
-        state: TelemetryState = basePoint.state,
-        wait: Boolean = true
+        distance: Int
     ) : this() {
         tokenId = token
         packageId = pckg
-        event = state.name
-        waiting = wait
         data = Data().apply {
             // time is correct here
             whenTime = DateTime.now()
@@ -84,9 +78,7 @@ class LocationEvent() : SendEvent {
                 satellites = it.satellites
             }
             speed = basePoint.lastSpeed
-            direction = if (state != TelemetryState.PARKING) {
-                basePoint.currentDirection.roundToInt()
-            } else null
+            direction = basePoint.currentDirection?.roundToInt()
             mileage = distance
         }
     }
