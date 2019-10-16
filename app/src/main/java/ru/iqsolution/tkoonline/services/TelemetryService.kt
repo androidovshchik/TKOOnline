@@ -140,6 +140,9 @@ class TelemetryService : BaseService(), TelemetryListener {
                                 Timber.i("Inserting event after delay $delay")
                                 preferences.blockingBulk {
                                     event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
+                                        // debug info
+                                        it.state = point.state.name
+                                        it.waiting = true
                                         lastEventTime = it.data.whenTime
                                     }
                                     packageId++
@@ -157,7 +160,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                     val user = it.token.carId.toString()
                     val pswd = it.token.token
                     factory.apply {
-                        if (connection == null || channel == null || username != user || password != pswd) {
+                        if (connection?.isOpen || channel.isOpen || username != user || password != pswd) {
                             closeConnection()
                             username = it.token.carId.toString()
                             password = it.token.token
@@ -179,9 +182,11 @@ class TelemetryService : BaseService(), TelemetryListener {
                         )
                         txCommit()
                     }
-                    //broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+                    db.locationDao().markAsSent()
+                    broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
                 } catch (e: Throwable) {
                     Timber.e(e)
+                    closeConnection()
                 }
             }
         }, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS)
@@ -232,6 +237,11 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun onLocationChanged(location: Location, satellitesCount: Int) {
+        if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
+            stopForeground(true)
+            stopSelf()
+            return
+        }
         val newLocation = SimpleLocation(location).apply {
             satellites = satellitesCount
         }
@@ -256,14 +266,9 @@ class TelemetryService : BaseService(), TelemetryListener {
                                 } else mileage
                                 point.replaceWith()?.let { state ->
                                     Timber.i("Replace state with $state")
-                                    event = LocationEvent(
-                                        point,
-                                        tokenId,
-                                        packageId,
-                                        distance.roundToInt(),
-                                        state,
-                                        false
-                                    ).also {
+                                    event = LocationEvent(point, tokenId, packageId, distance.roundToInt()).also {
+                                        // debug info
+                                        it.state = state.name
                                         lastEventTime = it.data.whenTime
                                     }
                                     packageId++

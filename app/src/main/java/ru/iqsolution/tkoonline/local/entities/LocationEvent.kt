@@ -42,8 +42,8 @@ class LocationEvent() : SendEvent {
     @SerializedName("data")
     lateinit var data: Data
 
-    @ColumnInfo(name = "le_event")
-    lateinit var event: String
+    @ColumnInfo(name = "le_state")
+    lateinit var state: String
 
     @ColumnInfo(name = "le_wait")
     var waiting = false
