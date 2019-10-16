@@ -8,7 +8,6 @@ import android.location.LocationManager
 import android.location.LocationProvider
 import android.os.Bundle
 import org.jetbrains.anko.locationManager
-import ru.iqsolution.tkoonline.LOCATION_INTERVAL
 import java.lang.ref.WeakReference
 
 @SuppressLint("MissingPermission")
@@ -76,5 +75,10 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
         override fun onSatelliteStatusChanged(status: GnssStatus) {
             satellitesCount = status.satelliteCount
         }
+    }
+
+    companion object {
+
+        private const val LOCATION_INTERVAL = 5000L
     }
 }

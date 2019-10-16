@@ -3,7 +3,6 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
-import ru.iqsolution.tkoonline.LOCATION_INTERVAL
 import ru.iqsolution.tkoonline.models.BasePoint
 import ru.iqsolution.tkoonline.models.TelemetryState
 import kotlin.math.roundToInt
@@ -53,6 +52,13 @@ class LocationEvent() : SendEvent {
     @ColumnInfo(name = "le_sent")
     override var sent = false
 
+    /**
+     * Duplicates access token value
+     */
+    @Ignore
+    @SerializedName("auth_key")
+    var authKey: String? = null
+
     constructor(
         basePoint: BasePoint,
         token: Long,
@@ -80,7 +86,7 @@ class LocationEvent() : SendEvent {
             speed = basePoint.lastSpeed
             direction = if (state != TelemetryState.PARKING) {
                 basePoint.currentDirection.roundToInt()
-            } else 0
+            } else null
             mileage = distance
         }
     }
@@ -125,7 +131,7 @@ class LocationEvent() : SendEvent {
                     return 0
                 }
                 val now = DateTime.now()
-                if (now.millis - locationTime.withZone(now.zone).millis <= LOCATION_INTERVAL) {
+                if (now.millis - locationTime.withZone(now.zone).millis <= VALID_TIME) {
                     return 1
                 }
                 return 0
@@ -141,7 +147,7 @@ class LocationEvent() : SendEvent {
 
         @ColumnInfo(name = "le_direction")
         @SerializedName("dir")
-        var direction = 0
+        var direction: Int? = null
 
         /**
          * In meters
@@ -149,5 +155,10 @@ class LocationEvent() : SendEvent {
         @ColumnInfo(name = "le_mileage")
         @SerializedName("race")
         var mileage = 0
+    }
+
+    companion object {
+
+        private const val VALID_TIME = 5000L
     }
 }
