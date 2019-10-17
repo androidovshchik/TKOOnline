@@ -74,13 +74,15 @@ class FileManager(context: Context) {
                 // Decode bitmap with inSampleSize set
                 BitmapFactory.decodeFile(file.path, this)
             }
+            val matrix = Matrix()
             val width = bitmap.width
             val height = bitmap.height
-            val ratio = width.toFloat() / height
-            val newWidth = if (ratio < 1) MAX_SIZE * ratio else MAX_SIZE.toFloat()
-            val scale = newWidth / width
-            val matrix = Matrix()
-            matrix.preScale(scale, scale)
+            if (width > MAX_SIZE || height > MAX_SIZE) {
+                val ratio = width.toFloat() / height
+                val newWidth = if (ratio < 1) MAX_SIZE * ratio else MAX_SIZE.toFloat()
+                val scale = newWidth / width
+                matrix.preScale(scale, scale)
+            }
             val exif = ExifInterface(file)
             val rotation = when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)) {
                 ExifInterface.ORIENTATION_ROTATE_90 -> 90
