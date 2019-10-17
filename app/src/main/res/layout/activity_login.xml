@@ -142,4 +142,18 @@
         android:src="@drawable/ic_menu_dots"
         android:background="?android:attr/selectableItemBackground"/>
 
+    <TextView
+        android:id="@+id/app_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:padding="16dp"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:lineSpacingMultiplier="1.1"
+        android:gravity="center"
+        tools:text="v.1"
+        fontPath="fonts/Roboto-Medium.ttf"/>
+
 </RelativeLayout>

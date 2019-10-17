@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
+import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
@@ -31,6 +32,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
 
     private var hasPrompted = false
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -49,6 +51,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
         login_menu.setOnClickListener {
             openDialog()
         }
+        app_version.text = "v.${BuildConfig.VERSION_CODE}"
     }
 
     /**
