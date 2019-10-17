@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.*
 import org.joda.time.DateTime
-import org.joda.time.Duration
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.areGranted
@@ -157,20 +156,19 @@ class TelemetryService : BaseService(), TelemetryListener {
                 db.locationDao().insert(it)
             }
             db.locationDao().getLastSendEvent()?.let {
-                val now = DateTime.now()
-                val delay = Duration(now, now.plusDays(2).withTime(0, 0, 0, 0)).millis
-                if () {
-
+                if (!it.location.isValid) {
+                    db.locationDao().delete(it.location)
+                    return@scheduleAtFixedRate
                 }
-                it.location.authKey = it.token.token
                 val user = it.token.carId.toString()
                 val pswd = it.token.token
+                it.location.authKey = it.token.token
                 try {
                     factory.apply {
                         if (connection?.isOpen == false || channel?.isOpen == false || username != user || password != pswd) {
                             abortConnection()
-                            username = it.token.carId.toString()
-                            password = it.token.token
+                            username = user
+                            password = pswd
                             connection = newConnection().apply {
                                 channel = createChannel()
                             }
@@ -187,13 +185,13 @@ class TelemetryService : BaseService(), TelemetryListener {
                         txCommit()
                     }
                     db.locationDao().markAsSent(it.location.id ?: 0)
+                    val locationCount = db.locationDao().getSendCount()
+                    if (locationCount <= 0) {
+                        broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+                    }
                 } catch (e: Throwable) {
                     Timber.e(e)
                     abortConnection()
-                }
-            } ?: run {
-                if (isRunning) {
-                    broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
                 }
             }
         }, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS)

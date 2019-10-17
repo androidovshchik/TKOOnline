@@ -58,6 +58,15 @@ class LocationEvent() : SendEvent {
     @SerializedName("auth_key")
     var authKey: String? = null
 
+    val isValid: Boolean
+        get() {
+            val now = DateTime.now()
+            if (now.millis - data.whenTime.withZone(now.zone).millis <= LIFE_TIME) {
+                return true
+            }
+            return false
+        }
+
     constructor(
         basePoint: BasePoint,
         token: Long,
@@ -152,5 +161,7 @@ class LocationEvent() : SendEvent {
     companion object {
 
         private const val VALID_TIME = 5000L
+
+        private const val LIFE_TIME = 48 * 60_000L
     }
 }
