@@ -25,7 +25,9 @@ function init() {
     map.geoObjects
         .add(markersCollection)
         .add(locationCollection);
-    Android.onReady();
+    if (typeof Android !== 'undefined') {
+        Android.onReady();
+    }
 }
 
 const script = document.createElement('script');
@@ -134,7 +136,7 @@ window._4_mapSetLocation = function (latitude: number, longitude: number, radius
     }
     const layout = ymaps.templateLayoutFactory.createClass(`
         <div class="placemark">
-            <img class="location_icon" src="icons/ic_location.svg">
+            <img id="my_location" class="location_icon" src="icons/ic_location.svg">
         </div>`
     );
     locationCollection
@@ -172,4 +174,19 @@ window._5_mapSaveState = function () {
     localStorage.setItem(`${id}_latitude`, center[0]);
     localStorage.setItem(`${id}_longitude`, center[1]);
     localStorage.setItem(`${id}_zoom`, map.getZoom());
+};
+
+// @ts-ignore
+window._6_mapChangeIcon = function (active: Boolean) {
+    if (map == null) {
+        return
+    }
+    const image = document.getElementById("my_location") as any;
+    if (image) {
+        if (active) {
+            image.src = "icons/ic_location.svg";
+        } else {
+            image.src = "icons/ic_location_gray.svg";
+        }
+    }
 };
