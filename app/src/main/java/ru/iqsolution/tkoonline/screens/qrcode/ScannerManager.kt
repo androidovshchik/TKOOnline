@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.iqsolution.tkoonline.screens.qrcode
 
 import android.annotation.SuppressLint
@@ -32,7 +34,6 @@ class ScannerManager(context: Context, listener: ScannerListener) : Detector.Pro
             .build()
     }
 
-    @Suppress("DEPRECATION")
     @SuppressLint("MissingPermission")
     fun start(holder: SurfaceHolder): Size? {
         try {
