@@ -1,76 +1,136 @@
 package ru.iqsolution.tkoonline.screens;
 
 import android.content.Context;
-import android.text.*;
+import android.graphics.Canvas;
+import android.text.Layout;
 import android.text.Layout.Alignment;
+import android.text.StaticLayout;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
 public class EllipsizingTextView extends TextView {
 
-    public static final int ALL_AVAILABLE = -1;
+    private static final String ELLIPSIS = "...";
 
-    private int mMaxLines = 2;
+    private boolean isStale = true;
+    private boolean programmaticChange;
+    private String fullText;
+    private float lineSpacingMultiplier = 1.0f;
+    private float lineAdditionalVerticalPadding = 0.0f;
 
     public EllipsizingTextView(Context context) {
-        this(context, null);
+        super(context);
     }
 
     public EllipsizingTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    @Override
-    public void setMaxLines(int maxlines) {
-        super.setMaxLines(maxlines);
-        mMaxLines = maxlines;
+    public EllipsizingTextView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
     }
 
-    public CharSequence setText(final CharSequence text, int avail) {
-        if (text == null || text.length() == 0) {
-            return text;
+    @Override
+    public void setLineSpacing(float add, float mult) {
+        this.lineAdditionalVerticalPadding = add;
+        this.lineSpacingMultiplier = mult;
+        super.setLineSpacing(add, mult);
+    }
+
+    @Override
+    protected void onTextChanged(CharSequence text, int start, int before, int after) {
+        super.onTextChanged(text, start, before, after);
+        if (!programmaticChange) {
+            fullText = text.toString();
+            isStale = true;
         }
-        setEllipsize(null);
-        setText(text);
-        if (avail == ALL_AVAILABLE) {
-            return text;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (isStale) {
+            resetText();
         }
-        Layout layout = getLayout();
-        if (layout == null) {
-            final int w = getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight();
-            layout = new StaticLayout(text, 0, text.length(), getPaint(), w, Alignment.ALIGN_NORMAL,
-                    1.0f, 0f, false);
-        }
-        // find the last line of text and chop it according to available space
-        final int lastLineStart = layout.getLineStart(mMaxLines - 1);
-        final CharSequence remainder = TextUtils.ellipsize(text.subSequence(lastLineStart,
-                text.length()), getPaint(), avail, TextUtils.TruncateAt.END);
-        // assemble just the text portion, without spans
-        final SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(text.toString(), 0, lastLineStart);
-        if (!TextUtils.isEmpty(remainder)) {
-            builder.append(remainder.toString());
-        }
-        // Now copy the original spans into the assembled string, modified for any ellipsizing.
-        //
-        // Merely assembling the Spanned pieces together would result in duplicate CharacterStyle
-        // spans in the assembled version if a CharacterStyle spanned across the lastLineStart
-        // offset.
-        if (text instanceof Spanned) {
-            final Spanned s = (Spanned) text;
-            final Object[] spans = s.getSpans(0, s.length(), Object.class);
-            final int destLen = builder.length();
-            for (int i = 0; i < spans.length; i++) {
-                final Object span = spans[i];
-                final int start = s.getSpanStart(span);
-                final int end = s.getSpanEnd(span);
-                final int flags = s.getSpanFlags(span);
-                if (start <= destLen) {
-                    builder.setSpan(span, start, Math.min(end, destLen), flags);
+        super.onDraw(canvas);
+    }
+
+    private void resetText() {
+        int maxLines = getMaxLines();
+        String workingText = fullText;
+        if (maxLines != -1) {
+            Layout layout = createWorkingLayout(workingText);
+            int originalLineCount = layout.getLineCount();
+            if (originalLineCount > maxLines) {
+                if (this.getEllipsize() == TextUtils.TruncateAt.START) {
+                    workingText = fullText.substring(layout.getLineStart(originalLineCount - maxLines - 1)).trim();
+                    while (createWorkingLayout(ELLIPSIS + workingText).getLineCount() > maxLines) {
+                        int firstSpace = workingText.indexOf(' ');
+                        if (firstSpace == -1) {
+                            workingText = workingText.substring(1);
+                        } else {
+                            workingText = workingText.substring(firstSpace + 1);
+                        }
+                    }
+                    workingText = ELLIPSIS + workingText;
+                } else if (this.getEllipsize() == TextUtils.TruncateAt.END) {
+                    workingText = fullText.substring(0, layout.getLineEnd(maxLines - 1)).trim();
+                    while (createWorkingLayout(workingText + ELLIPSIS).getLineCount() > maxLines) {
+                        int lastSpace = workingText.lastIndexOf(' ');
+                        if (lastSpace == -1) {
+                            workingText = workingText.substring(0, workingText.length() - 1);
+                        } else {
+                            workingText = workingText.substring(0, lastSpace);
+                        }
+                    }
+                    workingText = workingText + ELLIPSIS;
+                } else if (this.getEllipsize() == TextUtils.TruncateAt.MIDDLE) {
+                    boolean shrinkLeft = false;
+                    int firstOffset = layout.getLineEnd(maxLines / 2);
+                    int secondOffset = layout.getLineEnd(originalLineCount - 1) - firstOffset + 1;
+                    String firstWorkingText = fullText.substring(0, firstOffset).trim();
+                    String secondWorkingText = fullText.substring(secondOffset).trim();
+                    while (createWorkingLayout(firstWorkingText + ELLIPSIS + secondWorkingText).getLineCount() > maxLines) {
+                        if (shrinkLeft) {
+                            shrinkLeft = false;
+                            int lastSpace = firstWorkingText.lastIndexOf(' ');
+                            if (lastSpace == -1) {
+                                firstWorkingText = firstWorkingText.substring(
+                                        0, firstWorkingText.length() - 1);
+                            } else {
+                                firstWorkingText = firstWorkingText.substring(
+                                        0, lastSpace);
+                            }
+                        } else {
+                            shrinkLeft = true;
+                            int firstSpace = secondWorkingText.indexOf(' ');
+                            if (firstSpace == -1) {
+                                secondWorkingText = secondWorkingText
+                                        .substring(1);
+                            } else {
+                                secondWorkingText = secondWorkingText
+                                        .substring(firstSpace + 1);
+                            }
+                        }
+                    }
+                    workingText = firstWorkingText + ELLIPSIS + secondWorkingText;
                 }
             }
         }
-        setText(builder);
-        return builder;
+        if (!workingText.contentEquals(getText())) {
+            programmaticChange = true;
+            try {
+                setText(workingText);
+            } finally {
+                programmaticChange = false;
+            }
+        }
+        isStale = false;
+    }
+
+    @SuppressWarnings("deprecation")
+    private Layout createWorkingLayout(String workingText) {
+        return new StaticLayout(workingText, getPaint(), getWidth() - getPaddingLeft() - getPaddingRight(),
+                Alignment.ALIGN_NORMAL, lineSpacingMultiplier, lineAdditionalVerticalPadding, false);
     }
 }
