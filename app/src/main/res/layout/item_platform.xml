@@ -9,7 +9,7 @@
     android:background="?android:attr/selectableItemBackground"
     tools:ignore="MissingPrefix">
 
-    <TextView
+    <ru.iqsolution.tkoonline.screens.EllipsizingTextView
         android:id="@+id/container_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
