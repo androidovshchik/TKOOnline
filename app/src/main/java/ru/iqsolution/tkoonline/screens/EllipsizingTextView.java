@@ -9,6 +9,9 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+/**
+ * https://github.com/IPL/MultiplelineEllipsizeTextView
+ */
 public class EllipsizingTextView extends TextView {
 
     private static final String ELLIPSIS = "...";
@@ -62,7 +65,7 @@ public class EllipsizingTextView extends TextView {
             Layout layout = createWorkingLayout(workingText);
             int originalLineCount = layout.getLineCount();
             if (originalLineCount > maxLines) {
-                if (this.getEllipsize() == TextUtils.TruncateAt.START) {
+                if (getEllipsize() == TextUtils.TruncateAt.START) {
                     workingText = fullText.substring(layout.getLineStart(originalLineCount - maxLines - 1)).trim();
                     while (createWorkingLayout(ELLIPSIS + workingText).getLineCount() > maxLines) {
                         int firstSpace = workingText.indexOf(' ');
@@ -73,47 +76,6 @@ public class EllipsizingTextView extends TextView {
                         }
                     }
                     workingText = ELLIPSIS + workingText;
-                } else if (this.getEllipsize() == TextUtils.TruncateAt.END) {
-                    workingText = fullText.substring(0, layout.getLineEnd(maxLines - 1)).trim();
-                    while (createWorkingLayout(workingText + ELLIPSIS).getLineCount() > maxLines) {
-                        int lastSpace = workingText.lastIndexOf(' ');
-                        if (lastSpace == -1) {
-                            workingText = workingText.substring(0, workingText.length() - 1);
-                        } else {
-                            workingText = workingText.substring(0, lastSpace);
-                        }
-                    }
-                    workingText = workingText + ELLIPSIS;
-                } else if (this.getEllipsize() == TextUtils.TruncateAt.MIDDLE) {
-                    boolean shrinkLeft = false;
-                    int firstOffset = layout.getLineEnd(maxLines / 2);
-                    int secondOffset = layout.getLineEnd(originalLineCount - 1) - firstOffset + 1;
-                    String firstWorkingText = fullText.substring(0, firstOffset).trim();
-                    String secondWorkingText = fullText.substring(secondOffset).trim();
-                    while (createWorkingLayout(firstWorkingText + ELLIPSIS + secondWorkingText).getLineCount() > maxLines) {
-                        if (shrinkLeft) {
-                            shrinkLeft = false;
-                            int lastSpace = firstWorkingText.lastIndexOf(' ');
-                            if (lastSpace == -1) {
-                                firstWorkingText = firstWorkingText.substring(
-                                        0, firstWorkingText.length() - 1);
-                            } else {
-                                firstWorkingText = firstWorkingText.substring(
-                                        0, lastSpace);
-                            }
-                        } else {
-                            shrinkLeft = true;
-                            int firstSpace = secondWorkingText.indexOf(' ');
-                            if (firstSpace == -1) {
-                                secondWorkingText = secondWorkingText
-                                        .substring(1);
-                            } else {
-                                secondWorkingText = secondWorkingText
-                                        .substring(firstSpace + 1);
-                            }
-                        }
-                    }
-                    workingText = firstWorkingText + ELLIPSIS + secondWorkingText;
                 }
             }
         }
