@@ -158,6 +158,10 @@ class TelemetryService : BaseService(), TelemetryListener {
             db.locationDao().getLastSendEvent()?.let {
                 if (!it.location.isValid) {
                     db.locationDao().delete(it.location)
+                    val locationCount = db.locationDao().getSendCount()
+                    if (locationCount <= 0) {
+                        broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+                    }
                     return@scheduleAtFixedRate
                 }
                 val user = it.token.carId.toString()
