@@ -10,7 +10,7 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 7
+        versionCode 8
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         kapt {
@@ -90,14 +90,14 @@ dependencies {
     implementation "org.jetbrains.anko:anko-commons:${Versions.anko}"
     implementation "org.jetbrains.anko:anko-sdk23:${Versions.anko}"
     implementation "org.jetbrains.anko:anko-sdk23-listeners:${Versions.anko}"
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta04'
-    implementation 'androidx.exifinterface:exifinterface:1.1.0-beta01'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta05'
+    implementation 'androidx.exifinterface:exifinterface:1.1.0-rc01'
     implementation 'androidx.work:work-runtime-ktx:2.2.0'
     implementation "androidx.lifecycle:lifecycle-livedata:${Versions.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}"
     implementation "androidx.room:room-runtime:${Versions.room}"
     kapt "androidx.room:room-compiler:${Versions.room}"
-    implementation 'com.google.android.gms:play-services-vision:18.0.0'
+    implementation 'com.google.android.gms:play-services-vision:19.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation "org.kodein.di:kodein-di-generic-jvm:${Versions.kodein}"
     implementation "org.kodein.di:kodein-di-framework-android-core:${Versions.kodein}"
