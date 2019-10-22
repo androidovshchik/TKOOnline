@@ -18,7 +18,7 @@ export function getColor(status: number): string {
         case PlatformStatus.NOT_VISITED:
             return "#FF1313";
         case PlatformStatus.NOT_CLEANED:
-            return "#FF1313";
+            return "#FF8A00";
         default:
             return "#c4c4c4";
     }
