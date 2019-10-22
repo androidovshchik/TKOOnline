@@ -59,7 +59,9 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
      */
     override fun onQrCode(value: String) {
         if (activityManager.isRunning<TelemetryService>()) {
-            toast("Требуется завершение работы сервиса")
+            runOnUiThread {
+                toast("Подождите завершения работы сервиса")
+            }
             return
         }
         presenter.login(value)
