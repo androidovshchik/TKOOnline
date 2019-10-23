@@ -62,13 +62,16 @@ class SyncManager(context: Context, listener: SyncListener) {
 
         override fun onAvailable(network: Network) {
             Timber.d("Network on available")
-            reference.get()?.onNetworkChanged(connectivity.activeNetworkInfo?.isConnected == true)
+            reference.get()?.onNetworkChanged(isConnected)
         }
 
         override fun onLost(network: Network) {
             Timber.d("Network on lost")
-            reference.get()?.onNetworkChanged(connectivity.activeNetworkInfo?.isConnected == true)
+            reference.get()?.onNetworkChanged(isConnected)
         }
+
+        private val isConnected: Boolean
+            get() = connectivity.activeNetworkInfo?.isConnected == true
     }
 
     private val receiver = object : BroadcastReceiver() {

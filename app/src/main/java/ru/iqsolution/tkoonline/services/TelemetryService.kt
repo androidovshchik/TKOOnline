@@ -114,6 +114,9 @@ class TelemetryService : BaseService(), TelemetryListener {
                 stopSelf()
                 return@scheduleAtFixedRate
             }
+            if () {
+
+            }
             var event: LocationEvent? = null
             synchronized(lock) {
                 if (isRunning) {
@@ -247,6 +250,9 @@ class TelemetryService : BaseService(), TelemetryListener {
         onLocationAvailability(false)
     }
 
+    /**
+     * Will not be called here
+     */
     override fun onLocationState(state: LocationSettingsStates?) {}
 
     override fun onLocationAvailability(available: Boolean) {
