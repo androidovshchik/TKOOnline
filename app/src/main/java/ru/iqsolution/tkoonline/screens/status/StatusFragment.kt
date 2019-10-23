@@ -178,7 +178,7 @@ class StatusFragment : BaseFragment(), SyncListener {
      * Will be called only from [ru.iqsolution.tkoonline.screens.base.BaseActivity]
      */
     override fun onLocationState(state: LocationSettingsStates?) {
-        onLocationChanged(state?.isLocationUsable == true)
+        onLocationChanged(state?.isGpsUsable == true)
     }
 
     override fun onLocationResult(location: SimpleLocation) {

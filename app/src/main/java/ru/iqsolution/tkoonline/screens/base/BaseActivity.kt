@@ -56,13 +56,6 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         updateCloud()
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (this !is LoginActivity) {
-            checkLocation()
-        }
-    }
-
     override fun updateCloud() {
         presenter.calculateSend()
     }
@@ -87,27 +80,36 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         }
     }
 
-    private fun checkLocation() {
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            return
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (hasFocus) {
+            if (this !is LoginActivity) {
+                checkLocation()
+            }
         }
-        LocationServices.getSettingsClient(this)
-            .checkLocationSettings(locationSettingsRequest)
-            .addOnSuccessListener {
-                onLocationState(it.locationSettingsStates)
-            }
-            .addOnFailureListener {
-                onLocationState(null)
-                if (it is ResolvableApiException) {
-                    try {
-                        it.startResolutionForResult(this, REQUEST_LOCATION)
-                    } catch (e: IntentSender.SendIntentException) {
-                        Timber.e(e)
-                    }
-                } else {
-                    Timber.e(it)
+    }
+
+    private fun checkLocation() {
+        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        onLocationState(LocationSettingsStates(isGpsEnabled, false, false, false, false, false))
+        if (!isGpsEnabled) {
+            LocationServices.getSettingsClient(this)
+                .checkLocationSettings(locationSettingsRequest)
+                .addOnSuccessListener {
+                    onLocationState(it.locationSettingsStates)
                 }
-            }
+                .addOnFailureListener {
+                    onLocationState(null)
+                    if (it is ResolvableApiException) {
+                        try {
+                            it.startResolutionForResult(this, REQUEST_LOCATION)
+                        } catch (e: IntentSender.SendIntentException) {
+                            Timber.e(e)
+                        }
+                    } else {
+                        Timber.e(it)
+                    }
+                }
+        }
     }
 
     override fun onLocationState(state: LocationSettingsStates?) {

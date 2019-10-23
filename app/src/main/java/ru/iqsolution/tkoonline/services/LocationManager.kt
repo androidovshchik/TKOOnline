@@ -8,6 +8,7 @@ import android.location.LocationManager
 import android.location.LocationProvider
 import android.os.Bundle
 import org.jetbrains.anko.locationManager
+import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @SuppressLint("MissingPermission")
@@ -43,6 +44,7 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
      * For some reasons it's not always called
      */
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle?) {
+        Timber.d("onStatusChanged $provider $status")
         if (LocationManager.GPS_PROVIDER == provider) {
             reference.get()?.onLocationAvailability(
                 when (status) {
