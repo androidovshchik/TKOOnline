@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.screens.platform
 import android.content.Intent
 import android.os.Bundle
 import androidx.collection.SimpleArrayMap
+import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
@@ -177,6 +178,15 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             setResult(RESULT_CANCELED)
         }
         finish()
+    }
+
+    override fun onLocationState(state: LocationSettingsStates?) {
+        super.onLocationState(state)
+        onLocationAvailability(state?.isGpsUsable == true)
+    }
+
+    override fun onLocationAvailability(available: Boolean) {
+        platform_map.changeIcon(available)
     }
 
     override fun onLocationResult(location: SimpleLocation) {

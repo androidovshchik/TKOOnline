@@ -7,6 +7,7 @@ import androidx.collection.SimpleArrayMap
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.activity_platforms.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -158,6 +159,15 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             platforms_map.setMarkers(presenter.toJson(items), presenter.toJson(primaryItems))
         }
         platforms_refresh.isRefreshing = false
+    }
+
+    override fun onLocationState(state: LocationSettingsStates?) {
+        super.onLocationState(state)
+        onLocationAvailability(state?.isGpsUsable == true)
+    }
+
+    override fun onLocationAvailability(available: Boolean) {
+        platforms_map.changeIcon(available)
     }
 
     override fun onLocationResult(location: SimpleLocation) {

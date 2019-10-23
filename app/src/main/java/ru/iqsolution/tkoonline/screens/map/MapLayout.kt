@@ -125,17 +125,17 @@ class MapLayout : FrameLayout, MapListener {
 
     fun setLocation(location: SimpleLocation?) {
         location?.let {
-            setLocation(it.latitude, it.longitude, it.isGpsAvailable, it.accuracy)
+            setLocation(it.latitude, it.longitude, it.accuracy)
         }
     }
 
     /**
      * @param radius in meters
      */
-    fun setLocation(latitude: Double, longitude: Double, active: Boolean = true, radius: Float = 0f) {
+    fun setLocation(latitude: Double, longitude: Double, radius: Float = 0f) {
         mLatitude = latitude
         mLongitude = longitude
-        runCall("_4_mapSetLocation($latitude, $longitude, $active, $radius)")
+        runCall("_4_mapSetLocation($latitude, $longitude, $radius)")
     }
 
     fun clearState(all: Boolean = false) {
