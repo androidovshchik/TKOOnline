@@ -109,6 +109,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         timer = executor.scheduleAtFixedRate({
             // background thread here
             if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
+                abortConnection()
                 stopForeground(true)
                 stopSelf()
                 return@scheduleAtFixedRate
@@ -158,10 +159,7 @@ class TelemetryService : BaseService(), TelemetryListener {
             db.locationDao().getLastSendEvent()?.let {
                 if (!it.location.isValid) {
                     db.locationDao().delete(it.location)
-                    val locationCount = db.locationDao().getSendCount()
-                    if (locationCount <= 0) {
-                        broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-                    }
+                    checkCount()
                     return@scheduleAtFixedRate
                 }
                 val user = it.token.carId.toString()
@@ -189,10 +187,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                         txCommit()
                     }
                     db.locationDao().markAsSent(it.location.id ?: 0)
-                    val locationCount = db.locationDao().getSendCount()
-                    if (locationCount <= 0) {
-                        broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-                    }
+                    checkCount()
                 } catch (e: Throwable) {
                     Timber.e(e)
                     abortConnection()
@@ -212,6 +207,13 @@ class TelemetryService : BaseService(), TelemetryListener {
             }
         }
         return START_STICKY
+    }
+
+    private fun checkCount() {
+        val locationCount = db.locationDao().getSendCount()
+        if (locationCount <= 0) {
+            broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+        }
     }
 
     override fun startTelemetry() {
@@ -254,11 +256,6 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun onLocationChanged(location: Location, satellitesCount: Int) {
-        if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
-            stopForeground(true)
-            stopSelf()
-            return
-        }
         val newLocation = SimpleLocation(location).apply {
             satellites = satellitesCount
         }
@@ -271,6 +268,12 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
         launch {
             withContext(Dispatchers.IO) {
+                if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
+                    abortConnection()
+                    stopForeground(true)
+                    stopSelf()
+                    return@withContext
+                }
                 var event: LocationEvent? = null
                 synchronized(lock) {
                     if (isRunning) {
@@ -325,6 +328,9 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
+    /**
+     * Cannot be called on UI thread because of [android.os.NetworkOnMainThreadException]
+     */
     private fun abortConnection() {
         try {
             channel?.abort()
@@ -341,7 +347,6 @@ class TelemetryService : BaseService(), TelemetryListener {
     override fun onDestroy() {
         stopTelemetry()
         timer?.cancel(true)
-        abortConnection()
         releaseWakeLock()
         super.onDestroy()
     }
