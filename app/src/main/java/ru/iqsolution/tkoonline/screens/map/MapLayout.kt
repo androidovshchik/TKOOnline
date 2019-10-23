@@ -29,7 +29,11 @@ class MapLayout : FrameLayout, MapListener {
         val js = TextUtils.join(";", calls)
         calls.clear()
         if (!TextUtils.isEmpty(js)) {
-            map_web.loadUrl("javascript:$js")
+            map_web.apply {
+                if (parent != null) {
+                    loadUrl("javascript:$js")
+                }
+            }
         }
     }
 
@@ -69,7 +73,11 @@ class MapLayout : FrameLayout, MapListener {
 
     @WorkerThread
     override fun onReady() {
-        map_web.post(readyRunnable)
+        map_web.apply {
+            if (parent != null) {
+                post(readyRunnable)
+            }
+        }
     }
 
     /**
@@ -155,6 +163,10 @@ class MapLayout : FrameLayout, MapListener {
     }
 
     fun release() {
+        try {
+            removeAllViews()
+        } catch (e: Throwable) {
+        }
         map_web.destroy()
     }
 
