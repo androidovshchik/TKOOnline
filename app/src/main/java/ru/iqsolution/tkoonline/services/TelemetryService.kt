@@ -163,6 +163,10 @@ class TelemetryService : BaseService(), TelemetryListener {
                 }
             } else {
                 onLocationAvailability(false)
+                synchronized(lock) {
+                    lastEventTime = null
+                    basePoint = null
+                }
             }
             db.locationDao().getLastSendEvent()?.let {
                 if (!it.location.isValid) {
