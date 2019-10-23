@@ -15,6 +15,8 @@ open class SimpleLocation : Serializable, Location<Double> {
 
     var satellites = 0
 
+    var isGpsAvailable = true
+
     /**
      * It's only needed for map
      * In meters
@@ -57,6 +59,7 @@ open class SimpleLocation : Serializable, Location<Double> {
                 "longitude=$longitude, " +
                 "altitude=$altitude, " +
                 "satellites=$satellites, " +
+                "isGpsAvailable=$isGpsAvailable, " +
                 "accuracy=$accuracy, " +
                 "locationTime=$locationTime" +
                 ")"

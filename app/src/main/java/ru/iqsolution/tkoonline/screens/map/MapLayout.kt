@@ -117,7 +117,7 @@ class MapLayout : FrameLayout, MapListener {
 
     fun setLocation(location: SimpleLocation?) {
         location?.let {
-            setLocation(it.latitude, it.longitude, true, it.accuracy)
+            setLocation(it.latitude, it.longitude, it.isGpsAvailable, it.accuracy)
         }
     }
 
@@ -136,6 +136,10 @@ class MapLayout : FrameLayout, MapListener {
 
     fun saveState() {
         runCall("_5_mapSaveState()")
+    }
+
+    fun changeIcon(active: Boolean) {
+        runCall("_6_mapChangeIcon($active)")
     }
 
     private fun runCall(call: String) {

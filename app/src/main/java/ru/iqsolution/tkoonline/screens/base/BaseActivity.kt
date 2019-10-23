@@ -89,9 +89,9 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
     }
 
     private fun checkLocation() {
-        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        onLocationState(LocationSettingsStates(isGpsEnabled, false, false, false, false, false))
-        if (!isGpsEnabled) {
+        val isGpsAvailable = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        onLocationState(LocationSettingsStates(isGpsAvailable, false, false, false, false, false))
+        if (!isGpsAvailable) {
             LocationServices.getSettingsClient(this)
                 .checkLocationSettings(locationSettingsRequest)
                 .addOnSuccessListener {
