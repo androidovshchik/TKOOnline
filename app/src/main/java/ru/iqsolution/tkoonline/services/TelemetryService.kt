@@ -75,6 +75,9 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private var lastEventTime: DateTime? = null
 
+    @Volatile
+    private var locationCounter = -1L
+
     private val lock = Any()
 
     override fun onBind(intent: Intent): IBinder? {
@@ -107,6 +110,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
+            locationCounter++
             // background thread here
             if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
                 abortConnection()
@@ -114,50 +118,51 @@ class TelemetryService : BaseService(), TelemetryListener {
                 stopSelf()
                 return@scheduleAtFixedRate
             }
-            if () {
-
-            }
-            var event: LocationEvent? = null
-            synchronized(lock) {
-                if (isRunning) {
-                    lastEventTime?.let { lastTime ->
-                        val point = basePoint
-                        if (point != null) {
-                            var delay = 0L
-                            when (point.state) {
-                                TelemetryState.MOVING, TelemetryState.STOPPING -> {
-                                    val now = DateTime.now()
-                                    if (now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY) {
-                                        delay = MOVING_DELAY
+            if (locationCounter * TIMER_INTERVAL < LOCATION_DELAY) {
+                var event: LocationEvent? = null
+                synchronized(lock) {
+                    if (isRunning) {
+                        lastEventTime?.let { lastTime ->
+                            val point = basePoint
+                            if (point != null) {
+                                var delay = 0L
+                                when (point.state) {
+                                    TelemetryState.MOVING, TelemetryState.STOPPING -> {
+                                        val now = DateTime.now()
+                                        if (now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY) {
+                                            delay = MOVING_DELAY
+                                        }
+                                    }
+                                    TelemetryState.PARKING -> {
+                                        val now = DateTime.now()
+                                        if (now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY) {
+                                            delay = PARKING_DELAY
+                                        }
+                                    }
+                                    else -> {
                                     }
                                 }
-                                TelemetryState.PARKING -> {
-                                    val now = DateTime.now()
-                                    if (now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY) {
-                                        delay = PARKING_DELAY
+                                if (delay > 0L) {
+                                    Timber.i("Inserting event after delay $delay")
+                                    preferences.blockingBulk {
+                                        event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
+                                            // debug info
+                                            it.state = point.state.name
+                                            it.waiting = true
+                                            lastEventTime = it.data.whenTime
+                                        }
+                                        packageId++
                                     }
-                                }
-                                else -> {
-                                }
-                            }
-                            if (delay > 0L) {
-                                Timber.i("Inserting event after delay $delay")
-                                preferences.blockingBulk {
-                                    event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
-                                        // debug info
-                                        it.state = point.state.name
-                                        it.waiting = true
-                                        lastEventTime = it.data.whenTime
-                                    }
-                                    packageId++
                                 }
                             }
                         }
                     }
                 }
-            }
-            event?.let {
-                db.locationDao().insert(it)
+                event?.let {
+                    db.locationDao().insert(it)
+                }
+            } else {
+                onLocationAvailability(false)
             }
             db.locationDao().getLastSendEvent()?.let {
                 if (!it.location.isValid) {
@@ -272,6 +277,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                 return
             }
         }
+        locationCounter = 0L
         launch {
             withContext(Dispatchers.IO) {
                 if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
@@ -366,6 +372,11 @@ class TelemetryService : BaseService(), TelemetryListener {
 
         // Для состояния движения и остановка - 1 минута
         private const val MOVING_DELAY = 60_000L
+
+        /**
+         * After this period on no signal there is something strange with work of gps provider
+         */
+        private const val LOCATION_DELAY = 2 * 60_000L
 
         /**
          * @return true if service is running
