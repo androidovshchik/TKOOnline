@@ -237,6 +237,14 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
+    override fun onLocationStart(enabled: Boolean, ttffMillis: Int) {
+        onLocationAvailability(true)
+    }
+
+    override fun onLocationStop(disabled: Boolean) {
+        onLocationAvailability(false)
+    }
+
     override fun onLocationState(state: LocationSettingsStates?) {}
 
     override fun onLocationAvailability(available: Boolean) {
@@ -367,6 +375,7 @@ class TelemetryService : BaseService(), TelemetryListener {
          * Currently this shouldn't be called outside
          * @return true if service is stopped
          */
+        @Suppress("unused")
         private fun stop(context: Context): Boolean = context.run {
             if (activityManager.isRunning<TelemetryService>()) {
                 return stopService<TelemetryService>()
