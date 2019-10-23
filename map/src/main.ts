@@ -5,7 +5,31 @@ declare const Android;
 
 declare const ymaps;
 
-let id, map, markersCollection, locationCollection;
+let id, map, markersCollection, locationCollection, isGpsAvailable = true;
+
+// @ts-ignore
+const MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+
+function changeIcon(element) {
+    if (isGpsAvailable) {
+        element.src = "icons/ic_location.svg";
+    } else {
+        element.src = "icons/ic_location_gray.svg";
+    }
+}
+
+const observer = new MutationObserver((mutations) => {
+    const element = document.getElementById('my_location');
+    if (element) {
+        cancelObserver();
+        changeIcon(element);
+    }
+});
+
+function cancelObserver() {
+    observer.disconnect();
+    observer.takeRecords();
+}
 
 function init() {
     // @ts-ignore
@@ -116,6 +140,8 @@ window._4_mapClearLocation = function () {
     if (map == null) {
         return
     }
+    cancelObserver();
+    isGpsAvailable = false;
     locationCollection.removeAll();
 };
 
@@ -123,10 +149,12 @@ window._4_mapClearLocation = function () {
  * @param radius in meters
  */
 // @ts-ignore
-window._4_mapSetLocation = function (latitude: number, longitude: number, activate: boolean = true, radius: number = 0) {
+window._4_mapSetLocation = function (latitude: number, longitude: number, radius: number = 0) {
     if (map == null) {
         return
     }
+    cancelObserver();
+    isGpsAvailable = true;
     locationCollection.removeAll();
     if (radius > 0) {
         locationCollection.add(new ymaps.Circle([[latitude, longitude], radius], {}, {
@@ -136,7 +164,7 @@ window._4_mapSetLocation = function (latitude: number, longitude: number, activa
     }
     const layout = ymaps.templateLayoutFactory.createClass(`
         <div class="placemark">
-            <img id="my_location" class="location_icon" src="icons/ic_location${activate ? '' : '_gray'}.svg">
+            <img id="my_location" class="location_icon" src="icons/ic_location.svg">
         </div>`
     );
     locationCollection
@@ -177,16 +205,19 @@ window._5_mapSaveState = function () {
 };
 
 // @ts-ignore
-window._6_mapChangeIcon = function (active: Boolean) {
+window._6_mapChangeIcon = function (active: boolean) {
     if (map == null) {
         return
     }
-    const image = document.getElementById("my_location") as any;
-    if (image) {
-        if (active) {
-            image.src = "icons/ic_location.svg";
-        } else {
-            image.src = "icons/ic_location_gray.svg";
-        }
+    cancelObserver();
+    isGpsAvailable = active;
+    const element = document.getElementById("my_location");
+    if (element) {
+        changeIcon(element);
+    } else {
+        observer.observe(document.body, {
+            subtree: true,
+            childList: true
+        });
     }
 };
