@@ -123,7 +123,7 @@ window._4_mapClearLocation = function () {
  * @param radius in meters
  */
 // @ts-ignore
-window._4_mapSetLocation = function (latitude: number, longitude: number, radius: number = 0) {
+window._4_mapSetLocation = function (latitude: number, longitude: number, activate: boolean = true, radius: number = 0) {
     if (map == null) {
         return
     }
@@ -136,7 +136,7 @@ window._4_mapSetLocation = function (latitude: number, longitude: number, radius
     }
     const layout = ymaps.templateLayoutFactory.createClass(`
         <div class="placemark">
-            <img id="my_location" class="location_icon" src="icons/ic_location.svg">
+            <img id="my_location" class="location_icon" src="icons/ic_location${activate ? '' : '_gray'}.svg">
         </div>`
     );
     locationCollection
