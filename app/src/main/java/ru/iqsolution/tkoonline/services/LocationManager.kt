@@ -32,39 +32,48 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
     }
 
     fun requestUpdates() {
-        locationClient.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, 0f, this)
-        locationClient.registerGnssStatusCallback(gnssCallback)
+        locationClient.also {
+            it.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, 0f, this)
+            it.registerGnssStatusCallback(gnssCallback)
+        }
     }
 
     /**
      * NOTICE UI thread
+     * For some reasons it's not always called
      */
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle?) {
-        if (LocationManager.GPS_PROVIDER != provider) {
-            return
+        if (LocationManager.GPS_PROVIDER == provider) {
+            reference.get()?.onLocationAvailability(
+                when (status) {
+                    LocationProvider.OUT_OF_SERVICE -> false
+                    else -> true
+                }
+            )
         }
-        reference.get()?.onLocationAvailability(
-            when (status) {
-                LocationProvider.OUT_OF_SERVICE -> false
-                else -> true
-            }
-        )
     }
 
-    /**
-     * NOTICE UI thread
-     */
     override fun onLocationChanged(location: Location) {
         reference.get()?.onLocationChanged(location, satellitesCount)
     }
 
-    override fun onProviderEnabled(provider: String) {}
+    override fun onProviderEnabled(provider: String) {
+        if (LocationManager.GPS_PROVIDER == provider) {
+            reference.get()?.onLocationStart(true)
+        }
+    }
 
-    override fun onProviderDisabled(provider: String) {}
+    override fun onProviderDisabled(provider: String) {
+        if (LocationManager.GPS_PROVIDER == provider) {
+            reference.get()?.onLocationStop(true)
+        }
+    }
 
     fun removeUpdates() {
-        locationClient.unregisterGnssStatusCallback(gnssCallback)
-        locationClient.removeUpdates(this)
+        locationClient.also {
+            it.unregisterGnssStatusCallback(gnssCallback)
+            it.removeUpdates(this)
+        }
     }
 
     private val gnssCallback = object : GnssStatus.Callback() {
@@ -74,6 +83,18 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
          */
         override fun onSatelliteStatusChanged(status: GnssStatus) {
             satellitesCount = status.satelliteCount
+        }
+
+        override fun onStarted() {
+            reference.get()?.onLocationStart(false)
+        }
+
+        override fun onFirstFix(ttffMillis: Int) {
+            reference.get()?.onLocationStart(false, ttffMillis)
+        }
+
+        override fun onStopped() {
+            reference.get()?.onLocationStop(false)
         }
     }
 
