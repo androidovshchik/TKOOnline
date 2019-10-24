@@ -340,13 +340,6 @@ class TelemetryService : BaseService(), TelemetryListener {
         })
     }
 
-    private fun releaseWakeLock() {
-        wakeLock?.let {
-            it.release()
-            wakeLock = null
-        }
-    }
-
     /**
      * Cannot be called on UI thread because of [android.os.NetworkOnMainThreadException]
      */
@@ -360,6 +353,13 @@ class TelemetryService : BaseService(), TelemetryListener {
             connection?.abort()
         } catch (e: Throwable) {
             Timber.e(e)
+        }
+    }
+
+    private fun releaseWakeLock() {
+        wakeLock?.let {
+            it.release()
+            wakeLock = null
         }
     }
 
