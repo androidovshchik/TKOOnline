@@ -11,7 +11,6 @@ import coil.api.load
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
-import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
@@ -59,9 +58,6 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
      */
     override fun onQrCode(value: String) {
         if (activityManager.isRunning<TelemetryService>()) {
-            runOnUiThread {
-                toast("Подождите завершения работы сервиса")
-            }
             return
         }
         presenter.login(value)
