@@ -36,6 +36,7 @@ import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.math.roundToInt
 
 /**
@@ -75,8 +76,7 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private var lastEventTime: DateTime? = null
 
-    @Volatile
-    private var locationCounter = -1L
+    private var locationCounter = AtomicLong(-1L)
 
     private val lock = Any()
 
@@ -110,7 +110,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
-            locationCounter++
+            locationCounter.incrementAndGet()
             // background thread here
             if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
                 abortConnection()
@@ -118,7 +118,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                 stopSelf()
                 return@scheduleAtFixedRate
             }
-            if (locationCounter * TIMER_INTERVAL < LOCATION_DELAY) {
+            if (locationCounter.get() * TIMER_INTERVAL < LOCATION_DELAY) {
                 var event: LocationEvent? = null
                 synchronized(lock) {
                     if (isRunning) {
@@ -252,6 +252,9 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun onLocationStart(enabled: Boolean, ttffMillis: Int) {
+        if (!enabled || ttffMillis > 0) {
+            locationCounter.set(0L)
+        }
         onLocationAvailability(true)
     }
 
@@ -281,7 +284,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                 return
             }
         }
-        locationCounter = 0L
+        locationCounter.set(0L)
         launch {
             withContext(Dispatchers.IO) {
                 if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
