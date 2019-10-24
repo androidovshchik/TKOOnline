@@ -90,7 +90,7 @@ dependencies {
     implementation "org.jetbrains.anko:anko-commons:${Versions.anko}"
     implementation "org.jetbrains.anko:anko-sdk23:${Versions.anko}"
     implementation "org.jetbrains.anko:anko-sdk23-listeners:${Versions.anko}"
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta05'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-rc01'
     implementation 'androidx.exifinterface:exifinterface:1.1.0-rc01'
     implementation 'androidx.work:work-runtime-ktx:2.2.0'
     implementation "androidx.lifecycle:lifecycle-livedata:${Versions.lifecycle}"
