@@ -79,13 +79,28 @@
         android:lineSpacingExtra="8sp"
         tools:text="msknt.iqsolution.ru:4568"/>
 
+    <Switch
+        android:id="@+id/file_logs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="6dp"
+        android:text="Сохранять логи"
+        android:textSize="16sp"
+        android:textColor="#89000000"
+        android:lineSpacingExtra="8sp"
+        android:switchPadding="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        fontPath="fonts/Roboto-Bold.ttf"/>
+
     <Button
         android:id="@+id/dialog_unlock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
         android:layout_marginBottom="10dp"
-        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_below="@+id/file_logs"
         android:textSize="14sp"
         android:textColor="@color/colorAccent"
         android:lineSpacingExtra="2sp"
@@ -98,21 +113,11 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/dialog_unlock"
         android:layout_alignBottom="@+id/dialog_unlock"
-        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_below="@+id/file_logs"
         android:layout_marginStart="3dp"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:src="@drawable/ic_db"
-        android:background="?android:attr/selectableItemBackground"/>
-
-    <Switch
-        android:id="@+id/file_logs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/export_db"
-        android:layout_alignBottom="@+id/dialog_unlock"
-        android:layout_below="@+id/dialog_telemetry_server"
-        android:layout_marginStart="6dp"
         android:background="?android:attr/selectableItemBackground"/>
 
     <Button
@@ -121,7 +126,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="10dp"
-        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_below="@+id/file_logs"
         android:layout_alignParentEnd="true"
         android:text="Сохранить"
         android:textSize="14sp"
