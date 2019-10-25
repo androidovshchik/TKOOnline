@@ -92,6 +92,29 @@
         android:background="?android:attr/selectableItemBackground"
         tools:text="Разблокировать"/>
 
+    <ImageButton
+        android:id="@+id/export_db"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/dialog_unlock"
+        android:layout_alignBottom="@+id/dialog_unlock"
+        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_marginStart="3dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:src="@drawable/ic_db"
+        android:background="?android:attr/selectableItemBackground"/>
+
+    <Switch
+        android:id="@+id/file_logs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/export_db"
+        android:layout_alignBottom="@+id/dialog_unlock"
+        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_marginStart="6dp"
+        android:background="?android:attr/selectableItemBackground"/>
+
     <Button
         android:id="@+id/dialog_save"
         android:layout_width="wrap_content"
