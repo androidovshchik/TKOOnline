@@ -94,6 +94,10 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
         }
     }
 
+    override fun exportDb() {
+        presenter.export()
+    }
+
     override fun enterKioskMode() {
         hasPrompted = false
         preferences.enableLock = true

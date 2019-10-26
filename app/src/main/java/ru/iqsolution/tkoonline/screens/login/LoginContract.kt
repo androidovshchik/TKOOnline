@@ -6,6 +6,8 @@ interface LoginContract {
 
     interface Presenter {
 
+        fun export()
+
         fun login(data: String)
 
         fun reset()

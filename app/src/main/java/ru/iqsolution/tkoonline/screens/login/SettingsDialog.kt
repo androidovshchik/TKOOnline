@@ -35,6 +35,11 @@ class SettingsDialog : BaseDialogFragment() {
         dialog_unlock.setOnClickListener {
             setLocked(!mEnableLock, preferences)
         }
+        export_db.setOnClickListener {
+            makeCallback<SettingsListener> {
+                exportDb()
+            }
+        }
         dialog_save.setOnClickListener {
             val slashRegex = "/+$".toRegex()
             val serverAddress = dialog_main_server.text.toString().trim()

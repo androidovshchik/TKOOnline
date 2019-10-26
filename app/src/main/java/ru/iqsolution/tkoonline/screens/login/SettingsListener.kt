@@ -8,6 +8,8 @@ interface SettingsListener {
 
     fun openPasswordDialog()
 
+    fun exportDb()
+
     fun enterKioskMode()
 
     fun exitKioskMode()
