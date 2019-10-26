@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_login.*
+import ru.iqsolution.tkoonline.LogTree
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.setTextSelection
 import ru.iqsolution.tkoonline.local.Preferences
@@ -24,7 +25,12 @@ class SettingsDialog : BaseDialogFragment() {
         val preferences = Preferences(context).apply {
             dialog_main_server.setTextSelection(mainServerAddress)
             dialog_telemetry_server.setTextSelection(mainTelemetryAddress)
+            file_logs.isChecked = enableLogs
             setAsLocked(enableLock)
+        }
+        file_logs.setOnCheckedChangeListener { _, isChecked ->
+            preferences.enableLogs = isChecked
+            LogTree.saveToFile = isChecked
         }
         dialog_unlock.setOnClickListener {
             setLocked(!mEnableLock, preferences)

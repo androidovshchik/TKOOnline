@@ -111,6 +111,7 @@ dependencies {
     implementation 'io.github.inflationx:calligraphy3:3.1.1'
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.elvishew:xlog:1.6.1'
     implementation "com.facebook.stetho:stetho:${Versions.stetho}"
     implementation "com.facebook.stetho:stetho-okhttp3:${Versions.stetho}"
     testImplementation 'junit:junit:4.12'

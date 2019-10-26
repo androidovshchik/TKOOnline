@@ -74,6 +74,8 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     var packageId by intPref(0, "0x12")
 
+    var enableLogs by booleanPref(false, "0x13")
+
     val isLoggedIn: Boolean
         get() = accessToken != null
 
