@@ -3,7 +3,11 @@ package ru.iqsolution.tkoonline
 import com.elvishew.xlog.XLog
 import timber.log.Timber
 
-class LogTree : Timber.DebugTree() {
+class LogTree(enableLogs: Boolean) : Timber.DebugTree() {
+
+    init {
+        saveToFile = enableLogs
+    }
 
     override fun createStackElementTag(element: StackTraceElement): String {
         return "${super.createStackElementTag(element)}:${element.methodName}:${element.lineNumber}"

@@ -9,6 +9,12 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import coil.Coil
 import coil.ImageLoader
+import com.elvishew.xlog.LogConfiguration
+import com.elvishew.xlog.XLog
+import com.elvishew.xlog.flattener.PatternFlattener
+import com.elvishew.xlog.printer.file.FilePrinter
+import com.elvishew.xlog.printer.file.backup.NeverBackupStrategy
+import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
 import com.facebook.stetho.Stetho
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
@@ -37,6 +43,7 @@ import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.*
 import ru.iqsolution.tkoonline.services.workers.MidnightWorker
 import timber.log.Timber
+import java.io.File
 
 @Suppress("unused")
 class MainApp : Application(), KodeinAware {
@@ -108,8 +115,23 @@ class MainApp : Application(), KodeinAware {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        Timber.plant(LogTree(preferences.enableLogs))
+        getExternalFilesDir(null)?.let {
+            val folder = File(it, "logs").apply {
+                mkdirs()
+            }
+            val config = LogConfiguration.Builder()
+                .t()
+                .st(2)
+                .build()
+            val filePrinter = FilePrinter.Builder(folder.path)
+                .fileNameGenerator(DateFileNameGenerator())
+                .backupStrategy(NeverBackupStrategy())
+                .flattener(PatternFlattener("{d yyyy-MM-dd hh:mm:ss.SSS} {l}: {m}"))
+                .build()
+            XLog.init(config, filePrinter)
+        }
         if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
             Stetho.initialize(
                 Stetho.newInitializerBuilder(applicationContext)
                     .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(applicationContext))
