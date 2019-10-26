@@ -122,7 +122,6 @@ class MainApp : Application(), KodeinAware {
             }
             val config = LogConfiguration.Builder()
                 .t()
-                .st(2)
                 .build()
             val filePrinter = FilePrinter.Builder(folder.path)
                 .fileNameGenerator(DateFileNameGenerator())

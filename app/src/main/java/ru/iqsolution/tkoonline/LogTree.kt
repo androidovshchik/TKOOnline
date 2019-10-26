@@ -16,12 +16,13 @@ class LogTree(enableLogs: Boolean) : Timber.DebugTree() {
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         super.log(priority, tag, message, t)
         if (saveToFile) {
-            XLog.log(priority, tag, message, t)
+            XLog.log(priority, "$tag: $message", t)
         }
     }
 
     companion object {
 
+        @Volatile
         var saveToFile = false
     }
 }
