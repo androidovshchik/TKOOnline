@@ -95,7 +95,7 @@ class MainApp : Application(), KodeinAware {
         }
 
         bind<Database>() with singleton {
-            Room.databaseBuilder(applicationContext, Database::class.java, "app.db")
+            Room.databaseBuilder(applicationContext, Database::class.java, DB_NAME)
                 .fallbackToDestructiveMigration()
                 .addCallback(object : RoomDatabase.Callback() {
 
@@ -115,7 +115,6 @@ class MainApp : Application(), KodeinAware {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        Timber.plant(LogTree(preferences.enableLogs))
         getExternalFilesDir(null)?.let {
             val folder = File(it, "logs").apply {
                 mkdirs()
@@ -130,6 +129,7 @@ class MainApp : Application(), KodeinAware {
                 .build()
             XLog.init(config, filePrinter)
         }
+        Timber.plant(LogTree(preferences.enableLogs))
         if (BuildConfig.DEBUG) {
             Stetho.initialize(
                 Stetho.newInitializerBuilder(applicationContext)

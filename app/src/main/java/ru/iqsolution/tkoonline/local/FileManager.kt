@@ -9,9 +9,14 @@ import androidx.exifinterface.media.ExifInterface
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
+import ru.iqsolution.tkoonline.DB_NAME
 import ru.iqsolution.tkoonline.extensions.use
 import timber.log.Timber
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.*
 
@@ -30,6 +35,29 @@ class FileManager(context: Context) {
 
     fun getRandomName(): String {
         return "${UUID.randomUUID()}.jpg"
+    }
+
+    fun copyDb(context: Context?): Boolean {
+        context?.apply {
+            getExternalFilesDir(null)?.let {
+                it.mkdirs()
+                val dbFile = getDatabasePath(DB_NAME)
+                val datetime = DateTime.now().toString(FORMATTER)
+                val distFile = File(it, "app_${datetime}.db")
+                try {
+                    FileInputStream(dbFile).use { input ->
+                        FileOutputStream(distFile).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    return true
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                    distFile.delete()
+                }
+            }
+        }
+        return false
     }
 
     fun copyImage(src: String, dist: String) {
@@ -186,5 +214,7 @@ class FileManager(context: Context) {
         private const val LIFETIME = 4 * 24 * 60 * 60 * 1000L
 
         private val IMAGE_TYPE = "image/jpeg".toMediaTypeOrNull()
+
+        private val FORMATTER: DateTimeFormatter = DateTimeFormat.forPattern("HH.mm.ss.SSS")
     }
 }
