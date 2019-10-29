@@ -18,7 +18,10 @@ import com.rabbitmq.client.ConnectionFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.*
+import org.jetbrains.anko.activityManager
+import org.jetbrains.anko.powerManager
+import org.jetbrains.anko.startService
+import org.jetbrains.anko.stopService
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
@@ -110,7 +113,6 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
         val executor = Executors.newScheduledThreadPool(1)
         timer = executor.scheduleAtFixedRate({
-            locationCounter.incrementAndGet()
             // background thread here
             if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
                 abortConnection()
@@ -118,54 +120,59 @@ class TelemetryService : BaseService(), TelemetryListener {
                 stopSelf()
                 return@scheduleAtFixedRate
             }
-            if (locationCounter.get() * TIMER_INTERVAL < LOCATION_DELAY) {
-                var event: LocationEvent? = null
-                synchronized(lock) {
-                    if (isRunning) {
-                        lastEventTime?.let { lastTime ->
-                            val point = basePoint
-                            if (point != null) {
-                                var delay = 0L
-                                when (point.state) {
-                                    TelemetryState.MOVING, TelemetryState.STOPPING -> {
-                                        val now = DateTime.now()
-                                        if (now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY) {
-                                            delay = MOVING_DELAY
+            val locationDelay = locationCounter.incrementAndGet() * TIMER_INTERVAL
+            when {
+                locationDelay < LOCATION_MIN_DELAY -> {
+                    onLocationAvailability(false)
+                }
+                locationDelay < LOCATION_MIN_DELAY -> {
+                    synchronized(lock) {
+                        lastEventTime = null
+                        basePoint = null
+                    }
+                    var event: LocationEvent? = null
+                    synchronized(lock) {
+                        if (isRunning) {
+                            lastEventTime?.let { lastTime ->
+                                val point = basePoint
+                                if (point != null) {
+                                    var delay = 0L
+                                    when (point.state) {
+                                        TelemetryState.MOVING, TelemetryState.STOPPING -> {
+                                            val now = DateTime.now()
+                                            if (now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY) {
+                                                delay = MOVING_DELAY
+                                            }
+                                        }
+                                        TelemetryState.PARKING -> {
+                                            val now = DateTime.now()
+                                            if (now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY) {
+                                                delay = PARKING_DELAY
+                                            }
+                                        }
+                                        else -> {
                                         }
                                     }
-                                    TelemetryState.PARKING -> {
-                                        val now = DateTime.now()
-                                        if (now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY) {
-                                            delay = PARKING_DELAY
+                                    if (delay > 0L) {
+                                        Timber.i("Inserting event after delay $delay")
+                                        preferences.blockingBulk {
+                                            event =
+                                                LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
+                                                    // debug info
+                                                    it.state = point.state.name
+                                                    it.waiting = true
+                                                    lastEventTime = it.data.whenTime
+                                                }
+                                            packageId++
                                         }
-                                    }
-                                    else -> {
-                                    }
-                                }
-                                if (delay > 0L) {
-                                    Timber.i("Inserting event after delay $delay")
-                                    preferences.blockingBulk {
-                                        event = LocationEvent(point, tokenId, packageId, mileage.roundToInt()).also {
-                                            // debug info
-                                            it.state = point.state.name
-                                            it.waiting = true
-                                            lastEventTime = it.data.whenTime
-                                        }
-                                        packageId++
                                     }
                                 }
                             }
                         }
                     }
-                }
-                event?.let {
-                    db.locationDao().insert(it)
-                }
-            } else {
-                onLocationAvailability(false)
-                synchronized(lock) {
-                    lastEventTime = null
-                    basePoint = null
+                    event?.let {
+                        db.locationDao().insert(it)
+                    }
                 }
             }
             db.locationDao().getLastSendEvent()?.let {
@@ -188,17 +195,19 @@ class TelemetryService : BaseService(), TelemetryListener {
                             }
                         }
                     }
+                    val json = gson.toJson(it.location)
+                    Timber.d("LocationEvent: $json")
                     channel?.apply {
                         txSelect()
                         channel?.basicPublish(
                             "cars",
                             it.token.carId.toString(),
                             null,
-                            gson.toJson(it.location).toByteArray(Charsets.UTF_8)
+                            json.toByteArray(Charsets.UTF_8)
                         )
                         txCommit()
                     }
-                    db.locationDao().markAsSent(it.location.id ?: 0)
+                    db.locationDao().markAsSent(it.location.id ?: 0L)
                     checkCount()
                 } catch (e: Throwable) {
                     Timber.e(e)
@@ -278,12 +287,6 @@ class TelemetryService : BaseService(), TelemetryListener {
             satellites = satellitesCount
         }
         onLocationResult(newLocation)
-        if (!BuildConfig.DEBUG) {
-            if (location.isFromMockProvider) {
-                toast("Отключите эмуляцию местоположения")
-                return
-            }
-        }
         locationCounter.set(0L)
         launch {
             withContext(Dispatchers.IO) {
@@ -370,6 +373,24 @@ class TelemetryService : BaseService(), TelemetryListener {
         super.onDestroy()
     }
 
+    private inline fun addEvent(block: BasePoint.(LocationEvent?) -> Unit) {
+        var event: LocationEvent? = null
+        synchronized(lock) {
+            if (isRunning) {
+                block(event)
+                val point = basePoint
+                if (point != null) {
+
+                } else {
+
+                }
+            }
+        }
+        event?.let {
+            db.locationDao().insert(it)
+        }
+    }
+
     companion object {
 
         private const val TIMER_INTERVAL = 1500L
@@ -381,9 +402,14 @@ class TelemetryService : BaseService(), TelemetryListener {
         private const val MOVING_DELAY = 60_000L
 
         /**
-         * After this period on no signal there is something strange with work of gps provider
+         * Min timeout of no input locations
          */
-        private const val LOCATION_DELAY = 2 * 60_000L
+        private const val LOCATION_MIN_DELAY = 15_000L
+
+        /**
+         * Max timeout of no input locations
+         */
+        private const val LOCATION_MAX_DELAY = 60_000L
 
         /**
          * @return true if service is running
