@@ -240,48 +240,33 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
         return
     }
     routeCollection.removeAll();
-    routeCollection.add(new ymaps.Circle([[55, 37], 1000], {}, {
-        fillColor: "#70b06e99",
-        strokeWidth: 0
-    }));
-    const layout = ymaps.templateLayoutFactory.createClass(`
-        <div class="placemark">
-            <img class="arrow_icon" style="transform: rotate(90deg);" src="icons/MOVING.svg">
-            <span style="background: red">2</span>
-        </div>`
-    );
-    const balloon = ymaps.templateLayoutFactory.createClass(`
-        <span>
-            ID пакета: id<br>
-            Скорость: spd<br>
-            Пробег: race<br>
-            Высота: height<br>
-            Кол-во спутников: sat_cnt<br>
-            Валидность: valid<br>
-            Отправлено: _t<br>
-            Время события: event_time
-        </span>
-    `);
-    routeCollection
-        .add(new ymaps.Placemark([55, 37], {}, {
-            iconLayout: 'default#imageWithContent',
-            iconImageSize: [0, 0],
-            iconImageOffset: [0, 0],
-            // NOTICE magic -21
-            iconContentOffset: [0, 0],
-            iconContentLayout: layout,
-            balloonContentLayout: balloon
-        } as any));
-    /*locations.forEach(loc => {
+    locations.forEach(loc => {
+        const layout = ymaps.templateLayoutFactory.createClass(`
+            <div class="placemark">
+                <img class="arrow_icon" style="transform: rotate(90deg);opacity: 0.3" src="icons/${loc._s}.svg">
+            </div>`
+        );
+        const balloon = ymaps.templateLayoutFactory.createClass(`
+            <span>
+                ID пакета: ${loc.id}<br>
+                Скорость: ${loc.data.spd}<br>
+                Пробег: ${loc.data.race}<br>
+                Высота: ${loc.data.height}<br>
+                Кол-во спутников: ${loc.data.sat_cnt}<br>
+                Валидность: ${loc.data.valid}<br>
+                Отправлено: ${loc._t}<br>
+                Время события: ${loc.data.event_time}
+            </span>
+        `);
         routeCollection
-            .add(new ymaps.Placemark([loc.data.lat, loc.data.lon], {
-                balloonContent: 'Это красивая ме'
-            }, {
-                iconLayout: 'default#image',
-                iconImageHref: `icons/${loc._s}.svg`,
-                iconRotate: 90,
+            .add(new ymaps.Placemark([loc.data.lat, loc.data.lon], {}, {
+                iconLayout: 'default#imageWithContent',
                 iconImageSize: [0, 0],
-                iconImageOffset: [0, 0]
-            } as any))
-    });*/
+                iconImageOffset: [0, 0],
+                // NOTICE magic -19
+                iconContentOffset: [-19, -14],
+                iconContentLayout: layout,
+                balloonContentLayout: balloon
+            } as any));
+    });
 };
