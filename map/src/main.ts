@@ -123,7 +123,8 @@ function addPlatforms(platforms: Platform[]) {
                 iconImageOffset: [0, 0],
                 // NOTICE magic -23
                 iconContentOffset: [-23, -24],
-                iconContentLayout: layout
+                iconContentLayout: layout,
+                zIndex: 9999
             } as any))
     });
 }
@@ -239,19 +240,30 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
         return
     }
     routeCollection.removeAll();
-    routeCollection.add(new ymaps.Circle([[50, 50], 1000], {}, {
+    routeCollection.add(new ymaps.Circle([[55, 37], 1000], {}, {
         fillColor: "#70b06e99",
         strokeWidth: 0
     }));
+    const layout = ymaps.templateLayoutFactory.createClass(`
+        <div class="placemark">
+            <img style="transform: rotate(90deg);" src="icons/MOVING.svg">
+        </div>`
+    );
+    const MyBalloonContentLayout = ymaps.templateLayoutFactory.createClass('<span>Это красивая ме</span>');
     routeCollection
-        .add(new ymaps.Placemark([50, 50], {
+        .add(new ymaps.Placemark([55, 37], {
             balloonContent: 'Это красивая ме'
         }, {
-            iconLayout: 'default#image',
-            iconImageHref: `icons/MOVING.svg`,
-            iconRotate: 90
+            iconLayout: 'default#imageWithContent',
+            iconImageSize: [0, 0],
+            iconImageOffset: [0, 0],
+            // NOTICE magic -21
+            iconContentOffset: [0, 0],
+            iconContentLayout: layout,
+            balloonContentLayout: MyBalloonContentLayout,
+            balloonPanelMaxMapArea: 0
         } as any));
-    locations.forEach(loc => {
+    /*locations.forEach(loc => {
         routeCollection
             .add(new ymaps.Placemark([loc.data.lat, loc.data.lon], {
                 balloonContent: 'Это красивая ме'
@@ -262,5 +274,5 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
                 iconImageSize: [0, 0],
                 iconImageOffset: [0, 0]
             } as any))
-    });
+    });*/
 };
