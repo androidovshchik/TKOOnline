@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.login
 
 import android.content.Context
 import android.os.SystemClock
+import androidx.sqlite.db.SimpleSQLiteQuery
 import com.chibatching.kotpref.bulk
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.*
@@ -34,6 +35,7 @@ class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presen
         val contextRef = WeakReference(context)
         launch {
             val result = withContext(Dispatchers.IO) {
+                db.baseDao().checkpoint(SimpleSQLiteQuery("pragma wal_checkpoint(full)"))
                 fileManager.copyDb(contextRef.get())
             }
             reference.get()?.onExported(result)

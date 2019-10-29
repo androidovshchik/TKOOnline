@@ -3,10 +3,7 @@ package ru.iqsolution.tkoonline.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import ru.iqsolution.tkoonline.local.dao.CleanDao
-import ru.iqsolution.tkoonline.local.dao.LocationDao
-import ru.iqsolution.tkoonline.local.dao.PhotoDao
-import ru.iqsolution.tkoonline.local.dao.TokenDao
+import ru.iqsolution.tkoonline.local.dao.*
 import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
@@ -19,10 +16,12 @@ import ru.iqsolution.tkoonline.local.entities.PhotoEvent
         CleanEvent::class,
         LocationEvent::class
     ],
-    version = 8
+    version = 9
 )
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase() {
+
+    abstract fun baseDao(): BaseDao
 
     abstract fun tokenDao(): TokenDao
 
