@@ -246,22 +246,31 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
     }));
     const layout = ymaps.templateLayoutFactory.createClass(`
         <div class="placemark">
-            <img style="transform: rotate(90deg);" src="icons/MOVING.svg">
+            <img class="arrow_icon" style="transform: rotate(90deg);" src="icons/MOVING.svg">
+            <span style="background: red">2</span>
         </div>`
     );
-    const MyBalloonContentLayout = ymaps.templateLayoutFactory.createClass('<span>Это красивая ме</span>');
+    const balloon = ymaps.templateLayoutFactory.createClass(`
+        <span>
+            ID пакета: id<br>
+            Скорость: spd<br>
+            Пробег: race<br>
+            Высота: height<br>
+            Кол-во спутников: sat_cnt<br>
+            Валидность: valid<br>
+            Отправлено: _t<br>
+            Время события: event_time
+        </span>
+    `);
     routeCollection
-        .add(new ymaps.Placemark([55, 37], {
-            balloonContent: 'Это красивая ме'
-        }, {
+        .add(new ymaps.Placemark([55, 37], {}, {
             iconLayout: 'default#imageWithContent',
             iconImageSize: [0, 0],
             iconImageOffset: [0, 0],
             // NOTICE magic -21
             iconContentOffset: [0, 0],
             iconContentLayout: layout,
-            balloonContentLayout: MyBalloonContentLayout,
-            balloonPanelMaxMapArea: 0
+            balloonContentLayout: balloon
         } as any));
     /*locations.forEach(loc => {
         routeCollection

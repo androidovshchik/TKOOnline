@@ -19,6 +19,9 @@ $trashIconHeight: 21px;
 // on change recalculate offset
 $locationIconWidth: 33px;
 
+// on change recalculate offset
+$arrowIconWidth: 28px;
+
 //noinspection ALL
 @font-face {
   font-family: 'Roboto';
@@ -85,4 +88,15 @@ html, body, #map {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
+}
+
+.arrow_icon {
+  position: absolute;
+  width: $arrowIconWidth;
+  border-radius: 50%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.35);
 }
