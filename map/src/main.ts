@@ -239,15 +239,28 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
         return
     }
     routeCollection.removeAll();
+    routeCollection.add(new ymaps.Circle([[50, 50], 1000], {}, {
+        fillColor: "#70b06e99",
+        strokeWidth: 0
+    }));
+    routeCollection
+        .add(new ymaps.Placemark([50, 50], {
+            balloonContent: 'Это красивая ме'
+        }, {
+            iconLayout: 'default#image',
+            iconImageHref: `icons/MOVING.svg`,
+            iconRotate: 90
+        } as any));
     locations.forEach(loc => {
         routeCollection
-            .add(new ymaps.Placemark([loc.data.lat, loc.data.lon], {}, {
-                iconLayout: 'default#imageWithContent',
+            .add(new ymaps.Placemark([loc.data.lat, loc.data.lon], {
+                balloonContent: 'Это красивая ме'
+            }, {
+                iconLayout: 'default#image',
+                iconImageHref: `icons/${loc._s}.svg`,
+                iconRotate: 90,
                 iconImageSize: [0, 0],
-                iconImageOffset: [0, 0],
-                // NOTICE magic -23
-                iconContentOffset: [-23, -24],
-                iconContentLayout: dddddd
+                iconImageOffset: [0, 0]
             } as any))
     });
 };

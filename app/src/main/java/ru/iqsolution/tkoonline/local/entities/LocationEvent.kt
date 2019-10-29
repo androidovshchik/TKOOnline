@@ -43,12 +43,15 @@ class LocationEvent() : SendEvent {
     lateinit var data: Data
 
     @ColumnInfo(name = "le_state")
+    @SerializedName("_s")
     lateinit var state: String
 
     @ColumnInfo(name = "le_wait")
+    @SerializedName("_w")
     var waiting = false
 
     @ColumnInfo(name = "le_sent")
+    @SerializedName("_t")
     override var sent = false
 
     /**
