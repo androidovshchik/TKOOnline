@@ -97,6 +97,7 @@ class MainApp : Application(), KodeinAware {
         bind<Database>() with singleton {
             Room.databaseBuilder(applicationContext, Database::class.java, DB_NAME)
                 .fallbackToDestructiveMigration()
+                .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                 .addCallback(object : RoomDatabase.Callback() {
 
                     override fun onCreate(sqliteDatabase: SupportSQLiteDatabase) {
@@ -125,7 +126,7 @@ class MainApp : Application(), KodeinAware {
             val filePrinter = FilePrinter.Builder(folder.path)
                 .fileNameGenerator(DateFileNameGenerator())
                 .backupStrategy(NeverBackupStrategy())
-                .flattener(PatternFlattener("{d yyyy-MM-dd hh:mm:ss.SSS} {l}: {m}"))
+                .flattener(PatternFlattener("{d yyyy-MM-dd HH:mm:ss.SSS} {l}: {m}"))
                 .build()
             XLog.init(config, filePrinter)
         }
