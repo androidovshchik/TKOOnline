@@ -61,7 +61,7 @@ class SyncManager(context: Context, listener: SyncListener) {
     private val callback = object : ConnectivityManager.NetworkCallback() {
 
         override fun onAvailable(network: Network) {
-            Timber.d("Network on available")
+            // Timber.d("Network on available")
             reference.get()?.onNetworkChanged(isConnected)
         }
 
@@ -77,7 +77,6 @@ class SyncManager(context: Context, listener: SyncListener) {
     private val receiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
-            Timber.d("Status bar action: ${intent.action}")
             when (intent.action) {
                 Intent.ACTION_TIME_TICK, Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED -> {
                     if (intent.action == Intent.ACTION_TIMEZONE_CHANGED) {
@@ -93,6 +92,7 @@ class SyncManager(context: Context, listener: SyncListener) {
                 }
                 ACTION_LOCATION -> {
                     if (intent.hasExtra(EXTRA_SYNC_LOCATION)) {
+                        Timber.d("Received ACTION_LOCATION EXTRA_SYNC_LOCATION")
                         val location = intent.getSerializableExtra(EXTRA_SYNC_LOCATION) as SimpleLocation
                         reference.get()?.onLocationResult(location)
                     }
@@ -102,12 +102,13 @@ class SyncManager(context: Context, listener: SyncListener) {
                     }
                 }
                 ACTION_CLOUD -> {
+                    Timber.d("Received ACTION_CLOUD")
                     reference.get()?.onCloudChanged()
                 }
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
                     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
                     val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-                    Timber.d("On battery changes: status $status, level $level")
+                    // Timber.d("On battery changes: status $status, level $level")
                     reference.get()?.onBatteryChanged(status, level)
                 }
             }
