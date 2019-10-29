@@ -8,5 +8,5 @@ import androidx.sqlite.db.SupportSQLiteQuery
 interface BaseDao {
 
     @RawQuery
-    fun checkpoint(supportSQLiteQuery: SupportSQLiteQuery)
+    fun checkpoint(supportSQLiteQuery: SupportSQLiteQuery): Int
 }
