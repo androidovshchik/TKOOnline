@@ -179,7 +179,7 @@ window._4_mapSetLocation = function (latitude: number, longitude: number, radius
             // NOTICE magic -21
             iconContentOffset: [-21, -16],
             iconContentLayout: layout,
-            zIndex: 999999
+            zIndex: 99999
         } as any))
 };
 
@@ -240,12 +240,27 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
         return
     }
     routeCollection.removeAll();
-    locations.forEach(loc => {
+    locations.forEach((loc, i) => {
+        routeCollection.add(new ymaps.Circle([[loc.data.lat, loc.data.lon], 1000], {}, {
+            fillColor: "#70b06e99",
+            strokeWidth: 0
+        }));
         const layout = ymaps.templateLayoutFactory.createClass(`
             <div class="placemark">
-                <img class="arrow_icon" style="transform: rotate(90deg);opacity: 0.3" src="icons/${loc._s}.svg">
-            </div>`
-        );
+                <img id="arrow_${i}" class="arrow_icon" style="transform: rotate(${loc.data.dir - 45}deg);${loc._w ? 'opacity: 0.3' : ''}" src="icons/${loc._s}.svg">
+            </div>`, {
+            build: function () {
+                layout.superclass.build.call(this);
+                document.getElementById(`arrow_${i}`).addEventListener('click', this.onClick);
+            },
+            clear: function () {
+                document.getElementById(`arrow_${i}`).removeEventListener('click', this.onClick);
+                layout.superclass.clear.call(this);
+            },
+            onClick: function () {
+                console.log('click');
+            }
+        });
         const balloon = ymaps.templateLayoutFactory.createClass(`
             <span>
                 ID пакета: ${loc.id}<br>
@@ -266,7 +281,10 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
                 // NOTICE magic -19
                 iconContentOffset: [-19, -14],
                 iconContentLayout: layout,
-                balloonContentLayout: balloon
+                balloonContentLayout: balloon,
+                // Запретим замену обычного балуна на балун-панель.
+                // Если не указывать эту опцию, на картах маленького размера откроется балун-панель.
+                balloonPanelMaxMapArea: 0
             } as any));
     });
 };
