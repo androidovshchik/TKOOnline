@@ -11,6 +11,7 @@ import coil.api.load
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
+import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
@@ -95,7 +96,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
     }
 
     override fun exportDb() {
-        presenter.export()
+        presenter.export(applicationContext)
     }
 
     override fun enterKioskMode() {
@@ -118,6 +119,10 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
     override fun onLoggedIn() {
         startActivityNoop<PlatformsActivity>()
         finish()
+    }
+
+    override fun onExported(success: Boolean) {
+        toast(if (success) "БД успешно экспортирована" else "Не удалось экспортировать БД")
     }
 
     override fun showError(e: Throwable?) {

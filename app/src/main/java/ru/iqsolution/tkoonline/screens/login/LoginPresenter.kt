@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.login
 
+import android.content.Context
 import android.os.SystemClock
 import com.chibatching.kotpref.bulk
 import com.google.gson.JsonSyntaxException
@@ -7,17 +8,38 @@ import kotlinx.coroutines.*
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
+import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.models.QrCode
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import timber.log.Timber
+import java.lang.ref.WeakReference
 
 class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presenter {
 
     val server: Server by instance()
 
+    val fileManager: FileManager by instance()
+
     private var qrCodeJson: String? = null
+
+    private var isExporting = false
+
+    override fun export(context: Context) {
+        if (isExporting) {
+            return
+        }
+        isExporting = true
+        val contextRef = WeakReference(context)
+        launch {
+            val result = withContext(Dispatchers.IO) {
+                fileManager.copyDb(contextRef.get())
+            }
+            reference.get()?.onExported(result)
+            isExporting = false
+        }
+    }
 
     override fun login(data: String) {
         if (data == qrCodeJson) {

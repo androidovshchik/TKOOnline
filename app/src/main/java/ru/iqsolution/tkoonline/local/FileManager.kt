@@ -41,9 +41,9 @@ class FileManager(context: Context) {
         context?.apply {
             getExternalFilesDir(null)?.let {
                 it.mkdirs()
-                val dbFile = getDatabasePath(DB_NAME)
                 val datetime = DateTime.now().toString(FORMATTER)
                 val distFile = File(it, "app_${datetime}.db")
+                val dbFile = getDatabasePath(DB_NAME)
                 try {
                     FileInputStream(dbFile).use { input ->
                         FileOutputStream(distFile).use { output ->
