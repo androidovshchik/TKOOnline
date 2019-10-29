@@ -1,11 +1,12 @@
 import {Platform} from "./platform.interface";
 import {getColor} from "./status.enum";
+import {LocationEvent} from "./location.interface";
 
 declare const Android;
 
 declare const ymaps;
 
-let id, map, markersCollection, locationCollection, isGpsAvailable = true;
+let id, map, markersCollection, locationCollection, routeCollection, isGpsAvailable = true;
 
 // @ts-ignore
 const MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
@@ -46,9 +47,11 @@ function init() {
     });
     markersCollection = new ymaps.GeoObjectCollection();
     locationCollection = new ymaps.GeoObjectCollection();
+    routeCollection = new ymaps.GeoObjectCollection();
     map.geoObjects
         .add(markersCollection)
-        .add(locationCollection);
+        .add(locationCollection)
+        .add(routeCollection);
     if (typeof Android !== 'undefined') {
         Android.onReady();
     }
@@ -220,4 +223,31 @@ window._6_mapChangeIcon = function (active: boolean) {
             childList: true
         });
     }
+};
+
+// @ts-ignore
+window._7_mapClearRoute = function () {
+    if (map == null) {
+        return
+    }
+    routeCollection.removeAll();
+};
+
+// @ts-ignore
+window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
+    if (map == null) {
+        return
+    }
+    routeCollection.removeAll();
+    locations.forEach(loc => {
+        routeCollection
+            .add(new ymaps.Placemark([loc.data.lat, loc.data.lon], {}, {
+                iconLayout: 'default#imageWithContent',
+                iconImageSize: [0, 0],
+                iconImageOffset: [0, 0],
+                // NOTICE magic -23
+                iconContentOffset: [-23, -24],
+                iconContentLayout: dddddd
+            } as any))
+    });
 };
