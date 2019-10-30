@@ -246,21 +246,10 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
             strokeWidth: 0
         }));
         const layout = ymaps.templateLayoutFactory.createClass(`
-            <div class="placemark">
-                <img id="arrow_${i}" class="arrow_icon" style="transform: rotate(${loc.data.dir - 45}deg);${loc._w ? 'opacity: 0.3' : ''}" src="icons/${loc._s}.svg">
-            </div>`, {
-            build: function () {
-                layout.superclass.build.call(this);
-                document.getElementById(`arrow_${i}`).addEventListener('click', this.onClick);
-            },
-            clear: function () {
-                document.getElementById(`arrow_${i}`).removeEventListener('click', this.onClick);
-                layout.superclass.clear.call(this);
-            },
-            onClick: function () {
-                console.log('click');
-            }
-        });
+            <div id="arrow_${i}" class="placemark">
+                <img class="arrow_icon" style="transform: rotate(${loc.data.dir - 45}deg);${loc._w ? 'opacity: 0.3' : 'opacity: 0.3'}" src="icons/${loc._s}.svg">
+            </div>`
+        );
         const balloon = ymaps.templateLayoutFactory.createClass(`
             <span>
                 ID пакета: ${loc.id}<br>
@@ -276,10 +265,10 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
         routeCollection
             .add(new ymaps.Placemark([loc.data.lat, loc.data.lon], {}, {
                 iconLayout: 'default#imageWithContent',
-                iconImageSize: [0, 0],
-                iconImageOffset: [0, 0],
-                // NOTICE magic -19
-                iconContentOffset: [-19, -14],
+                // NOTICE magic numbers
+                iconImageSize: [24, 28],
+                iconImageOffset: [-10, -14],
+                iconContentOffset: [-9, 0],
                 iconContentLayout: layout,
                 balloonContentLayout: balloon,
                 // Запретим замену обычного балуна на балун-панель.
