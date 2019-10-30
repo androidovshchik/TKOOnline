@@ -247,7 +247,7 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
         }));
         const layout = ymaps.templateLayoutFactory.createClass(`
             <div id="arrow_${i}" class="placemark">
-                <img class="arrow_icon" style="transform: rotate(${loc.data.dir - 45}deg);${loc._w ? 'opacity: 0.3' : 'opacity: 0.3'}" src="icons/${loc._s}.svg">
+                <img class="arrow_icon" style="transform: rotate(${loc.data.dir - 45}deg)" src="icons/${loc._s}${loc._w ? '2' : '2'}.svg">
             </div>`
         );
         const balloon = ymaps.templateLayoutFactory.createClass(`
@@ -264,6 +264,8 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
         `);
         routeCollection
             .add(new ymaps.Placemark([loc.data.lat, loc.data.lon], {}, {
+                draggable: true,
+                hideIconOnBalloonOpen: false,
                 iconLayout: 'default#imageWithContent',
                 // NOTICE magic numbers
                 iconImageSize: [24, 28],
