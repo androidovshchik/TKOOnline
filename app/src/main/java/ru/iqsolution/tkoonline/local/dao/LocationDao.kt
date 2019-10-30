@@ -29,6 +29,15 @@ interface LocationDao {
     )
     fun getLastSendEvent(): LocationEventToken?
 
+    @Query(
+        """
+        SELECT location_events.*, tokens.* FROM location_events 
+        INNER JOIN tokens ON location_events.le_token_id = tokens.t_id
+        WHERE location_events.le_when_time LIKE :day || '%'
+    """
+    )
+    fun getDayEvents(day: String): List<LocationEventToken>
+
     @Insert
     fun insert(item: LocationEvent)
 
