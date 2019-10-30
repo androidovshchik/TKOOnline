@@ -241,13 +241,9 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
     }
     routeCollection.removeAll();
     locations.forEach((loc, i) => {
-        routeCollection.add(new ymaps.Circle([[loc.data.lat, loc.data.lon], 1000], {}, {
-            fillColor: "#70b06e99",
-            strokeWidth: 0
-        }));
         const layout = ymaps.templateLayoutFactory.createClass(`
             <div id="arrow_${i}" class="placemark">
-                <img class="arrow_icon" style="transform: rotate(${loc.data.dir - 45}deg)" src="icons/${loc._s}${loc._w ? '2' : '2'}.svg">
+                <img class="arrow_icon" style="transform: rotate(${loc.data.dir - 45}deg)" src="icons/${loc._s}${loc._w ? '2' : ''}.svg">
             </div>`
         );
         const balloon = ymaps.templateLayoutFactory.createClass(`
@@ -264,7 +260,6 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
         `);
         routeCollection
             .add(new ymaps.Placemark([loc.data.lat, loc.data.lon], {}, {
-                draggable: true,
                 hideIconOnBalloonOpen: false,
                 iconLayout: 'default#imageWithContent',
                 // NOTICE magic numbers
