@@ -132,10 +132,15 @@ class MapLayout : FrameLayout, MapListener {
     /**
      * @param radius in meters
      */
-    fun setLocation(latitude: Double, longitude: Double, radius: Float = 0f) {
+    fun setLocation(
+        latitude: Double,
+        longitude: Double,
+        radius: Float = 0f,
+        active: Boolean = true
+    ) {
         mLatitude = latitude
         mLongitude = longitude
-        runCall("_4_mapSetLocation($latitude, $longitude, $radius)")
+        runCall("_4_mapSetLocation($latitude, $longitude, $radius, $active)")
     }
 
     fun clearState(all: Boolean = false) {
@@ -148,6 +153,14 @@ class MapLayout : FrameLayout, MapListener {
 
     fun changeIcon(active: Boolean) {
         runCall("_6_mapChangeIcon($active)")
+    }
+
+    fun clearRoute() {
+        runCall("_7_mapClearRoute()")
+    }
+
+    fun setRoute(locations: String) {
+        runCall("_7_mapSetRoute($locations)")
     }
 
     private fun runCall(call: String) {
