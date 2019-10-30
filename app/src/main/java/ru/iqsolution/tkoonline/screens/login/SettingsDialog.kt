@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.chibatching.kotpref.bulk
-import kotlinx.android.synthetic.main.dialog_login.*
+import kotlinx.android.synthetic.main.dialog_settings.*
 import ru.iqsolution.tkoonline.LogTree
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.setTextSelection
@@ -18,7 +18,7 @@ class SettingsDialog : BaseDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(R.layout.dialog_login, container, false)
+        return inflater.inflate(R.layout.dialog_settings, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -26,11 +26,15 @@ class SettingsDialog : BaseDialogFragment() {
             dialog_main_server.setTextSelection(mainServerAddress)
             dialog_telemetry_server.setTextSelection(mainTelemetryAddress)
             file_logs.isChecked = enableLogs
+            build_route.isChecked = showRoute
             setAsLocked(enableLock)
         }
         file_logs.setOnCheckedChangeListener { _, isChecked ->
             preferences.enableLogs = isChecked
             LogTree.saveToFile = isChecked
+        }
+        build_route.setOnCheckedChangeListener { _, isChecked ->
+            preferences.showRoute = isChecked
         }
         dialog_unlock.setOnClickListener {
             setLocked(!mEnableLock, preferences)

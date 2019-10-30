@@ -85,12 +85,28 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_telemetry_server"
         android:layout_marginStart="6dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginBottom="8dp"
         android:text="Сохранять логи"
         android:textSize="16sp"
         android:textColor="#89000000"
         android:lineSpacingExtra="8sp"
-        android:switchPadding="8dp"
+        android:switchPadding="10dp"
+        android:background="?android:attr/selectableItemBackground"
+        fontPath="fonts/Roboto-Bold.ttf" />
+
+    <Switch
+        android:id="@+id/build_route"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_toEndOf="@+id/file_logs"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="8dp"
+        android:text="Строить маршрут"
+        android:textSize="16sp"
+        android:textColor="#89000000"
+        android:lineSpacingExtra="8sp"
+        android:switchPadding="10dp"
         android:background="?android:attr/selectableItemBackground"
         fontPath="fonts/Roboto-Bold.ttf"/>
 
