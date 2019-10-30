@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.platforms
 
 import android.content.Context
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
+import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
@@ -14,6 +15,8 @@ interface PlatformsContract {
         fun loadPlatformsTypes(refresh: Boolean)
 
         fun loadPhotoCleanEvents()
+
+        fun loadRoute()
 
         fun logout(context: Context)
 
@@ -29,6 +32,8 @@ interface PlatformsContract {
         fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>)
 
         fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>)
+
+        fun onRoute(locationEvents: List<LocationEvent>)
 
         fun onLoggedOut()
     }

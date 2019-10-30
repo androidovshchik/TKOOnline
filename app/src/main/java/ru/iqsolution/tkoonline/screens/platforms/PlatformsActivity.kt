@@ -14,6 +14,7 @@ import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
+import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
@@ -138,7 +139,12 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             items.notifyItems(false, secondary)
             notifyDataSetChanged()
         }
-        presenter.loadPhotoCleanEvents()
+        presenter.apply {
+            loadPhotoCleanEvents()
+            if (preferences.showRoute) {
+                loadRoute()
+            }
+        }
     }
 
     override fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>) {
@@ -159,6 +165,10 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             platforms_map.setMarkers(presenter.toJson(items), presenter.toJson(primaryItems))
         }
         platforms_refresh.isRefreshing = false
+    }
+
+    override fun onRoute(locationEvents: List<LocationEvent>) {
+        platforms_map.setRoute(presenter.toJson(locationEvents))
     }
 
     override fun onLocationState(state: LocationSettingsStates?) {

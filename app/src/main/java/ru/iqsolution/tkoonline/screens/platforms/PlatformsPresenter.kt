@@ -12,6 +12,7 @@ import okhttp3.OkHttpClient
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
+import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
@@ -30,10 +31,11 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
 
     override fun loadPlatformsTypes(refresh: Boolean) {
         baseJob.cancelChildren()
+        val header = preferences.authHeader
         launch {
-            val responseTypes = server.getPhotoTypes(preferences.authHeader)
+            val responseTypes = server.getPhotoTypes(header)
             reference.get()?.onReceivedTypes(responseTypes.data)
-            val responsePlatforms = server.getPlatforms(preferences.authHeader, preferences.serverDay)
+            val responsePlatforms = server.getPlatforms(header, preferences.serverDay)
             var minLat = Double.MAX_VALUE
             var maxLat = Double.MIN_VALUE
             var minLon = Double.MAX_VALUE
@@ -90,14 +92,31 @@ class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsCon
     }
 
     override fun loadPhotoCleanEvents() {
+        val day = preferences.serverDay
         launch {
             val photoEvents = arrayListOf<PhotoEvent>()
             val cleanEvents = arrayListOf<CleanEvent>()
             withContext(Dispatchers.IO) {
-                photoEvents.addAll(db.photoDao().getDayEvents(preferences.serverDay))
-                cleanEvents.addAll(db.cleanDao().getDayEvents(preferences.serverDay))
+                photoEvents.addAll(db.photoDao().getDayEvents(day))
+                cleanEvents.addAll(db.cleanDao().getDayEvents(day))
             }
             reference.get()?.onPhotoCleanEvents(photoEvents, cleanEvents)
+        }
+    }
+
+    override fun loadRoute() {
+        val day = preferences.serverDay
+        val carId = preferences.carId
+        launch {
+            val locationEvents = arrayListOf<LocationEvent>()
+            withContext(Dispatchers.IO) {
+                db.locationDao().getDayEvents(day).forEach {
+                    if (it.token.carId == carId) {
+                        locationEvents.add(it.location)
+                    }
+                }
+            }
+            reference.get()?.onRoute(locationEvents)
         }
     }
 
