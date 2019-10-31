@@ -13,6 +13,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.*
+import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -60,16 +61,13 @@ class SyncManager(context: Context, listener: SyncListener) {
 
         override fun onAvailable(network: Network) {
             // Timber.d("Network on available")
-            reference.get()?.onNetworkChanged(isConnected)
+            reference.get()?.onNetworkChanged(connectivity.isConnected)
         }
 
         override fun onLost(network: Network) {
             Timber.d("Network on lost")
-            reference.get()?.onNetworkChanged(isConnected)
+            reference.get()?.onNetworkChanged(connectivity.isConnected)
         }
-
-        private val isConnected: Boolean
-            get() = connectivity.activeNetworkInfo?.isConnected == true
     }
 
     private val receiver = object : BroadcastReceiver() {
