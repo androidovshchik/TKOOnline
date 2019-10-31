@@ -144,7 +144,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                     }
                     if (eventDelay > 0L) {
                         Timber.i("Event after delay $eventDelay")
-                        preferences.insertEvent(it)
+                        return@addEventSync preferences.insertEvent(it)
                     }
                 }
                 return@addEventSync null
@@ -276,11 +276,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                             distance = preferences.mileage
                         }
                         it.replaceWith()?.let { state ->
-                            val event =
-                                LocationEvent(it, tokenId, packageId, distance.roundToInt())
-                            packageId++
-                            lastEventTime = event.data.whenTime
-                            insertEvent(it)
+                            val event = preferences.insertEvent(it, distance, false)
                             Timber.i("Replace state with $state")
                             basePoint = BasePoint(newLocation, state)
                             return@addEventSync event
@@ -373,7 +369,7 @@ class TelemetryService : BaseService(), TelemetryListener {
     private fun Preferences.insertEvent(
         basePoint: BasePoint,
         distance: Float = mileage,
-        waiting: Boolean = false
+        waiting: Boolean = true
     ): LocationEvent? {
         blockingBulk {
             val event = LocationEvent(basePoint, tokenId, packageId, distance.roundToInt()).also {
