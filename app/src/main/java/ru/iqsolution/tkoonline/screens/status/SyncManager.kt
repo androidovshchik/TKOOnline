@@ -12,10 +12,7 @@ import android.os.BatteryManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
-import ru.iqsolution.tkoonline.ACTION_CLOUD
-import ru.iqsolution.tkoonline.ACTION_LOCATION
-import ru.iqsolution.tkoonline.EXTRA_SYNC_AVAILABILITY
-import ru.iqsolution.tkoonline.EXTRA_SYNC_LOCATION
+import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -43,6 +40,7 @@ class SyncManager(context: Context, listener: SyncListener) {
         })
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(receiver, IntentFilter().apply {
+                addAction(ACTION_COORDINATES)
                 addAction(ACTION_LOCATION)
                 addAction(ACTION_CLOUD)
             })
@@ -90,10 +88,11 @@ class SyncManager(context: Context, listener: SyncListener) {
                     }
                     reference.get()?.onTimeChanged()
                 }
-                ACTION_LOCATION -> {
-                    if (intent.hasExtra(EXTRA_SYNC_LOCATION)) {
-                        Timber.d("Received ACTION_LOCATION EXTRA_SYNC_LOCATION")
-                        val location = intent.getSerializableExtra(EXTRA_SYNC_LOCATION) as SimpleLocation
+                ACTION_COORDINATES -> {
+                    if (intent.hasExtra(EXTRA_SYNC_COORDINATES)) {
+                        Timber.d("Received ACTION_COORDINATES EXTRA_SYNC_COORDINATES")
+                        val location =
+                            intent.getSerializableExtra(EXTRA_SYNC_COORDINATES) as SimpleLocation
                         reference.get()?.onLocationResult(location)
                     }
                     if (intent.hasExtra(EXTRA_SYNC_AVAILABILITY)) {

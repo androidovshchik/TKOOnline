@@ -31,7 +31,7 @@ const val ACTION_CLOUD = "action_cloud"
 
 const val EXTRA_TELEMETRY_TASK = "telemetry_task"
 
-const val EXTRA_SYNC_LOCATION = "sync_location"
+const val EXTRA_SYNC_COORDINATES = "sync_coordinates"
 
 const val EXTRA_SYNC_AVAILABILITY = "sync_availability"
 
