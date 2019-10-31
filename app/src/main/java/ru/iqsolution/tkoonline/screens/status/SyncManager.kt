@@ -41,8 +41,8 @@ class SyncManager(context: Context, listener: SyncListener) {
         })
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(receiver, IntentFilter().apply {
-                addAction(ACTION_COORDINATES)
                 addAction(ACTION_LOCATION)
+                addAction(ACTION_ROUTE)
                 addAction(ACTION_CLOUD)
             })
     }
@@ -86,11 +86,11 @@ class SyncManager(context: Context, listener: SyncListener) {
                     }
                     reference.get()?.onTimeChanged()
                 }
-                ACTION_COORDINATES -> {
-                    if (intent.hasExtra(EXTRA_SYNC_COORDINATES)) {
-                        Timber.d("Received ACTION_COORDINATES EXTRA_SYNC_COORDINATES")
+                ACTION_LOCATION -> {
+                    if (intent.hasExtra(EXTRA_SYNC_LOCATION)) {
+                        Timber.d("Received ACTION_LOCATION EXTRA_SYNC_LOCATION")
                         val location =
-                            intent.getSerializableExtra(EXTRA_SYNC_COORDINATES) as SimpleLocation
+                            intent.getSerializableExtra(EXTRA_SYNC_LOCATION) as SimpleLocation
                         reference.get()?.onLocationResult(location)
                     }
                     if (intent.hasExtra(EXTRA_SYNC_AVAILABILITY)) {
@@ -98,8 +98,8 @@ class SyncManager(context: Context, listener: SyncListener) {
                         reference.get()?.onLocationAvailability(available)
                     }
                 }
-                ACTION_LOCATION -> {
-                    Timber.d("Received ACTION_LOCATION")
+                ACTION_ROUTE -> {
+                    Timber.d("Received ACTION_ROUTE")
                     reference.get()?.onLocationEvent()
                 }
                 ACTION_CLOUD -> {

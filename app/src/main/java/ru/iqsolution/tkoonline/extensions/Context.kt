@@ -8,9 +8,21 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.core.content.PermissionChecker.PermissionResult
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startService
+import ru.iqsolution.tkoonline.receivers.ToastReceiver
+
+fun Context.bgToast(message: String) = sendBroadcast(intentFor<ToastReceiver>().apply {
+    putExtra(ToastReceiver.EXTRA_MESSAGE, message)
+    putExtra(ToastReceiver.EXTRA_DURATION, Toast.LENGTH_SHORT)
+})
+
+fun Context.longBgToast(message: String) = sendBroadcast(intentFor<ToastReceiver>().apply {
+    putExtra(ToastReceiver.EXTRA_MESSAGE, message)
+    putExtra(ToastReceiver.EXTRA_DURATION, Toast.LENGTH_LONG)
+})
 
 tailrec fun Context?.activity(): Activity? = when (this) {
     is Activity -> this

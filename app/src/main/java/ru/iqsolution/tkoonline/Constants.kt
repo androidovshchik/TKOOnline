@@ -23,15 +23,15 @@ val PATTERN_DATETIME: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd'T'
 
 val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
-const val ACTION_COORDINATES = "action_coordinates"
+const val ACTION_LOCATION = "action_location"
 
-const val ACTION_LOCATION/*EVENT*/ = "action_location"
+const val ACTION_ROUTE = "action_route"
 
 const val ACTION_CLOUD = "action_cloud"
 
 const val EXTRA_TELEMETRY_TASK = "telemetry_task"
 
-const val EXTRA_SYNC_COORDINATES = "sync_coordinates"
+const val EXTRA_SYNC_LOCATION = "sync_coordinates"
 
 const val EXTRA_SYNC_AVAILABILITY = "sync_availability"
 
