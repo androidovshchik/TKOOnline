@@ -1,10 +1,12 @@
 #!/bin/bash
-
+rm -rf gen
+mkdir -p gen
 for image in *.png; do 
-    convert $image -virtual-pixel transparent -distort ScaleRotateTranslate -45 $image;
-    continue;
-    for i in $(seq -175 5 175); do 
+    # convert $image -virtual-pixel transparent -distort SRT -45 $image;
+    # continue;
+    for i in $(seq -175 5 180); do 
         if [ $i -eq 0 ]; then
+            convert $image gen/${image%.*}0.png;
             continue;
         fi
         if [ $i -lt 0 ]; then
@@ -12,6 +14,6 @@ for image in *.png; do
         else
             filename=${image%.*}$i.png;
         fi
-        convert $image -virtual-pixel transparent -distort ScaleRotateTranslate $i $filename;
+        convert $image -virtual-pixel transparent -distort SRT $i gen/$filename;
     done
 done
