@@ -16,6 +16,11 @@ interface SyncListener : LocationListener {
     /**
      * Requires to find out new data
      */
+    fun onLocationEvent()
+
+    /**
+     * Requires to find out new data
+     */
     fun onCloudChanged()
 
     fun onCloudChanged(hasData: Boolean, photoCount: Int)

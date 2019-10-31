@@ -174,6 +174,12 @@ class StatusFragment : BaseFragment(), SyncListener {
         }
     }
 
+    override fun onLocationEvent() {
+        makeCallback<IBaseView> {
+            updateRoute()
+        }
+    }
+
     /**
      * Will be called only from [ru.iqsolution.tkoonline.screens.base.BaseActivity]
      */

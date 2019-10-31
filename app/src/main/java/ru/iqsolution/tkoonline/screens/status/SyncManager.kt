@@ -100,6 +100,10 @@ class SyncManager(context: Context, listener: SyncListener) {
                         reference.get()?.onLocationAvailability(available)
                     }
                 }
+                ACTION_LOCATION -> {
+                    Timber.d("Received ACTION_LOCATION")
+                    reference.get()?.onLocationEvent()
+                }
                 ACTION_CLOUD -> {
                     Timber.d("Received ACTION_CLOUD")
                     reference.get()?.onCloudChanged()
