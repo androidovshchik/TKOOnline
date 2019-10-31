@@ -20,5 +20,5 @@ export interface LocationEvent {
 }
 
 export function getAngle(angle: number): number {
-    return angle / 10 + (angle % 10 <= 5 ? 0 : 1);
+    return 10 * (angle % 10 <= 5 ? Math.floor(angle / 10) : Math.ceil(angle / 10));
 }
