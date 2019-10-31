@@ -161,6 +161,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                     return@addEventSync null
                 }
             }
+            bgToast("Не удается определить местоположение")
             if (!connectivityManager.isConnected) {
                 return@scheduleAtFixedRate
             }
@@ -259,7 +260,7 @@ class TelemetryService : BaseService(), TelemetryListener {
     override fun onLocationState(state: LocationSettingsStates?) {}
 
     override fun onLocationAvailability(available: Boolean) {
-        broadcastManager.sendBroadcast(Intent(ACTION_COORDINATES).apply {
+        broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_AVAILABILITY, available)
         })
     }
@@ -312,13 +313,14 @@ class TelemetryService : BaseService(), TelemetryListener {
             longitude = location.longitude.toFloat()
             locationTime = location.locationTime.toString(PATTERN_DATETIME)
         }
-        broadcastManager.sendBroadcast(Intent(ACTION_COORDINATES).apply {
-            putExtra(EXTRA_SYNC_COORDINATES, location)
+        broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
+            putExtra(EXTRA_SYNC_LOCATION, location)
         })
     }
 
     @WorkerThread
     private fun checkCount() {
+        broadcastManager.sendBroadcast(Intent(ACTION_ROUTE))
         val locationCount = db.locationDao().getSendCount()
         if (locationCount <= 0) {
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
@@ -376,7 +378,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
         event?.let {
             db.locationDao().insert(it)
-            broadcastManager.sendBroadcast(Intent(ACTION_LOCATION))
+            broadcastManager.sendBroadcast(Intent(ACTION_ROUTE))
         }
     }
 
