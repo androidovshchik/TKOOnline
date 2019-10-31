@@ -285,30 +285,27 @@ class TelemetryService : BaseService(), TelemetryListener {
                     if (it != null) {
                         preferences.blockingBulk {
                             val space = it.updateLocation(newLocation)
-                            val distance: Float
+                            val meters: Float
                             if (it.state != TelemetryState.PARKING) {
-                                distance = mileage + space
-                                mileage = distance
+                                meters = mileage + space
+                                mileage = meters
                             } else {
-                                distance = mileage
+                                meters = mileage
                             }
                             it.replaceWith()?.let { state ->
+                                val event =
+                                    LocationEvent(it, tokenId, packageId, meters.roundToInt())
+                                // debug info
+                                event.state = it.state.name
+                                packageId++
+                                lastEventTime = event.data.whenTime
                                 Timber.i("Replace state with $state")
                                 basePoint = BasePoint(newLocation, state)
-                                return@addEventSync LocationEvent(
-                                    it,
-                                    tokenId,
-                                    packageId,
-                                    distance.roundToInt()
-                                ).also {
-                                    // debug info
-                                    it.state = state.name
-                                    lastEventTime = it.data.whenTime
-                                    packageId++
-                                }
+                                return@addEventSync event
                             }
                         }
                     } else {
+                        Timber.i("Init base point")
                         basePoint = BasePoint(newLocation)
                     }
                     return@addEventSync null
