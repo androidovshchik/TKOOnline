@@ -18,3 +18,7 @@ export interface LocationEvent {
     _t: boolean;
     data: LocationData;
 }
+
+export function getAngle(angle: number): number {
+    return angle / 10 + (angle % 10 <= 5 ? 0 : 1);
+}

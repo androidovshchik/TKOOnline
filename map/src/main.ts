@@ -1,6 +1,6 @@
 import {Platform} from "./platform.interface";
 import {getColor} from "./status.enum";
-import {LocationEvent} from "./location.interface";
+import {getAngle, LocationEvent} from "./location.interface";
 
 declare const Android;
 
@@ -243,7 +243,7 @@ window._7_mapSetRoute = function (locations: LocationEvent[] = []) {
     locations.forEach((loc, i) => {
         const layout = ymaps.templateLayoutFactory.createClass(`
             <div id="arrow_${i}" class="placemark">
-                <img class="arrow_icon" style="transform: rotate(${loc.data.dir - 45}deg)" src="icons/${loc._s}${loc._w ? '2' : ''}.svg">
+                <img class="arrow_icon" src="icons/gen/${loc._s}${loc._w ? 'G' : ''}${getAngle(loc.data.dir)}.png">
             </div>`
         );
         const balloon = ymaps.templateLayoutFactory.createClass(`
