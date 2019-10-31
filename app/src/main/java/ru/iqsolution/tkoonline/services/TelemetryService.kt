@@ -143,15 +143,8 @@ class TelemetryService : BaseService(), TelemetryListener {
                         }
                     }
                     if (eventDelay > 0L) {
-                        preferences.blockingBulk {
-                            Timber.i("Event after delay $eventDelay")
-                            val event = LocationEvent(it, tokenId, packageId, mileage.roundToInt())
-                            // debug info
-                            event.waiting = true
-                            packageId++
-                            lastEventTime = event.data.whenTime
-                            return@addEventSync event
-                        }
+                        Timber.i("Event after delay $eventDelay")
+                        preferences.insertEvent(it)
                     }
                 }
                 return@addEventSync null
@@ -272,24 +265,25 @@ class TelemetryService : BaseService(), TelemetryListener {
                 }
                 addEventSync {
                     if (it != null) {
-                        preferences.blockingBulk {
-                            val space = it.updateLocation(newLocation)
-                            val distance: Float
-                            if (it.state != TelemetryState.PARKING) {
-                                distance = mileage + space
+                        val space = it.updateLocation(newLocation)
+                        val distance: Float
+                        if (it.state != TelemetryState.PARKING) {
+                            distance = preferences.mileage + space
+                            preferences.blockingBulk {
                                 mileage = distance
-                            } else {
-                                distance = mileage
                             }
-                            it.replaceWith()?.let { state ->
-                                val event =
-                                    LocationEvent(it, tokenId, packageId, distance.roundToInt())
-                                packageId++
-                                lastEventTime = event.data.whenTime
-                                Timber.i("Replace state with $state")
-                                basePoint = BasePoint(newLocation, state)
-                                return@addEventSync event
-                            }
+                        } else {
+                            distance = preferences.mileage
+                        }
+                        it.replaceWith()?.let { state ->
+                            val event =
+                                LocationEvent(it, tokenId, packageId, distance.roundToInt())
+                            packageId++
+                            lastEventTime = event.data.whenTime
+                            insertEvent(it)
+                            Timber.i("Replace state with $state")
+                            basePoint = BasePoint(newLocation, state)
+                            return@addEventSync event
                         }
                     } else {
                         Timber.i("Init base point")
@@ -374,6 +368,23 @@ class TelemetryService : BaseService(), TelemetryListener {
             db.locationDao().insert(it)
             broadcastManager.sendBroadcast(Intent(ACTION_ROUTE))
         }
+    }
+
+    private fun Preferences.insertEvent(
+        basePoint: BasePoint,
+        distance: Float = mileage,
+        waiting: Boolean = false
+    ): LocationEvent? {
+        blockingBulk {
+            val event = LocationEvent(basePoint, tokenId, packageId, distance.roundToInt()).also {
+                // debug info
+                it.waiting = waiting
+            }
+            packageId++
+            lastEventTime = event.data.whenTime
+            return event
+        }
+        return null
     }
 
     companion object {
