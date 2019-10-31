@@ -6,9 +6,11 @@ import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
+import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.WorkerThread
 import kotlinx.android.synthetic.main.merge_map.view.*
+import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
@@ -54,6 +56,7 @@ class MapLayout : FrameLayout, MapListener {
     )
 
     init {
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
         View.inflate(context, R.layout.merge_map, this)
         map_web.addJavascriptInterface(MapJavaScript(this), "Android")
         map_plus.setOnClickListener {

@@ -9,7 +9,6 @@ import android.view.MotionEvent
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.core.content.ContextCompat
-import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 
 class MapWebView : WebView {
@@ -52,11 +51,4 @@ class MapWebView : WebView {
     }
 
     override fun hasOverlappingRendering() = false
-
-    companion object {
-
-        init {
-            setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
-        }
-    }
 }

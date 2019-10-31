@@ -70,16 +70,16 @@ class MainApp : Application(), KodeinAware {
         bind<OkHttpClient>() with singleton {
             OkHttpClient.Builder().apply {
                 addInterceptor(DomainInterceptor(applicationContext))
-                if (BuildConfig.DEBUG) {
-                    addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
+                addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
 
-                        override fun log(message: String) {
-                            Timber.tag("NETWORK")
-                                .d(message)
-                        }
-                    }).apply {
-                        level = HttpLoggingInterceptor.Level.BASIC
-                    })
+                    override fun log(message: String) {
+                        Timber.tag("NETWORK")
+                            .d(message)
+                    }
+                }).apply {
+                    level = HttpLoggingInterceptor.Level.BASIC
+                })
+                if (BuildConfig.DEBUG) {
                     addNetworkInterceptor(StethoInterceptor())
                 }
             }.build()
