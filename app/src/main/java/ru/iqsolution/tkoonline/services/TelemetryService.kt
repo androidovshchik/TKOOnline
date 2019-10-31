@@ -112,16 +112,16 @@ class TelemetryService : BaseService(), TelemetryListener {
             if (!checkActivity()) {
                 return@scheduleAtFixedRate
             }
-            var eventDelay = 0L
             val locationDelay = locationCounter.incrementAndGet() * TIMER_INTERVAL
             if (locationDelay > LOCATION_MIN_DELAY) {
                 onLocationAvailability(false)
+            }
+            addEventSync {
+                var eventDelay = 0L
                 if (locationDelay > LOCATION_MAX_DELAY) {
                     bgToast("Не удается определить местоположение")
                     eventDelay = -1L
                 }
-            }
-            addEventSync {
                 lastEventTime = null
                 basePoint = null
                 val lastTime = lastEventTime ?: return@addEventSync null
@@ -145,17 +145,11 @@ class TelemetryService : BaseService(), TelemetryListener {
                     if (eventDelay > 0L) {
                         Timber.i("Inserting event after delay $eventDelay")
                         preferences.blockingBulk {
-                            event = LocationEvent(
-                                it,
-                                tokenId,
-                                packageId,
-                                mileage.roundToInt()
-                            ).also {
-                                // debug info
-                                it.waiting = true
-                                lastEventTime = it.data.whenTime
-                            }
+                            val event = LocationEvent(it, tokenId, packageId, mileage.roundToInt())
+                            event.waiting = true
                             packageId++
+                            lastEventTime = event.data.whenTime
+                            return@addEventSync event
                         }
                     }
                 }
