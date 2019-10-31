@@ -6,6 +6,7 @@ import android.content.Intent
 import android.location.Location
 import android.os.IBinder
 import android.os.PowerManager
+import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.chibatching.kotpref.blockingBulk
@@ -15,6 +16,9 @@ import com.google.gson.Gson
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.startService
@@ -22,7 +26,6 @@ import org.jetbrains.anko.stopService
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
-import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.getActivities
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startForegroundService
@@ -127,7 +130,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                         lastEventTime = null
                         basePoint = null
                     }
-                    addPointEvent {
+                    addEventSync {
                         lastEventTime?.let { lastTime ->
                             val point = basePoint
                             if (point != null) {
@@ -163,7 +166,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                                 }
                             }
                         }
-                        return@addPointEvent null
+                        return@addEventSync null
                     }
                 }
             }
@@ -222,13 +225,6 @@ class TelemetryService : BaseService(), TelemetryListener {
         return START_STICKY
     }
 
-    private fun checkCount() {
-        val locationCount = db.locationDao().getSendCount()
-        if (locationCount <= 0) {
-            broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-        }
-    }
-
     override fun startTelemetry() {
         isRunning = true
         locationManager.requestUpdates()
@@ -280,43 +276,45 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
         onLocationResult(newLocation)
         locationCounter.set(0L)
-        //launch {
-        //   withContext(Dispatchers.IO) {
-        /*if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
-            abortConnection()
-            stopForeground(true)
-            stopSelf()
-            //return@withContext
-        }*/
-        addPointEvent { point ->
-            if (point != null) {
-                preferences.blockingBulk {
-                    val space = point.updateLocation(newLocation)
-                    val distance: Float
-                    if (point.state != TelemetryState.PARKING) {
-                        distance = mileage + space
-                        mileage = distance
-                    } else {
-                        distance = mileage
-                    }
-                    point.replaceWith()?.let { state ->
-                        Timber.i("Replace state with $state")
-                        basePoint = BasePoint(newLocation, state)
-                        return@addPointEvent LocationEvent(point, tokenId, packageId, distance.roundToInt()).also {
-                            // debug info
-                            it.state = state.name
-                            lastEventTime = it.data.whenTime
-                            packageId++
-                        }
-                    }
+        launch {
+            withContext(Dispatchers.IO) {
+                if (!checkActivity()) {
+                    return@withContext
                 }
-            } else {
-                basePoint = BasePoint(newLocation)
+                addEventSync {
+                    if (it != null) {
+                        preferences.blockingBulk {
+                            val space = it.updateLocation(newLocation)
+                            val distance: Float
+                            if (it.state != TelemetryState.PARKING) {
+                                distance = mileage + space
+                                mileage = distance
+                            } else {
+                                distance = mileage
+                            }
+                            it.replaceWith()?.let { state ->
+                                Timber.i("Replace state with $state")
+                                basePoint = BasePoint(newLocation, state)
+                                return@addEventSync LocationEvent(
+                                    it,
+                                    tokenId,
+                                    packageId,
+                                    distance.roundToInt()
+                                ).also {
+                                    // debug info
+                                    it.state = state.name
+                                    lastEventTime = it.data.whenTime
+                                    packageId++
+                                }
+                            }
+                        }
+                    } else {
+                        basePoint = BasePoint(newLocation)
+                    }
+                    return@addEventSync null
+                }
             }
-            return@addPointEvent null
         }
-        //   }
-        //}
     }
 
     override fun onLocationResult(location: SimpleLocation) {
@@ -325,9 +323,27 @@ class TelemetryService : BaseService(), TelemetryListener {
             longitude = location.longitude.toFloat()
             locationTime = location.locationTime.toString(PATTERN_DATETIME)
         }
-        broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
-            putExtra(EXTRA_SYNC_LOCATION, location)
+        broadcastManager.sendBroadcast(Intent(ACTION_COORDINATES).apply {
+            putExtra(EXTRA_SYNC_COORDINATES, location)
         })
+    }
+
+    private fun checkCount() {
+        val locationCount = db.locationDao().getSendCount()
+        if (locationCount <= 0) {
+            broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+        }
+    }
+
+    @WorkerThread
+    private fun checkActivity(): Boolean {
+        if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
+            abortConnection()
+            stopForeground(true)
+            stopSelf()
+            return false
+        }
+        return true
     }
 
     /**
@@ -360,7 +376,8 @@ class TelemetryService : BaseService(), TelemetryListener {
         super.onDestroy()
     }
 
-    private inline fun addPointEvent(block: (BasePoint?) -> LocationEvent?) {
+    @WorkerThread
+    private inline fun addEventSync(block: (BasePoint?) -> LocationEvent?) {
         var event: LocationEvent? = null
         synchronized(lock) {
             if (isRunning) {
@@ -397,9 +414,6 @@ class TelemetryService : BaseService(), TelemetryListener {
          */
         @Throws(SecurityException::class)
         fun start(context: Context, vararg params: Pair<String, Any?>): Boolean = context.run {
-            if (!areGranted(*DANGER_PERMISSIONS)) {
-                return false
-            }
             return if (!activityManager.isRunning<TelemetryService>()) {
                 startForegroundService<TelemetryService>() != null
             } else {
