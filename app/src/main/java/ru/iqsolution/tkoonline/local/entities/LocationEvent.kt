@@ -70,14 +70,9 @@ class LocationEvent() : SendEvent {
             return false
         }
 
-    constructor(
-        basePoint: BasePoint,
-        token: Long,
-        pckg: Int,
-        distance: Int
-    ) : this() {
+    constructor(basePoint: BasePoint, token: Long, id: Int, distance: Int) : this() {
         tokenId = token
-        packageId = pckg
+        packageId = id
         data = Data().apply {
             // time is correct here
             whenTime = DateTime.now()

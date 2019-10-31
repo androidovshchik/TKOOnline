@@ -5,12 +5,16 @@ package ru.iqsolution.tkoonline.screens.login
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.FragmentTransaction
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.ViewGroup
 import coil.api.load
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
+import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
 import ru.iqsolution.tkoonline.BuildConfig
@@ -52,6 +56,15 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             openDialog()
         }
         app_version.text = "v.${BuildConfig.VERSION_CODE}"
+        // NOTICE this violates Google play policy
+        if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+            startActivity(
+                Intent(
+                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                    Uri.parse("package:$packageName")
+                )
+            )
+        }
     }
 
     /**

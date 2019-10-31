@@ -79,7 +79,13 @@ class BasePoint(
         distance += space
         if (state != TelemetryState.PARKING) {
             // getting only angle
-            Location.distanceBetween(latitude, longitude, location.latitude, location.longitude, output)
+            Location.distanceBetween(
+                latitude,
+                longitude,
+                location.latitude,
+                location.longitude,
+                output
+            )
             val angle = if (output[1] < 0) 360 + output[1] else output[1]
             baseDirection?.let {
                 currentDirection = angle
@@ -162,6 +168,7 @@ class BasePoint(
         return null
     }
 
+    @Suppress("SameParameterValue")
     private fun getMinSpeed(interval: Int): Int? {
         var minSpeed: Int? = null
         speedMap.apply {
