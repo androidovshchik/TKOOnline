@@ -17,3 +17,4 @@ for image in *.png; do
         convert $image -virtual-pixel transparent -distort SRT $i gen/$filename;
     done
 done
+pngquant --quality=70 gen/*
