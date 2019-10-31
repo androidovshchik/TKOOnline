@@ -2,6 +2,9 @@
 -renamesourcefileattribute SourceFile
 -repackageclasses
 
+# only for debug
+-keep class ru.iqsolution.tkoonline.** { *; }
+
 # common case
 -dontwarn org.slf4j.**
 

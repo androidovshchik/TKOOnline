@@ -147,7 +147,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                         return@addEventSync preferences.insertEvent(it)
                     }
                 }
-                return@addEventSync null
+                null
             }
             if (!connectivityManager.isConnected) {
                 return@scheduleAtFixedRate
@@ -285,7 +285,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                         Timber.i("Init base point")
                         basePoint = BasePoint(newLocation)
                     }
-                    return@addEventSync null
+                    null
                 }
             }
         }

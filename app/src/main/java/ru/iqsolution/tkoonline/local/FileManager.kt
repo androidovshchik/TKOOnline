@@ -41,7 +41,7 @@ class FileManager(context: Context) {
         context?.apply {
             externalDir?.let {
                 val folder = File(it, "backup").apply {
-                    it.mkdirs()
+                    mkdirs()
                 }
                 val datetime = DateTime.now().toString(FORMATTER)
                 val distFile = File(folder, "app_${datetime}.db")
