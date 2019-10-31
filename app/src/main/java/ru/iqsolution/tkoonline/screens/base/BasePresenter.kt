@@ -10,6 +10,7 @@ import ru.iqsolution.tkoonline.MainApp
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.services.TelemetryService
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -52,6 +53,22 @@ open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, Corout
                     attempts++
                 }
             }
+        }
+    }
+
+    override fun loadRoute() {
+        val day = preferences.serverDay
+        val carId = preferences.carId
+        launch {
+            val locationEvents = arrayListOf<LocationEvent>()
+            withContext(Dispatchers.IO) {
+                db.locationDao().getDayEvents(day).forEach {
+                    if (it.token.carId == carId) {
+                        locationEvents.add(it.location)
+                    }
+                }
+            }
+            reference.get()?.onRoute(locationEvents)
         }
     }
 

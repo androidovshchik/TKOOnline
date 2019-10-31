@@ -139,11 +139,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             items.notifyItems(false, secondary)
             notifyDataSetChanged()
         }
-        presenter.apply {
-            loadPhotoCleanEvents()
-            if (preferences.showRoute) {
-                loadRoute()
-            }
+        presenter.loadPhotoCleanEvents()
+        if (preferences.showRoute) {
+            updateRoute()
         }
     }
 

@@ -20,6 +20,7 @@ import org.jetbrains.anko.toast
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
@@ -55,6 +56,12 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
         super.onStart()
         updateCloud()
     }
+
+    override fun updateRoute() {
+        presenter.loadRoute()
+    }
+
+    override fun onRoute(locationEvents: List<LocationEvent>) {}
 
     override fun updateCloud() {
         presenter.calculateSend()

@@ -10,6 +10,8 @@ interface IBasePresenter<V : IBaseView> {
 
     fun launchTelemetry(context: Context)
 
+    fun loadRoute()
+
     fun calculateSend()
 
     fun toJson(instance: Any): String
