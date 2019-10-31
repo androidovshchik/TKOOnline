@@ -23,7 +23,9 @@ val PATTERN_DATETIME: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd'T'
 
 val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
-const val ACTION_LOCATION = "action_location"
+const val ACTION_COORDINATES = "action_coordinates"
+
+const val ACTION_LOCATION/*EVENT*/ = "action_location"
 
 const val ACTION_CLOUD = "action_cloud"
 
