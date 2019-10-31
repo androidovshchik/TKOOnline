@@ -23,6 +23,9 @@ class MapLayout : FrameLayout, MapListener {
 
     private var isReady = false
 
+    // location
+    private var isActive = false
+
     private val calls = arrayListOf<String>()
 
     private val readyRunnable = Runnable {
@@ -135,15 +138,10 @@ class MapLayout : FrameLayout, MapListener {
     /**
      * @param radius in meters
      */
-    fun setLocation(
-        latitude: Double,
-        longitude: Double,
-        radius: Float = 0f,
-        active: Boolean = true
-    ) {
+    fun setLocation(latitude: Double, longitude: Double, radius: Float = 0f) {
         mLatitude = latitude
         mLongitude = longitude
-        runCall("_4_mapSetLocation($latitude, $longitude, $radius, $active)")
+        runCall("_4_mapSetLocation($latitude, $longitude, $radius, $isActive)")
     }
 
     fun clearState(all: Boolean = false) {
@@ -155,6 +153,7 @@ class MapLayout : FrameLayout, MapListener {
     }
 
     fun changeIcon(active: Boolean) {
+        isActive = active
         runCall("_6_mapChangeIcon($active)")
     }
 

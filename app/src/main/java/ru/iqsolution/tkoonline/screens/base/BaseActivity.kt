@@ -54,7 +54,9 @@ open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseVie
 
     override fun onStart() {
         super.onStart()
-        updateCloud()
+        if (this !is LoginActivity) {
+            updateCloud()
+        }
     }
 
     override fun updateRoute() {
