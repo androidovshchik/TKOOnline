@@ -23,9 +23,6 @@ class MapLayout : FrameLayout, MapListener {
 
     private var isReady = false
 
-    // location
-    private var isActive = false
-
     private val calls = arrayListOf<String>()
 
     private val readyRunnable = Runnable {
@@ -186,4 +183,10 @@ class MapLayout : FrameLayout, MapListener {
     }
 
     override fun hasOverlappingRendering() = false
+
+    companion object {
+
+        // location
+        private var isActive = false
+    }
 }

@@ -285,18 +285,16 @@ class TelemetryService : BaseService(), TelemetryListener {
                     if (it != null) {
                         preferences.blockingBulk {
                             val space = it.updateLocation(newLocation)
-                            val meters: Float
+                            val distance: Float
                             if (it.state != TelemetryState.PARKING) {
-                                meters = mileage + space
-                                mileage = meters
+                                distance = mileage + space
+                                mileage = distance
                             } else {
-                                meters = mileage
+                                distance = mileage
                             }
                             it.replaceWith()?.let { state ->
                                 val event =
-                                    LocationEvent(it, tokenId, packageId, meters.roundToInt())
-                                // debug info
-                                event.state = it.state.name
+                                    LocationEvent(it, tokenId, packageId, distance.roundToInt())
                                 packageId++
                                 lastEventTime = event.data.whenTime
                                 Timber.i("Replace state with $state")

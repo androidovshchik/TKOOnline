@@ -73,6 +73,8 @@ class LocationEvent() : SendEvent {
     constructor(basePoint: BasePoint, token: Long, id: Int, distance: Int) : this() {
         tokenId = token
         packageId = id
+        // debug info
+        state = basePoint.state.name
         data = Data().apply {
             // time is correct here
             whenTime = DateTime.now()
