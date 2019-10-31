@@ -112,56 +112,55 @@ class TelemetryService : BaseService(), TelemetryListener {
             if (!checkActivity()) {
                 return@scheduleAtFixedRate
             }
+            var eventDelay = 0L
             val locationDelay = locationCounter.incrementAndGet() * TIMER_INTERVAL
             if (locationDelay > LOCATION_MIN_DELAY) {
                 onLocationAvailability(false)
                 if (locationDelay > LOCATION_MAX_DELAY) {
-                    synchronized(lock) {
-                        lastEventTime = null
-                        basePoint = null
-                    }
-                }
-                addEventSync {
-                    val lastTime = lastEventTime ?: return@addEventSync null
-                    if (it != null) {
-                        var delay = 0L
-                        when (it.state) {
-                            TelemetryState.MOVING, TelemetryState.STOPPING -> {
-                                val now = DateTime.now()
-                                if (now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY) {
-                                    delay = MOVING_DELAY
-                                }
-                            }
-                            TelemetryState.PARKING -> {
-                                val now = DateTime.now()
-                                if (now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY) {
-                                    delay = PARKING_DELAY
-                                }
-                            }
-                            else -> {
-                            }
-                        }
-                        if (delay > 0L) {
-                            Timber.i("Inserting event after delay $delay")
-                            preferences.blockingBulk {
-                                event = LocationEvent(
-                                    it,
-                                    tokenId,
-                                    packageId,
-                                    mileage.roundToInt()
-                                ).also {
-                                    // debug info
-                                    it.waiting = true
-                                    lastEventTime = it.data.whenTime
-                                }
-                                packageId++
-                            }
-                        }
-                    }
-                    return@addEventSync null
+                    bgToast("Не удается определить местоположение")
+                    eventDelay = -1L
                 }
             }
-            bgToast("Не удается определить местоположение")
+            addEventSync {
+                lastEventTime = null
+                basePoint = null
+                val lastTime = lastEventTime ?: return@addEventSync null
+                if (it != null) {
+                    when (it.state) {
+                        TelemetryState.MOVING, TelemetryState.STOPPING -> {
+                            val now = DateTime.now()
+                            if (now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY) {
+                                eventDelay = MOVING_DELAY
+                            }
+                        }
+                        TelemetryState.PARKING -> {
+                            val now = DateTime.now()
+                            if (now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY) {
+                                eventDelay = PARKING_DELAY
+                            }
+                        }
+                        else -> {
+                        }
+                    }
+                    if (eventDelay > 0L) {
+                        Timber.i("Inserting event after delay $eventDelay")
+                        preferences.blockingBulk {
+                            event = LocationEvent(
+                                it,
+                                tokenId,
+                                packageId,
+                                mileage.roundToInt()
+                            ).also {
+                                // debug info
+                                it.waiting = true
+                                lastEventTime = it.data.whenTime
+                            }
+                            packageId++
+                        }
+                    }
+                }
+                return@addEventSync null
+            }
             if (!connectivityManager.isConnected) {
                 return@scheduleAtFixedRate
             }
