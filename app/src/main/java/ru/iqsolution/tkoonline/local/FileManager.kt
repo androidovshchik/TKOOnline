@@ -39,10 +39,12 @@ class FileManager(context: Context) {
 
     fun copyDb(context: Context?): Boolean {
         context?.apply {
-            getExternalFilesDir(null)?.let {
-                it.mkdirs()
+            externalDir?.let {
+                val folder = File(it, "backup").apply {
+                    it.mkdirs()
+                }
                 val datetime = DateTime.now().toString(FORMATTER)
-                val distFile = File(it, "app_${datetime}.db")
+                val distFile = File(folder, "app_${datetime}.db")
                 val dbFile = getDatabasePath(DB_NAME)
                 try {
                     FileInputStream(dbFile).use { input ->

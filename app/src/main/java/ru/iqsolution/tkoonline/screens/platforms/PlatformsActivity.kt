@@ -233,6 +233,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                 }
             }
         }
+        if (preferences.showRoute) {
+            updateRoute()
+        }
     }
 
     override fun onDestroy() {

@@ -23,10 +23,7 @@ import org.jetbrains.anko.*
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
-import ru.iqsolution.tkoonline.extensions.getActivities
-import ru.iqsolution.tkoonline.extensions.isConnected
-import ru.iqsolution.tkoonline.extensions.isRunning
-import ru.iqsolution.tkoonline.extensions.startForegroundService
+import ru.iqsolution.tkoonline.extensions.*
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
@@ -262,7 +259,7 @@ class TelemetryService : BaseService(), TelemetryListener {
     override fun onLocationState(state: LocationSettingsStates?) {}
 
     override fun onLocationAvailability(available: Boolean) {
-        broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
+        broadcastManager.sendBroadcast(Intent(ACTION_COORDINATES).apply {
             putExtra(EXTRA_SYNC_AVAILABILITY, available)
         })
     }
@@ -379,6 +376,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
         event?.let {
             db.locationDao().insert(it)
+            broadcastManager.sendBroadcast(Intent(ACTION_LOCATION))
         }
     }
 
@@ -409,6 +407,9 @@ class TelemetryService : BaseService(), TelemetryListener {
          */
         @Throws(SecurityException::class)
         fun start(context: Context, vararg params: Pair<String, Any?>): Boolean = context.run {
+            if (!areGranted(*DANGER_PERMISSIONS)) {
+                return false
+            }
             return if (!activityManager.isRunning<TelemetryService>()) {
                 startForegroundService<TelemetryService>() != null
             } else {

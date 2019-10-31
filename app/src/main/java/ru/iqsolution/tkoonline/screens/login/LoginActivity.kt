@@ -56,7 +56,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
             openDialog()
         }
         app_version.text = "v.${BuildConfig.VERSION_CODE}"
-        // NOTICE this violates Google play policy
+        // NOTICE this violates Google Play policy
         if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
             startActivity(
                 Intent(
