@@ -4,9 +4,7 @@ import android.app.Application
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
+import android.content.Context
 import coil.Coil
 import coil.ImageLoader
 import com.elvishew.xlog.LogConfiguration
@@ -16,31 +14,22 @@ import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.backup.NeverBackupStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
 import com.facebook.stetho.Stetho
-import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
 import net.danlew.android.joda.ResourceZoneInfoProvider
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.jetbrains.anko.notificationManager
-import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
 import org.kodein.di.generic.provider
-import org.kodein.di.generic.singleton
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
-import ru.iqsolution.tkoonline.local.Database
-import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
-import ru.iqsolution.tkoonline.remote.*
+import ru.iqsolution.tkoonline.local.localModule
+import ru.iqsolution.tkoonline.remote.remoteModule
 import ru.iqsolution.tkoonline.services.workers.MidnightWorker
 import timber.log.Timber
 import java.io.File
@@ -50,72 +39,19 @@ class MainApp : Application(), KodeinAware {
 
     override val kodein by Kodein.lazy {
 
-        bind<Preferences>() with provider {
-            Preferences(applicationContext)
+        bind<Context>() with provider {
+            applicationContext
         }
 
-        bind<FileManager>() with provider {
-            FileManager(applicationContext)
-        }
+        import(localModule)
 
-        bind<Gson>() with provider {
-            GsonBuilder()
-                .setLenient()
-                .setExclusionStrategies(SerializedNameStrategy())
-                .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
-                .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
-                .create()
-        }
-
-        bind<OkHttpClient>() with singleton {
-            OkHttpClient.Builder().apply {
-                addInterceptor(DomainInterceptor(applicationContext))
-                addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
-
-                    override fun log(message: String) {
-                        Timber.tag("NETWORK")
-                            .d(message)
-                    }
-                }).apply {
-                    level = HttpLoggingInterceptor.Level.BASIC
-                })
-                if (BuildConfig.DEBUG) {
-                    addNetworkInterceptor(StethoInterceptor())
-                }
-            }.build()
-        }
-
-        bind<Server>() with singleton {
-            Retrofit.Builder()
-                .client(instance())
-                .baseUrl("https://localhost/mobile/v1/")// "localhost" will be replaced
-                .addConverterFactory(GsonConverterFactory.create(instance()))
-                .build()
-                .create(Server::class.java)
-        }
-
-        bind<Database>() with singleton {
-            Room.databaseBuilder(applicationContext, Database::class.java, DB_NAME)
-                .fallbackToDestructiveMigration()
-                .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
-                .addCallback(object : RoomDatabase.Callback() {
-
-                    override fun onCreate(sqliteDatabase: SupportSQLiteDatabase) {
-                        // may be put initial data here etc.
-                        // PopulateTask().execute(db)
-                    }
-                })
-                .build()
-        }
+        import(remoteModule)
     }
-
-    // val db: Database by instance()
 
     val preferences: Preferences by instance()
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
         getExternalFilesDir(null)?.let {
             val folder = File(it, "logs").apply {
                 mkdirs()
@@ -171,11 +107,5 @@ class MainApp : Application(), KodeinAware {
         /*FileManager(applicationContext).deleteAllFiles()
         //preferences.clear()
         deleteDatabase("app.db")*/
-    }
-
-    companion object {
-
-        lateinit var instance: MainApp
-            private set
     }
 }
