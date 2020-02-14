@@ -17,8 +17,6 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.models.ContainerType
 import ru.iqsolution.tkoonline.models.SimpleContainer
-import kotlin.math.max
-import kotlin.math.min
 
 class ContainerLayout : RelativeLayout {
 
@@ -59,22 +57,6 @@ class ContainerLayout : RelativeLayout {
                 containerType = ContainerType.fromId(getString(R.styleable.ContainerLayout_containerType))
             }
         }
-        arrow_up_volume.setOnClickListener {
-            container?.apply {
-                if (containerVolume < 99.9f) {
-                    containerVolume = min(99.999f, containerVolume + 0.1f)
-                    updateVolumeText()
-                }
-            }
-        }
-        arrow_down_volume.setOnClickListener {
-            container?.apply {
-                if (containerVolume >= 0.1f) {
-                    containerVolume = max(0f, containerVolume - 0.1f)
-                    updateVolumeText()
-                }
-            }
-        }
         arrow_up_count.setOnClickListener {
             container?.apply {
                 if (containerCount < 99) {
@@ -92,8 +74,6 @@ class ContainerLayout : RelativeLayout {
             }
         }
         if (containerType == ContainerType.BULK1 || containerType == ContainerType.BULK2) {
-            arrow_up_volume.visibility = INVISIBLE
-            arrow_down_volume.visibility = INVISIBLE
             arrow_up_count.visibility = INVISIBLE
             arrow_down_count.visibility = INVISIBLE
             count_value.visibility = INVISIBLE

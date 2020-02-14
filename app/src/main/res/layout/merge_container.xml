@@ -56,29 +56,6 @@
             tools:text="0,8м3"
             fontPath="fonts/Roboto-Regular.ttf"/>
 
-        <ImageView
-            android:id="@+id/arrow_up_volume"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:paddingBottom="10dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_arrow_up"/>
-
-        <ImageView
-            android:id="@+id/arrow_down_volume"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:paddingTop="10dp"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:paddingBottom="10dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_arrow_down"/>
-
     </RelativeLayout>
 
     <RelativeLayout
