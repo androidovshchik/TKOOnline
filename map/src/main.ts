@@ -70,13 +70,11 @@ document.getElementsByTagName('head')[0].appendChild(script);
  */
 
 // @ts-ignore
-window._1_mapSetZoom = function (zoom: number, duration: number = 500) {
+window._1_mapSetBounds = function (lat1: number, lon1: number, lat2: number, lon2: number) {
     if (map == null) {
         return
     }
-    map.setZoom(zoom, {
-        duration: duration
-    });
+    map.setBounds([[lat1, lon1], [lat2, lon2]]);
 };
 
 // @ts-ignore

@@ -12,4 +12,9 @@ class MapJavaScript(listener: MapListener) {
     fun onReady() {
         reference.get()?.onReady()
     }
+
+    @JavascriptInterface
+    fun onPlatform(kpId: Int) {
+        reference.get()?.onPlatform(kpId)
+    }
 }

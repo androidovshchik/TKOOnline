@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.webkit.WebView
 import android.widget.FrameLayout
@@ -23,6 +24,8 @@ class MapLayout : FrameLayout, MapListener {
 
     private var isReady = false
 
+    private var hasInteracted = false
+
     private val calls = arrayListOf<String>()
 
     private val readyRunnable = Runnable {
@@ -31,11 +34,7 @@ class MapLayout : FrameLayout, MapListener {
         val js = TextUtils.join(";", calls)
         calls.clear()
         if (!TextUtils.isEmpty(js)) {
-            map_web.apply {
-                if (parent != null) {
-                    loadUrl("javascript:$js")
-                }
-            }
+            map_web.loadUrl("javascript:$js")
         }
     }
 
@@ -60,14 +59,17 @@ class MapLayout : FrameLayout, MapListener {
         View.inflate(context, R.layout.merge_map, this)
         map_web.addJavascriptInterface(MapJavaScript(this), "Android")
         map_plus.setOnClickListener {
+            hasInteracted = true
             zoomIn()
         }
         map_minus.setOnClickListener {
+            hasInteracted = true
             zoomOut()
         }
         map_location.setOnClickListener {
             mLatitude?.let { latitude ->
                 mLongitude?.let { longitude ->
+                    hasInteracted = false
                     moveTo(latitude, longitude)
                 }
             }
@@ -76,11 +78,12 @@ class MapLayout : FrameLayout, MapListener {
 
     @WorkerThread
     override fun onReady() {
-        map_web.apply {
-            if (parent != null) {
-                post(readyRunnable)
-            }
-        }
+        map_web.post(readyRunnable)
+    }
+
+    @WorkerThread
+    override fun onPlatform(kpId: Int) {
+
     }
 
     /**
@@ -91,6 +94,10 @@ class MapLayout : FrameLayout, MapListener {
         map_tools.visibility = GONE
         calls.clear()
         map_web.loadUrl(url)
+    }
+
+    fun setBounds(lat1: Int, lon1: Int, lat2: Int, lon2: Int) {
+        runCall("_1_mapSetBounds($lat1, $lon1, $lat2, $lon2)")
     }
 
     fun zoomIn(duration: Int = 500) {
@@ -180,6 +187,15 @@ class MapLayout : FrameLayout, MapListener {
         } catch (e: Throwable) {
         }
         map_web.destroy()
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                hasInteracted = true
+            }
+        }
+        return super.dispatchTouchEvent(event)
     }
 
     override fun hasOverlappingRendering() = false
