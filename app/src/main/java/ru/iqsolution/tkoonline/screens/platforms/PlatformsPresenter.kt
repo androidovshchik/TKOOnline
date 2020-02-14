@@ -16,6 +16,7 @@ import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
+import ru.iqsolution.tkoonline.screens.map.MapRect
 import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 
@@ -33,14 +34,11 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
             val responseTypes = server.getPhotoTypes(header)
             reference.get()?.onReceivedTypes(responseTypes.data)
             val responsePlatforms = server.getPlatforms(header, preferences.serverDay)
-            var minLat = Double.MAX_VALUE
-            var maxLat = Double.MIN_VALUE
-            var minLon = Double.MAX_VALUE
-            var maxLon = Double.MIN_VALUE
+            val mapRect = MapRect()
             val primary = arrayListOf<PlatformContainers>()
             val secondary = arrayListOf<PlatformContainers>()
-            val allPlatforms = responsePlatforms.data.distinctBy { it.kpId }
-                .filter { it.isValid }
+            val allPlatforms = responsePlatforms.data.filter { it.isValid }
+                .distinctBy { it.kpId }
             db.platformDao().deleteAll()
             db.platformDao().insert(allPlatforms)
             allPlatforms.forEach { item ->
@@ -48,16 +46,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                     return@forEach
                 }
                 if (!refresh) {
-                    if (item.latitude < minLat) {
-                        minLat = item.latitude
-                    } else if (item.latitude > maxLat) {
-                        maxLat = item.latitude
-                    }
-                    if (item.longitude < minLon) {
-                        minLon = item.longitude
-                    } else if (item.longitude > maxLon) {
-                        maxLon = item.longitude
-                    }
+                    mapRect.update(item)
                 }
                 when (item.status) {
                     PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(item))
@@ -77,7 +66,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
             reference.get()?.apply {
                 if (!refresh) {
                     if (responsePlatforms.data.isNotEmpty()) {
-                        changeMapPosition((maxLat + minLat) / 2, (maxLon + minLon) / 2)
+                        changeMapBounds(mapRect)
                     }
                 }
                 onReceivedPlatforms(primary, secondary)
@@ -103,11 +92,6 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
         observer = SendWorker.launch(context, true).also {
             it?.observeForever(this)
         }
-    }
-
-    override fun cancelExit(context: Context) {
-        SendWorker.cancel(context)
-        TelemetryService.start(context, EXTRA_TELEMETRY_TASK to true)
     }
 
     override fun onChanged(t: WorkInfo?) {
