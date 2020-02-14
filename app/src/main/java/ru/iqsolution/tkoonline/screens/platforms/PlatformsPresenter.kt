@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
@@ -24,8 +23,6 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
     PlatformsContract.Presenter, Observer<WorkInfo> {
 
     private val server: Server by instance()
-
-    private val client: OkHttpClient by instance()
 
     private var observer: LiveData<WorkInfo>? = null
 
@@ -43,10 +40,10 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
             val primary = arrayListOf<PlatformContainers>()
             val secondary = arrayListOf<PlatformContainers>()
             val allPlatforms = responsePlatforms.data.distinctBy { it.kpId }
+                .filter { it.isValid }
+            db.platformDao().deleteAll()
+            db.platformDao().insert(allPlatforms)
             allPlatforms.forEach { item ->
-                if (!item.isValid) {
-                    return@forEach
-                }
                 if (item.linkedKpId != null) {
                     return@forEach
                 }
@@ -68,9 +65,6 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 }
             }
             allPlatforms.forEach { item ->
-                if (!item.isValid) {
-                    return@forEach
-                }
                 if (item.linkedKpId == null) {
                     return@forEach
                 }
@@ -112,7 +106,6 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
     }
 
     override fun cancelExit(context: Context) {
-        client.dispatcher.cancelAll()
         SendWorker.cancel(context)
         TelemetryService.start(context, EXTRA_TELEMETRY_TASK to true)
     }
