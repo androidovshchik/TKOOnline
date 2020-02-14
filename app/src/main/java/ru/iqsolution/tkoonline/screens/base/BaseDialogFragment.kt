@@ -9,9 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import org.jetbrains.anko.inputMethodManager
+import ru.iqsolution.tkoonline.extensions.makeCallback
 import javax.annotation.OverridingMethodsMustInvokeSuper
 
-open class BaseDialogFragment : DialogFragment() {
+abstract class BaseDialogFragment : DialogFragment() {
 
     @OverridingMethodsMustInvokeSuper
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -26,10 +27,6 @@ open class BaseDialogFragment : DialogFragment() {
     }
 
     inline fun <reified T> makeCallback(action: T.() -> Unit) {
-        activity?.let {
-            if (it is T && !it.isFinishing) {
-                action(it)
-            }
-        }
+        context?.makeCallback(action)
     }
 }
