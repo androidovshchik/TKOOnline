@@ -25,9 +25,16 @@ class PhotoType : Serializable {
         val isError: Boolean,
         val shortName: String
     ) {
-        BEFORE(0, "До", false, false, "До"),
-        AFTER(1, "После", false, false, "Посл"),
+        BEFORE(0, "До уборки", false, false, "До"),
+        AFTER(1, "После уборки", false, false, "Посл"),
         OTHER(16, "Прочее", false, true, "Пр");
+
+        fun toType() = PhotoType().also {
+            it.id = id
+            it.description = description
+            it.shortName = shortName
+            it.isError = if (isError) 1 else 0
+        }
 
         companion object {
 
