@@ -5,12 +5,11 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'AndResGuard'
 
 android {
-    //noinspection GradleCompatible
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 9
+        versionCode 10
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         kapt {
@@ -85,15 +84,13 @@ andResGuard {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2"
     implementation "org.jetbrains.anko:anko-commons:${Versions.anko}"
     implementation "org.jetbrains.anko:anko-sdk23:${Versions.anko}"
     implementation "org.jetbrains.anko:anko-sdk23-listeners:${Versions.anko}"
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-rc01'
-    implementation 'androidx.exifinterface:exifinterface:1.1.0-rc01'
-    implementation 'androidx.work:work-runtime-ktx:2.2.0'
-    implementation "androidx.lifecycle:lifecycle-livedata:${Versions.lifecycle}"
-    implementation "androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}"
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha01'
+    implementation 'androidx.exifinterface:exifinterface:1.2.0-beta01'
+    implementation 'androidx.work:work-runtime-ktx:2.3.1'
     implementation "androidx.room:room-runtime:${Versions.room}"
     kapt "androidx.room:room-compiler:${Versions.room}"
     implementation 'com.google.android.gms:play-services-vision:19.0.0'
@@ -102,11 +99,11 @@ dependencies {
     implementation "org.kodein.di:kodein-di-framework-android-core:${Versions.kodein}"
     implementation "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.2.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.2.2'
     implementation 'com.rabbitmq:amqp-client:5.7.3'
     implementation 'net.danlew:android.joda:2.10.3'
     implementation 'com.chibatching.kotpref:kotpref:2.9.1'
-    implementation 'io.coil-kt:coil:0.7.0'
+    implementation 'io.coil-kt:coil:0.8.0'
     implementation 'io.github.inflationx:calligraphy3:3.1.1'
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'com.jakewharton.timber:timber:4.7.1'
