@@ -5,8 +5,8 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.jetbrains.anko.activityManager
 import org.kodein.di.KodeinAware
+import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.MainApp
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
@@ -16,13 +16,15 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
-open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, CoroutineScope {
+open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V>, KodeinAware, CoroutineScope {
 
-    val preferences: Preferences by instance()
+    override val kodein by closestKodein(context)
 
-    val db: Database by instance()
+    protected val preferences: Preferences by instance()
 
-    val gson: Gson by instance()
+    protected val db: Database by instance()
+
+    protected val gson: Gson by instance()
 
     protected lateinit var reference: WeakReference<V>
 
@@ -95,8 +97,6 @@ open class BasePresenter<V : IBaseView> : IBasePresenter<V>, KodeinAware, Corout
         baseJob.cancelChildren()
         reference.clear()
     }
-
-    override val kodein = MainApp.instance.kodein
 
     override val coroutineContext = Dispatchers.Main + baseJob + CoroutineExceptionHandler { _, e ->
         Timber.e(e)

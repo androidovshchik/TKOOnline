@@ -17,11 +17,11 @@ import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
-class LoginPresenter : BasePresenter<LoginContract.View>(), LoginContract.Presenter {
+class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(context), LoginContract.Presenter {
 
-    val server: Server by instance()
+    private val server: Server by instance()
 
-    val fileManager: FileManager by instance()
+    private val fileManager: FileManager by instance()
 
     private var qrCodeJson: String? = null
 

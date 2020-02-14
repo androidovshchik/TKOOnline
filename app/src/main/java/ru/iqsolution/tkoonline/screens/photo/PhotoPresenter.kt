@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline.screens.photo
 
 import android.app.Activity
+import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -11,9 +12,9 @@ import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import java.io.File
 
-class PhotoPresenter : BasePresenter<PhotoContract.View>(), PhotoContract.Presenter {
+class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(context), PhotoContract.Presenter {
 
-    val fileManager: FileManager by instance()
+    private val fileManager: FileManager by instance()
 
     override fun getExternalFile(photoEvent: PhotoEvent): File {
         if (photoEvent.id != null) {

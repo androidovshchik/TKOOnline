@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platform
 
+import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -7,7 +8,7 @@ import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
-class PlatformPresenter : BasePresenter<PlatformContract.View>(), PlatformContract.Presenter {
+class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>(context), PlatformContract.Presenter {
 
     override fun loadCleanEvents(kpId: Int) {
         val day = preferences.serverDay

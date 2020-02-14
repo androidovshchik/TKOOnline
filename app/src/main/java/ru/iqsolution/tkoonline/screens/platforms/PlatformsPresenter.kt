@@ -20,11 +20,12 @@ import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 
-class PlatformsPresenter : BasePresenter<PlatformsContract.View>(), PlatformsContract.Presenter, Observer<WorkInfo> {
+class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.View>(context),
+    PlatformsContract.Presenter, Observer<WorkInfo> {
 
-    val server: Server by instance()
+    private val server: Server by instance()
 
-    val client: OkHttpClient by instance()
+    private val client: OkHttpClient by instance()
 
     private var observer: LiveData<WorkInfo>? = null
 
