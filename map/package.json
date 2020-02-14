@@ -8,16 +8,16 @@
     "build:sass": "node-sass -r --output-style compressed src/styles.scss ../app/src/main/assets/map.css"
   },
   "dependencies": {
-    "@types/yandex-maps": "^2.1.8"
+    "@types/yandex-maps": "^2.1.9"
   },
   "devDependencies": {
-    "node-sass": "^4.13.0",
-    "terser-webpack-plugin": "^2.2.1",
+    "node-sass": "^4.13.1",
+    "terser-webpack-plugin": "^2.3.4",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.6.4",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.9.0",
-    "webpack-obfuscator": "^0.18.3"
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.3",
+    "webpack-obfuscator": "^0.24.6"
   }
 }

@@ -70,6 +70,16 @@ document.getElementsByTagName('head')[0].appendChild(script);
  */
 
 // @ts-ignore
+window._1_mapSetZoom = function (zoom: number, duration: number = 500) {
+    if (map == null) {
+        return
+    }
+    map.setZoom(zoom, {
+        duration: duration
+    });
+};
+
+// @ts-ignore
 window._1_mapZoomIn = function (duration: number = 500) {
     if (map == null) {
         return
@@ -116,16 +126,27 @@ function addPlatforms(platforms: Platform[]) {
                 <img class="trash_icon" src="icons/ic_delete.svg">
             </div>`
         );
+        const placemark = new ymaps.Placemark([p.latitude, p.longitude], {}, {
+            iconLayout: 'default#imageWithContent',
+            iconImageSize: [0, 0],
+            iconImageOffset: [0, 0],
+            // NOTICE magic -23
+            iconContentOffset: [-23, -24],
+            iconContentLayout: layout,
+            iconShape: {
+                type: 'Circle',
+                coordinates: [0, 0],
+                radius: 24
+            },
+            zIndex: 9999
+        } as any);
+        placemark.events.add('click', function () {
+            if (typeof Android !== 'undefined') {
+                Android.onPlatform(p.kp_id);
+            }
+        });
         markersCollection
-            .add(new ymaps.Placemark([p.latitude, p.longitude], {}, {
-                iconLayout: 'default#imageWithContent',
-                iconImageSize: [0, 0],
-                iconImageOffset: [0, 0],
-                // NOTICE magic -23
-                iconContentOffset: [-23, -24],
-                iconContentLayout: layout,
-                zIndex: 9999
-            } as any))
+            .add(placemark)
     });
 }
 
