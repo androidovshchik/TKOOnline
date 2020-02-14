@@ -10,6 +10,7 @@ import ru.iqsolution.tkoonline.remote.api.*
 
 interface Server {
 
+    @Tag("login")
     @FormUrlEncoded
     @Headers("Accept: application/json")
     @POST("auth")
@@ -22,6 +23,7 @@ interface Server {
     /**
      * @param date [ru.iqsolution.tkoonline.PATTERN_DATE]
      */
+    @Tag("platforms")
     @Headers("Accept: application/json")
     @GET("container-sites/{date}")
     suspend fun getPlatforms(
@@ -29,12 +31,14 @@ interface Server {
         @Path("date") date: String
     ): ResponsePlatforms
 
+    @Tag("photos")
     @Headers("Accept: application/json")
     @GET("photo-types")
     suspend fun getPhotoTypes(
         @Header("Authorization") token: String
     ): ResponseTypes
 
+    @Tag("clean")
     @Headers("Accept: application/json")
     @POST("container-sites/{kp_id}/events")
     fun sendClean(
@@ -46,6 +50,7 @@ interface Server {
     /**
      * @param time [ru.iqsolution.tkoonline.PATTERN_DATETIME]
      */
+    @Tag("photo")
     @Multipart
     @Headers("Accept: application/json")
     @POST("container-sites/photos")
@@ -59,6 +64,7 @@ interface Server {
         @Part photo: MultipartBody.Part
     ): Call<ResponsePhoto>
 
+    @Tag("logout")
     @POST("auth/close")
     fun logout(
         @Header("Authorization") token: String
