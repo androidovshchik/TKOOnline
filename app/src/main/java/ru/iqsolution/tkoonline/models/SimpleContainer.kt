@@ -17,10 +17,10 @@ class SimpleContainer(type: ContainerType) : Serializable, Container {
 
     override fun toString(): String {
         return "SimpleContainer(" +
-                "linkedIds=$linkedIds, " +
-                "containerType='$containerType', " +
-                "containerVolume=$containerVolume, " +
-                "containerCount=$containerCount" +
-                ")"
+            "linkedIds=$linkedIds, " +
+            "containerType='$containerType', " +
+            "containerVolume=$containerVolume, " +
+            "containerCount=$containerCount" +
+            ")"
     }
 }

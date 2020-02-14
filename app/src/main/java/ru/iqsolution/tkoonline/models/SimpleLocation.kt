@@ -53,12 +53,12 @@ open class SimpleLocation : Serializable, Location<Double> {
 
     override fun toString(): String {
         return "SimpleLocation(" +
-                "latitude=$latitude, " +
-                "longitude=$longitude, " +
-                "altitude=$altitude, " +
-                "satellites=$satellites, " +
-                "accuracy=$accuracy, " +
-                "locationTime=$locationTime" +
-                ")"
+            "latitude=$latitude, " +
+            "longitude=$longitude, " +
+            "altitude=$altitude, " +
+            "satellites=$satellites, " +
+            "accuracy=$accuracy, " +
+            "locationTime=$locationTime" +
+            ")"
     }
 }

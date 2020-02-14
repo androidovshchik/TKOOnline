@@ -29,6 +29,14 @@ tailrec fun Context?.activity(): Activity? = when (this) {
     else -> (this as? ContextWrapper)?.baseContext?.activity()
 }
 
+inline fun <reified T> Context.makeCallback(action: T.() -> Unit) {
+    activity()?.let {
+        if (it is T && !it.isFinishing) {
+            action(it)
+        }
+    }
+}
+
 @PermissionResult
 fun Context.areGranted(vararg permissions: String): Boolean {
     for (permission in permissions) {
