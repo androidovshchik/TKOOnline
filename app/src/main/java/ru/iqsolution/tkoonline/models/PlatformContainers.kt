@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
+import ru.iqsolution.tkoonline.local.entities.Platform
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
@@ -128,10 +129,10 @@ class PlatformContainers() : Platform() {
 
     override fun toString(): String {
         return "PlatformContainers(" +
-                "containers=$containers, " +
-                "errors=$errors, " +
-                ")" +
-                " ${super.toString()}"
+            "containers=$containers, " +
+            "errors=$errors, " +
+            ")" +
+            " ${super.toString()}"
     }
 
     companion object {
