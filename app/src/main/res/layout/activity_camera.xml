@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="MissingPrefix">
+
+    <fragment
+        android:id="@+id/status_fragment"
+        android:name="ru.iqsolution.tkoonline.screens.status.StatusFragment"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_height"
+        tools:layout="@layout/include_status"/>
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/status_bar_height"
+        tools:background="@drawable/login_background"/>
+
+    <ImageView
+        android:id="@+id/turn_light"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="20dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"
+        android:background="@drawable/camera_oval"
+        android:foreground="?android:attr/selectableItemBackground"
+        tools:src="@drawable/ic_highlight_on"/>
+
+    <ImageView
+        android:id="@+id/shot"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_shot"
+        android:background="?android:attr/selectableItemBackground"/>
+
+</RelativeLayout>
