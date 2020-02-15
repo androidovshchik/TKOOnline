@@ -9,6 +9,7 @@ import coil.api.load
 import kotlinx.android.synthetic.main.activity_photo.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.toast
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.EXTRA_PHOTO_EVENT
 import ru.iqsolution.tkoonline.EXTRA_PHOTO_LINKED_IDS
 import ru.iqsolution.tkoonline.EXTRA_PHOTO_TITLE
@@ -24,6 +25,8 @@ import java.io.File
  */
 class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
 
+    override val presenter: PhotoPresenter by instance()
+
     private lateinit var photoEvent: PhotoEvent
 
     private lateinit var externalPhoto: File
@@ -34,10 +37,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo)
         photoEvent = intent.getSerializableExtra(EXTRA_PHOTO_EVENT) as PhotoEvent
-        presenter = PhotoPresenter().also {
-            it.attachView(this)
-            externalPhoto = it.getExternalFile(photoEvent)
-        }
+        externalPhoto = presenter.getExternalFile(photoEvent)
         val linkedIds = intent.getIntegerArrayListExtra(EXTRA_PHOTO_LINKED_IDS).orEmpty()
         toolbar_back.setOnClickListener {
             if (preFinishing) {

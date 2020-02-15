@@ -17,6 +17,7 @@ import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.isRunning
@@ -30,6 +31,8 @@ import ru.iqsolution.tkoonline.services.workers.DeleteWorker
 
 class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, SettingsListener {
 
+    override val presenter: LoginPresenter by instance()
+
     private val settingsDialog = SettingsDialog()
 
     private val passwordDialog = PasswordDialog()
@@ -40,9 +43,6 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, Scanne
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        presenter = LoginPresenter().also {
-            it.attachView(this)
-        }
         preferences.bulk {
             logout()
         }

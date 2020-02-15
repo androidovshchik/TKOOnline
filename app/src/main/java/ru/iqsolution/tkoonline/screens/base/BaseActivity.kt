@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.base
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -17,30 +16,42 @@ import com.google.android.gms.location.LocationSettingsStates
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import org.jetbrains.anko.locationManager
 import org.jetbrains.anko.toast
+import org.kodein.di.Kodein
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.closestKodein
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
+import ru.iqsolution.tkoonline.screens.screenModule
 import ru.iqsolution.tkoonline.screens.status.StatusFragment
 import ru.iqsolution.tkoonline.services.LocationListener
 import timber.log.Timber
 
-@SuppressLint("Registered")
 @Suppress("MemberVisibilityCanBePrivate")
-open class BaseActivity<T : BasePresenter<out IBaseView>> : Activity(), IBaseView, LocationListener {
+abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView, KodeinAware, LocationListener {
 
-    protected lateinit var presenter: T
+    private val parentKodein by closestKodein()
 
-    protected lateinit var preferences: Preferences
+    override val kodein: Kodein by Kodein.lazy {
+
+        extend(parentKodein)
+
+        import(screenModule)
+    }
+
+    protected abstract val presenter: P
+
+    protected val preferences: Preferences by instance()
 
     private var statusBar: StatusFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        preferences = Preferences(applicationContext)
     }
 
     @Suppress("DEPRECATION")
