@@ -49,7 +49,7 @@ class MapRect {
      * Length in meters of 1° of latitude = always 111.32 km
      * Length in meters of 1° of longitude = 111.32 km * cos(latitude)
      */
-    fun update() {
+    fun measure() {
         if (isValid) {
             val minLength = 2 //km
             val latLength = 111.32 //km

@@ -6,7 +6,8 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:padding="9dp"
-    android:background="?android:attr/selectableItemBackground"
+    android:foreground="?android:attr/selectableItemBackground"
+    tools:background="#804D4A5B"
     tools:ignore="MissingPrefix">
 
     <ru.iqsolution.tkoonline.screens.EllipsizingTextView

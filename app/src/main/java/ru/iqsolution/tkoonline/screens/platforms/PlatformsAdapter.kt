@@ -2,11 +2,13 @@ package ru.iqsolution.tkoonline.screens.platforms
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.item_platform.view.*
+import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundDrawable
 import org.jetbrains.anko.dip
 import ru.iqsolution.tkoonline.FORMAT_TIME
@@ -59,6 +61,9 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: PlatformContainers) {
             val size = if (item.meters < 80) maxSize else minSize
+            itemView.backgroundColor = if (item.highlighted) {
+                Color.parseColor("#804D4A5B")
+            } else Color.WHITE
             address.text = item.address
             range.text = appContext.getString(
                 R.string.platform_range_n,

@@ -28,6 +28,7 @@ import java.util.*
 /**
  * NOTICE should have an id [R.id.status_fragment]
  */
+@Suppress("DEPRECATION")
 class StatusFragment : BaseFragment(), SyncListener {
 
     private lateinit var syncManager: SyncManager

@@ -29,6 +29,8 @@ interface PlatformsContract {
 
         fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>)
 
+        fun highlightItem(kpId: Int)
+
         fun onLoggedOut()
     }
 }

@@ -37,6 +37,8 @@ class PlatformContainers() : Platform() {
      */
     var timestamp = 0L
 
+    var highlighted = false
+
     constructor(platform: Platform) : this() {
         kpId = platform.kpId
         linkedKpId = platform.linkedKpId
