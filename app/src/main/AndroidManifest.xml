@@ -62,6 +62,11 @@
             android:screenOrientation="sensorPortrait">
         </activity>
         <activity
+            android:name=".screens.outside.OutsideActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="sensorPortrait">
+        </activity>
+        <activity
             android:name=".screens.platform.PlatformActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="sensorPortrait">
@@ -102,7 +107,7 @@
         <receiver
             android:name=".receivers.ToastReceiver"
             android:enabled="true"
-            android:exported="false"></receiver>
+            android:exported="false"/>
     </application>
 
 </manifest>
