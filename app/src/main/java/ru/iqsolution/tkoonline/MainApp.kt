@@ -5,6 +5,8 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import androidx.camera.camera2.Camera2Config
+import androidx.camera.core.CameraXConfig
 import coil.Coil
 import coil.ImageLoader
 import com.elvishew.xlog.LogConfiguration
@@ -35,7 +37,7 @@ import timber.log.Timber
 import java.io.File
 
 @Suppress("unused")
-class MainApp : Application(), KodeinAware {
+class MainApp : Application(), KodeinAware, CameraXConfig.Provider {
 
     override val kodein by Kodein.lazy {
 
@@ -49,6 +51,8 @@ class MainApp : Application(), KodeinAware {
     }
 
     val preferences: Preferences by instance()
+
+    override fun getCameraXConfig() = Camera2Config.defaultConfig()
 
     override fun onCreate() {
         super.onCreate()

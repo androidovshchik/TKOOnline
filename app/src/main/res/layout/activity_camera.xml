@@ -20,6 +20,14 @@
         android:layout_marginTop="@dimen/status_bar_height"
         tools:background="@drawable/login_background"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_below="@+id/status_fragment"
+        android:background="@drawable/bottom_shadow"
+        android:elevation="6dp"
+        tools:elevation="0dp"/>
+
     <ImageView
         android:id="@+id/turn_light"
         android:layout_width="65dp"

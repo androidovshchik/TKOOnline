@@ -5,6 +5,8 @@ import org.kodein.di.generic.bind
 import org.kodein.di.generic.contexted
 import org.kodein.di.generic.instance
 import org.kodein.di.generic.provider
+import ru.iqsolution.tkoonline.screens.camera.CameraActivity
+import ru.iqsolution.tkoonline.screens.camera.CameraPresenter
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.login.LoginPresenter
 import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
@@ -34,6 +36,12 @@ val screenModule = Kodein.Module("screen") {
 
     bind<PhotoPresenter>() with contexted<PhotoActivity>().provider {
         PhotoPresenter(instance()).apply {
+            attachView(context)
+        }
+    }
+
+    bind<CameraPresenter>() with contexted<CameraActivity>().provider {
+        CameraPresenter(instance()).apply {
             attachView(context)
         }
     }
