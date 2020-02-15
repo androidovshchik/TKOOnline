@@ -7,6 +7,7 @@ import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
@@ -25,6 +26,8 @@ import ru.iqsolution.tkoonline.services.workers.SendWorker
  */
 class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View, ConfirmListener, GalleryListener {
 
+    override val presenter: PlatformPresenter by instance()
+
     private lateinit var platform: PlatformContainers
 
     private val photoTypes = arrayListOf<PhotoType>()
@@ -41,12 +44,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform)
-        presenter = PlatformPresenter().also {
-            it.attachView(this)
-        }
-        platform = intent.getSerializableExtra(EXTRA_PLATFORM_PLATFORM) as PlatformContainers
+        platform = intent.getSerializableExtra(EXTRA_PLATFORM) as PlatformContainers
         photoTypes.apply {
-            addAll(intent.getSerializableExtra(EXTRA_PLATFORM_PHOTO_TYPES) as ArrayList<PhotoType>)
+            addAll(intent.getSerializableExtra(EXTRA_PHOTO_TYPES) as ArrayList<PhotoType>)
             forEach {
                 if (it.isError == 1) {
                     photoErrors.put(it.id, it.shortName)
@@ -90,8 +90,8 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             }
             startActivityNoop<ProblemActivity>(
                 REQUEST_PROBLEM,
-                EXTRA_PROBLEM_PLATFORM to platform,
-                EXTRA_PROBLEM_PHOTO_TYPES to photoTypes
+                EXTRA_PLATFORM to platform,
+                EXTRA_PHOTO_TYPES to photoTypes
             )
         }
         platform_not_cleaned.setOnClickListener {

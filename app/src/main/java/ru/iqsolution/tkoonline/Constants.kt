@@ -35,18 +35,14 @@ const val EXTRA_SYNC_LOCATION = "sync_coordinates"
 
 const val EXTRA_SYNC_AVAILABILITY = "sync_availability"
 
-const val EXTRA_PLATFORM_PLATFORM = "platform_platform"
+const val EXTRA_PLATFORM = "platform"
 
-const val EXTRA_PLATFORM_PHOTO_TYPES = "platform_photo types"
+const val EXTRA_PHOTO_TYPES = "photo_types"
 
-const val EXTRA_PROBLEM_PLATFORM = "problem_platform"
-
-const val EXTRA_PROBLEM_PHOTO_TYPES = "problem_photo_types"
+const val EXTRA_PHOTO_EVENT = "photo_event"
 
 // not required
 const val EXTRA_PHOTO_TITLE = "photo_title"
-
-const val EXTRA_PHOTO_EVENT = "photo_event"
 
 // not required
 const val EXTRA_PHOTO_LINKED_IDS = "photo_linked_ids"

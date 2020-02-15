@@ -11,7 +11,11 @@ import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.activity_platforms.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import ru.iqsolution.tkoonline.*
+import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_TYPES
+import ru.iqsolution.tkoonline.EXTRA_PLATFORM
+import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
+import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
@@ -23,13 +27,17 @@ import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.AdapterListener
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
+import ru.iqsolution.tkoonline.screens.map.MapRect
+import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
+import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 import java.util.*
 
 class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View, WaitListener,
     AdapterListener<PlatformContainers> {
+
+    override val presenter: PlatformsPresenter by instance()
 
     private lateinit var platformsAdapter: PlatformsAdapter
 
@@ -48,9 +56,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platforms)
-        presenter = PlatformsPresenter().also {
-            it.attachView(this)
-        }
         platformsAdapter = PlatformsAdapter(applicationContext).also {
             it.setListener(this)
         }
@@ -84,13 +89,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                     if (platformClicked) {
                         return@setOnClickListener
                     }
-                    val photoType = PhotoType.Default.OTHER
-                    startActivityNoop<PhotoActivity>(
-                        REQUEST_PHOTO,
-                        EXTRA_PHOTO_TITLE to photoType.description,
-                        EXTRA_PHOTO_EVENT to PhotoEvent(photoType.id).apply {
-                            ready = true
-                        }
+                    startActivityNoop<OutsideActivity>(
+                        REQUEST_OUTSIDE,
+                        EXTRA_PHOTO_TYPES to photoTypes
                     )
                 }
             }
@@ -110,8 +111,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platformClicked = true
         startActivityNoop<PlatformActivity>(
             REQUEST_PLATFORM,
-            EXTRA_PLATFORM_PLATFORM to item,
-            EXTRA_PLATFORM_PHOTO_TYPES to photoTypes
+            EXTRA_PLATFORM to item,
+            EXTRA_PHOTO_TYPES to photoTypes
         )
     }
 
@@ -128,8 +129,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         }
     }
 
-    override fun changeMapPosition(latitude: Double, longitude: Double) {
-        platforms_map.moveTo(latitude, longitude)
+    override fun changeMapBounds(mapRect: MapRect) {
+        platforms_map.setBounds(mapRect)
     }
 
     override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
@@ -195,7 +196,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     override fun cancelWork() {
-        presenter.cancelExit(applicationContext)
+        SendWorker.cancel(applicationContext)
+        TelemetryService.start(applicationContext, EXTRA_TELEMETRY_TASK to true)
     }
 
     override fun onLoggedOut() {
@@ -227,7 +229,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                     presenter.loadPhotoCleanEvents()
                 }
             }
-            REQUEST_PHOTO -> {
+            REQUEST_OUTSIDE -> {
                 if (resultCode == RESULT_OK) {
                     SendWorker.launch(applicationContext)
                 }
@@ -314,7 +316,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
         private const val REQUEST_PLATFORM = 300
 
-        private const val REQUEST_PHOTO = 310
+        private const val REQUEST_OUTSIDE = 310
 
         private const val URL = "file:///android_asset/platforms.html"
     }

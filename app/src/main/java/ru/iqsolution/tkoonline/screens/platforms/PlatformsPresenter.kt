@@ -65,7 +65,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
             }
             reference.get()?.apply {
                 if (!refresh) {
-                    if (responsePlatforms.data.isNotEmpty()) {
+                    if (allPlatforms.isNotEmpty()) {
                         changeMapBounds(mapRect)
                     }
                 }
