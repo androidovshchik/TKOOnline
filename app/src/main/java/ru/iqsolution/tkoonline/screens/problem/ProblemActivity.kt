@@ -8,8 +8,10 @@ import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.activity_problem.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
+import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
@@ -24,16 +26,15 @@ import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
  */
 class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
 
+    override val presenter: ProblemPresenter by instance()
+
     private lateinit var platform: PlatformContainers
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_problem)
-        presenter = ProblemPresenter().also {
-            it.attachView(this)
-        }
-        platform = intent.getSerializableExtra(EXTRA_PROBLEM_PLATFORM) as PlatformContainers
+        platform = intent.getSerializableExtra(EXTRA_PLATFORM) as PlatformContainers
         toolbar_back.setOnClickListener {
             setResult(RESULT_CANCELED)
             finish()
@@ -47,7 +48,7 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
                 platform.timeLimitTo.toString(FORMAT_TIME)
             ), 2, 7, 11, 16
         )
-        val photoTypes = intent.getSerializableExtra(EXTRA_PROBLEM_PHOTO_TYPES) as ArrayList<PhotoType>
+        val photoTypes = intent.getSerializableExtra(EXTRA_PHOTO_TYPES) as ArrayList<PhotoType>
         photoTypes.forEach {
             if (it.isError == 1) {
                 addButton(it)
@@ -62,6 +63,7 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
                 it.setMargins(dip(20), 0, dip(20), dip(20))
             }
             text = photoType.description
+            backgroundResource = R.drawable.button_gray
             setOnClickListener {
                 startActivityNoop<PhotoActivity>(
                     REQUEST_PHOTO,
