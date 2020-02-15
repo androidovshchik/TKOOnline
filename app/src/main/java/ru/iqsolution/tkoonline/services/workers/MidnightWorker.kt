@@ -7,11 +7,12 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.chibatching.kotpref.blockingBulk
-import kotlinx.coroutines.coroutineScope
+import okhttp3.OkHttpClient
 import org.jetbrains.anko.*
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.extensions.cancelAll
 import ru.iqsolution.tkoonline.extensions.getActivities
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.Server
@@ -21,14 +22,16 @@ import java.util.concurrent.TimeUnit
 
 class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
-    val preferences: Preferences by instance()
+    private val preferences: Preferences by instance()
 
-    val server: Server by instance()
+    private val client: OkHttpClient by instance()
 
-    override suspend fun doWork(): Result = coroutineScope {
+    private val server: Server by instance()
+
+    override fun doWork(): Result {
         val header = preferences.authHeader
         if (header.endsWith("null", true)) {
-            return@coroutineScope Result.success()
+            return Result.success()
         }
         preferences.blockingBulk {
             logout()
@@ -49,7 +52,11 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
         } catch (e: Throwable) {
             Timber.e(e)
         }
-        Result.success()
+        return Result.success()
+    }
+
+    override fun onStopped() {
+        client.cancelAll("logout")
     }
 
     companion object {

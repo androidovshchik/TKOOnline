@@ -5,14 +5,13 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
-import ru.iqsolution.tkoonline.MainApp
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
+import ru.iqsolution.tkoonline.extensions.cancelAll
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
@@ -23,48 +22,44 @@ import java.util.concurrent.TimeUnit
 
 class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
-    val db: Database by instance()
+    private val db: Database by instance()
 
-    val fileManager: FileManager by instance()
+    private val fileManager: FileManager by instance()
 
-    val preferences: Preferences by instance()
+    private val preferences: Preferences by instance()
 
-    val server: Server by instance()
+    private val client: OkHttpClient by instance()
+
+    private val server: Server by instance()
 
     private val broadcastManager = LocalBroadcastManager.getInstance(context)
 
-    override suspend fun doWork(): Result = coroutineScope {
-        val retry = inputData.getBoolean(PARAM_RETRY, false)
+    override fun doWork(): Result {
         var hasErrors = false
-        require(!isStopped)
+        val retry = inputData.getBoolean(PARAM_RETRY, false)
         val cleanEvents = db.cleanDao().getSendEvents()
         cleanEvents.forEach {
-            require(!isStopped)
             try {
                 val responseClean = server.sendClean(
                     it.token.authHeader,
                     it.clean.kpId,
                     RequestClean(it.clean)
                 ).execute()
-                require(!isStopped)
                 when {
-                    responseClean.code() in 200..299 -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
-                    responseClean.code() == 401 -> return@coroutineScope Result.success()
+                    responseClean.isSuccessful -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
+                    responseClean.code() == 401 -> return Result.success()
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
                 hasErrors = true
             }
         }
-        require(!isStopped)
         if (cleanEvents.isNotEmpty()) {
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
         val photoEvents = db.photoDao().getSendEvents()
         photoEvents.forEach {
-            require(!isStopped)
             val photo = fileManager.readFile(it.photo.path) ?: return@forEach
-            require(!isStopped)
             try {
                 val responsePhoto = server.sendPhoto(
                     it.token.authHeader,
@@ -75,26 +70,23 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     it.photo.longitude.toString().toRequestBody(TEXT_TYPE),
                     photo
                 ).execute()
-                require(!isStopped)
                 when {
-                    responsePhoto.code() in 200..299 -> db.photoDao().markAsSent(it.photo.id ?: 0L)
-                    responsePhoto.code() == 401 -> return@coroutineScope Result.success()
+                    responsePhoto.isSuccessful -> db.photoDao().markAsSent(it.photo.id ?: 0L)
+                    responsePhoto.code() == 401 -> return Result.success()
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
                 hasErrors = true
             }
         }
-        require(!isStopped)
         if (photoEvents.isNotEmpty()) {
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
-        if (retry) {
+        return if (retry) {
             val locationCount = db.locationDao().getSendCount()
-            require(!isStopped)
             if (locationCount > 0) {
                 // awaiting telemetry service
-                return@coroutineScope Result.retry()
+                return Result.retry()
             }
             try {
                 server.logout(preferences.authHeader).execute()
@@ -104,21 +96,20 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             }
             when {
                 hasErrors -> Result.retry()
-                isStopped -> Result.failure()
                 else -> Result.success()
             }
         } else {
-            when {
-                isStopped -> Result.failure()
-                else -> Result.success()
-            }
+            Result.success()
         }
     }
 
-    @Suppress("OverridingDeprecatedMember")
-    override val coroutineContext = Dispatchers.IO
-
-    override val kodein = MainApp.instance.kodein
+    override fun onStopped() {
+        client.apply {
+            cancelAll("clean")
+            cancelAll("photo")
+            cancelAll("logout")
+        }
+    }
 
     companion object {
 

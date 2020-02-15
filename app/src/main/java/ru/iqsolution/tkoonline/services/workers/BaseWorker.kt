@@ -1,12 +1,12 @@
 package ru.iqsolution.tkoonline.services.workers
 
 import android.content.Context
-import androidx.work.CoroutineWorker
+import androidx.work.Worker
 import androidx.work.WorkerParameters
 import org.kodein.di.KodeinAware
-import ru.iqsolution.tkoonline.MainApp
+import org.kodein.di.android.closestKodein
 
-abstract class BaseWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params), KodeinAware {
+abstract class BaseWorker(context: Context, params: WorkerParameters) : Worker(context, params), KodeinAware {
 
-    override val kodein = MainApp.instance.kodein
+    override val kodein by closestKodein(context)
 }
