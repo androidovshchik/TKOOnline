@@ -39,28 +39,28 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
             val secondary = arrayListOf<PlatformContainers>()
             val allPlatforms = responsePlatforms.data.filter { it.isValid }
                 .distinctBy { it.kpId }
-            db.platformDao().deleteAll()
-            db.platformDao().insert(allPlatforms)
-            allPlatforms.forEach { item ->
-                if (item.linkedKpId != null) {
-                    return@forEach
+            withContext(Dispatchers.IO) {
+                db.platformDao().deleteAll()
+                db.platformDao().insert(allPlatforms)
+                allPlatforms.forEach { item ->
+                    if (item.linkedKpId != null) {
+                        return@forEach
+                    }
+                    if (!refresh) {
+                        mapRect.update(item)
+                    }
+                    when (item.status) {
+                        PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(item))
+                        else -> secondary.add(PlatformContainers(item))
+                    }
                 }
-                if (!refresh) {
-                    mapRect.update(item)
-                }
-                when (item.status) {
-                    PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(item))
-                    else -> secondary.add(PlatformContainers(item))
-                }
-            }
-            allPlatforms.forEach { item ->
-                if (item.linkedKpId == null) {
-                    return@forEach
-                }
-                val platform = primary.firstOrNull { it.kpId == item.linkedKpId }
-                    ?: secondary.firstOrNull { it.kpId == item.linkedKpId }
-                platform?.apply {
-                    setFromEqual(item)
+                allPlatforms.forEach { item ->
+                    if (item.linkedKpId == null) {
+                        return@forEach
+                    }
+                    val platform = primary.firstOrNull { it.kpId == item.linkedKpId }
+                        ?: secondary.firstOrNull { it.kpId == item.linkedKpId }
+                    platform?.setFromEqual(item)
                 }
             }
             reference.get()?.apply {

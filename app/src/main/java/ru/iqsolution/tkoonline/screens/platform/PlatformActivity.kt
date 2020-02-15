@@ -17,6 +17,7 @@ import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.map.MapRect
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
 import ru.iqsolution.tkoonline.services.workers.SendWorker
@@ -74,7 +75,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
         platform_map.apply {
             loadUrl(URL)
             setLocation(preferences.location)
-            moveTo(platform.latitude, platform.longitude)
+            setBounds(MapRect().apply {
+                update(platform)
+            })
         }
         platform_id.setTextBoldSpan(getString(R.string.platform_id, platform.kpId), 0, 3)
         platform_range.setTextBoldSpan(

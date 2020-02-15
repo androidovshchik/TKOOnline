@@ -105,7 +105,7 @@ class MapLayout : FrameLayout, MapListener {
     }
 
     fun setBounds(lat1: Double, lon1: Double, lat2: Double, lon2: Double) {
-        runCall("_1_mapSetBounds($lat1, $lon1, $lat2, $lon2)")
+        runCall("_0_mapSetBounds($lat1, $lon1, $lat2, $lon2)")
     }
 
     fun zoomIn(duration: Int = 500) {

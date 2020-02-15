@@ -70,7 +70,7 @@ document.getElementsByTagName('head')[0].appendChild(script);
  */
 
 // @ts-ignore
-window._1_mapSetBounds = function (lat1: number, lon1: number, lat2: number, lon2: number) {
+window._0_mapSetBounds = function (lat1: number, lon1: number, lat2: number, lon2: number) {
     if (map == null) {
         return
     }
