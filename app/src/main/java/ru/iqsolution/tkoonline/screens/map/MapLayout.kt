@@ -96,7 +96,15 @@ class MapLayout : FrameLayout, MapListener {
         map_web.loadUrl(url)
     }
 
-    fun setBounds(lat1: Int, lon1: Int, lat2: Int, lon2: Int) {
+    fun setBounds(mapRect: MapRect) {
+        mapRect.update(mLatitude, mLongitude)
+        if (mapRect.isValid) {
+            mapRect.update()
+            setBounds(mapRect.minLat, mapRect.minLon, mapRect.maxLat, mapRect.maxLon)
+        }
+    }
+
+    fun setBounds(lat1: Double, lon1: Double, lat2: Double, lon2: Double) {
         runCall("_1_mapSetBounds($lat1, $lon1, $lat2, $lon2)")
     }
 

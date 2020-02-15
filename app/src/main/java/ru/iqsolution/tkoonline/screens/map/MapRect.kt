@@ -1,6 +1,8 @@
 package ru.iqsolution.tkoonline.screens.map
 
-import ru.iqsolution.tkoonline.local.entities.Platform
+import ru.iqsolution.tkoonline.models.Location
+import kotlin.math.PI
+import kotlin.math.cos
 
 class MapRect {
 
@@ -12,22 +14,54 @@ class MapRect {
 
     var maxLon = Double.MIN_VALUE
 
+    private var updateCount = 0
+
+    val isValid: Boolean
+        get() = updateCount >= 1
+
     val centerLat: Double
         get() = (maxLat + minLat) / 2
 
     val centerLon: Double
         get() = (maxLon + minLon) / 2
 
-    fun update(platform: Platform) {
-        if (platform.latitude < minLat) {
-            minLat = platform.latitude
-        } else if (platform.latitude > maxLat) {
-            maxLat = platform.latitude
+    fun update(location: Location<Double>) {
+        update(location.latitude, location.longitude)
+    }
+
+    fun update(latitude: Double?, longitude: Double?) {
+        if (latitude != null && longitude != null) {
+            if (latitude < minLat) {
+                minLat = latitude
+            } else if (latitude > maxLat) {
+                maxLat = latitude
+            }
+            if (longitude < minLon) {
+                minLon = longitude
+            } else if (longitude > maxLon) {
+                maxLon = longitude
+            }
+            updateCount++
         }
-        if (platform.longitude < minLon) {
-            minLon = platform.longitude
-        } else if (platform.longitude > maxLon) {
-            maxLon = platform.longitude
+    }
+
+    /**
+     * Length in meters of 1° of latitude = always 111.32 km
+     * Length in meters of 1° of longitude = 111.32 km * cos(latitude)
+     */
+    fun update() {
+        if (isValid) {
+            val minLength = 2 //km
+            val latLength = 111.32 //km
+            if (maxLat - minLat < minLength / latLength) {
+                minLat -= minLength / latLength / 2
+                maxLat += minLength / latLength / 2
+            }
+            val lonLength = latLength * cos(centerLat * PI / 180)
+            if (maxLon - minLon < minLength / lonLength) {
+                minLon -= minLength / lonLength / 2
+                maxLon += minLength / lonLength / 2
+            }
         }
     }
 }
