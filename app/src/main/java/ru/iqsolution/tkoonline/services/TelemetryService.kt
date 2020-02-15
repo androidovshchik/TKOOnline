@@ -120,7 +120,9 @@ class TelemetryService : BaseService(), TelemetryListener {
                 if (locationDelay > LOCATION_MAX_DELAY) {
                     lastEventTime = null
                     basePoint = null
-                    bgToast("Не удается определить местоположение")
+                    if (BuildConfig.DEBUG) {
+                        bgToast("Не удается определить местоположение")
+                    }
                     return@addEventSync null
                 }
                 val lastTime = lastEventTime ?: return@addEventSync null

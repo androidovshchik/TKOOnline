@@ -166,6 +166,20 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         platforms_refresh.isRefreshing = false
     }
 
+    override fun highlightItem(kpId: Int) {
+        platformsAdapter.apply {
+            (primaryItems + items).forEachIndexed { index, item ->
+                item.highlighted = if (item.kpId == kpId) {
+                    platforms_list.layoutManager?.scrollToPosition(index)
+                    true
+                } else {
+                    false
+                }
+            }
+            notifyDataSetChanged()
+        }
+    }
+
     override fun onRoute(locationEvents: List<LocationEvent>) {
         platforms_map.setRoute(presenter.toJson(locationEvents))
     }
