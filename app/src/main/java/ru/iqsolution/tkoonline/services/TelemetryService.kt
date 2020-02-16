@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.iqsolution.tkoonline.services
 
 import android.annotation.SuppressLint
