@@ -3,14 +3,11 @@ package ru.iqsolution.tkoonline.screens.base
 import android.content.Context
 import com.google.gson.Gson
 import kotlinx.coroutines.*
-import org.jetbrains.anko.activityManager
 import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
-import ru.iqsolution.tkoonline.services.TelemetryService
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -34,27 +31,6 @@ open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
 
     override fun attachView(view: V) {
         reference = WeakReference(view)
-    }
-
-    override fun launchTelemetry(context: Context) {
-        if (context.activityManager.isRunning<TelemetryService>()) {
-            return
-        }
-        GlobalScope.launch(Dispatchers.Main) {
-            var attempts = 0
-            repeat(3) {
-                if (attempts < 0) {
-                    return@repeat
-                }
-                try {
-                    TelemetryService.start(context)
-                    attempts = -1
-                } catch (e: Throwable) {
-                    delay(3000L + attempts * 1000L)
-                    attempts++
-                }
-            }
-        }
     }
 
     override fun loadRoute() {

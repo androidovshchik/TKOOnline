@@ -14,6 +14,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStates
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
+import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.locationManager
 import org.jetbrains.anko.toast
 import org.kodein.di.Kodein
@@ -21,12 +22,15 @@ import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.common.status.StatusFragment
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.screenModule
+import ru.iqsolution.tkoonline.services.TelemetryRunnable
+import ru.iqsolution.tkoonline.services.TelemetryService
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -57,7 +61,9 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
         super.onPostCreate(savedInstanceState)
         if (this !is LoginActivity) {
             statusBar = fragmentManager.findFragmentById(R.id.status_fragment) as StatusFragment?
-            presenter.launchTelemetry(applicationContext)
+            if (!activityManager.isRunning<TelemetryService>()) {
+                TelemetryRunnable(applicationContext).run()
+            }
         }
     }
 

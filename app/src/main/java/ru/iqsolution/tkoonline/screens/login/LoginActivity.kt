@@ -38,7 +38,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
 
     private var hasPrompted = false
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "BatteryLife")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
