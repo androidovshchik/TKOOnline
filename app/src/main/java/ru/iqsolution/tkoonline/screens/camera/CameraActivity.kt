@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.camera
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.Surface
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -41,91 +42,67 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         setContentView(R.layout.activity_camera)
         cameraExecutor = ContextCompat.getMainExecutor(applicationContext)
+        toggleLight(preferences.enableLight)
         turn_light.setOnClickListener {
-            when (camera?.cameraInfo?.torchState?.value) {
-                TorchState.ON -> toggleLight(false)
-                else -> toggleLight(true)
+            camera?.let {
+                val toggled = when (it.cameraInfo.torchState.value) {
+                    TorchState.ON -> toggleLight(false)
+                    else -> toggleLight(true)
+                }
+                if (toggled == false) {
+                    toast("Требуется наличие вспышки для камеры")
+                }
             }
         }
         shot.setOnClickListener {
             imageCapture?.let {
-                val photoFile = creatseFile(outputDirectory, FILENssAME, PHOTO_EXTssENSION)
+                /*val photoFile = creatseFile(outputDirectory, FILENssAME, PHOTO_EXTssENSION)
                 val metadata = ImageCapture.Metadata().apply {
-
-                    // Mirror image when using the front camera
                     isReversedHorizontal = lensFacing == CameraSelector.LENS_FACING_FRONT
                 }
-                it.takePicture(metadata, cameraExecutor, this)
+                it.takePicture(metadata, cameraExecutor, this)*/
             }
         }
         val cameraProvider = ProcessCameraProvider.getInstance(applicationContext)
         cameraProvider.addListener(Runnable {
             val window = windowManager.windowSize
-            val screenAspectRatio = aspectRatio(window.x, window.y)
-            val previewRatio = max(width, height).toDouble() / min(width, height)
-            if (abs(previewRatio - RATIO_4_3_VALUE) <= abs(previewRatio - RATIO_16_9_VALUE)) {
-                return AspectRatio.RATIO_4_3
-            }
-            AspectRatio.RATIO_16_9
+            val screenAspectRatio = getAspectRatio(window.x, window.y)
             Timber.e("Preview aspect ratio: $screenAspectRatio")
-
-            val rotation = 0
-            Timber.e("rotation $rotation")
-
+            val preview = Preview.Builder()
+                .setTargetAspectRatio(screenAspectRatio)
+                .setTargetRotation(Surface.ROTATION_0)
+                .build()
+            preview.setSurfaceProvider(camera_preview.previewSurfaceProvider)
+            imageCapture = ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .setTargetAspectRatio(screenAspectRatio)
+                .setTargetRotation(Surface.ROTATION_0)
+                .setFlashMode(ImageCapture.FLASH_MODE_OFF)
+                .build()
             val cameraSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
-
-            // Preview
-            val preview = Preview.Builder()
-                // We request aspect ratio but no resolution
-                .setTargetAspectRatio(screenAspectRatio)
-                // Set initial target rotation
-                .setTargetRotation(rotation)
-                .build()
-
-            // Default PreviewSurfaceProvider
-            preview?.setSurfaceProvider(camera_preview.previewSurfaceProvider)
-
-            // ImageCapture
-            imageCapture = ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                // We request aspect ratio but no resolution to match preview config, but letting
-                // CameraX optimize for whatever specific resolution best fits requested capture mode
-                .setTargetAspectRatio(screenAspectRatio)
-                // Set initial target rotation, we will have to call this again if rotation changes
-                // during the lifecycle of this use case
-                .setTargetRotation(rotation)
-                .setFlashMode(ImageCapture.FLASH_MODE_ON)
-                .build()
             try {
-                // A variable number of use-cases can be passed here -
-                // camera provides access to CameraControl & CameraInfo
-                camera = cameraProvider.get().bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture
-                )
+                camera = cameraProvider.get().bindToLifecycle(this, cameraSelector, preview, imageCapture)
                 toggleLight(preferences.enableLight)
-                //camera?.cameraControl?.enableTorch(true)
-            } catch (exc: Exception) {
-                Timber.e("Use case binding failed", exc)
+            } catch (e: Throwable) {
+                Timber.e(e)
             }
         }, cameraExecutor)
     }
 
-    private fun toggleLight(enable: Boolean) {
+    private fun toggleLight(enable: Boolean): Boolean? {
         camera?.also {
-            if (it.cameraInfo.hasFlashUnit()) {
-                it.cameraControl.enableTorch(enable)
-                preferences.enableLight = enable
-                turn_light.setImageResource(
-                    if (enable) R.drawable.ic_highlight_on else R.drawable.ic_highlight_off
-                )
-            } else {
-                if (enable) {
-                    toast("Требуется наличие вспышки для камеры")
-                }
+            if (!it.cameraInfo.hasFlashUnit()) {
+                return false
             }
+            it.cameraControl.enableTorch(enable)
+            preferences.enableLight = enable
         }
+        turn_light.setImageResource(
+            if (enable) R.drawable.ic_highlight_on else R.drawable.ic_highlight_off
+        )
+        return null
     }
 
     override fun onStart() {
@@ -139,6 +116,7 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
     }
 
     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+        camera?.cameraControl?.enableTorch(false)
         setResult(RESULT_OK)
         finish()
     }
@@ -148,6 +126,7 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
     }
 
     override fun onBackPressed() {
+        camera?.cameraControl?.enableTorch(false)
         finish()
     }
 
@@ -160,8 +139,13 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
 
     companion object {
 
-        private const val RATIO_4_3 = 4.0 / 3.0
-
-        private const val RATIO_16_9 = 16.0 / 9.0
+        private fun getAspectRatio(width: Int, height: Int): Int {
+            val previewRatio = max(width, height).toDouble() / min(width, height)
+            return if (abs(previewRatio - 4.0 / 3.0) <= abs(previewRatio - 16.0 / 9.0)) {
+                AspectRatio.RATIO_4_3
+            } else {
+                AspectRatio.RATIO_16_9
+            }
+        }
     }
 }
