@@ -1,8 +1,10 @@
 package ru.iqsolution.tkoonline.screens.base
 
+import org.kodein.di.KodeinAware
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
+import ru.iqsolution.tkoonline.services.LocationListener
 
-interface IBaseView {
+interface IBaseView : KodeinAware, LocationListener {
 
     fun updateRoute()
 

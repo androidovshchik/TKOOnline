@@ -1,8 +1,10 @@
 package ru.iqsolution.tkoonline.screens.base
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import org.kodein.di.KodeinAware
 
-interface IBasePresenter<V : IBaseView> {
+interface IBasePresenter<V : IBaseView> : KodeinAware, CoroutineScope {
 
     val isAttached: Boolean
 

@@ -4,7 +4,6 @@ import android.content.Context
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.jetbrains.anko.activityManager
-import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.extensions.isRunning
@@ -16,7 +15,7 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
-open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V>, KodeinAware, CoroutineScope {
+open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
 
     override val kodein by closestKodein(context)
 

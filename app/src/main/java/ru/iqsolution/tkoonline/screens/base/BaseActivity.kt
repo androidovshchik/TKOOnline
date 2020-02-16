@@ -17,7 +17,6 @@ import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import org.jetbrains.anko.locationManager
 import org.jetbrains.anko.toast
 import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
@@ -25,14 +24,13 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import ru.iqsolution.tkoonline.screens.common.status.StatusFragment
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.screenModule
-import ru.iqsolution.tkoonline.screens.status.StatusFragment
-import ru.iqsolution.tkoonline.services.LocationListener
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView, KodeinAware, LocationListener {
+abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
 
     private val parentKodein by closestKodein()
 
