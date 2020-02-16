@@ -26,7 +26,7 @@ class MapLayout : FrameLayout, MapListener {
 
     private var isReady = false
 
-    private var hasInteracted = false
+    private var hasInteracted = true
 
     private val calls = mutableListOf<String>()
 
@@ -149,6 +149,9 @@ class MapLayout : FrameLayout, MapListener {
 
     fun setLocation(location: SimpleLocation?) {
         location?.let {
+            if (!hasInteracted) {
+                moveTo(it.latitude, it.longitude)
+            }
             setLocation(it.latitude, it.longitude, it.accuracy)
         }
     }
