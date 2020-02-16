@@ -200,8 +200,7 @@ class BasePoint(
             "currentDirection=$currentDirection, " +
             "speedMap=$speedMap, " +
             "distance=$distance" +
-            ")" +
-            " ${super.toString()}"
+            ") ${super.toString()}"
     }
 
     companion object {

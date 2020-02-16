@@ -2,35 +2,34 @@ package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
 import ru.iqsolution.tkoonline.local.entities.Platform
+import kotlin.math.PI
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * Special class for non-linked platforms
- * NOTICE containers also include platform [containerVolume] and [containerCount] values
+ * Special class for displayed in list platforms
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class PlatformContainers() : Platform() {
 
-    var containers = mutableListOf(
-        SimpleContainer(ContainerType.REGULAR),
-        SimpleContainer(ContainerType.BUNKER),
-        SimpleContainer(ContainerType.BULK1),
-        SimpleContainer(ContainerType.SPECIAL1),
-        SimpleContainer(ContainerType.UNKNOWN)
-    )
+    /**
+     * if linked id == null then they are with linked id == this kp id or empty
+     * if linked id != null then they are with linked id == this linked id or empty
+     */
+    val linkedIds = hashSetOf<Int>()
 
     /**
      * It's needed only for map
      */
     @SerializedName("_e")
-    var errors = mutableListOf<String>()
+    val errors = mutableListOf<String>()
 
     /**
      * It's needed for sorting primary items and sizing ovals in list
+     * More than 80 meters
      */
-    var meters = DEFAULT_DISTANCE
+    var meters = 99.0
 
     /**
      * It's needed for sorting secondary items in list
@@ -55,66 +54,12 @@ class PlatformContainers() : Platform() {
         timeLimitTo = platform.timeLimitTo
         timeLimitFrom = platform.timeLimitFrom
         status = platform.status
-        containers.forEach {
-            it.setFromEqual(platform)
-        }
     }
-
-    val allLinkedIds: List<Int>
-        get() {
-            val all = mutableListOf<Int>()
-            containers.forEach {
-                all.addAll(it.linkedIds)
-            }
-            return all
-        }
 
     fun addError(error: String, position: Int = errors.size) {
         if (!errors.contains(error)) {
             errors.add(position, error)
         }
-    }
-
-    override fun setFromEqual(container: Container?): Boolean {
-        return if (container is Platform?) {
-            setFromEqual(container)
-        } else {
-            super.setFromEqual(container)
-        }
-    }
-
-    fun setFromEqual(platform: Platform?): Boolean {
-        if (platform == null) {
-            return false
-        }
-        val linkedId = platform.linkedKpId ?: return false
-        containers.forEach {
-            if (it.setFromEqual(platform)) {
-                it.linkedIds.add(linkedId)
-            }
-        }
-        return false
-    }
-
-    override fun setFromAny(container: Container?): Boolean {
-        return if (container is Platform?) {
-            setFromAny(container)
-        } else {
-            super.setFromAny(container)
-        }
-    }
-
-    fun setFromAny(platform: Platform?): Boolean {
-        if (platform == null) {
-            return false
-        }
-        val linkedId = platform.linkedKpId ?: return false
-        containers.forEach {
-            if (it.setFromAny(platform)) {
-                it.linkedIds.add(linkedId)
-            }
-        }
-        return false
     }
 
     /**
@@ -123,35 +68,16 @@ class PlatformContainers() : Platform() {
      * distance = radius * angle
      */
     fun setDistanceTo(l: Location<Double>) {
-        val lat1 = latitude * D
-        val lat2 = l.latitude * D
-        val dLon = (l.longitude - longitude) * D
-        meters = R * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dLon))
+        val lat1 = latitude * PI / 180
+        val lat2 = l.latitude * PI / 180
+        val dLon = (l.longitude - longitude) * PI / 180
+        meters = 6378137 * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dLon))
     }
 
     override fun toString(): String {
         return "PlatformContainers(" +
-            "containers=$containers, " +
+            "linkedIds=$linkedIds, " +
             "errors=$errors, " +
-            ")" +
-            " ${super.toString()}"
-    }
-
-    companion object {
-
-        /**
-         * More than 80 meters
-         */
-        private const val DEFAULT_DISTANCE = 99.0
-
-        /**
-         * Count of radians in one degree
-         */
-        private const val D = Math.PI / 180
-
-        /**
-         * Radius of the earth in meters
-         */
-        private const val R = 6378137
+            ") ${super.toString()}"
     }
 }
