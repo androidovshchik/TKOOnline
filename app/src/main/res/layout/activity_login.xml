@@ -112,7 +112,7 @@
 
             <fragment
                 android:id="@+id/barcode_fragment"
-                android:name="ru.iqsolution.tkoonline.screens.qrcode.QrCodeFragment"
+                android:name="ru.iqsolution.tkoonline.screens.login.qrcode.QrCodeFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/barcode_container_padding"

@@ -5,7 +5,7 @@
     tools:layout_height="@dimen/map_height"
     tools:parentTag="FrameLayout">
 
-    <ru.iqsolution.tkoonline.screens.map.MapWebView
+    <ru.iqsolution.tkoonline.screens.common.map.MapWebView
         android:id="@+id/map_web"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
