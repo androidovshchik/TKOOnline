@@ -5,6 +5,8 @@ import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.Surface
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -52,6 +54,35 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
         setContentView(R.layout.activity_camera)
         cameraExecutor = ContextCompat.getMainExecutor(applicationContext)
         externalPhoto = File(intent.getStringExtra(EXTRA_PHOTO_PATH)!!)
+        val scaleGestureDetector =
+            ScaleGestureDetector(applicationContext, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    camera?.run {
+                        val zoomRatio = cameraInfo.zoomState.value?.zoomRatio ?: 0f
+                        cameraControl.setZoomRatio(zoomRatio * detector.scaleFactor)
+                    }
+                    return true
+                }
+            })
+        camera_preview.setOnTouchListener { _, event ->
+            scaleGestureDetector.onTouchEvent(event)
+            if (event.action == MotionEvent.ACTION_UP) {
+                camera?.let {
+                    val factory = SurfaceOrientedMeteringPointFactory(
+                        camera_preview.width.toFloat(), camera_preview.height.toFloat()
+                    )
+                    val point = factory.createPoint(event.x, event.y)
+                    it.cameraControl.startFocusAndMetering(
+                        FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
+                            .disableAutoCancel()
+                            .build()
+                    )
+                    return@setOnTouchListener true
+                }
+            }
+            return@setOnTouchListener false
+        }
         toggleLight(preferences.enableLight)
         turn_light.setOnClickListener {
             camera?.let {
@@ -107,6 +138,11 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
                 return false
             }
             it.cameraControl.enableTorch(enable)
+            imageCapture?.flashMode = if (enable) {
+                ImageCapture.FLASH_MODE_ON
+            } else {
+                ImageCapture.FLASH_MODE_OFF
+            }
             preferences.enableLight = enable
         }
         turn_light.setImageResource(
