@@ -8,48 +8,59 @@ import androidx.work.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.extensions.cancelAll
 import ru.iqsolution.tkoonline.local.FileManager
 import timber.log.Timber
 import java.io.File
 
-class InstallWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
+class DownloadWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
     private val fileManager: FileManager by instance()
 
     private val client: OkHttpClient by instance()
 
     override fun doWork(): Result {
-        val url = inputData.getString(PARAM_URL) ?: return Result.success()
+        val url = inputData.getString(PARAM_URL) ?: return Result.failure()
         try {
             val request = Request.Builder()
                 .url(url)
                 .get()
+                .tag(url)
                 .build()
-            val body = client.newCall(request).execute().body
-            if (body != null) {
-                fileManager.writeFile(File("")) {
-                    it.write(body.bytes())
-                    it.flush()
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                val body = response.body
+                if (body != null) {
+                    val result = fileManager.writeFile(File(fileManager.externalDir, "app.apk")) {
+                        it.write(body.bytes())
+                        it.flush()
+                    }
+                    return if (result) {
+                        Result.success()
+                    } else {
+                        Result.failure()
+                    }
                 }
             }
         } catch (e: Throwable) {
             Timber.e(e)
         }
-        return Result.success()
+        return Result.failure()
     }
 
     override fun onStopped() {
-
+        val url = inputData.getString(PARAM_URL)
+        client.cancelAll(url)
     }
 
     companion object {
 
-        private const val NAME = "INSTALL"
+        private const val NAME = "DOWNLOAD"
 
         private const val PARAM_URL = "url"
 
         fun launch(context: Context, url: String): LiveData<WorkInfo> {
-            val request = OneTimeWorkRequestBuilder<InstallWorker>()
+            val request = OneTimeWorkRequestBuilder<DownloadWorker>()
                 .setInputData(
                     Data.Builder()
                         .putString(PARAM_URL, url)
