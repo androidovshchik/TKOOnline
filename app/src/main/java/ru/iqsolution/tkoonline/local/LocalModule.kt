@@ -22,8 +22,9 @@ val localModule = Kodein.Module("local") {
 
     bind<Database>() with singleton {
         Room.databaseBuilder(instance(), Database::class.java, DB_NAME)
-            //.fallbackToDestructiveMigration()
-            .addMigrations(Database.MIGRATION_9_10)
+            .addMigrations(DummyMigration(7, 8))
+            .addMigrations(DummyMigration(8, 9))
+            .addMigrations(Migration910())
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
             .addCallback(object : RoomDatabase.Callback() {
 
