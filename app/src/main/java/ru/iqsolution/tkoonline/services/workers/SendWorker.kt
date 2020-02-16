@@ -38,7 +38,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
     override fun doWork(): Result {
         var hasErrors = false
-        val retry = inputData.getBoolean(PARAM_RETRY, false)
+        val exit = inputData.getBoolean(PARAM_EXIT, false)
         val cleanEvents = db.cleanDao().getSendEvents()
         cleanEvents.forEach {
             try {
@@ -50,6 +50,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 when {
                     responseClean.isSuccessful -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
                     responseClean.code() == 401 -> return Result.success()
+                    else -> hasErrors = true
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
@@ -75,6 +76,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 when {
                     responsePhoto.isSuccessful -> db.photoDao().markAsSent(it.photo.id ?: 0L)
                     responsePhoto.code() == 401 -> return Result.success()
+                    else -> hasErrors = true
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
@@ -84,7 +86,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         if (photoEvents.isNotEmpty()) {
             broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
         }
-        return if (retry) {
+        if (exit) {
             val locationCount = db.locationDao().getSendCount()
             if (locationCount > 0) {
                 // awaiting telemetry service
@@ -96,12 +98,10 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 Timber.e(e)
                 hasErrors = true
             }
-            when {
-                hasErrors -> Result.retry()
-                else -> Result.success()
-            }
-        } else {
-            Result.success()
+        }
+        return when {
+            hasErrors -> Result.retry()
+            else -> Result.success()
         }
     }
 
@@ -117,26 +117,26 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
         private const val NAME = "SEND"
 
-        private const val PARAM_RETRY = "retry"
+        private const val PARAM_EXIT = "exit"
 
         private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
 
-        fun launch(context: Context, retry: Boolean = false): LiveData<WorkInfo>? {
+        fun launch(context: Context, exit: Boolean = false): LiveData<WorkInfo>? {
             val request = OneTimeWorkRequestBuilder<SendWorker>()
                 .setInputData(
                     Data.Builder()
-                        .putBoolean(PARAM_RETRY, retry)
+                        .putBoolean(PARAM_EXIT, exit)
                         .build()
                 )
                 .apply {
-                    if (retry) {
+                    if (exit) {
                         setBackoffCriteria(BackoffPolicy.LINEAR, WorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
                     }
                 }
                 .build()
             WorkManager.getInstance(context).apply {
                 enqueueUniqueWork(NAME, ExistingWorkPolicy.REPLACE, request)
-                return if (retry) {
+                return if (exit) {
                     getWorkInfoByIdLiveData(request.id)
                 } else {
                     null
