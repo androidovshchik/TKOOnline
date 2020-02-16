@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.LocationSettingsStates
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platforms.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -36,6 +37,8 @@ import java.util.*
 class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View {
 
     override val presenter: PlatformsPresenter by instance()
+
+    private val gson: Gson by instance()
 
     private lateinit var platformsAdapter: PlatformsAdapter
 
@@ -159,7 +162,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
             }
             notifyDataSetChanged()
             // primary platforms will overlay secondary in such order
-            platforms_map.setMarkers(presenter.toJson(items), presenter.toJson(primaryItems))
+            platforms_map.setMarkers(gson.toJson(items), gson.toJson(primaryItems))
         }
         platforms_refresh.isRefreshing = false
     }
@@ -179,7 +182,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     }
 
     override fun onRoute(locationEvents: List<LocationEvent>) {
-        platforms_map.setRoute(presenter.toJson(locationEvents))
+        platforms_map.setRoute(gson.toJson(locationEvents))
     }
 
     override fun onLocationState(state: LocationSettingsStates?) {

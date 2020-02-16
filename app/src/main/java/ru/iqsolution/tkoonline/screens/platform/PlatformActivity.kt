@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.collection.SimpleArrayMap
 import com.google.android.gms.location.LocationSettingsStates
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
@@ -28,6 +29,8 @@ import ru.iqsolution.tkoonline.services.workers.SendWorker
 class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View {
 
     override val presenter: PlatformPresenter by instance()
+
+    private val gson: Gson by instance()
 
     private lateinit var platform: PlatformContainers
 
@@ -157,7 +160,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
                 platform.addError(this)
             }
         }
-        platform_map.setMarkers("[${presenter.toJson(platform)}]")
+        platform_map.setMarkers("[${gson.toJson(platform)}]")
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {

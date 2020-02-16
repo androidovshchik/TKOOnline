@@ -93,14 +93,14 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
             if (BuildConfig.DEBUG) {
                 e.toString()
             } else {
-                e?.localizedMessage
+                e?.localizedMessage ?: e.toString()
             }
         )
     }
 
     override fun showError(message: CharSequence?) {
-        message?.let {
-            toast(it)
+        if (message != null) {
+            toast(message)
         }
     }
 

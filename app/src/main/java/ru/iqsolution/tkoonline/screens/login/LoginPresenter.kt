@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.SystemClock
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.chibatching.kotpref.bulk
+import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.*
 import org.joda.time.DateTime
@@ -23,6 +24,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
     private val server: Server by instance()
 
     private val fileManager: FileManager by instance()
+
+    private val gson: Gson by instance()
 
     private var qrCodeJson: String? = null
 

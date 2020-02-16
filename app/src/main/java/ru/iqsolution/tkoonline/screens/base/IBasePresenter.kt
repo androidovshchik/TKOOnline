@@ -9,13 +9,9 @@ interface IBasePresenter<V : IBaseView> : KodeinAware, CoroutineScope {
 
     fun attachView(view: V)
 
-    fun loadRoute()
-
     fun calculateSend()
 
-    fun toJson(instance: Any): String
-
-    fun <T> fromJson(json: String, tClass: Class<out T>): T
+    fun loadRoute()
 
     fun detachView()
 }

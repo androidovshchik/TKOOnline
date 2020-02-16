@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.screens.base
 
 import android.content.Context
-import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
@@ -20,8 +19,6 @@ open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
 
     protected val db: Database by instance()
 
-    protected val gson: Gson by instance()
-
     protected lateinit var reference: WeakReference<V>
 
     protected val baseJob = SupervisorJob()
@@ -31,6 +28,17 @@ open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
 
     override fun attachView(view: V) {
         reference = WeakReference(view)
+    }
+
+    override fun calculateSend() {
+        launch {
+            var photoCount = 0
+            val allCount = withContext(Dispatchers.IO) {
+                photoCount = db.photoDao().getSendCount()
+                photoCount + db.cleanDao().getSendCount() + db.locationDao().getSendCount()
+            }
+            reference.get()?.updateCloud(allCount, photoCount)
+        }
     }
 
     override fun loadRoute() {
@@ -47,25 +55,6 @@ open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
             }
             reference.get()?.onRoute(locationEvents)
         }
-    }
-
-    override fun calculateSend() {
-        launch {
-            var photoCount = 0
-            val allCount = withContext(Dispatchers.IO) {
-                photoCount = db.photoDao().getSendCount()
-                photoCount + db.cleanDao().getSendCount() + db.locationDao().getSendCount()
-            }
-            reference.get()?.updateCloud(allCount, photoCount)
-        }
-    }
-
-    override fun toJson(instance: Any): String {
-        return gson.toJson(instance)
-    }
-
-    override fun <T> fromJson(json: String, tClass: Class<out T>): T {
-        return gson.fromJson(json, tClass)
     }
 
     override fun detachView() {
