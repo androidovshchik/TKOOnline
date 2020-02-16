@@ -1,25 +1,19 @@
 package ru.iqsolution.tkoonline.screens.camera
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.media.MediaScannerConnection
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.webkit.MimeTypeMap
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
 import kotlinx.android.synthetic.main.activity_camera.*
+import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.windowSize
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import timber.log.Timber
-import java.io.File
 import java.util.concurrent.Executor
 import kotlin.math.abs
 import kotlin.math.max
@@ -42,64 +36,28 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
 
     override fun getLifecycle() = lifecycleRegistry
 
-    private val imageSavedListener = object : ImageCapture.OnImageSavedCallback {
-        override fun onError(imageCaptureError: Int, message: String, cause: Throwable?) {
-            Log.e(TAG, "Photo capture failed: $message", cause)
-        }
-
-        override fun onImageSaved(photoFile: File) {
-            Log.d(TAG, "Photo capture succeeded: ${photoFile.absolutePath}")
-
-            // We can only change the foreground Drawable using API level 23+ API
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // Update the gallery thumbnail with latest picture taken
-                setGalleryThumbnail(photoFile)
-            }
-
-            // Implicit broadcasts will be ignored for devices running API level >= 24
-            // so if you only target API level 24+ you can remove this statement
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                requireActivity().sendBroadcast(
-                    Intent(android.hardware.Camera.ACTION_NEW_PICTURE, Uri.fromFile(photoFile))
-                )
-            }
-
-            // If the folder selected is an external media directory, this is unnecessary
-            // but otherwise other apps will not be able to access our images unless we
-            // scan them using [MediaScannerConnection]
-            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(photoFile.extension)
-            MediaScannerConnection.scanFile(
-                context, arrayOf(photoFile.absolutePath), arrayOf(mimeType), null
-            )
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         setContentView(R.layout.activity_camera)
         cameraExecutor = ContextCompat.getMainExecutor(applicationContext)
-        toggleLightIcon(preferences.enableLight)
         turn_light.setOnClickListener {
-            camera?.let {
-
+            when (camera?.cameraInfo?.torchState?.value) {
+                TorchState.ON -> toggleLight(false)
+                else -> toggleLight(true)
             }
         }
         shot.setOnClickListener {
-            // Get a stable reference of the modifiable image capture use case
-            imageCapture?.let { imageCapture ->
-                val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
+            imageCapture?.let {
+                val photoFile = creatseFile(outputDirectory, FILENssAME, PHOTO_EXTssENSION)
                 val metadata = ImageCapture.Metadata().apply {
 
                     // Mirror image when using the front camera
                     isReversedHorizontal = lensFacing == CameraSelector.LENS_FACING_FRONT
                 }
-                imageCapture.takePicture(photoFile, metadata, cameraExecutor, imageSavedListener)
+                it.takePicture(metadata, cameraExecutor, this)
             }
         }
-        val cameraSelector = CameraSelector.Builder()
-            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-            .build()
         val cameraProvider = ProcessCameraProvider.getInstance(applicationContext)
         cameraProvider.addListener(Runnable {
             val window = windowManager.windowSize
@@ -114,8 +72,9 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
             val rotation = 0
             Timber.e("rotation $rotation")
 
-            // CameraProvider
-            val cameraProvider = cameraProvider.get()
+            val cameraSelector = CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .build()
 
             // Preview
             val preview = Preview.Builder()
@@ -142,9 +101,10 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
             try {
                 // A variable number of use-cases can be passed here -
                 // camera provides access to CameraControl & CameraInfo
-                camera = cameraProvider.bindToLifecycle(
+                camera = cameraProvider.get().bindToLifecycle(
                     this, cameraSelector, preview, imageCapture
                 )
+                toggleLight(preferences.enableLight)
                 //camera?.cameraControl?.enableTorch(true)
             } catch (exc: Exception) {
                 Timber.e("Use case binding failed", exc)
@@ -152,14 +112,20 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
         }, cameraExecutor)
     }
 
-    private fun toggleLightIcon(enable: Boolean) {
-        turn_light.setImageResource(
-            if (enable) {
-                R.drawable.ic_highlight_on
+    private fun toggleLight(enable: Boolean) {
+        camera?.also {
+            if (it.cameraInfo.hasFlashUnit()) {
+                it.cameraControl.enableTorch(enable)
+                preferences.enableLight = enable
+                turn_light.setImageResource(
+                    if (enable) R.drawable.ic_highlight_on else R.drawable.ic_highlight_off
+                )
             } else {
-                R.drawable.ic_highlight_off
+                if (enable) {
+                    toast("Требуется наличие вспышки для камеры")
+                }
             }
-        )
+        }
     }
 
     override fun onStart() {
@@ -170,6 +136,15 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
     override fun onResume() {
         super.onResume()
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
+    }
+
+    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+        setResult(RESULT_OK)
+        finish()
+    }
+
+    override fun onError(exception: ImageCaptureException) {
+        Timber.e(exception)
     }
 
     override fun onBackPressed() {
