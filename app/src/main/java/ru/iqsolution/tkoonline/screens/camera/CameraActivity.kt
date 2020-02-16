@@ -38,6 +38,10 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
 
     private var imageCapture: ImageCapture? = null
 
+    private lateinit var externalPhoto: File
+
+    private var preFinishing = false
+
     private val lifecycleRegistry = LifecycleRegistry(this)
 
     override fun getLifecycle() = lifecycleRegistry
@@ -47,6 +51,7 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         setContentView(R.layout.activity_camera)
         cameraExecutor = ContextCompat.getMainExecutor(applicationContext)
+        externalPhoto = File(intent.getStringExtra(EXTRA_PHOTO_PATH)!!)
         toggleLight(preferences.enableLight)
         turn_light.setOnClickListener {
             camera?.let {
@@ -61,10 +66,9 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
         }
         shot.setOnClickListener {
             imageCapture?.let {
-                val output = ImageCapture.OutputFileOptions.Builder(File(intent.getStringExtra(EXTRA_PHOTO_PATH)!!))
-                    .setMetadata(ImageCapture.Metadata().also {
-                        it.location = preferences.location
-                    })
+                preFinishing = true
+                val output = ImageCapture.OutputFileOptions.Builder(externalPhoto)
+                    .setMetadata(ImageCapture.Metadata())
                     .build()
                 it.takePicture(output, cameraExecutor, this)
             }
@@ -121,20 +125,29 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
     }
 
+    @Suppress("DEPRECATION")
     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
         camera?.cameraControl?.enableTorch(false)
-        scanFile(intent.getStringExtra(EXTRA_PHOTO_PATH)!!)
+        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).apply {
+            data = Uri.fromFile(externalPhoto)
+        })
+        MediaScannerConnection.scanFile(applicationContext, arrayOf(externalPhoto.path), null, null)
         setResult(RESULT_OK)
         finish()
     }
 
     override fun onError(exception: ImageCaptureException) {
+        preFinishing = false
         Timber.e(exception)
+        showError(exception)
     }
 
     override fun onBackPressed() {
-        camera?.cameraControl?.enableTorch(false)
-        finish()
+        if (!preFinishing) {
+            camera?.cameraControl?.enableTorch(false)
+            setResult(RESULT_CANCELED)
+            finish()
+        }
     }
 
     @SuppressLint("RestrictedApi")
@@ -142,14 +155,6 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         CameraX.unbindAll()
         super.onDestroy()
-    }
-
-    @Suppress("DEPRECATION")
-    private fun scanFile(path: String) {
-        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).apply {
-            data = Uri.parse("file://$path")
-        })
-        MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
     }
 
     companion object {

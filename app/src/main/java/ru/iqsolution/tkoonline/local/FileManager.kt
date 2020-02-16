@@ -173,7 +173,7 @@ class FileManager(context: Context) {
         externalDir?.listFiles()?.forEach {
             deleteFile(it)
         }
-        photosDir.listFiles().forEach {
+        photosDir.listFiles()?.forEach {
             if (now - it.lastModified() >= LIFETIME) {
                 deleteFile(it)
             }
@@ -188,7 +188,7 @@ class FileManager(context: Context) {
         externalDir?.listFiles()?.forEach {
             deleteFile(it)
         }
-        photosDir.listFiles().forEach {
+        photosDir.listFiles()?.forEach {
             deleteFile(it)
         }
     }
