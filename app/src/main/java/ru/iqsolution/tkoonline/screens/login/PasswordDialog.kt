@@ -14,6 +14,7 @@ import ru.iqsolution.tkoonline.extensions.setOnlyNumbers
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.base.BaseDialogFragment
 
+@Suppress("DEPRECATION")
 class PasswordDialog : BaseDialogFragment() {
 
     private var attemptsCount = 0

@@ -12,6 +12,7 @@ import ru.iqsolution.tkoonline.extensions.setTextSelection
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.base.BaseDialogFragment
 
+@Suppress("DEPRECATION")
 class SettingsDialog : BaseDialogFragment() {
 
     private var mEnableLock = false

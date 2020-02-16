@@ -1,8 +1,8 @@
 package ru.iqsolution.tkoonline.remote
 
-import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.joda.time.DateTime
@@ -41,7 +41,10 @@ val remoteModule = Kodein.Module("remote") {
                 level = HttpLoggingInterceptor.Level.BASIC
             })
             if (BuildConfig.DEBUG) {
-                addNetworkInterceptor(StethoInterceptor())
+                addNetworkInterceptor(
+                    Class.forName("com.facebook.stetho.okhttp3.StethoInterceptor")
+                        .newInstance() as Interceptor
+                )
             }
         }.build()
     }

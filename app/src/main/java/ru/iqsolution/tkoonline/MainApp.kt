@@ -15,7 +15,6 @@ import com.elvishew.xlog.flattener.PatternFlattener
 import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.backup.NeverBackupStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
-import com.facebook.stetho.Stetho
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
@@ -72,11 +71,9 @@ class MainApp : Application(), KodeinAware, CameraXConfig.Provider {
         }
         Timber.plant(LogTree(preferences.enableLogs))
         if (BuildConfig.DEBUG) {
-            Stetho.initialize(
-                Stetho.newInitializerBuilder(applicationContext)
-                    .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(applicationContext))
-                    .build()
-            )
+            Class.forName("com.facebook.stetho.Stetho")
+                .getDeclaredMethod("initializeWithDefaults", Context::class.java)
+                .invoke(null, applicationContext)
         }
         DateTimeZone.setProvider(ResourceZoneInfoProvider(applicationContext))
         if (isOreoPlus()) {
