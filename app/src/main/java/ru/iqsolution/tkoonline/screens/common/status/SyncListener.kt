@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens.status
+package ru.iqsolution.tkoonline.screens.common.status
 
 import ru.iqsolution.tkoonline.services.LocationListener
 

@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens.map
+package ru.iqsolution.tkoonline.screens.common.map
 
 import android.webkit.JavascriptInterface
 import java.lang.ref.WeakReference

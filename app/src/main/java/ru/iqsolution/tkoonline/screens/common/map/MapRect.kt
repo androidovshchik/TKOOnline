@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens.map
+package ru.iqsolution.tkoonline.screens.common.map
 
 import ru.iqsolution.tkoonline.models.Location
 import kotlin.math.PI
