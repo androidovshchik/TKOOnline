@@ -16,6 +16,7 @@ import ru.iqsolution.tkoonline.screens.photo.PhotoPresenter
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformPresenter
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
+import ru.iqsolution.tkoonline.screens.platforms.PlatformsAdapter
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsPresenter
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemPresenter
@@ -49,6 +50,12 @@ val screenModule = Kodein.Module("screen") {
     bind<PlatformPresenter>() with contexted<PlatformActivity>().provider {
         PlatformPresenter(instance()).apply {
             attachView(context)
+        }
+    }
+
+    bind<PlatformsAdapter>() with contexted<PlatformsActivity>().provider {
+        PlatformsAdapter(instance()).apply {
+            setListener(context)
         }
     }
 

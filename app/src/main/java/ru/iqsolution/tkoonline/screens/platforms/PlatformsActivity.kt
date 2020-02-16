@@ -40,7 +40,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     private val gson: Gson by instance()
 
-    private lateinit var platformsAdapter: PlatformsAdapter
+    private val platformsAdapter: PlatformsAdapter by instance()
 
     private val photoTypes = mutableListOf<PhotoType>()
 
@@ -57,9 +57,6 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platforms)
-        platformsAdapter = PlatformsAdapter(applicationContext).also {
-            it.setListener(this)
-        }
         platforms_map.apply {
             loadUrl(URL)
             setLocation(preferences.location)
@@ -271,9 +268,9 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
         photoEvents: List<PhotoEvent>? = null,
         cleanEvents: List<CleanEvent>? = null
     ) {
-        platforms?.let {
+        if (platforms != null) {
             clear()
-            addAll(it)
+            addAll(platforms)
         }
         if (location != null) {
             forEach {

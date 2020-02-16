@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="ContainerLayout">
-        <attr name="containerType" format="string|reference"/>
-    </declare-styleable>
     <declare-styleable name="GalleryLayout">
         <attr name="photoType" format="integer|reference"/>
     </declare-styleable>

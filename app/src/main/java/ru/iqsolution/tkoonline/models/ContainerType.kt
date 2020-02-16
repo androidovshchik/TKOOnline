@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.models
 
+import android.annotation.SuppressLint
 import ru.iqsolution.tkoonline.R
 
 @Suppress("unused")
@@ -22,6 +23,7 @@ enum class ContainerType(
 
         private val map = values().associateBy(ContainerType::id)
 
+        @SuppressLint("DefaultLocale")
         fun fromId(value: String?) = map.getOrDefault(value?.toUpperCase(), UNKNOWN)
     }
 }
