@@ -58,9 +58,15 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                     if (item.linkedKpId == null) {
                         return@forEach
                     }
-                    val platform = primary.firstOrNull { it.kpId == item.linkedKpId }
-                        ?: secondary.firstOrNull { it.kpId == item.linkedKpId }
-                    platform?.setFromEqual(item)
+                    val platform =
+                        primary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
+                            ?: secondary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
+                    if (platform != null) {
+                        platform.linkedIds.add(item.kpId)
+                    } else when (item.status) {
+                        PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(item))
+                        else -> secondary.add(PlatformContainers(item))
+                    }
                 }
             }
             reference.get()?.apply {

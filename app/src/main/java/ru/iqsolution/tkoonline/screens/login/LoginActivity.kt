@@ -54,7 +54,7 @@ class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
         login_menu.setOnClickListener {
             openDialog()
         }
-        app_version.text = "v.${BuildConfig.VERSION_CODE}"
+        app_version.text = BuildConfig.VERSION_NAME
         // NOTICE this violates Google Play policy
         if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
             startActivity(

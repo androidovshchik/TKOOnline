@@ -17,10 +17,10 @@ interface Container {
     }
 
     fun setFromEqual(container: Container?): Boolean {
-        container?.let {
-            if (containerType == it.containerType) {
-                containerVolume = it.containerVolume
-                containerCount = it.containerCount
+        if (container != null) {
+            if (containerType == container.containerType) {
+                containerVolume = container.containerVolume
+                containerCount = container.containerCount
                 return true
             }
         }
@@ -28,10 +28,10 @@ interface Container {
     }
 
     fun setFromAny(container: Container?): Boolean {
-        container?.let {
-            containerType = it.containerType
-            containerVolume = it.containerVolume
-            containerCount = it.containerCount
+        if (container != null) {
+            containerType = container.containerType
+            containerVolume = container.containerVolume
+            containerCount = container.containerCount
             return true
         }
         return false
