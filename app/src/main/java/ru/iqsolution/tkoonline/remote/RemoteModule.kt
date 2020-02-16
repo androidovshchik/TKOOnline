@@ -52,7 +52,7 @@ val remoteModule = Kodein.Module("remote") {
     bind<Server>() with singleton {
         Retrofit.Builder()
             .client(instance())
-            .baseUrl("https://localhost/mobile/v1/")// "localhost" will be replaced
+            .baseUrl("https://localhost/mobile/")// "localhost" will be replaced
             .addConverterFactory(GsonConverterFactory.create(instance()))
             .build()
             .create(Server::class.java)

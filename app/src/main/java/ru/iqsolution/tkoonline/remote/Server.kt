@@ -13,7 +13,7 @@ interface Server {
     @Tag("login")
     @FormUrlEncoded
     @Headers("Accept: application/json")
-    @POST("auth")
+    @POST("v1/auth")
     suspend fun login(
         @Field("login") login: String,
         @Field("password") password: String,
@@ -25,7 +25,7 @@ interface Server {
      */
     @Tag("platforms")
     @Headers("Accept: application/json")
-    @GET("container-sites/{date}")
+    @GET("v1/container-sites/{date}")
     suspend fun getPlatforms(
         @Header("Authorization") token: String,
         @Path("date") date: String
@@ -33,14 +33,14 @@ interface Server {
 
     @Tag("photos")
     @Headers("Accept: application/json")
-    @GET("photo-types")
+    @GET("v1/photo-types")
     suspend fun getPhotoTypes(
         @Header("Authorization") token: String
     ): ResponseTypes
 
     @Tag("clean")
     @Headers("Accept: application/json")
-    @POST("container-sites/{kp_id}/events")
+    @POST("v1/container-sites/{kp_id}/events")
     fun sendClean(
         @Header("Authorization") token: String,
         @Path("kp_id") kpId: Int,
@@ -53,7 +53,7 @@ interface Server {
     @Tag("photo")
     @Multipart
     @Headers("Accept: application/json")
-    @POST("container-sites/photos")
+    @POST("v1/container-sites/photos")
     fun sendPhoto(
         @Header("Authorization") token: String,
         @Part("cs_id") kpId: RequestBody?,
@@ -65,8 +65,12 @@ interface Server {
     ): Call<ResponsePhoto>
 
     @Tag("logout")
-    @POST("auth/close")
+    @POST("v1/auth/close")
     fun logout(
         @Header("Authorization") token: String
     ): Call<Unit>
+
+    @Tag("version")
+    @GET("version.json")
+    fun checkVersion(): Call<ResponseVersion>
 }

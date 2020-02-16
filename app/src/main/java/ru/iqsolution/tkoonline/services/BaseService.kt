@@ -9,11 +9,12 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import timber.log.Timber
 
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseService : Service(), KodeinAware, CoroutineScope {
 
     override val kodein by kodein()
 
-    val serviceJob = SupervisorJob()
+    protected val serviceJob = SupervisorJob()
 
     @Suppress("RedundantOverride")
     override fun onDestroy() {
