@@ -38,7 +38,7 @@
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
         android:background="@drawable/camera_oval"
-        android:foreground="?android:attr/selectableItemBackground"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
         tools:src="@drawable/ic_highlight_on"/>
 
     <ImageView
@@ -50,6 +50,6 @@
         android:layout_marginBottom="20dp"
         android:adjustViewBounds="true"
         android:src="@drawable/ic_shot"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
 </RelativeLayout>

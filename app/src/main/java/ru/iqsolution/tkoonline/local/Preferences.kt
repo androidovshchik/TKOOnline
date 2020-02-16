@@ -78,6 +78,8 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     var showRoute by booleanPref(false, "0x14")
 
+    var enableLight by booleanPref(false, "0x15")
+
     val isLoggedIn: Boolean
         get() = accessToken != null
 

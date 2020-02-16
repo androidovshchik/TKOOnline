@@ -41,6 +41,8 @@ const val EXTRA_PHOTO_TYPES = "photo_types"
 
 const val EXTRA_PHOTO_EVENT = "photo_event"
 
+const val EXTRA_PHOTO_PATH = "photo_path"
+
 // not required
 const val EXTRA_PHOTO_TITLE = "photo_title"
 

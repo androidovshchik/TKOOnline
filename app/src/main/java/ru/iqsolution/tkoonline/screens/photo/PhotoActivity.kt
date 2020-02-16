@@ -2,21 +2,17 @@ package ru.iqsolution.tkoonline.screens.photo
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.widget.RelativeLayout
-import androidx.core.content.FileProvider
 import coil.api.load
 import kotlinx.android.synthetic.main.activity_photo.*
 import kotlinx.android.synthetic.main.include_toolbar.*
-import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.EXTRA_PHOTO_EVENT
-import ru.iqsolution.tkoonline.EXTRA_PHOTO_LINKED_IDS
-import ru.iqsolution.tkoonline.EXTRA_PHOTO_TITLE
-import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.*
+import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.camera.CameraActivity
 import timber.log.Timber
 import java.io.File
 
@@ -96,19 +92,10 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
     }
 
     private fun takePhoto() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent.apply {
-                putExtra(
-                    MediaStore.EXTRA_OUTPUT,
-                    FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", externalPhoto)
-                )
-                putExtra("android.intent.extra.quickCapture", true)
-            }, REQUEST_PHOTO)
-        } else {
-            toast("Не найдено приложение для фото")
-            closePreview(RESULT_CANCELED)
-        }
+        startActivityNoop<CameraActivity>(
+            REQUEST_PHOTO,
+            EXTRA_PHOTO_PATH to externalPhoto.path
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
