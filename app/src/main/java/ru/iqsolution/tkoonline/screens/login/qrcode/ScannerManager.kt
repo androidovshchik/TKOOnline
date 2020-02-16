@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package ru.iqsolution.tkoonline.screens.qrcode
+package ru.iqsolution.tkoonline.screens.login.qrcode
 
 import android.annotation.SuppressLint
 import android.content.Context
