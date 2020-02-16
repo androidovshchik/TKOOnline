@@ -1,6 +1,9 @@
 package ru.iqsolution.tkoonline.screens.camera
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Bundle
 import android.view.Surface
 import androidx.camera.core.*
@@ -11,10 +14,12 @@ import androidx.lifecycle.LifecycleRegistry
 import kotlinx.android.synthetic.main.activity_camera.*
 import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_PATH
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.windowSize
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import timber.log.Timber
+import java.io.File
 import java.util.concurrent.Executor
 import kotlin.math.abs
 import kotlin.math.max
@@ -56,26 +61,26 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
         }
         shot.setOnClickListener {
             imageCapture?.let {
-                /*val photoFile = creatseFile(outputDirectory, FILENssAME, PHOTO_EXTssENSION)
-                val metadata = ImageCapture.Metadata().apply {
-                    isReversedHorizontal = lensFacing == CameraSelector.LENS_FACING_FRONT
-                }
-                it.takePicture(metadata, cameraExecutor, this)*/
+                val output = ImageCapture.OutputFileOptions.Builder(File(intent.getStringExtra(EXTRA_PHOTO_PATH)!!))
+                    .setMetadata(ImageCapture.Metadata().also {
+                        it.location = preferences.location
+                    })
+                    .build()
+                it.takePicture(output, cameraExecutor, this)
             }
         }
         val cameraProvider = ProcessCameraProvider.getInstance(applicationContext)
         cameraProvider.addListener(Runnable {
             val window = windowManager.windowSize
-            val screenAspectRatio = getAspectRatio(window.x, window.y)
-            Timber.e("Preview aspect ratio: $screenAspectRatio")
+            val aspectRatio = getAspectRatio(window.x, window.y)
             val preview = Preview.Builder()
-                .setTargetAspectRatio(screenAspectRatio)
+                .setTargetAspectRatio(aspectRatio)
                 .setTargetRotation(Surface.ROTATION_0)
                 .build()
             preview.setSurfaceProvider(camera_preview.previewSurfaceProvider)
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                .setTargetAspectRatio(screenAspectRatio)
+                .setTargetAspectRatio(aspectRatio)
                 .setTargetRotation(Surface.ROTATION_0)
                 .setFlashMode(ImageCapture.FLASH_MODE_OFF)
                 .build()
@@ -83,7 +88,8 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
             try {
-                camera = cameraProvider.get().bindToLifecycle(this, cameraSelector, preview, imageCapture)
+                camera = cameraProvider.get()
+                    .bindToLifecycle(this, cameraSelector, preview, imageCapture)
                 toggleLight(preferences.enableLight)
             } catch (e: Throwable) {
                 Timber.e(e)
@@ -117,6 +123,7 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
 
     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
         camera?.cameraControl?.enableTorch(false)
+        scanFile(intent.getStringExtra(EXTRA_PHOTO_PATH)!!)
         setResult(RESULT_OK)
         finish()
     }
@@ -135,6 +142,14 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         CameraX.unbindAll()
         super.onDestroy()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun scanFile(path: String) {
+        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).apply {
+            data = Uri.parse("file://$path")
+        })
+        MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
     }
 
     companion object {
