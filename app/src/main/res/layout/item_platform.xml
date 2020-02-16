@@ -10,7 +10,7 @@
     tools:background="#804D4A5B"
     tools:ignore="MissingPrefix">
 
-    <ru.iqsolution.tkoonline.screens.EllipsizingTextView
+    <ru.iqsolution.tkoonline.screens.common.EllipsizingTextView
         android:id="@+id/container_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

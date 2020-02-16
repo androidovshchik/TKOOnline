@@ -6,12 +6,13 @@ import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.AdapterListener
+import ru.iqsolution.tkoonline.screens.base.IBasePresenter
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 
 interface PlatformsContract {
 
-    interface Presenter {
+    interface Presenter : IBasePresenter<View> {
 
         fun loadPlatformsTypes(refresh: Boolean)
 

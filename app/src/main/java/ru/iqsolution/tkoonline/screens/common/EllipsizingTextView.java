@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens;
+package ru.iqsolution.tkoonline.screens.common;
 
 import android.content.Context;
 import android.graphics.Canvas;

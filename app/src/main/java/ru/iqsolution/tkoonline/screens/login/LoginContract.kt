@@ -1,12 +1,13 @@
 package ru.iqsolution.tkoonline.screens.login
 
 import android.content.Context
+import ru.iqsolution.tkoonline.screens.base.IBasePresenter
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 import ru.iqsolution.tkoonline.screens.login.qrcode.ScannerListener
 
 interface LoginContract {
 
-    interface Presenter {
+    interface Presenter : IBasePresenter<View> {
 
         fun export(context: Context)
 
