@@ -6,10 +6,9 @@ import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.item_platform.view.*
 import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundDrawable
+import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
 import ru.iqsolution.tkoonline.FORMAT_TIME
 import ru.iqsolution.tkoonline.R
@@ -75,7 +74,7 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
                     height = size
                     width = size
                 }
-                backgroundDrawable = ContextCompat.getDrawable(appContext, item.toPlatformStatus().drawable)
+                backgroundResource = item.toPlatformStatus().drawable
             }
         }
     }

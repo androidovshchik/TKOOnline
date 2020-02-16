@@ -9,10 +9,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import androidx.core.content.ContextCompat
 import coil.api.load
 import coil.transform.CircleCropTransformation
 import kotlinx.android.synthetic.main.merge_gallery.view.*
+import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.leftPadding
 import ru.iqsolution.tkoonline.R
@@ -51,7 +51,7 @@ class GalleryLayout : RelativeLayout {
         init(attrs)
     }
 
-    @SuppressLint("Recycle")
+    @SuppressLint("Recycle", "DefaultLocale")
     private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_gallery, this)
         attrs?.let {
@@ -72,13 +72,11 @@ class GalleryLayout : RelativeLayout {
             R.string.platform_gallery,
             photoType.description.toLowerCase()
         )
-        mark.background = ContextCompat.getDrawable(
-            context, when (photoType) {
-                PhotoType.Default.BEFORE -> R.drawable.ic_rect_red
-                PhotoType.Default.AFTER -> R.drawable.ic_rect_green
-                else -> 0
-            }
-        )
+        mark.backgroundResource = when (photoType) {
+            PhotoType.Default.BEFORE -> R.drawable.ic_rect_red
+            PhotoType.Default.AFTER -> R.drawable.ic_rect_green
+            else -> 0
+        }
     }
 
     fun updatePhotos(events: List<PhotoEvent>) {
