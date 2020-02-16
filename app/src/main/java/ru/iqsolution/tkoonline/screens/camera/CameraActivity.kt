@@ -1,16 +1,16 @@
 package ru.iqsolution.tkoonline.screens.camera
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.DisplayMetrics
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import kotlinx.android.synthetic.main.activity_camera.*
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.windowSize
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import timber.log.Timber
 import java.util.concurrent.Executor
@@ -21,53 +21,47 @@ import kotlin.math.min
 /**
  * Returns [android.app.Activity.RESULT_OK] if photo was captured
  */
-class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View, LifecycleOwner {
+class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
 
     override val presenter: CameraPresenter by instance()
 
-    private lateinit var mainExecutor1: Executor
+    private lateinit var executor: Executor
 
-    private var displayId: Int = -1
-    private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
-    private var imageCapture: ImageCapture? = null
-    private var camera: Camera? = null
 
-    override fun getLifecycle() = lifecycleRegistry
+    private var imageCapture: ImageCapture? = null
+
+    private var camera: Camera? = null
 
     private val lifecycleRegistry = LifecycleRegistry(this)
 
+    override fun getLifecycle() = lifecycleRegistry
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
         setContentView(R.layout.activity_camera)
-        mainExecutor1 = ContextCompat.getMainExecutor(applicationContext)
+        executor = ContextCompat.getMainExecutor(applicationContext)
         turn_light.setOnClickListener {
+            camera?.let {
 
+            }
         }
         shot.setOnClickListener {
 
         }
-        camera_preview.post {
-
-            // Keep track of the display in which this view is attached
-            displayId = camera_preview.display.displayId
-            bindCameraUseCases()
-        }
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        bindCamera()
     }
 
-    private fun bindCameraUseCases() {
-        // Get screen metrics used to setup camera for full screen resolution
-        val metrics = DisplayMetrics().also { camera_preview.display.getRealMetrics(it) }
-        Timber.e("Screen metrics: ${metrics.widthPixels} x ${metrics.heightPixels}")
-
-        val screenAspectRatio = aspectRatio(metrics.widthPixels, metrics.heightPixels)
+    private fun bindCamera() {
+        val window = windowManager.windowSize
+        val screenAspectRatio = aspectRatio(window.x, window.y)
         Timber.e("Preview aspect ratio: $screenAspectRatio")
 
-        val rotation = camera_preview.display.rotation
-
+        val rotation = 0
+        Timber.e("rotation $rotation")
         // Bind the CameraProvider to the LifeCycleOwner
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+        val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
         val cameraProviderFuture = ProcessCameraProvider.getInstance(applicationContext)
         cameraProviderFuture.addListener(Runnable {
 
@@ -106,17 +100,22 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View, Lif
                 camera = cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture
                 )
-                camera?.cameraControl?.enableTorch(true)
+                //camera?.cameraControl?.enableTorch(true)
             } catch (exc: Exception) {
                 Timber.e("Use case binding failed", exc)
             }
 
-        }, mainExecutor1)
+        }, executor)
     }
 
-    public override fun onStart() {
+    override fun onStart() {
         super.onStart()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleRegistry.currentState = Lifecycle.State.RESUMED
     }
 
     /**
@@ -140,6 +139,13 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View, Lif
 
     override fun onBackPressed() {
         finish()
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun onDestroy() {
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        CameraX.unbindAll()
+        super.onDestroy()
     }
 
     companion object {

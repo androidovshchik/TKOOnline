@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/status_bar_height"
-        tools:background="@drawable/login_background"/>
+        android:background="@android:color/black"/>
 
     <View
         android:layout_width="match_parent"
