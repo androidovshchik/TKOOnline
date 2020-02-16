@@ -22,7 +22,7 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
 
     init {
         satellitesCount = locationClient.getGpsStatus(null)
-            .satellites.map { it.usedInFix() }.size
+            ?.satellites?.map { it.usedInFix() }?.size ?: 0
         listener.apply {
             onLocationAvailability(locationClient.isProviderEnabled(LocationManager.GPS_PROVIDER))
             locationClient.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {

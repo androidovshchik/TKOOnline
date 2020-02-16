@@ -43,6 +43,10 @@ class DummyMigration(startVersion: Int, endVersion: Int) : Migration(startVersio
 class Migration910 : Migration(9, 10) {
 
     override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL("CREATE TABLE IF NOT EXISTS `platforms` (`p_id` INTEGER NOT NULL, `p_linked_id` INTEGER, `p_address` TEXT NOT NULL, `p_lat` REAL NOT NULL, `p_lon` REAL NOT NULL, `p_bal_keeper` TEXT, `p_keeper_phone` TEXT, `p_reg_operator` TEXT, `p_operator_phone` TEXT, `p_container_type` TEXT NOT NULL, `p_container_volume` REAL NOT NULL, `p_container_count` INTEGER NOT NULL, `p_time_from` TEXT NOT NULL, `p_time_to` TEXT NOT NULL, `p_status` INTEGER NOT NULL, PRIMARY KEY(`p_id`))")
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `platforms` (`p_id` INTEGER NOT NULL, `p_linked_id` INTEGER, `p_address` TEXT NOT NULL, `p_lat` REAL NOT NULL, `p_lon` REAL NOT NULL, `p_bal_keeper` TEXT, `p_keeper_phone` TEXT, `p_reg_operator` TEXT, `p_operator_phone` TEXT, `p_container_type` TEXT NOT NULL, `p_container_volume` REAL NOT NULL, `p_container_count` INTEGER NOT NULL, `p_time_from` TEXT NOT NULL, `p_time_to` TEXT NOT NULL, `p_status` INTEGER NOT NULL, PRIMARY KEY(`p_id`));
+        """.trimIndent()
+        )
     }
 }

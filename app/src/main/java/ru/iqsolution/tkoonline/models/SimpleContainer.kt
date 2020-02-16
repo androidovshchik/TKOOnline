@@ -7,8 +7,6 @@ import java.io.Serializable
  */
 class SimpleContainer(type: ContainerType) : Serializable, Container {
 
-    var linkedIds = hashSetOf<Int>()
-
     override var containerType: String = type.id
 
     override var containerVolume = 0f
@@ -17,7 +15,6 @@ class SimpleContainer(type: ContainerType) : Serializable, Container {
 
     override fun toString(): String {
         return "SimpleContainer(" +
-            "linkedIds=$linkedIds, " +
             "containerType='$containerType', " +
             "containerVolume=$containerVolume, " +
             "containerCount=$containerCount" +
