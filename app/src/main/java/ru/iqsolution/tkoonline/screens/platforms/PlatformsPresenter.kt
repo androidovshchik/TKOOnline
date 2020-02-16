@@ -35,8 +35,8 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
             reference.get()?.onReceivedTypes(responseTypes.data)
             val responsePlatforms = server.getPlatforms(header, preferences.serverDay)
             val mapRect = MapRect()
-            val primary = arrayListOf<PlatformContainers>()
-            val secondary = arrayListOf<PlatformContainers>()
+            val primary = mutableListOf<PlatformContainers>()
+            val secondary = mutableListOf<PlatformContainers>()
             val allPlatforms = responsePlatforms.data.filter { it.isValid }
                 .distinctBy { it.kpId }
             withContext(Dispatchers.IO) {
@@ -77,8 +77,8 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
     override fun loadPhotoCleanEvents() {
         val day = preferences.serverDay
         launch {
-            val photoEvents = arrayListOf<PhotoEvent>()
-            val cleanEvents = arrayListOf<CleanEvent>()
+            val photoEvents = mutableListOf<PhotoEvent>()
+            val cleanEvents = mutableListOf<CleanEvent>()
             withContext(Dispatchers.IO) {
                 photoEvents.addAll(db.photoDao().getDayEvents(day))
                 cleanEvents.addAll(db.cleanDao().getDayEvents(day))

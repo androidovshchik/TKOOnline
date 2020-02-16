@@ -13,7 +13,7 @@ import kotlin.math.sin
 @Suppress("MemberVisibilityCanBePrivate")
 class PlatformContainers() : Platform() {
 
-    var containers = arrayListOf(
+    var containers = mutableListOf(
         SimpleContainer(ContainerType.REGULAR),
         SimpleContainer(ContainerType.BUNKER),
         SimpleContainer(ContainerType.BULK1),
@@ -25,7 +25,7 @@ class PlatformContainers() : Platform() {
      * It's needed only for map
      */
     @SerializedName("_e")
-    var errors = arrayListOf<String>()
+    var errors = mutableListOf<String>()
 
     /**
      * It's needed for sorting primary items and sizing ovals in list
@@ -62,7 +62,7 @@ class PlatformContainers() : Platform() {
 
     val allLinkedIds: List<Int>
         get() {
-            val all = arrayListOf<Int>()
+            val all = mutableListOf<Int>()
             containers.forEach {
                 all.addAll(it.linkedIds)
             }

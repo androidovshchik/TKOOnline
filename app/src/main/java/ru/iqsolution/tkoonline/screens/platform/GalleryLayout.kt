@@ -25,7 +25,7 @@ class GalleryLayout : RelativeLayout {
 
     private var photoType = PhotoType.Default.OTHER
 
-    private val photoEvents = arrayListOf<PhotoEvent>()
+    private val photoEvents = mutableListOf<PhotoEvent>()
 
     private var enableShoot = false
 

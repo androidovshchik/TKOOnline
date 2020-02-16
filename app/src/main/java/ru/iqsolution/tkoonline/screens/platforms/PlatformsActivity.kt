@@ -39,7 +39,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
 
     private lateinit var platformsAdapter: PlatformsAdapter
 
-    private val photoTypes = arrayListOf<PhotoType>()
+    private val photoTypes = mutableListOf<PhotoType>()
 
     private val photoErrors = SimpleArrayMap<Int, String>()
 
@@ -261,7 +261,7 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
     /**
      * The order of notification (primary) -> (secondary) is important
      */
-    private fun ArrayList<PlatformContainers>.notifyItems(
+    private fun MutableList<PlatformContainers>.notifyItems(
         isPrimary: Boolean,
         platforms: List<PlatformContainers>? = null,
         location: SimpleLocation? = null,

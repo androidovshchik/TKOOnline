@@ -21,7 +21,7 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
         fileManager.deleteOldFiles()
         val now = DateTime.now()
         val allTokens = db.tokenDao().getTokens()
-        val expiredTokens = arrayListOf<AccessToken>()
+        val expiredTokens = mutableListOf<AccessToken>()
         for (token in allTokens) {
             if (token.expires.withZone(now.zone).isBefore(now)) {
                 expiredTokens.add(token)

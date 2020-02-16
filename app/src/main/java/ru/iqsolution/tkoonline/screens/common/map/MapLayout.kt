@@ -28,7 +28,7 @@ class MapLayout : FrameLayout, MapListener {
 
     private var hasInteracted = false
 
-    private val calls = arrayListOf<String>()
+    private val calls = mutableListOf<String>()
 
     private val readyRunnable = Runnable {
         isReady = true

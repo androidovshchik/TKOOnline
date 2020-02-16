@@ -20,7 +20,7 @@ import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
 
 class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
 
-    val primaryItems = arrayListOf<PlatformContainers>()
+    val primaryItems = mutableListOf<PlatformContainers>()
 
     private val minSize = context.dip(17)
 

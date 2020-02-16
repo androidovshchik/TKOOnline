@@ -31,7 +31,7 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
 
     private lateinit var platform: PlatformContainers
 
-    private val photoTypes = arrayListOf<PhotoType>()
+    private val photoTypes = mutableListOf<PhotoType>()
 
     private val photoErrors = SimpleArrayMap<Int, String>()
 

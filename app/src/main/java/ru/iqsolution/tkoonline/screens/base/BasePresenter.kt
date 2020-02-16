@@ -61,7 +61,7 @@ open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
         val day = preferences.serverDay
         val carId = preferences.carId
         launch {
-            val locationEvents = arrayListOf<LocationEvent>()
+            val locationEvents = mutableListOf<LocationEvent>()
             withContext(Dispatchers.IO) {
                 db.locationDao().getDayEvents(day).forEach {
                     if (it.token.carId == carId) {

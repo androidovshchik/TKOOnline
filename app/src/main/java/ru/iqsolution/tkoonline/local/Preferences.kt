@@ -113,5 +113,6 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
         tokenId = 0L
         mileage = 0f
         packageId = 0
+        enableLight = false
     }
 }
