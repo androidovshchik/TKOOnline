@@ -1,9 +1,6 @@
 package ru.iqsolution.tkoonline.screens.camera
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -67,7 +64,7 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
             })
         camera_preview.setOnTouchListener { _, event ->
             scaleGestureDetector.onTouchEvent(event)
-            if (event.action == MotionEvent.ACTION_UP) {
+            if (event.action == MotionEvent.ACTION_UP && !preFinishing) {
                 camera?.let {
                     val factory = SurfaceOrientedMeteringPointFactory(
                         camera_preview.width.toFloat(), camera_preview.height.toFloat()
@@ -78,13 +75,15 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
                             .disableAutoCancel()
                             .build()
                     )
-                    return@setOnTouchListener true
                 }
             }
-            return@setOnTouchListener false
+            return@setOnTouchListener true
         }
         toggleLight(preferences.enableLight)
         turn_light.setOnClickListener {
+            if (preFinishing) {
+                return@setOnClickListener
+            }
             camera?.let {
                 val toggled = when (it.cameraInfo.torchState.value) {
                     TorchState.ON -> toggleLight(false)
@@ -96,6 +95,9 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
             }
         }
         shot.setOnClickListener {
+            if (preFinishing) {
+                return@setOnClickListener
+            }
             imageCapture?.let {
                 preFinishing = true
                 val output = ImageCapture.OutputFileOptions.Builder(externalPhoto)
@@ -164,10 +166,6 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
     @Suppress("DEPRECATION")
     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
         camera?.cameraControl?.enableTorch(false)
-        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).apply {
-            data = Uri.fromFile(externalPhoto)
-        })
-        MediaScannerConnection.scanFile(applicationContext, arrayOf(externalPhoto.path), null, null)
         setResult(RESULT_OK)
         finish()
     }
