@@ -63,23 +63,22 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
                 }
             })
         camera_preview.setOnTouchListener { _, event ->
-            scaleGestureDetector.onTouchEvent(event)
-            if (event.action == MotionEvent.ACTION_UP && !preFinishing) {
-                camera?.let {
-                    val factory = SurfaceOrientedMeteringPointFactory(
-                        camera_preview.width.toFloat(), camera_preview.height.toFloat()
-                    )
-                    val point = factory.createPoint(event.x, event.y)
-                    it.cameraControl.startFocusAndMetering(
-                        FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
-                            .disableAutoCancel()
-                            .build()
-                    )
+            if (!preFinishing) {
+                scaleGestureDetector.onTouchEvent(event)
+                if (event.action == MotionEvent.ACTION_UP) {
+                    camera?.let {
+                        val factory = SurfaceOrientedMeteringPointFactory(
+                            camera_preview.width.toFloat(), camera_preview.height.toFloat()
+                        )
+                        val point = factory.createPoint(event.x, event.y)
+                        it.cameraControl.startFocusAndMetering(
+                            FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).build()
+                        )
+                    }
                 }
             }
             return@setOnTouchListener true
         }
-        toggleLight(preferences.enableLight)
         turn_light.setOnClickListener {
             if (preFinishing) {
                 return@setOnClickListener
@@ -156,6 +155,7 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
     override fun onStart() {
         super.onStart()
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        toggleLight(preferences.enableLight)
     }
 
     override fun onResume() {
@@ -165,7 +165,6 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
 
     @Suppress("DEPRECATION")
     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-        camera?.cameraControl?.enableTorch(false)
         setResult(RESULT_OK)
         finish()
     }
@@ -178,10 +177,14 @@ class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
 
     override fun onBackPressed() {
         if (!preFinishing) {
-            camera?.cameraControl?.enableTorch(false)
             setResult(RESULT_CANCELED)
             finish()
         }
+    }
+
+    override fun onStop() {
+        camera?.cameraControl?.enableTorch(false)
+        super.onStop()
     }
 
     @SuppressLint("RestrictedApi")
