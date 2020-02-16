@@ -46,16 +46,10 @@ class FileManager(context: Context) {
                 val datetime = DateTime.now().toString(FORMATTER)
                 val distFile = File(folder, "app_${datetime}.db")
                 val dbFile = getDatabasePath(DB_NAME)
-                try {
+                return writeFile(distFile) { output ->
                     FileInputStream(dbFile).use { input ->
-                        FileOutputStream(distFile).use { output ->
-                            input.copyTo(output)
-                        }
+                        input.copyTo(output)
                     }
-                    return true
-                } catch (e: Throwable) {
-                    Timber.e(e)
-                    distFile.delete()
                 }
             }
         }
@@ -74,15 +68,10 @@ class FileManager(context: Context) {
         if (!src.exists()) {
             return
         }
-        try {
-            FileOutputStream(dist).use { output ->
-                readBitmap(src)?.use {
-                    compress(Bitmap.CompressFormat.JPEG, 75, output)
-                }
+        readBitmap(src)?.use {
+            writeFile(dist) {
+                compress(Bitmap.CompressFormat.JPEG, 75, it)
             }
-        } catch (e: Throwable) {
-            Timber.e(e)
-            dist.delete()
         }
     }
 
@@ -190,6 +179,20 @@ class FileManager(context: Context) {
         }
         photosDir.listFiles()?.forEach {
             deleteFile(it)
+        }
+    }
+
+    @WorkerThread
+    inline fun writeFile(dist: File, block: (FileOutputStream) -> Unit): Boolean {
+        return try {
+            FileOutputStream(dist).use { output ->
+                block(output)
+            }
+            true
+        } catch (e: Throwable) {
+            Timber.e(e)
+            deleteFile(dist)
+            false
         }
     }
 

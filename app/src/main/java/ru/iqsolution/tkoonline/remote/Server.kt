@@ -72,5 +72,5 @@ interface Server {
 
     @Tag("version")
     @GET("version.json")
-    fun checkVersion(): Call<ResponseVersion>
+    suspend fun checkVersion(): ResponseVersion
 }

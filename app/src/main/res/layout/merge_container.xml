@@ -89,7 +89,9 @@
             android:paddingEnd="18dp"
             android:paddingBottom="10dp"
             android:adjustViewBounds="true"
-            android:src="@drawable/ic_arrow_up"/>
+            android:src="@drawable/ic_arrow_up"
+            android:visibility="invisible"
+            tools:visibility="visible"/>
 
         <ImageView
             android:id="@+id/arrow_down_count"
@@ -101,7 +103,9 @@
             android:paddingEnd="18dp"
             android:paddingBottom="10dp"
             android:adjustViewBounds="true"
-            android:src="@drawable/ic_arrow_down"/>
+            android:src="@drawable/ic_arrow_down"
+            android:visibility="invisible"
+            tools:visibility="visible"/>
 
     </RelativeLayout>
 
