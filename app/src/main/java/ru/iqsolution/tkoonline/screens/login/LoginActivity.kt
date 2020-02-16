@@ -25,11 +25,10 @@ import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
-import ru.iqsolution.tkoonline.screens.qrcode.ScannerListener
 import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.DeleteWorker
 
-class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View, ScannerListener, SettingsListener {
+class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
 
     override val presenter: LoginPresenter by instance()
 

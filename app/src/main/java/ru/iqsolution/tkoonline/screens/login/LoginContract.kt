@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.login
 
 import android.content.Context
 import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.screens.login.qrcode.ScannerListener
 
 interface LoginContract {
 
@@ -14,7 +15,7 @@ interface LoginContract {
         fun reset()
     }
 
-    interface View : IBaseView {
+    interface View : IBaseView, ScannerListener, SettingsListener {
 
         fun onExported(success: Boolean)
 

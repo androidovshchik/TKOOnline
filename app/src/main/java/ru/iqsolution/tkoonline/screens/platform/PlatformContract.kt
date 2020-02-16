@@ -16,12 +16,10 @@ interface PlatformContract {
         fun saveCleanEvents(platform: PlatformContainers)
     }
 
-    interface View : IBaseView {
+    interface View : IBaseView, ConfirmListener, GalleryListener {
 
         fun onCleanEvents(event: CleanEventRelated?)
 
         fun onPhotoEvents(events: List<PhotoEvent>)
-
-        fun closeDetails(hasCleanChanges: Boolean)
     }
 }

@@ -24,18 +24,16 @@ import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.models.SimpleLocation
-import ru.iqsolution.tkoonline.screens.base.AdapterListener
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import ru.iqsolution.tkoonline.screens.map.MapRect
 import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 import java.util.*
 
-class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View, WaitListener,
-    AdapterListener<PlatformContainers> {
+class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View {
 
     override val presenter: PlatformsPresenter by instance()
 

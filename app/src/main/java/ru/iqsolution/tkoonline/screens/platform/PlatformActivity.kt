@@ -17,7 +17,7 @@ import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
-import ru.iqsolution.tkoonline.screens.map.MapRect
+import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
 import ru.iqsolution.tkoonline.services.workers.SendWorker
@@ -25,7 +25,7 @@ import ru.iqsolution.tkoonline.services.workers.SendWorker
 /**
  * Returns [android.app.Activity.RESULT_OK] if there were changes
  */
-class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View, ConfirmListener, GalleryListener {
+class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View {
 
     override val presenter: PlatformPresenter by instance()
 

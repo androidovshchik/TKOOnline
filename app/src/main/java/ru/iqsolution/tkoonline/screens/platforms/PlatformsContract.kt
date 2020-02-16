@@ -5,8 +5,9 @@ import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.screens.base.AdapterListener
 import ru.iqsolution.tkoonline.screens.base.IBaseView
-import ru.iqsolution.tkoonline.screens.map.MapRect
+import ru.iqsolution.tkoonline.screens.common.map.MapRect
 
 interface PlatformsContract {
 
@@ -19,7 +20,7 @@ interface PlatformsContract {
         fun logout(context: Context)
     }
 
-    interface View : IBaseView {
+    interface View : IBaseView, WaitListener, AdapterListener<PlatformContainers> {
 
         fun onReceivedTypes(types: List<PhotoType>)
 
