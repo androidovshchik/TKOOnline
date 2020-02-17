@@ -11,6 +11,9 @@ interface Container {
     val isEmpty: Boolean
         get() = containerVolume < 0.09f && containerCount <= 0
 
+    val isInvalid: Boolean
+        get() = containerVolume > 0.09f && containerCount <= 0
+
     fun reset() {
         containerVolume = 0f
         containerCount = 0

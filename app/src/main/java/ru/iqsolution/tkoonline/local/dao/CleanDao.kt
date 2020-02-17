@@ -61,12 +61,19 @@ abstract class CleanDao {
         val primaryEvent = events[0]
         // it is not necessary to delete
         deleteDayKpEvents(day, primaryEvent.kpId)
+        if (primaryEvent.isInvalid) {
+            // it is important to have related id, so simply not sending this event
+            primaryEvent.sent = true
+        }
         val relatedId = insert(primaryEvent)
-        insertAll(events.drop(1).apply {
-            forEach {
-                it.relatedId = relatedId
-            }
-        })
+        val relatedEvents = events.drop(1).filter { !it.isInvalid }
+        if (relatedEvents.isNotEmpty()) {
+            insertAll(relatedEvents.apply {
+                forEach {
+                    it.relatedId = relatedId
+                }
+            })
+        }
         return relatedId
     }
 
