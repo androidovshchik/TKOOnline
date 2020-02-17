@@ -57,27 +57,29 @@ abstract class CleanDao {
 
     /**
      * Normally one of events should be valid
+     * @return list of kp ids of inserted events
      */
     @Transaction
-    open fun insertMultiple(day: String, events: List<CleanEvent>): Long {
+    open fun insertMultiple(day: String, events: List<CleanEvent>): List<Int> {
         require(events.isNotEmpty())
         val primaryEvent = events[0]
-        // it is not necessary to delete
-        deleteDayKpEvents(day, primaryEvent.kpId)
         if (primaryEvent.isInvalid) {
             // it is important to have related id, so simply not sending this event
             primaryEvent.sent = true
         }
         val relatedId = insert(primaryEvent)
-        val relatedEvents = events.drop(1).filter { !it.isInvalid }
+        val insertedEvents = mutableListOf(primaryEvent.kpId)
+        val relatedEvents = events.drop(1)
+            .filter { !it.isInvalid }
         if (relatedEvents.isNotEmpty()) {
             insertAll(relatedEvents.apply {
                 forEach {
                     it.relatedId = relatedId
+                    insertedEvents.add(it.kpId)
                 }
             })
         }
-        return relatedId
+        return insertedEvents
     }
 
     @Query(
@@ -88,15 +90,4 @@ abstract class CleanDao {
     """
     )
     abstract fun markAsSent(id: Long)
-
-    /**
-     * Deleting previous events before saving (NOTICE foreign key)
-     */
-    @Query(
-        """
-        DELETE FROM clean_events
-        WHERE ce_kp_id = :kpId AND ce_related_id IS NULL AND ce_when_time LIKE :day || '%'
-    """
-    )
-    abstract fun deleteDayKpEvents(day: String, kpId: Int)
 }

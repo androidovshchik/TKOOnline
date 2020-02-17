@@ -90,7 +90,7 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
         get() = "amqp://$carId:$accessToken@$mainTelemetryAddress"
 
     val serverDay: String
-        get() = serverTime?.split("T")?.get(0).toString()
+        get() = serverTime?.substringBefore("T").toString()
 
     val location: SimpleLocation?
         get() = locationTime?.let {
