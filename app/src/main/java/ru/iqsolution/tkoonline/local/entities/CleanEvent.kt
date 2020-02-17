@@ -42,7 +42,7 @@ class CleanEvent() : Container, SendEvent {
     override var tokenId = 0L
 
     @ColumnInfo(name = "ce_kp_id")
-    var kpId = 0
+    override var kpId = 0
 
     @ColumnInfo(name = "ce_linked_id")
     var linkedId: Int? = null

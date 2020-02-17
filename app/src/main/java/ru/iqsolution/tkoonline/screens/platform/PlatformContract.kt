@@ -22,7 +22,7 @@ interface PlatformContract {
 
     interface View : IBaseView, ConfirmListener, GalleryListener {
 
-        fun onLinkedPlatforms(event: List<Platform>?)
+        fun onLinkedPlatforms(event: List<Platform>)
 
         fun onCleanEvents(event: CleanEventRelated?)
 

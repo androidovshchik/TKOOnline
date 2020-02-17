@@ -57,7 +57,7 @@ class PlatformContainers() : Platform() {
         status = platform.status
     }
 
-    fun addError(error: String, position: Int = errors.size) {
+    fun putError(error: String, position: Int = errors.size) {
         if (!errors.contains(error)) {
             errors.add(position, error)
         }

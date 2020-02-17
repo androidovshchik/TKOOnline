@@ -2,6 +2,8 @@ package ru.iqsolution.tkoonline.models
 
 interface Container {
 
+    var kpId: Int
+
     var containerType: String
 
     var containerVolume: Float
