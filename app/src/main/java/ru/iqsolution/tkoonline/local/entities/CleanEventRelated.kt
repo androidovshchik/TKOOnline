@@ -8,6 +8,6 @@ class CleanEventRelated {
     @Embedded
     lateinit var clean: CleanEvent
 
-    @Relation(parentColumn = "ce_related_id", entityColumn = "ce_id", entity = CleanEvent::class)
+    @Relation(parentColumn = "ce_id", entityColumn = "ce_related_id", entity = CleanEvent::class)
     lateinit var events: List<CleanEvent>
 }
