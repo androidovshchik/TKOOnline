@@ -50,7 +50,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
 
     private var hasPhotoChanges = false
 
-    private var hasPhotoInfo = false
+    private var hasLatestPhotos = false
 
     private var preFinishing = false
 
@@ -180,12 +180,12 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         platform_map.setMarkers("[${gson.toJson(platform)}]")
         gallery_before.updatePhotos(events)
         gallery_after.updatePhotos(events)
-        hasPhotoInfo = true
+        hasLatestPhotos = true
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {
-        if (hasPhotoInfo) {
-            hasPhotoInfo = false
+        if (hasLatestPhotos) {
+            hasLatestPhotos = false
             val event = photoEvent ?: PhotoEvent(platform.kpId, photoType.id)
             startActivityNoop<PhotoActivity>(
                 REQUEST_PHOTO,
@@ -231,6 +231,8 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 if (resultCode == RESULT_OK) {
                     hasPhotoChanges = true
                     presenter.loadPhotoEvents(platform.kpId)
+                } else {
+                    hasLatestPhotos = true
                 }
             }
         }

@@ -50,6 +50,7 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
         }
         val cleanEvents = platforms.map {
             CleanEvent(it.kpId, tokenId).apply {
+                linkedId = it.linkedKpId
                 setFromAny(it)
             }
         }
