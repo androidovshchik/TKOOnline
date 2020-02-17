@@ -78,8 +78,9 @@ class CleanEvent() : Container, SendEvent {
     @ColumnInfo(name = "ce_sent")
     override var sent = false
 
-    constructor(kp: Int) : this() {
+    constructor(kp: Int, token: Long) : this() {
         kpId = kp
+        tokenId = token
         // time is correct here
         whenTime = DateTime.now()
         // required for initialization only

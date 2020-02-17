@@ -6,16 +6,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
+import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
 class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>(context), PlatformContract.Presenter {
 
     override fun loadLinkedPlatforms(linkedIds: List<Int>) {
         launch {
-            val platforms = withContext(Dispatchers.IO) {
+            val linkedPlatforms = withContext(Dispatchers.IO) {
                 db.platformDao().getFromIds(linkedIds)
             }
-            reference.get()?.onLinkedPlatforms(platforms)
+            reference.get()?.onLinkedPlatforms(linkedPlatforms)
         }
     }
 
@@ -39,15 +40,21 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
         }
     }
 
-    override fun savePlatformEvents(platforms: List<Platform>) {
+    override fun savePlatformEvents(platform: PlatformContainers, platforms: List<Platform>) {
         val day = preferences.serverDay
-        val cleanEvent = CleanEvent(platform.kpId).apply {
-            tokenId = preferences.tokenId
+        val tokenId = preferences.tokenId
+        val cleanEvent = CleanEvent(platform.kpId, tokenId).apply {
             setFromAny(platform)
+        }
+        val cleanEvents = platforms.map {
+            CleanEvent(it.kpId, tokenId).apply {
+                setFromAny(it)
+            }
         }
         launch {
             withContext(Dispatchers.IO) {
-                db.cleanDao().insertMultiple(day, cleanEvent, platform.containers)
+                val validKpIds = db.cleanDao().insertMultiple(cleanEvent, cleanEvents)
+                // todo ready
                 db.photoDao().markAsReady(day, cleanEvent.kpId)
             }
             reference.get()?.closeDetails(true)
