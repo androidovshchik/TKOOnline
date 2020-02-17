@@ -59,6 +59,7 @@ abstract class CleanDao {
     open fun insertMultiple(day: String, events: List<CleanEvent>): Long {
         require(events.isNotEmpty())
         val primaryEvent = events[0]
+        // it is not necessary to delete
         deleteDayKpEvents(day, primaryEvent.kpId)
         val relatedId = insert(primaryEvent)
         insertAll(events.drop(1).apply {

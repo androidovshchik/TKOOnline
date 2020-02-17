@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
-import ru.iqsolution.tkoonline.models.SimpleContainer
 
 @Entity(
     tableName = "clean_events",
@@ -85,12 +84,6 @@ class CleanEvent() : Container, SendEvent {
         whenTime = DateTime.now()
         // required for initialization only
         containerType = ContainerType.UNKNOWN.id
-    }
-
-    fun toSimpleContainer(): SimpleContainer {
-        return SimpleContainer(toContainerType()).also {
-            it.setFromEqual(this)
-        }
     }
 
     override fun toString(): String {

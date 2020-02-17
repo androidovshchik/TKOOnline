@@ -70,9 +70,9 @@ class LocationEvent() : SendEvent {
             return false
         }
 
-    constructor(basePoint: BasePoint, token: Long, id: Int, distance: Int) : this() {
+    constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Int) : this() {
         tokenId = token
-        packageId = id
+        packageId = pckg
         // debug info
         state = basePoint.state.name
         data = Data().apply {

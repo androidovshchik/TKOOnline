@@ -55,7 +55,7 @@ class PhotoEvent() : Serializable, SendEvent {
      * Normally it will never change
      */
     @ColumnInfo(name = "pe_type")
-    var type = -1
+    var typeId = -1
 
     /**
      * Normally it will never change
@@ -84,14 +84,14 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_sent")
     override var sent = false
 
-    constructor(typeId: Int) : this() {
-        type = typeId
+    constructor(type: Int) : this() {
+        typeId = type
         // required for initialization only
         path = ""
         whenTime = DateTime.now()
     }
 
-    constructor(kp: Int, typeId: Int) : this(typeId) {
+    constructor(kp: Int, type: Int) : this(type) {
         kpId = kp
     }
 }
