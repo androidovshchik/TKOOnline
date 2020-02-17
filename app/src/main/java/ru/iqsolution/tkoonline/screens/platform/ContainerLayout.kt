@@ -71,6 +71,7 @@ class ContainerLayout : RelativeLayout {
             val containerType = container.toContainerType()
             icon_type.setImageResource(containerType.icon)
             text_type.text = containerType.shortName
+            updateVolumeText()
             if (containerType != ContainerType.BULK1 && containerType != ContainerType.BULK2) {
                 arrow_up_count.visibility = VISIBLE
                 arrow_down_count.visibility = VISIBLE
@@ -78,7 +79,6 @@ class ContainerLayout : RelativeLayout {
             }
         }
         if (refId == container.kpId) {
-            updateVolumeText()
             updateCountText()
         }
     }

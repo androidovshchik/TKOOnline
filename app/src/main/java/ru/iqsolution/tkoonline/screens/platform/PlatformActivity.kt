@@ -142,8 +142,9 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     /**
      * Called once after create
      */
-    override fun onLinkedPlatforms(event: List<Platform>) {
-        event.forEachIndexed { index, item ->
+    override fun onLinkedPlatforms(platforms: List<Platform>) {
+        linkedPlatforms.addAll(platforms)
+        platforms.forEachIndexed { index, item ->
             attach(ContainerLayout(applicationContext).apply {
                 updateContainer(item)
             }, 3 + index)
@@ -154,11 +155,14 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     /**
      * Called once after create
      */
-    override fun onCleanEvents(event: CleanEventRelated?) {
-        event?.events?.forEach {
-            containerLayouts.add(ContainerLayout(applicationContext).apply {
-                updateContainer(it)
-            })
+    override fun onCleanEvents(event: CleanEventRelated) {
+        platform_content.children.forEach {
+            if (it is ContainerLayout) {
+                it.updateContainer(event.clean)
+                event.events.forEach { item ->
+                    it.updateContainer(item)
+                }
+            }
         }
     }
 
@@ -167,7 +171,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         gallery_after.updatePhotos(events)
         events.forEach {
             photoErrors.get(it.typeId)?.let { error ->
-                platform.putError(error, 0)
+                platform.putError(error)
             }
         }
         platform_map.setMarkers("[${gson.toJson(platform)}]")

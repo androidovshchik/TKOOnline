@@ -26,7 +26,9 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
             val cleanEvents = withContext(Dispatchers.IO) {
                 db.cleanDao().getDayKpEvents(day, kpId)
             }
-            reference.get()?.onCleanEvents(cleanEvents)
+            if (cleanEvents != null) {
+                reference.get()?.onCleanEvents(cleanEvents)
+            }
         }
     }
 
@@ -55,7 +57,7 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
             withContext(Dispatchers.IO) {
                 val validKpIds = db.cleanDao().insertMultiple(cleanEvent, cleanEvents)
                 // todo ready
-                db.photoDao().markAsReady(day, cleanEvent.kpId)
+                //db.photoDao().markAsReady(day, cleanEvent.kpId)
             }
             reference.get()?.closeDetails(true)
         }
