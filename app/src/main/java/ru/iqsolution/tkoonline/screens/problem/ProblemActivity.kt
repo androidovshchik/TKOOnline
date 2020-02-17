@@ -24,7 +24,7 @@ import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 /**
  * Returns [android.app.Activity.RESULT_OK] if photo event was saved
  */
-class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
+class ProblemActivity : BaseActivity<ProblemContract.Presenter>(), ProblemContract.View {
 
     override val presenter: ProblemPresenter by instance()
 
@@ -69,7 +69,7 @@ class ProblemActivity : BaseActivity<ProblemPresenter>(), ProblemContract.View {
                     REQUEST_PHOTO,
                     EXTRA_PHOTO_TITLE to photoType.description,
                     EXTRA_PHOTO_EVENT to PhotoEvent(platform.kpId, photoType.id),
-                    EXTRA_PHOTO_LINKED_IDS to platform.allLinkedIds
+                    EXTRA_PHOTO_LINKED_IDS to platform.linkedIds
                 )
             }
         })

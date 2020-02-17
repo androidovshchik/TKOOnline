@@ -34,7 +34,7 @@ import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 import java.util.*
 
-class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.View {
+class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), PlatformsContract.View {
 
     override val presenter: PlatformsPresenter by instance()
 

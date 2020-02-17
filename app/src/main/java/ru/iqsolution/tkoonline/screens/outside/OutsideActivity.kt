@@ -24,7 +24,7 @@ import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 /**
  * Returns [android.app.Activity.RESULT_OK] if photo event was saved
  */
-class OutsideActivity : BaseActivity<OutsidePresenter>(), OutsideContract.View {
+class OutsideActivity : BaseActivity<OutsideContract.Presenter>(), OutsideContract.View {
 
     override val presenter: OutsidePresenter by instance()
 
