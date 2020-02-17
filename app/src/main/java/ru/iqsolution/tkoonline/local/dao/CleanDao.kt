@@ -37,7 +37,7 @@ abstract class CleanDao {
         LIMIT 1
     """
     )
-    abstract fun getDayKpIdEvent(day: String, kpId: Int): CleanEventRelated?
+    abstract fun getDayKpEvent(day: String, kpId: Int): CleanEventRelated?
 
     @Query(
         """
@@ -52,31 +52,21 @@ abstract class CleanDao {
     @Insert
     abstract fun insert(item: CleanEvent): Long
 
+    @Insert
+    abstract fun insertAll(item: List<CleanEvent>)
+
     @Transaction
-    open fun insertMultiple(day: String, events: List<CleanEvent>) {
-        val kp = item.kpId
-        deleteDayKpId(day, kp)
-        val related = insert(item)
-        val container = item.toSimpleContainer()
-        containers.forEach {
-            item.setFromAny(it)
-            it.linkedIds.forEach { linked ->
-                insert(item.apply {
-                    id = null
-                    kpId = linked
-                    linkedId = kp
-                    relatedId = related
-                })
+    open fun insertMultiple(day: String, events: List<CleanEvent>): Long {
+        require(events.isNotEmpty())
+        val primaryEvent = events[0]
+        deleteDayKpEvents(day, primaryEvent.kpId)
+        val relatedId = insert(primaryEvent)
+        insertAll(events.drop(1).apply {
+            forEach {
+                it.relatedId = relatedId
             }
-        }
-        // apply changes
-        item.apply {
-            id = related
-            kpId = kp
-            linkedId = null
-            relatedId = null
-            setFromAny(container)
-        }
+        })
+        return relatedId
     }
 
     @Query(
@@ -89,13 +79,13 @@ abstract class CleanDao {
     abstract fun markAsSent(id: Long)
 
     /**
-     * Deleting unnecessary for send events
+     * Deleting previous events before saving (NOTICE foreign key)
      */
     @Query(
         """
         DELETE FROM clean_events
-        WHERE ce_kp_id in (:kpIds) AND ce_related_id IS NULL AND ce_sent = 0 AND ce_when_time LIKE :day || '%'
+        WHERE ce_kp_id = :kpId AND ce_related_id IS NULL AND ce_when_time LIKE :day || '%'
     """
     )
-    abstract fun deleteDayKpId(day: String, kpIds: List<Long>)
+    abstract fun deleteDayKpEvents(day: String, kpId: Int)
 }

@@ -19,7 +19,7 @@ interface PlatformDao {
     fun getFromIds(kpIds: List<Long>): List<Platform>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(item: List<Platform>)
+    fun insertAll(item: List<Platform>)
 
     @Query(
         """
