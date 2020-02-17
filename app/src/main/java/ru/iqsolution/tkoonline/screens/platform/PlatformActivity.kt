@@ -2,12 +2,16 @@ package ru.iqsolution.tkoonline.screens.platform
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.collection.SimpleArrayMap
+import androidx.core.view.children
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
+import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.wrapContent
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
@@ -34,8 +38,6 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     private val gson: Gson by instance()
 
     private lateinit var platform: PlatformContainers
-
-    private val containerLayouts = mutableListOf<ContainerLayout>()
 
     private val linkedPlatforms = mutableListOf<Platform>()
 
@@ -124,28 +126,27 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             preFinishing = true
             presenter.savePlatformEvents(platform, linkedPlatforms)
         }
-        onLinkedPlatforms(null)
+        attach(ContainerLayout(applicationContext).apply {
+            updateContainer(platform)
+        }, 2)
         presenter.apply {
             loadLinkedPlatforms(platform.linkedIds.toList())
             loadPhotoEvents(platform.kpId)
         }
     }
 
-    override fun onLinkedPlatforms(event: List<Platform>?) {
-        event?.run {
-            platform.containers.forEach {
-                it.setFromEqual(clean)
-                events.forEach { event ->
-                    it.setFromEqual(event)
-                }
-            }
-        }
-        platform.apply {
-            platform_regular.updateContainer(containerType, containers)
-            platform_bunker.updateContainer(containerType, containers)
-            platform_bulk.updateContainer(containerType, containers)
-            platform_special.updateContainer(containerType, containers)
-            platform_unknown.updateContainer(containerType, containers)
+    private fun attach(layout: ContainerLayout, index: Int) {
+        platform_content.addView(layout, index, ViewGroup.LayoutParams(matchParent, wrapContent))
+    }
+
+    /**
+     * Called once after create
+     */
+    override fun onLinkedPlatforms(event: List<Platform>) {
+        event.forEachIndexed { index, item ->
+            attach(ContainerLayout(applicationContext).apply {
+                updateContainer(item)
+            }, 3 + index)
         }
         presenter.loadCleanEvents(platform.kpId)
     }
@@ -154,15 +155,19 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
      * Called once after create
      */
     override fun onCleanEvents(event: CleanEventRelated?) {
+        event?.events?.forEach {
+            containerLayouts.add(ContainerLayout(applicationContext).apply {
+                updateContainer(it)
+            })
+        }
     }
 
     override fun onPhotoEvents(events: List<PhotoEvent>) {
         gallery_before.updatePhotos(events)
         gallery_after.updatePhotos(events)
-        // todo platform.errors.clear()
         events.forEach {
-            photoErrors.get(it.typeId)?.let {
-                platform.addError(this)
+            photoErrors.get(it.typeId)?.let { error ->
+                platform.putError(error, 0)
             }
         }
         platform_map.setMarkers("[${gson.toJson(platform)}]")
@@ -221,8 +226,10 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     override fun onDestroy() {
         confirmDialog?.dismiss()
         platform_map.release()
-        containerLayouts.forEach {
-            it.clear()
+        platform_content.children.forEach {
+            if (it is ContainerLayout) {
+                it.clear()
+            }
         }
         super.onDestroy()
     }
