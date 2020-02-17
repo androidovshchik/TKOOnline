@@ -83,7 +83,7 @@ class GalleryLayout : RelativeLayout {
         photoEvents.apply {
             clear()
             events.forEach {
-                if (it.type == photoType.id) {
+                if (it.typeId == photoType.id) {
                     add(it)
                 }
             }
@@ -110,7 +110,7 @@ class GalleryLayout : RelativeLayout {
                     } as ImageView
                     count++
                 }
-                (child ?: getChildAt(i) as ImageView).load(photoEvents[i].toFile()) {
+                (child ?: getChildAt(i) as ImageView).load("file://${photoEvents[i].path}") {
                     transformations(CircleCropTransformation())
                 }
             }

@@ -81,7 +81,7 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
             }
         }
         if (photoEvent.id != null) {
-            photo_preview.load(File(photoEvent.path))
+            photo_preview.load("file://${photoEvent.path}")
         } else {
             takePhoto()
         }

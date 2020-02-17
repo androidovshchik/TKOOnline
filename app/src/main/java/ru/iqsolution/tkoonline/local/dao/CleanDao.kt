@@ -37,7 +37,7 @@ abstract class CleanDao {
         LIMIT 1
     """
     )
-    abstract fun getDayKpEvent(day: String, kpId: Int): CleanEventRelated?
+    abstract fun getDayKpEvents(day: String, kpId: Int): CleanEventRelated?
 
     @Query(
         """
