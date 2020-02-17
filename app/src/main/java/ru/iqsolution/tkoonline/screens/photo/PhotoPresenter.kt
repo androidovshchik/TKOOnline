@@ -35,7 +35,7 @@ class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(conte
             tokenId = preferences.tokenId
             latitude = preferences.latitude.toDouble()
             longitude = preferences.longitude.toDouble()
-            // it may be empty when there is a new event
+            // previously it may be empty when there is a new event
             path = internalPhoto.path
             whenTime = DateTime.now()
         }
@@ -46,10 +46,10 @@ class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(conte
                     deleteFile(externalFile)
                 }
                 if (photoEvent.id == null) {
-                    if (linkedIds.isNotEmpty()) {
-                        db.photoDao().insertMultiple(photoEvent, linkedIds)
-                    } else {
+                    if (photoEvent.kpId == null) {
                         db.photoDao().insert(photoEvent)
+                    } else {
+                        db.photoDao().insertMultiple(photoEvent, linkedIds)
                     }
                 } else {
                     // NOTICE events without kp id have no updates
