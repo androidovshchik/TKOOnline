@@ -7,7 +7,6 @@ import androidx.room.Transaction
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.CleanEventToken
-import ru.iqsolution.tkoonline.models.SimpleContainer
 
 @Dao
 abstract class CleanDao {
@@ -38,13 +37,14 @@ abstract class CleanDao {
         LIMIT 1
     """
     )
-    abstract fun getDayKpIdEvents(day: String, kpId: Int): CleanEventRelated?
+    abstract fun getDayKpIdEvent(day: String, kpId: Int): CleanEventRelated?
 
     @Query(
         """
         SELECT clean_events.*, tokens.* FROM clean_events 
-        INNER JOIN tokens ON clean_events.ce_token_id = tokens.t_id
-        WHERE clean_events.ce_sent = 0
+        INNER JOIN tokens ON ce_token_id = t_id
+        WHERE ce_sent = 0
+        ORDER BY ce_id ASC
     """
     )
     abstract fun getSendEvents(): List<CleanEventToken>
@@ -53,7 +53,7 @@ abstract class CleanDao {
     abstract fun insert(item: CleanEvent): Long
 
     @Transaction
-    open fun insertMultiple(day: String, item: CleanEvent, containers: List<SimpleContainer>) {
+    open fun insertMultiple(day: String, events: List<CleanEvent>) {
         val kp = item.kpId
         deleteDayKpId(day, kp)
         val related = insert(item)
@@ -88,11 +88,14 @@ abstract class CleanDao {
     )
     abstract fun markAsSent(id: Long)
 
+    /**
+     * Deleting unnecessary for send events
+     */
     @Query(
         """
         DELETE FROM clean_events
-        WHERE ce_kp_id = :kpId AND ce_related_id IS NULL AND ce_sent = 0 AND ce_when_time LIKE :day || '%'
+        WHERE ce_kp_id in (:kpIds) AND ce_related_id IS NULL AND ce_sent = 0 AND ce_when_time LIKE :day || '%'
     """
     )
-    abstract fun deleteDayKpId(day: String, kpId: Int)
+    abstract fun deleteDayKpId(day: String, kpIds: List<Long>)
 }
