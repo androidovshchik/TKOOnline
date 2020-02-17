@@ -36,7 +36,7 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
         setContentView(R.layout.activity_photo)
         photoEvent = intent.getSerializableExtra(EXTRA_PHOTO_EVENT) as PhotoEvent
         externalPhoto = presenter.getExternalFile(photoEvent)
-        val kpIds = intent.getIntegerArrayListExtra(EXTRA_PHOTO_KP_IDS).orEmpty()
+        val linkedIds = intent.getIntegerArrayListExtra(EXTRA_PHOTO_LINKED_IDS).orEmpty()
         toolbar_back.setOnClickListener {
             if (preFinishing) {
                 return@setOnClickListener
@@ -69,7 +69,7 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
                 return@setOnClickListener
             }
             preFinishing = true
-            presenter.saveEvent(photoEvent, kpIds, externalPhoto)
+            presenter.saveEvent(photoEvent, linkedIds, externalPhoto)
         }
         if (photoEvent.sent) {
             photo_delete.isEnabled = false

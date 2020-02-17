@@ -29,7 +29,7 @@ class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(conte
     /**
      * Normally there will be no case when file doesn't exist and id is null
      */
-    override fun saveEvent(photoEvent: PhotoEvent, kpIds: List<Int>, externalFile: File) {
+    override fun saveEvent(photoEvent: PhotoEvent, linkedIds: List<Int>, externalFile: File) {
         val internalPhoto = File(fileManager.photosDir, externalFile.name)
         photoEvent.apply {
             tokenId = preferences.tokenId
@@ -49,7 +49,7 @@ class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(conte
                     if (photoEvent.kpId == null) {
                         db.photoDao().insert(photoEvent)
                     } else {
-                        db.photoDao().insertMultiple(photoEvent, kpIds)
+                        db.photoDao().insertMultiple(photoEvent, linkedIds)
                     }
                 } else {
                     // NOTICE events without kp id have no updates

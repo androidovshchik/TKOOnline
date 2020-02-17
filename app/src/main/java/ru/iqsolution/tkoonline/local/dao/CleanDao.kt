@@ -60,17 +60,16 @@ abstract class CleanDao {
      * @return list of kp ids of inserted events
      */
     @Transaction
-    open fun insertMultiple(events: List<CleanEvent>): List<Int> {
-        require(events.isNotEmpty())
-        val primaryEvent = events[0]
-        val insertedIds = mutableListOf(primaryEvent.kpId)
+    open fun insertMultiple(primaryEvent: CleanEvent, events: List<CleanEvent>): List<Int> {
+        val validIds = mutableListOf<Int>()
         if (primaryEvent.isInvalid) {
             primaryEvent.sent = true
+        } else {
+            validIds.add(primaryEvent.kpId)
         }
         val relatedId = insert(primaryEvent)
-        val relatedEvents = events.drop(1)
-        if (relatedEvents.isNotEmpty()) {
-            insertAll(relatedEvents.apply {
+        if (events.isNotEmpty()) {
+            insertAll(events.apply {
                 forEach {
                     it.relatedId = relatedId
                     if (it.isInvalid) {
@@ -78,9 +77,9 @@ abstract class CleanDao {
                     }
                 }
             })
-            insertedIds.addAll(relatedEvents.filter { !it.isInvalid }.map { it.kpId })
+            validIds.addAll(events.filter { !it.isInvalid }.map { it.kpId })
         }
-        return insertedIds
+        return validIds
     }
 
     @Query(
