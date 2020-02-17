@@ -47,4 +47,4 @@ const val EXTRA_PHOTO_PATH = "photo_path"
 const val EXTRA_PHOTO_TITLE = "photo_title"
 
 // not required
-const val EXTRA_PHOTO_LINKED_IDS = "photo_linked_ids"
+const val EXTRA_PHOTO_KP_IDS = "photo_kp_ids"

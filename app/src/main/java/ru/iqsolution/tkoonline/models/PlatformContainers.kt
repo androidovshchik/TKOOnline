@@ -14,6 +14,7 @@ import kotlin.math.sin
 class PlatformContainers() : Platform() {
 
     /**
+     * Doesn't include this [kpId]
      * if linked id == null then they are with linked id == this kp id or empty
      * if linked id != null then they are with linked id == this linked id or empty
      */
