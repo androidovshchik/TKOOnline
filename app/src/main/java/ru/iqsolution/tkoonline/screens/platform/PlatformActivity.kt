@@ -50,6 +50,8 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
 
     private var hasPhotoChanges = false
 
+    private var hasPhotoInfo = false
+
     private var preFinishing = false
 
     @Suppress("UNCHECKED_CAST")
@@ -178,16 +180,20 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         platform_map.setMarkers("[${gson.toJson(platform)}]")
         gallery_before.updatePhotos(events)
         gallery_after.updatePhotos(events)
+        hasPhotoInfo = true
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {
-        val event = photoEvent ?: PhotoEvent(platform.kpId, photoType.id)
-        startActivityNoop<PhotoActivity>(
-            REQUEST_PHOTO,
-            EXTRA_PHOTO_TITLE to photoType.description,
-            EXTRA_PHOTO_EVENT to event,
-            EXTRA_PHOTO_LINKED_IDS to platform.linkedIds.toList()
-        )
+        if (hasPhotoInfo) {
+            hasPhotoInfo = false
+            val event = photoEvent ?: PhotoEvent(platform.kpId, photoType.id)
+            startActivityNoop<PhotoActivity>(
+                REQUEST_PHOTO,
+                EXTRA_PHOTO_TITLE to photoType.description,
+                EXTRA_PHOTO_EVENT to event,
+                EXTRA_PHOTO_LINKED_IDS to platform.linkedIds.toList()
+            )
+        }
     }
 
     override fun closeDetails(hasCleanChanges: Boolean) {

@@ -57,6 +57,13 @@ class PlatformContainers() : Platform() {
         status = platform.status
     }
 
+    val allKpIds: List<Int>
+        get() {
+            val all = mutableListOf(kpId)
+            all.addAll(linkedIds)
+            return all
+        }
+
     fun putError(error: String, position: Int = errors.size) {
         if (!errors.contains(error)) {
             errors.add(position, error)

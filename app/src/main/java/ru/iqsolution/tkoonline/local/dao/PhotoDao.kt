@@ -94,11 +94,20 @@ abstract class PhotoDao {
     @Query(
         """
         UPDATE photo_events
-        SET pe_ready = 1
-        WHERE pe_kp_id = :kpId AND pe_when_time LIKE :day || '%'
+        SET pe_ready = :ready
+        WHERE pe_kp_id in (:kpIds) AND pe_when_time LIKE :day || '%'
     """
     )
-    abstract fun markAsReady(day: String, kpId: Int)
+    abstract fun markReady(day: String, kpIds: List<Int>, ready: Int)
+
+    @Transaction
+    open fun markReadyMultiple(day: String, allKpIds: List<Int>, validKpIds: List<Int>) {
+        require(allKpIds.isNotEmpty())
+        markReady(day, allKpIds, 0)
+        if (validKpIds.isNotEmpty()) {
+            markReady(day, validKpIds, 1)
+        }
+    }
 
     @Query(
         """
