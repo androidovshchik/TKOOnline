@@ -64,15 +64,17 @@ class ContainerLayout : RelativeLayout {
     }
 
     fun updateContainer(container: Container) {
+        clear()
+        reference = WeakReference(container)
         val containerType = container.toContainerType()
         icon_type.setImageResource(containerType.icon)
         text_type.text = containerType.shortName
+        updateVolumeText()
         if (containerType != ContainerType.BULK1 && containerType != ContainerType.BULK2) {
             arrow_up_count.visibility = VISIBLE
             arrow_down_count.visibility = VISIBLE
             count_value.visibility = VISIBLE
         }
-        updateVolumeText()
         updateCountText()
     }
 
