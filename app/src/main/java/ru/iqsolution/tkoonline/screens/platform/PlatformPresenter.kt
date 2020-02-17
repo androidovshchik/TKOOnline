@@ -5,16 +5,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
-import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
 class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>(context), PlatformContract.Presenter {
+
+    override fun loadLinkedPlatforms(linkedIds: List<Int>) {
+        launch {
+            val platforms = withContext(Dispatchers.IO) {
+                db.platformDao().getFromIds(linkedIds)
+            }
+            reference.get()?.onLinkedPlatforms(platforms)
+        }
+    }
 
     override fun loadCleanEvents(kpId: Int) {
         val day = preferences.serverDay
         launch {
             val cleanEvents = withContext(Dispatchers.IO) {
-                db.cleanDao().getDayKpIdEvents(day, kpId)
+                db.cleanDao().getDayKpEvents(day, kpId)
             }
             reference.get()?.onCleanEvents(cleanEvents)
         }
@@ -24,13 +33,13 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
         val day = preferences.serverDay
         launch {
             val photoEvents = withContext(Dispatchers.IO) {
-                db.photoDao().getDayKpIdEvents(day, kpId)
+                db.photoDao().getDayKpEvents(day, kpId)
             }
             reference.get()?.onPhotoEvents(photoEvents)
         }
     }
 
-    override fun saveCleanEvents(platform: PlatformContainers) {
+    override fun savePlatformEvents(platforms: List<Platform>) {
         val day = preferences.serverDay
         val cleanEvent = CleanEvent(platform.kpId).apply {
             tokenId = preferences.tokenId

@@ -10,7 +10,7 @@ interface PlatformContract {
 
     interface Presenter : IBasePresenter<View> {
 
-        fun loadLinkedPlatforms(kpId: Int)
+        fun loadLinkedPlatforms(linkedIds: List<Int>)
 
         fun loadCleanEvents(kpId: Int)
 

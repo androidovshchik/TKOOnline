@@ -16,7 +16,7 @@ interface PlatformDao {
         ORDER BY p_kp_id ASC
     """
     )
-    fun getFromIds(kpIds: List<Long>): List<Platform>
+    fun getFromIds(kpIds: List<Int>): List<Platform>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(item: List<Platform>)
