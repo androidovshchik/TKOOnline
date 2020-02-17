@@ -2,7 +2,7 @@ package ru.iqsolution.tkoonline.screens.platform
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.collection.SimpleArrayMap
 import androidx.core.view.children
 import com.google.android.gms.location.LocationSettingsStates
@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
+import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.wrapContent
 import org.kodein.di.generic.instance
@@ -127,7 +128,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             presenter.savePlatformEvents(platform, linkedPlatforms)
         }
         attach(ContainerLayout(applicationContext).apply {
-            setContainer(platform)
+            initContainer(platform)
         }, 2)
         presenter.apply {
             loadLinkedPlatforms(platform.linkedIds.toList())
@@ -136,7 +137,9 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     }
 
     private fun attach(layout: ContainerLayout, index: Int) {
-        platform_content.addView(layout, index, ViewGroup.LayoutParams(matchParent, wrapContent))
+        platform_content.addView(layout, index, LinearLayout.LayoutParams(matchParent, wrapContent).apply {
+            bottomMargin = dip(9)
+        })
     }
 
     /**
@@ -146,7 +149,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         linkedPlatforms.addAll(platforms)
         platforms.forEachIndexed { index, item ->
             attach(ContainerLayout(applicationContext).apply {
-                setContainer(item)
+                initContainer(item)
             }, 3 + index)
         }
         presenter.loadCleanEvents(platform.kpId)

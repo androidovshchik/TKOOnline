@@ -63,7 +63,7 @@ class ContainerLayout : RelativeLayout {
         }
     }
 
-    fun setContainer(container: Container) {
+    fun initContainer(container: Container) {
         reference = WeakReference(container)
         val containerType = container.toContainerType()
         icon_type.setImageResource(containerType.icon)

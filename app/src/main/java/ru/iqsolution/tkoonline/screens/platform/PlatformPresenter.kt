@@ -43,7 +43,6 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
     }
 
     override fun savePlatformEvents(platform: PlatformContainers, platforms: List<Platform>) {
-        val day = preferences.serverDay
         val tokenId = preferences.tokenId
         val cleanEvent = CleanEvent(platform.kpId, tokenId).apply {
             setFromAny(platform)
@@ -56,8 +55,7 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
         launch {
             withContext(Dispatchers.IO) {
                 val validKpIds = db.cleanDao().insertMultiple(cleanEvent, cleanEvents)
-                // todo ready
-                //db.photoDao().markAsReady(day, cleanEvent.kpId)
+                db.photoDao().markAsReady(platform.linkedIds.toList(), validKpIds)
             }
             reference.get()?.closeDetails(true)
         }
