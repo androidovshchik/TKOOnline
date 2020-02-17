@@ -61,7 +61,7 @@ class GalleryLayout : RelativeLayout {
         }
         photo_add.setOnClickListener {
             if (enableShoot) {
-                if (photoEvents.size < 4) {
+                if (photoEvents.size < MAX_PHOTO_COUNT) {
                     makeCallback<GalleryListener> {
                         onPhotoClick(photoType, null)
                     }
@@ -118,9 +118,14 @@ class GalleryLayout : RelativeLayout {
             if (diff > 0) {
                 removeViews(photoEvents.size, diff)
             }
-            photo_add.visibility = if (photoEvents.size > 3) GONE else VISIBLE
+            photo_add.visibility = if (photoEvents.size >= MAX_PHOTO_COUNT) GONE else VISIBLE
         }
     }
 
     override fun hasOverlappingRendering() = false
+
+    companion object {
+
+        private const val MAX_PHOTO_COUNT = 4
+    }
 }

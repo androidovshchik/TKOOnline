@@ -14,6 +14,7 @@ import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
+import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -26,13 +27,17 @@ import ru.iqsolution.tkoonline.services.workers.SendWorker
 /**
  * Returns [android.app.Activity.RESULT_OK] if there were changes
  */
-class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.View {
+class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformContract.View {
 
     override val presenter: PlatformPresenter by instance()
 
     private val gson: Gson by instance()
 
     private lateinit var platform: PlatformContainers
+
+    private val containerLayouts = mutableListOf<ContainerLayout>()
+
+    private val linkedPlatforms = mutableListOf<Platform>()
 
     private val photoTypes = mutableListOf<PhotoType>()
 
@@ -105,9 +110,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
                 return@setOnClickListener
             }
             preFinishing = true
-            presenter.saveCleanEvents(platform.apply {
-                reset()
-                containers.forEach {
+            platform.reset()
+            presenter.savePlatformEvents(platform, linkedPlatforms.apply {
+                forEach {
                     it.reset()
                 }
             })
@@ -117,23 +122,16 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
                 return@setOnClickListener
             }
             preFinishing = true
-            presenter.saveCleanEvents(platform.apply {
-                containers.forEach {
-                    setFromEqual(it)
-                }
-            })
+            presenter.savePlatformEvents(platform, linkedPlatforms)
         }
-        onCleanEvents(null)
+        onLinkedPlatforms(null)
         presenter.apply {
-            loadCleanEvents(platform.kpId)
+            loadLinkedPlatforms(platform.linkedIds.toList())
             loadPhotoEvents(platform.kpId)
         }
     }
 
-    /**
-     * Called once after create
-     */
-    override fun onCleanEvents(event: CleanEventRelated?) {
+    override fun onLinkedPlatforms(event: List<Platform>?) {
         event?.run {
             platform.containers.forEach {
                 it.setFromEqual(clean)
@@ -149,14 +147,21 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             platform_special.updateContainer(containerType, containers)
             platform_unknown.updateContainer(containerType, containers)
         }
+        presenter.loadCleanEvents(platform.kpId)
+    }
+
+    /**
+     * Called once after create
+     */
+    override fun onCleanEvents(event: CleanEventRelated?) {
     }
 
     override fun onPhotoEvents(events: List<PhotoEvent>) {
         gallery_before.updatePhotos(events)
         gallery_after.updatePhotos(events)
-        platform.errors.clear()
+        // todo platform.errors.clear()
         events.forEach {
-            photoErrors.get(it.type)?.run {
+            photoErrors.get(it.typeId)?.let {
                 platform.addError(this)
             }
         }
@@ -169,20 +174,22 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
             REQUEST_PHOTO,
             EXTRA_PHOTO_TITLE to photoType.description,
             EXTRA_PHOTO_EVENT to event,
-            EXTRA_PHOTO_LINKED_IDS to platform.allLinkedIds
+            EXTRA_PHOTO_LINKED_IDS to platform.linkedIds.toList()
         )
     }
 
     override fun closeDetails(hasCleanChanges: Boolean) {
         preFinishing = true
-        if (hasPhotoChanges || hasCleanChanges) {
-            if (hasCleanChanges) {
-                SendWorker.launch(applicationContext)
+        setResult(
+            if (hasPhotoChanges || hasCleanChanges) {
+                if (hasCleanChanges) {
+                    SendWorker.launch(applicationContext)
+                }
+                RESULT_OK
+            } else {
+                RESULT_CANCELED
             }
-            setResult(RESULT_OK)
-        } else {
-            setResult(RESULT_CANCELED)
-        }
+        )
         finish()
     }
 
@@ -214,11 +221,9 @@ class PlatformActivity : BaseActivity<PlatformPresenter>(), PlatformContract.Vie
     override fun onDestroy() {
         confirmDialog?.dismiss()
         platform_map.release()
-        platform_regular.clear()
-        platform_bunker.clear()
-        platform_bulk.clear()
-        platform_special.clear()
-        platform_unknown.clear()
+        containerLayouts.forEach {
+            it.clear()
+        }
         super.onDestroy()
     }
 
