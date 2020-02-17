@@ -27,7 +27,7 @@ import kotlin.math.min
 /**
  * Returns [android.app.Activity.RESULT_OK] if photo was captured
  */
-class CameraActivity : BaseActivity<CameraPresenter>(), CameraContract.View {
+class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.View {
 
     override val presenter: CameraPresenter by instance()
 

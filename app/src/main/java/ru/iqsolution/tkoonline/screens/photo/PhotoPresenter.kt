@@ -17,11 +17,13 @@ class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(conte
     private val fileManager: FileManager by instance()
 
     override fun getExternalFile(photoEvent: PhotoEvent): File {
-        if (photoEvent.id != null) {
-            val internalPhoto = File(photoEvent.path)
-            return File(fileManager.externalDir, internalPhoto.name)
-        }
-        return File(fileManager.externalDir, fileManager.getRandomName())
+        return File(
+            fileManager.externalDir, if (photoEvent.id != null) {
+                File(photoEvent.path).name
+            } else {
+                fileManager.getRandomName()
+            }
+        )
     }
 
     /**
@@ -44,10 +46,10 @@ class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(conte
                     deleteFile(externalFile)
                 }
                 if (photoEvent.id == null) {
-                    if (photoEvent.kpId == null) {
-                        db.photoDao().insert(photoEvent)
-                    } else {
+                    if (linkedIds.isNotEmpty()) {
                         db.photoDao().insertMultiple(photoEvent, linkedIds)
+                    } else {
+                        db.photoDao().insert(photoEvent)
                     }
                 } else {
                     // NOTICE events without kp id have no updates

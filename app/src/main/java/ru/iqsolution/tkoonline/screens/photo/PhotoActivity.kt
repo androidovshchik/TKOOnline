@@ -9,19 +9,21 @@ import kotlinx.android.synthetic.main.include_toolbar.*
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.camera.CameraActivity
-import timber.log.Timber
 import java.io.File
 
 /**
  * Returns [android.app.Activity.RESULT_OK] if photo event was saved
  */
-class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
+class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.View {
 
     override val presenter: PhotoPresenter by instance()
+
+    private val fileManager: FileManager by instance()
 
     private lateinit var photoEvent: PhotoEvent
 
@@ -79,7 +81,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
             }
         }
         if (photoEvent.id != null) {
-            photo_preview.load(photoEvent.toFile())
+            photo_preview.load(File(photoEvent.path))
         } else {
             takePhoto()
         }
@@ -93,7 +95,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
 
     private fun takePhoto() {
         startActivityNoop<CameraActivity>(
-            REQUEST_PHOTO,
+            REQUEST_CAMERA,
             EXTRA_PHOTO_PATH to externalPhoto.path
         )
     }
@@ -101,7 +103,7 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            REQUEST_PHOTO -> {
+            REQUEST_CAMERA -> {
                 when {
                     resultCode == RESULT_OK -> photo_preview.load(externalPhoto)
                     photoEvent.id == null -> closePreview(RESULT_CANCELED)
@@ -111,16 +113,12 @@ class PhotoActivity : BaseActivity<PhotoPresenter>(), PhotoContract.View {
     }
 
     override fun onDestroy() {
-        try {
-            externalPhoto.delete()
-        } catch (e: Throwable) {
-            Timber.e(e)
-        }
+        fileManager.deleteFile(externalPhoto)
         super.onDestroy()
     }
 
     companion object {
 
-        private const val REQUEST_PHOTO = 600
+        private const val REQUEST_CAMERA = 600
     }
 }

@@ -28,7 +28,7 @@ import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.DeleteWorker
 
-class LoginActivity : BaseActivity<LoginPresenter>(), LoginContract.View {
+class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.View {
 
     override val presenter: LoginPresenter by instance()
 
