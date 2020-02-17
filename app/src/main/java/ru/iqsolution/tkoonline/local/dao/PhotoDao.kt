@@ -29,15 +29,16 @@ abstract class PhotoDao {
         """
         SELECT * FROM photo_events 
         WHERE pe_kp_id = :kpId AND pe_related_id IS NULL AND pe_when_time LIKE :day || '%'
+        ORDER BY pe_id ASC
     """
     )
-    abstract fun getDayKpIdEvents(day: String, kpId: Int): List<PhotoEvent>
+    abstract fun getDayKpEvents(day: String, kpId: Int): List<PhotoEvent>
 
     @Query(
         """
         SELECT photo_events.*, tokens.* FROM photo_events 
-        INNER JOIN tokens ON photo_events.pe_token_id = tokens.t_id
-        WHERE photo_events.pe_ready = 1 AND photo_events.pe_sent = 0
+        INNER JOIN tokens ON pe_token_id = t_id
+        WHERE pe_ready = 1 AND pe_sent = 0
     """
     )
     abstract fun getSendEvents(): List<PhotoEventToken>
@@ -68,7 +69,7 @@ abstract class PhotoDao {
     }
 
     @Update
-    abstract fun updateSimple(item: PhotoEvent)
+    abstract fun update(item: PhotoEvent)
 
     @Query(
         """
@@ -86,7 +87,7 @@ abstract class PhotoDao {
     open fun updateMultiple(item: PhotoEvent) {
         require(item.id != null && item.kpId != null)
         if (!item.sent) {
-            updateSimple(item)
+            update(item)
         }
         updateRelated(
             item.id ?: 0L,
