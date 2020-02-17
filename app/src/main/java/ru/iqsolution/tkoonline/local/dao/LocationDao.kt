@@ -21,9 +21,9 @@ interface LocationDao {
     @Query(
         """
         SELECT location_events.*, tokens.* FROM location_events 
-        INNER JOIN tokens ON location_events.le_token_id = tokens.t_id
-        WHERE location_events.le_sent = 0
-        ORDER BY location_events.le_id DESC
+        INNER JOIN tokens ON le_token_id = t_id
+        WHERE le_sent = 0
+        ORDER BY le_id DESC
         LIMIT 1
     """
     )
@@ -32,11 +32,12 @@ interface LocationDao {
     @Query(
         """
         SELECT location_events.*, tokens.* FROM location_events 
-        INNER JOIN tokens ON location_events.le_token_id = tokens.t_id
-        WHERE location_events.le_when_time LIKE :day || '%'
+        INNER JOIN tokens ON le_token_id = t_id
+        WHERE t_car_id = :carId AND le_when_time LIKE :day || '%'
+        ORDER BY le_id ASC
     """
     )
-    fun getDayEvents(day: String): List<LocationEventToken>
+    fun getCarDayEvents(carId: Int, day: String): List<LocationEventToken>
 
     @Insert
     fun insert(item: LocationEvent)

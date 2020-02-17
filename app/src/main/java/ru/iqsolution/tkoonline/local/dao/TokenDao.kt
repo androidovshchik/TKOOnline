@@ -9,6 +9,7 @@ interface TokenDao {
     @Query(
         """
         SELECT * FROM tokens
+        ORDER BY t_id ASC
     """
     )
     fun getTokens(): List<AccessToken>
