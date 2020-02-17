@@ -47,7 +47,7 @@ open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
         launch {
             val locationEvents = mutableListOf<LocationEvent>()
             withContext(Dispatchers.IO) {
-                locationEvents.addAll(db.locationDao().getCarDayEvents(carId, day).map { it.location })
+                locationEvents.addAll(db.locationDao().getDayCarEvents(day, carId).map { it.location })
             }
             reference.get()?.onRoute(locationEvents)
         }

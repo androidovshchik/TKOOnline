@@ -18,7 +18,7 @@ open class Platform : Serializable, Container, Location<Double> {
 
     @PrimaryKey
     @SerializedName("kp_id")
-    @ColumnInfo(name = "p_id")
+    @ColumnInfo(name = "p_kp_id")
     var kpId = 0
 
     @SerializedName("linked_kp_id")

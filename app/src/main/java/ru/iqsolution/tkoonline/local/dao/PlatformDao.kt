@@ -12,11 +12,11 @@ interface PlatformDao {
     @Query(
         """
         SELECT * FROM platforms 
-        WHERE p_linked_id = :id
-        ORDER BY p_id ASC
+        WHERE p_kp_id in (:kpIds)
+        ORDER BY p_kp_id ASC
     """
     )
-    fun getLinked(id: Long?): List<Platform>
+    fun getFromIds(kpIds: List<Long>): List<Platform>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(item: List<Platform>)

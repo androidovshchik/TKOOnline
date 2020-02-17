@@ -29,6 +29,9 @@ interface LocationDao {
     )
     fun getLastSendEvent(): LocationEventToken?
 
+    /**
+     * Only debug feature for routing
+     */
     @Query(
         """
         SELECT location_events.*, tokens.* FROM location_events 
@@ -37,7 +40,7 @@ interface LocationDao {
         ORDER BY le_id ASC
     """
     )
-    fun getCarDayEvents(carId: Int, day: String): List<LocationEventToken>
+    fun getDayCarEvents(day: String, carId: Int): List<LocationEventToken>
 
     @Insert
     fun insert(item: LocationEvent)
