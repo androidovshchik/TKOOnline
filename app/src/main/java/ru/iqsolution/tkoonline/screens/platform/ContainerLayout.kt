@@ -14,20 +14,13 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import kotlinx.android.synthetic.main.merge_container.view.*
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.use
+import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
-import ru.iqsolution.tkoonline.models.SimpleContainer
+import java.lang.ref.WeakReference
 
 class ContainerLayout : RelativeLayout {
 
-    var containerType = ContainerType.UNKNOWN
-
-    var container: SimpleContainer? = null
-        set(value) {
-            field = value
-            updateVolumeText()
-            updateCountText()
-        }
+    private var reference: WeakReference<Container>? = null
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -52,13 +45,8 @@ class ContainerLayout : RelativeLayout {
     @SuppressLint("Recycle")
     private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_container, this)
-        attrs?.let {
-            context.obtainStyledAttributes(it, R.styleable.ContainerLayout).use {
-                containerType = ContainerType.fromId(getString(R.styleable.ContainerLayout_containerType))
-            }
-        }
         arrow_up_count.setOnClickListener {
-            container?.apply {
+            reference?.get()?.apply {
                 if (containerCount < 99) {
                     containerCount++
                     updateCountText()
@@ -66,49 +54,41 @@ class ContainerLayout : RelativeLayout {
             }
         }
         arrow_down_count.setOnClickListener {
-            container?.apply {
+            reference?.get()?.apply {
                 if (containerCount > 0) {
                     containerCount--
                     updateCountText()
                 }
             }
         }
-        if (containerType == ContainerType.BULK1 || containerType == ContainerType.BULK2) {
-            arrow_up_count.visibility = INVISIBLE
-            arrow_down_count.visibility = INVISIBLE
-            count_value.visibility = INVISIBLE
-        }
-        icon_type.setImageResource(containerType.icon)
-        text_type.text = containerType.shortName
     }
 
-    fun updateContainer(type: String, containers: List<SimpleContainer>) {
-        containers.forEach {
-            if (containerType.id == it.containerType) {
-                if (it.linkedIds.isNotEmpty() || containerType.id == type) {
-                    container = it
-                    visibility = View.VISIBLE
-                    return
-                }
-            }
+    fun updateContainer(container: Container) {
+        val containerType = container.toContainerType()
+        icon_type.setImageResource(containerType.icon)
+        text_type.text = containerType.shortName
+        if (containerType != ContainerType.BULK1 && containerType != ContainerType.BULK2) {
+            arrow_up_count.visibility = VISIBLE
+            arrow_down_count.visibility = VISIBLE
+            count_value.visibility = VISIBLE
         }
-        container = null
-        visibility = View.GONE
+        updateVolumeText()
+        updateCountText()
     }
 
     private fun updateVolumeText() {
-        volume_value.setValueText(context.getString(R.string.platform_volume, container?.containerVolume ?: 0f))
+        volume_value.setValueText(context.getString(R.string.platform_volume, reference?.get()?.containerVolume ?: 0f))
     }
 
     private fun updateCountText() {
-        count_value.setValueText(context.getString(R.string.platform_count, container?.containerCount ?: 0))
+        count_value.setValueText(context.getString(R.string.platform_count, reference?.get()?.containerCount ?: 0))
+    }
+
+    fun clear() {
+        reference?.clear()
     }
 
     override fun hasOverlappingRendering() = false
-
-    fun clear() {
-        container = null
-    }
 
     private fun TextView.setValueText(text: CharSequence) {
         val smallStyle = RelativeSizeSpan(0.6f)
