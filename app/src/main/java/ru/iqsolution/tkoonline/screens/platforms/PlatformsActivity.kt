@@ -288,8 +288,8 @@ class PlatformsActivity : BaseActivity<PlatformsPresenter>(), PlatformsContract.
                                 it.timestamp = millis
                             }
                         }
-                        photoErrors.get(event.type)?.run {
-                            it.addError(this, 0)
+                        photoErrors.get(event.typeId)?.let { error ->
+                            it.addError(error, 0)
                         }
                     }
                 }

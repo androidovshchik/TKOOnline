@@ -41,7 +41,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 .distinctBy { it.kpId }
             withContext(Dispatchers.IO) {
                 db.platformDao().deleteAll()
-                db.platformDao().insert(allPlatforms)
+                db.platformDao().insertAll(allPlatforms)
                 allPlatforms.forEach { item ->
                     if (item.linkedKpId != null) {
                         return@forEach

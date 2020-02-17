@@ -55,6 +55,9 @@ abstract class CleanDao {
     @Insert
     abstract fun insertAll(item: List<CleanEvent>)
 
+    /**
+     * Normally one of events should be valid
+     */
     @Transaction
     open fun insertMultiple(day: String, events: List<CleanEvent>): Long {
         require(events.isNotEmpty())
