@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference
 
 class ContainerLayout : RelativeLayout {
 
-    private var reference: WeakReference<Container>? = null
+    private lateinit var reference: WeakReference<Container>
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -46,7 +46,7 @@ class ContainerLayout : RelativeLayout {
     private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_container, this)
         arrow_up_count.setOnClickListener {
-            reference?.get()?.apply {
+            reference.get()?.apply {
                 if (containerCount < 99) {
                     containerCount++
                     updateCountText()
@@ -54,7 +54,7 @@ class ContainerLayout : RelativeLayout {
             }
         }
         arrow_down_count.setOnClickListener {
-            reference?.get()?.apply {
+            reference.get()?.apply {
                 if (containerCount > 0) {
                     containerCount--
                     updateCountText()
@@ -63,36 +63,39 @@ class ContainerLayout : RelativeLayout {
         }
     }
 
-    fun updateContainer(container: Container) {
-        var refId = reference?.get()?.kpId
-        if (refId == null) {
-            refId = container.kpId
-            reference = WeakReference(container)
-            val containerType = container.toContainerType()
-            icon_type.setImageResource(containerType.icon)
-            text_type.text = containerType.shortName
-            updateVolumeText()
-            if (containerType != ContainerType.BULK1 && containerType != ContainerType.BULK2) {
-                arrow_up_count.visibility = VISIBLE
-                arrow_down_count.visibility = VISIBLE
-                count_value.visibility = VISIBLE
-            }
+    fun setContainer(container: Container) {
+        reference = WeakReference(container)
+        val containerType = container.toContainerType()
+        icon_type.setImageResource(containerType.icon)
+        text_type.text = containerType.shortName
+        updateVolumeText()
+        if (containerType != ContainerType.BULK1 && containerType != ContainerType.BULK2) {
+            arrow_up_count.visibility = VISIBLE
+            arrow_down_count.visibility = VISIBLE
+            count_value.visibility = VISIBLE
         }
-        if (refId == container.kpId) {
-            updateCountText()
+        updateCountText()
+    }
+
+    fun updateContainer(container: Container) {
+        reference.get()?.let {
+            if (it.kpId == container.kpId) {
+                it.containerCount = container.containerCount
+                updateCountText()
+            }
         }
     }
 
     private fun updateVolumeText() {
-        volume_value.setValueText(context.getString(R.string.platform_volume, reference?.get()?.containerVolume ?: 0f))
+        volume_value.setValueText(context.getString(R.string.platform_volume, reference.get()?.containerVolume ?: 0f))
     }
 
     private fun updateCountText() {
-        count_value.setValueText(context.getString(R.string.platform_count, reference?.get()?.containerCount ?: 0))
+        count_value.setValueText(context.getString(R.string.platform_count, reference.get()?.containerCount ?: 0))
     }
 
     fun clear() {
-        reference?.clear()
+        reference.clear()
     }
 
     override fun hasOverlappingRendering() = false

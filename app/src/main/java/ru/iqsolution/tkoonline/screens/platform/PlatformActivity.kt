@@ -127,7 +127,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             presenter.savePlatformEvents(platform, linkedPlatforms)
         }
         attach(ContainerLayout(applicationContext).apply {
-            updateContainer(platform)
+            setContainer(platform)
         }, 2)
         presenter.apply {
             loadLinkedPlatforms(platform.linkedIds.toList())
@@ -146,7 +146,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         linkedPlatforms.addAll(platforms)
         platforms.forEachIndexed { index, item ->
             attach(ContainerLayout(applicationContext).apply {
-                updateContainer(item)
+                setContainer(item)
             }, 3 + index)
         }
         presenter.loadCleanEvents(platform.kpId)
@@ -167,14 +167,14 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     }
 
     override fun onPhotoEvents(events: List<PhotoEvent>) {
-        gallery_before.updatePhotos(events)
-        gallery_after.updatePhotos(events)
         events.forEach {
             photoErrors.get(it.typeId)?.let { error ->
                 platform.putError(error)
             }
         }
         platform_map.setMarkers("[${gson.toJson(platform)}]")
+        gallery_before.updatePhotos(events)
+        gallery_after.updatePhotos(events)
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {
