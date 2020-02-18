@@ -7,5 +7,5 @@ external class ExitData {
 
 external interface App {
 
-    fun exit(s: (ExitData) -> Unit, e: (dynamic) -> Unit)
+    fun exit(s: Success<ExitData>, e: Error)
 }

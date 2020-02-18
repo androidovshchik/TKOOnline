@@ -17,11 +17,11 @@ external class DialogData {
 
 external interface OS {
 
-    fun runCommand(cmd: String, s: (CommandData) -> Unit, e: (dynamic) -> Unit)
+    fun runCommand(command: String, s: Success<CommandData>, e: Error)
 
-    fun getEnvar(v: String, s: (EnvarData) -> Unit, e: (dynamic) -> Unit)
+    fun getEnvar(key: String, s: Success<EnvarData>, e: Error)
 
-    fun dialogOpen(t: String, s: (DialogData) -> Unit, e: (dynamic) -> Unit)
+    fun dialogOpen(title: String, s: Success<DialogData>, e: Error)
 
-    fun dialogSave(t: String, s: (DialogData) -> Unit, e: (dynamic) -> Unit)
+    fun dialogSave(title: String, s: Success<DialogData>, e: Error)
 }
