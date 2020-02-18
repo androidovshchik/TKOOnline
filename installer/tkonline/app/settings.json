@@ -1,7 +1,7 @@
 {
-    "appname": "TKOnline-установщик",
+    "appname": "TKOnline",
     "appport": "0",
-    "mode": "browser",
+    "mode": "window",
     "window": {
         "width": "600",
         "height": "480",

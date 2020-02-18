@@ -16,7 +16,6 @@ def prod = project.hasProperty('prod')
 compileKotlin2Js {
     kotlinOptions {
         moduleKind = 'amd'
-        sourceMap = !prod
     }
 }
 
@@ -25,7 +24,6 @@ kotlinFrontend {
         devDependency "terser-webpack-plugin"
     }
     webpackBundle {
-        bundleName = "main"
         if (prod) {
             mode = "production"
         }
