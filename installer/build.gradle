@@ -1,12 +1,14 @@
 apply plugin: 'kotlin2js'
 apply plugin: 'org.jetbrains.kotlin.frontend'
 
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    main.resources.srcDirs += "src/main/resources"
+}
+
 repositories {
     jcenter()
     mavenCentral()
-    maven {
-        url "https://kotlin.bintray.com/kotlin-js-wrappers"
-    }
 }
 
 dependencies {
@@ -29,11 +31,9 @@ compileKotlin2Js {
 kotlinFrontend {
     npm {
         devDependency "terser-webpack-plugin"
-        devDependency "webpack-obfuscator"
     }
     webpackBundle {
         bundleName = "main"
-        contentPath = file('src/main/resources')
         if (prod) {
             mode = "production"
         }

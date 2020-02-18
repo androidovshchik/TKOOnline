@@ -1,4 +1,4 @@
-package androidovshchik.flameadmin
+package ru.iqsolution.tkonline
 
 import org.js.neutralino.Neutralino
 import org.w3c.dom.HTMLButtonElement

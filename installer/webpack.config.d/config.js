@@ -1,9 +1,11 @@
-// noinspection JSUnresolvedVariable
+const path = require('path');
+
+config.output.path = path.join(__dirname, '/../tkonline/app/assets');
+config.output.filename = 'app.js';
+
 if (defined.PRODUCTION) {
-    // noinspection JSFileReferences
     const TerserPlugin = require('./node_modules/terser-webpack-plugin');
 
-    // noinspection JSUnresolvedVariable
     config.optimization = {
         minimize: true,
         minimizer: [
