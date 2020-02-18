@@ -1,0 +1,21 @@
+{
+  "name": "installer",
+  "version": "1.0.0",
+  "scripts": {
+    "serve:js": "webpack-dev-server --mode=development",
+    "serve:sass": "npm run build:sass && npm run build:sass -- -w",
+    "build:js": "webpack-cli --mode=production",
+    "build:sass": "node-sass -r --output-style compressed src/styles.scss ../app/src/main/assets/map.css"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "node-sass": "^4.13.1",
+    "terser-webpack-plugin": "^2.3.4",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.3",
+    "webpack-obfuscator": "^0.24.6"
+  }
+}
