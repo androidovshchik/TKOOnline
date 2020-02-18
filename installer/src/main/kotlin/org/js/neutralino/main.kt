@@ -1,17 +1,22 @@
 package org.js.neutralino
 
+import org.js.neutralino.core.*
+
 external var Neutralino: NeutralinoJs
 
 external class NeutralinoJs {
 
-    fun app(o: Any)
+    var app: App
 
-    app: app,
-    filesystem : filesystem,
-    settings : settings,
-    os : os,
-    computer : computer,
-    storage : storage,
-    init : init,
-    debug : debug
+    var filesystem: Filesystem
+
+    var settings: Settings
+
+    var os: Os
+
+    var computer: Computer
+
+    var storage: Storage
+
+    var debug: Debug
 }

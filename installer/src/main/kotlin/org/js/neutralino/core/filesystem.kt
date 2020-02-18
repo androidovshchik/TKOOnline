@@ -2,15 +2,15 @@ package org.js.neutralino.core
 
 external class Filesystem {
 
-    fun createDirectory(dirName: Any, s: Any, e: Any)
+    fun createDirectory(dirName: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
 
-    fun removeDirectory(dirName: Any, s: Any, e: Any)
+    fun removeDirectory(dirName: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
 
-    fun writeFile(fileName: Any, content: Any, s: Any, e: Any)
+    fun writeFile(fileName: String, content: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
 
-    fun readFile(fileName: Any, s: Any, e: Any)
+    fun readFile(fileName: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
 
-    fun removeFile(fileName: Any, s: Any, e: Any)
+    fun removeFile(fileName: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
 
-    fun readDirectory(path: Any, s: Any, e: Any)
+    fun readDirectory(path: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
 }
