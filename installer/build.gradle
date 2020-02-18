@@ -1,0 +1,42 @@
+apply plugin: 'kotlin2js'
+apply plugin: 'org.jetbrains.kotlin.frontend'
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven {
+        url "https://kotlin.bintray.com/kotlin-js-wrappers"
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-js:${Versions.kotlin}"
+}
+
+// ./gradlew ... -Pprod
+def prod = project.hasProperty('prod')
+
+compileKotlin2Js {
+    kotlinOptions {
+        moduleKind = 'amd'
+        sourceMap = !prod
+        if (!prod) {
+            sourceMapEmbedSources = "always"
+        }
+    }
+}
+
+kotlinFrontend {
+    npm {
+        devDependency "terser-webpack-plugin"
+        devDependency "webpack-obfuscator"
+    }
+    webpackBundle {
+        bundleName = "main"
+        contentPath = file('src/main/resources')
+        if (prod) {
+            mode = "production"
+        }
+    }
+    define("PRODUCTION", prod)
+}

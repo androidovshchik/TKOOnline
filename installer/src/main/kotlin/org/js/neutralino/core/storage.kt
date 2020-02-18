@@ -9,7 +9,7 @@ external class StorageData {
 
 external interface Storage {
 
-    fun putData(data: StorageData, s: (Any) -> Unit, e: Error)
+    fun putData(data: StorageData, s: Success<dynamic>, e: Error)
 
-    fun getData(bucket: String, s: (Any) -> Unit, e: Error)
+    fun getData(bucket: String, s: Success<Any>, e: Error)
 }
