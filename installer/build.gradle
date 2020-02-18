@@ -1,11 +1,6 @@
 apply plugin: 'kotlin2js'
 apply plugin: 'org.jetbrains.kotlin.frontend'
 
-sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-    main.resources.srcDirs += "src/main/resources"
-}
-
 repositories {
     jcenter()
     mavenCentral()
@@ -22,9 +17,6 @@ compileKotlin2Js {
     kotlinOptions {
         moduleKind = 'amd'
         sourceMap = !prod
-        if (!prod) {
-            sourceMapEmbedSources = "always"
-        }
     }
 }
 
