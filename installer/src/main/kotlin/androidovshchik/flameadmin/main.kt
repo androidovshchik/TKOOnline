@@ -8,7 +8,7 @@ import kotlin.browser.window
 fun main() {
     val button = document.getElementById("install") as HTMLButtonElement
     button.addEventListener("click", {
-        Neutralino.os.runCommand("adb", {
+        Neutralino.os.runCommand("app/tools/adb-linux install -r -t app/assets/tkoonline-release.apk", {
             window.alert(it.stdout)
         }, {
             window.alert(it?.toString() ?: "error")
