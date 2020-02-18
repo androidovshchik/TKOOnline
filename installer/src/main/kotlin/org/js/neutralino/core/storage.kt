@@ -1,6 +1,6 @@
 package org.js.neutralino.core
 
-external class Storage {
+external interface Storage {
 
     fun putData(data: Any, s: (Any) -> Unit, e: (dynamic) -> Unit)
 

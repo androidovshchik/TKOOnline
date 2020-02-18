@@ -1,12 +1,27 @@
 package org.js.neutralino.core
 
-external class Os {
+external class CommandData {
 
-    fun runCommand(cmd: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
+    var stdout: String
+}
 
-    fun getEnvar(v: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
+external class EnvarData {
 
-    fun dialogOpen(t: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
+    var value: String
+}
 
-    fun dialogSave(t: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
+external class DialogData {
+
+    var file: String
+}
+
+external interface OS {
+
+    fun runCommand(cmd: String, s: (CommandData) -> Unit, e: (dynamic) -> Unit)
+
+    fun getEnvar(v: String, s: (EnvarData) -> Unit, e: (dynamic) -> Unit)
+
+    fun dialogOpen(t: String, s: (DialogData) -> Unit, e: (dynamic) -> Unit)
+
+    fun dialogSave(t: String, s: (DialogData) -> Unit, e: (dynamic) -> Unit)
 }

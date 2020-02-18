@@ -1,6 +1,6 @@
 package org.js.neutralino.core
 
-external class Settings {
+external interface Settings {
 
     fun getSettings(s: (Any) -> Unit, e: (dynamic) -> Unit)
 }

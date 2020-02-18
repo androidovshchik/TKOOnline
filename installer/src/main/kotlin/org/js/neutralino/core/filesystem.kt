@@ -1,10 +1,15 @@
 package org.js.neutralino.core
 
-external class Filesystem {
+external class DirectoryData {
 
-    fun createDirectory(dirName: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
+    var stdout: String
+}
 
-    fun removeDirectory(dirName: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
+external interface Filesystem {
+
+    fun createDirectory(dirName: String, s: (DirectoryData) -> Unit, e: (dynamic) -> Unit)
+
+    fun removeDirectory(dirName: String, s: (DirectoryData) -> Unit, e: (dynamic) -> Unit)
 
     fun writeFile(fileName: String, content: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
 

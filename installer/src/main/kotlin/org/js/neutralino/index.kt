@@ -4,7 +4,7 @@ import org.js.neutralino.core.*
 
 external var Neutralino: NeutralinoJs
 
-external class NeutralinoJs {
+external interface NeutralinoJs {
 
     var app: App
 
@@ -12,7 +12,7 @@ external class NeutralinoJs {
 
     var settings: Settings
 
-    var os: Os
+    var os: OS
 
     var computer: Computer
 

@@ -1,6 +1,11 @@
 package org.js.neutralino.core
 
-external class App {
+external class ExitData {
 
-    fun exit(s: (Any) -> Unit, e: (dynamic) -> Unit)
+    var message: String
+}
+
+external interface App {
+
+    fun exit(s: (ExitData) -> Unit, e: (dynamic) -> Unit)
 }
