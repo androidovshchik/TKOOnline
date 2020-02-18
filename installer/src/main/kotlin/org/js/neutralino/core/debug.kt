@@ -1,15 +1,15 @@
 package org.js.neutralino.core
 
-external enum class sdfsdf {
+external enum class LogType {
     INFO, ERROR, WARN
 }
 
-external class asdasd {
+external class LogData {
 
     var message: String
 }
 
 external interface Debug {
 
-    fun log(type: String, message: String, s: (Any) -> Unit, e: (dynamic) -> Unit)
+    fun log(type: LogType, message: String, s: Success<LogData>, e: Error)
 }
