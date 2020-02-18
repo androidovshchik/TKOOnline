@@ -12,27 +12,27 @@ external class FileData {
     var type: FileType
 }
 
-external class DirData {
+external class DirectoryData {
 
     var files: List<FileData>
 }
 
-external class FsData {
+external class FilesystemData {
 
     var stdout: String
 }
 
 external interface Filesystem {
 
-    fun createDirectory(dirName: String, s: Success<FsData>, e: Error)
+    fun createDirectory(dirName: String, s: Success<FilesystemData>, e: Error)
 
-    fun removeDirectory(dirName: String, s: Success<FsData>, e: Error)
+    fun removeDirectory(dirName: String, s: Success<FilesystemData>, e: Error)
 
-    fun readDirectory(path: String, s: Success<DirData>, e: Error)
+    fun readDirectory(path: String, s: Success<DirectoryData>, e: Error)
 
-    fun writeFile(fileName: String, content: String, s: Success<FsData>, e: Error)
+    fun writeFile(fileName: String, content: String, s: Success<FilesystemData>, e: Error)
 
-    fun readFile(fileName: String, s: Success<FsData>, e: Error)
+    fun readFile(fileName: String, s: Success<FilesystemData>, e: Error)
 
-    fun removeFile(fileName: String, s: Success<FsData>, e: Error)
+    fun removeFile(fileName: String, s: Success<FilesystemData>, e: Error)
 }

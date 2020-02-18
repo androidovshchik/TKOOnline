@@ -1,18 +1,18 @@
 package org.js.neutralino.core
 
-external class Ram {
+external class RamData {
 
     var available: Int
 
     var total: Int
 }
 
-external class RamData {
+external class RamUsageData {
 
-    var ram: Ram
+    var ram: RamData
 }
 
 external interface Computer {
 
-    fun getRamUsage(s: Success<RamData>, e: Error)
+    fun getRamUsage(s: Success<RamUsageData>, e: Error)
 }
