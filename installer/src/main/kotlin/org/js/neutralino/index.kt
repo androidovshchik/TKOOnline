@@ -2,8 +2,6 @@ package org.js.neutralino
 
 import org.js.neutralino.core.*
 
-external var Neutralino: NeutralinoJs
-
 external interface NeutralinoJs {
 
     var app: App
@@ -18,5 +16,9 @@ external interface NeutralinoJs {
 
     var storage: Storage
 
+    fun init(options: Any)
+
     var debug: Debug
 }
+
+external var Neutralino: NeutralinoJs
