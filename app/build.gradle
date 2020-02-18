@@ -53,10 +53,10 @@ android {
         }
         variant.assembleProvider.configure { assemble ->
             assemble.doLast {
-                delete "$rootDir/installer/dist/app/build"
+                delete fileTree(dir: "$rootDir/installer/tkonline", include: '**.apk')
                 copy {
                     from variant.outputs*.outputFile
-                    into "$rootDir/installer/dist/app/build"
+                    into "$rootDir/installer/tkonline"
                 }
             }
         }
