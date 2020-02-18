@@ -51,6 +51,15 @@ android {
         variant.outputs.all {
             outputFileName = "${applicationId.substring(applicationId.lastIndexOf(".") + 1)}${variant.versionCode}-${variant.buildType.name}.apk"
         }
+        variant.assembleProvider.configure { assemble ->
+            assemble.doLast {
+                delete "$rootDir/installer/dist/app/build"
+                copy {
+                    from variant.outputs*.outputFile
+                    into "$rootDir/installer/dist/app/build"
+                }
+            }
+        }
     }
     lintOptions {
         //checkReleaseBuilds false
