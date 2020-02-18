@@ -10,7 +10,7 @@ external interface BootboxBaseOptions<T> {
     var title: dynamic /* String | Element */
         get() = definedExternally
         set(value) = definedExternally
-    var callback: ((result: T) -> Any)?
+    var callback: dynamic /* ((result: T) -> Any)? */
         get() = definedExternally
         set(value) = definedExternally
     var onEscape: dynamic /* () -> Any | Boolean */
@@ -35,7 +35,7 @@ external interface BootboxBaseOptions<T> {
     var locale: String?
         get() = definedExternally
         set(value) = definedExternally
-    var buttons: BootboxButtonMap?
+    var buttons: dynamic /* BootboxButtonMap? */
         get() = definedExternally
         set(value) = definedExternally
     var scrollable: Boolean?
@@ -56,7 +56,7 @@ external interface BootboxDialogOptions<T> : BootboxBaseOptions<T> {
 }
 
 external interface BootboxAlertOptions : BootboxDialogOptions<Unit> {
-    var callback: (() -> Any)?
+    override var callback: (() -> Any)?
         get() = definedExternally
         set(value) = definedExternally
     override var buttons: BootboxAlertButtonMap?
@@ -65,7 +65,7 @@ external interface BootboxAlertOptions : BootboxDialogOptions<Unit> {
 }
 
 external interface BootboxConfirmOptions : BootboxDialogOptions<Boolean> {
-    var callback: (result: Boolean) -> Any
+    override var callback: (result: Boolean) -> Any
     override var buttons: BootboxConfirmPromptButtonMap?
         get() = definedExternally
         set(value) = definedExternally
@@ -85,7 +85,7 @@ external interface BootboxPromptOptions : BootboxBaseOptions<String> {
         get() = definedExternally
         set(value) = definedExternally
     var inputType: String /* "text" | "textarea" | "email" | "select" | "checkbox" | "date" | "time" | "number" | "password" | "radio" | "range" */
-    var callback: (result: String) -> Any
+    override var callback: (result: String) -> Any
     override var buttons: BootboxConfirmPromptButtonMap?
         get() = definedExternally
         set(value) = definedExternally
@@ -127,15 +127,19 @@ external interface BootboxButton {
         set(value) = definedExternally
 }
 
-external interface BootboxButtonMap {
-    @nativeGetter
-    operator fun get(key: String): dynamic /* BootboxButton | Function<*> */
+external interface BootboxButtonMap
 
-    @nativeSetter
-    operator fun set(key: String, value: BootboxButton)
+@Suppress("NOTHING_TO_INLINE")
+inline operator fun BootboxButtonMap.get(key: String): dynamic /* BootboxButton | Function<*> */ = asDynamic()[key]
 
-    @nativeSetter
-    operator fun set(key: String, value: Function<*>)
+@Suppress("NOTHING_TO_INLINE")
+inline operator fun BootboxButtonMap.set(key: String, value: BootboxButton) {
+    asDynamic()[key] = value
+}
+
+@Suppress("NOTHING_TO_INLINE")
+inline operator fun BootboxButtonMap.set(key: String, value: Function<*>) {
+    asDynamic()[key] = value
 }
 
 external interface BootboxAlertButtonMap : BootboxButtonMap {
@@ -160,14 +164,14 @@ external interface BootboxLocaleValues {
 }
 
 external interface BootboxStatic {
-    fun alert(message: String, callback: () -> Unit = definedExternally): Any
-    fun alert(options: BootboxAlertOptions): Any
-    fun confirm(message: String, callback: (result: Boolean) -> Unit): Any
-    fun confirm(options: BootboxConfirmOptions): Any
-    fun prompt(message: String, callback: (result: String) -> Unit): Any
-    fun prompt(options: BootboxPromptOptions): Any
-    fun dialog(message: String, callback: (result: String) -> Unit = definedExternally): Any
-    fun dialog(options: BootboxDialogOptions<String>): Any
+    fun alert(message: String, callback: () -> Unit = definedExternally): Any /* JQuery */
+    fun alert(options: BootboxAlertOptions): Any /* JQuery */
+    fun confirm(message: String, callback: (result: Boolean) -> Unit): Any /* JQuery */
+    fun confirm(options: BootboxConfirmOptions): Any /* JQuery */
+    fun prompt(message: String, callback: (result: String) -> Unit): Any /* JQuery */
+    fun prompt(options: BootboxPromptOptions): Any /* JQuery */
+    fun dialog(message: String, callback: (result: String) -> Unit = definedExternally): Any /* JQuery */
+    fun dialog(options: BootboxDialogOptions<String>): Any /* JQuery */
     fun setDefaults(options: BootboxDefaultOptions)
     fun hideAll()
     fun addLocale(name: String, values: BootboxLocaleValues)

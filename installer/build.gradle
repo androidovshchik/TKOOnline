@@ -21,6 +21,7 @@ compileKotlin2Js {
 
 kotlinFrontend {
     npm {
+        dependency "bootbox"
         devDependency "terser-webpack-plugin"
     }
     webpackBundle {
