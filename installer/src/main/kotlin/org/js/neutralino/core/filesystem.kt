@@ -1,15 +1,17 @@
 package org.js.neutralino.core
 
-@Suppress("EnumEntryName")
-external enum class FileType {
-    directory, file
+object FileType {
+
+    const val DIRECTORY = "directory"
+
+    const val FILE = "file"
 }
 
 external class FileData {
 
     var name: String
 
-    var type: FileType
+    var type: String
 }
 
 external class DirectoryData {
