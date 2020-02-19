@@ -34,22 +34,17 @@ fun main() {
             OSName.WINDOWS -> "adb.exe"
             OSName.LINUX -> "adb-linux"
             else -> {
-                showError("Текущая ОС не поддерживается")
+                showError("Данная ОС не поддерживается")
                 return@addEventListener
             }
         }
         findFile(".", ".apk") { apk ->
-            findFile("tools", adb) { _ ->
-                execCommand("") {
+            findFile("app/tools", adb) { _ ->
+                execCommand("app/tools/$adb install -r -t $apk") {
 
                 }
             }
         }
-        /*Neutralino.os.runCommand("app/tools/adb-linux install -r -t app/assets/tkoonline-release.apk", {
-            bootbox.confirm(BootboxConfirm("success: ${it.stdout}"))
-        }, {
-            bootbox.confirm(BootboxConfirm("error: ${it?.toString()}"))
-        })*/
     })
 }
 
@@ -67,7 +62,19 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
 }
 
 private fun execCommand(command: String, success: () -> Unit) {
-
+    Neutralino.debug.log(LogType.INFO, command, {
+        Neutralino.os.runCommand(command, {
+            Neutralino.debug.log(LogType.INFO, it.stdout, {}, {})
+            when {
+                it.stdout.contains("no devices/emulators found") -> showError("Не найдено устройство")
+                else -> showPrompt(it.stdout)
+            }
+        }, {
+            showPrompt("Ошибка при выполнении команды $command")
+        })
+    }, {
+        showPrompt("Ошибка при сохранении лога команды")
+    })
 }
 
 private fun showError(message: String) {
