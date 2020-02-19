@@ -9,7 +9,11 @@ class BootboxAlertDialog(val title: String, val message: String) {
     val buttons = arrayOf(
         BootboxButton().apply {
             label = if (title == "Ошибка") "Закрыть" else "OK"
-            className = if (title == "Ошибка") "btn-danger" else "btn-success"
+            className = when (title) {
+                "Ошибка" -> "btn-danger"
+                "Внимание" -> "btn-warning"
+                else -> "btn-success"
+            }
         }
     )
 }
