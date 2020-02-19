@@ -30,7 +30,12 @@ fun main() {
         waitDialog?.on("hidden.bs.modal") {
             alertTitle?.also { title ->
                 alertMessage?.also { message ->
-                    bootbox.dialog(BootboxAlertDialog(title, message))
+                    bootbox.dialog(
+                        BootboxAlertDialog(
+                            title.ifEmpty { "Ошибка" },
+                            message.ifEmpty { "Пустое сообщение" }
+                        )
+                    )
                     alertMessage = null
                 }
                 alertTitle = null
@@ -40,7 +45,7 @@ fun main() {
             OSName.WINDOWS -> "adb.exe"
             OSName.LINUX -> "adb-linux"
             else -> {
-                showError("Данная ОС не поддерживается\nВ")
+                showError("Данная ОС не поддерживается")
                 return@addEventListener
             }
         }
@@ -50,14 +55,14 @@ fun main() {
                     when {
                         it.contains("no devices/emulators found") -> showError(
                             """
-                            Не найдено устройство
+                            Не найдено устройство.
+                            Проверьте, подключено ли устройство к ПК, включен ли режим разработчика и отладка по USB
                         """.trimIndent()
                         )
                         it.contains("Success") -> {
 
                         }
-                        else -> {
-                        }
+                        else -> showError(it)
                     }
                 }
             }
@@ -71,10 +76,10 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
         if (file != null) {
             success(file)
         } else {
-            showError("Не найден файл $path/$filename".replace("/.", "*"))
+            showError("Не найден файл $path/$filename".replace("/.", "/*."))
         }
     }, {
-        showError("При поиске файла $path/$filename".replace("/.", "*"))
+        showError("При поиске файла $path/$filename".replace("/.", "/*."))
     })
 }
 
@@ -87,7 +92,7 @@ private fun execCommand(command: String, success: (String) -> Unit) {
                 showError("При сохранении лога вывода команды")
             })
         }, {
-            showError("При выполнении команды\n$command")
+            showError("При выполнении команды $command")
         })
     }, {
         showError("При сохранении лога команды")
