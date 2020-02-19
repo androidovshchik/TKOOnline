@@ -65,7 +65,7 @@ external interface BootboxPromptOptions : BootboxBaseOptions {
 
     var value: String?
 
-    var inputType: String /* "text" | "textarea" | "email" | "select" | "checkbox" | "date" | "time" | "number" | "password" | "radio" | "range" */
+    var inputType: String? /* "text" | "textarea" | "email" | "select" | "checkbox" | "date" | "time" | "number" | "password" | "radio" | "range" */
 
     override var callback: (result: String) -> Any
 
