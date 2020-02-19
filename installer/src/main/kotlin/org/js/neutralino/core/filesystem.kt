@@ -30,7 +30,7 @@ external interface Filesystem {
 
     fun removeDirectory(dirName: String, s: Success<FilesystemData>, e: Error)
 
-    fun readDirectory(path: String, s: Success<DirectoryData>, e: Error)
+    fun readDirectory(path: String, s: Success<DirectoryData?>, e: Error)
 
     fun writeFile(fileName: String, content: String, s: Success<FilesystemData>, e: Error)
 

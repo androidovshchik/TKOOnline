@@ -1,6 +1,6 @@
 package ru.iqsolution.tkonline
 
-class BootboxWait {
+class BootboxWaitDialog {
 
     val message = """
         <div class="center-vertical">
