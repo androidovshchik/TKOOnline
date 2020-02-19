@@ -22,7 +22,7 @@ var alertMessage: String? = null
 @Suppress("SpellCheckingInspection", "CascadeIf")
 fun main() {
     window.onerror = { message, _, _, _, _ ->
-        Neutralino.debug.log(LogType.ERROR, "${Date().toLocaleString()}: $message".trim(), {}, {})
+        Neutralino.debug.log(LogType.ERROR, "${Date().toLocaleString()}: $message", {}, {})
     }
     bootbox.setLocale("ru")
     val button = document.getElementById("install") as HTMLButtonElement
@@ -65,9 +65,15 @@ fun main() {
                             ) { grant ->
                                 if (grant.contains("Added: $packageName")) {
                                     execCommand("$adb shell dpm set-device-owner $packageName/.receivers.AdminReceiver") { owner ->
-                                        // Success: Device owner
-                                        // empty
-                                        showError(owner)
+                                        if (owner.contains("Success: Device owner") || owner.isEmpty()) {
+                                            showPrompt(
+                                                "Готово", """
+                                                Приложение успешно установлено в режиме киоска
+                                            """.trimIndent()
+                                            )
+                                        } else {
+                                            showError(owner)
+                                        }
                                     }
                                 } else {
                                     showError(grant)
@@ -77,7 +83,8 @@ fun main() {
                             showError(
                                 """
                                 Не найдено устройство.
-                                Проверьте, подключено ли устройство к ПК, включен ли режим разработчика и отладка по USB
+                                Проверьте, подключено ли устройство к ПК для передачи файлов, 
+                                включен ли режим разработчика и отладка по USB
                             """.trimIndent()
                             )
                         } else {
@@ -94,7 +101,7 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
     Neutralino.filesystem.readDirectory(path, { data ->
         val file = data?.files?.firstOrNull { it.type == FileType.FILE && it.name.contains(filename) }?.name
         if (file != null) {
-            success(file)
+            success(file.trim())
         } else {
             showError("Не найден файл $path/$filename".replace("/.", "/*."))
         }
@@ -104,10 +111,10 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
 }
 
 private fun execCommand(command: String, success: (String) -> Unit) {
-    Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: $command".trim(), {
+    Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: $command", {
         Neutralino.os.runCommand(command, { data ->
-            Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: ${data.stdout}".trim(), {
-                success(data.stdout)
+            Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: ${data.stdout}", {
+                success(data.stdout.trim())
             }, {
                 showError("При сохранении лога вывода команды")
             })
