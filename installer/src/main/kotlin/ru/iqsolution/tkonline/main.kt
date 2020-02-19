@@ -43,7 +43,7 @@ fun main() {
             }
         }
         val adb = when (NL_OS) {
-            OSName.WINDOWS -> "app/tools/adb.exe"
+            OSName.WINDOWS -> "app\\tools\\adb.exe"
             OSName.LINUX -> "app/tools/adb-linux"
             else -> {
                 showError(
@@ -57,16 +57,16 @@ fun main() {
         }
         val packageName = "ru.iqsolution.tkoonline"
         findFile(".", ".apk") { apk ->
-            findFile("app/tools", adb.substringAfterLast("/")) {
+            findFile("app/tools", adb.substring("app/tools/".length)) {
                 execCommand("$adb kill-server && $adb start-server") {
                     execCommand("$adb install -r -t $apk") { install ->
                         if (install.contains("Success")) {
                             execCommand(
                                 """
-                                $adb shell pm grant $packageName android.permission.CAMERA && \
-                                $adb shell pm grant $packageName android.permission.ACCESS_FINE_LOCATION && \
+                                $adb shell pm grant $packageName android.permission.CAMERA &&
+                                $adb shell pm grant $packageName android.permission.ACCESS_FINE_LOCATION &&
                                 $adb shell dumpsys deviceidle whitelist +$packageName
-                            """.trimIndent()
+                            """.trimIndent().replace("\n", " ")
                             ) { grant ->
                                 if (grant.contains("Added: $packageName")) {
                                     execCommand("$adb shell dpm set-device-owner $packageName/.receivers.AdminReceiver") { owner ->
