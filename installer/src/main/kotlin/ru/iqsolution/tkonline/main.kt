@@ -54,25 +54,26 @@ fun main() {
         findFile(".", ".apk") { apk ->
             findFile("app/tools", adb.substringAfterLast("/")) {
                 execCommand("$adb kill-server && $adb start-server") {
-                    execCommand("$adb install -r -t $apk") {
-                        if (it.contains("Success")) {
+                    execCommand("$adb install -r -t $apk") { install ->
+                        if (install.contains("Success")) {
                             execCommand(
                                 """
                                 $adb shell pm grant $packageName android.permission.CAMERA && \
                                 $adb shell pm grant $packageName android.permission.ACCESS_FINE_LOCATION && \
                                 $adb shell dumpsys deviceidle whitelist +$packageName
                             """.trimIndent()
-                            ) {
-                                if (it.contains("Added: $packageName")) {
-                                    execCommand("$adb shell dpm set-device-owner $packageName/.receivers.AdminReceiver") {
-                                        "Success: Device owner"
-                                        showError(it)
+                            ) { grant ->
+                                if (grant.contains("Added: $packageName")) {
+                                    execCommand("$adb shell dpm set-device-owner $packageName/.receivers.AdminReceiver") { owner ->
+                                        // Success: Device owner
+                                        // empty
+                                        showError(owner)
                                     }
                                 } else {
-                                    showError(it)
+                                    showError(grant)
                                 }
                             }
-                        } else if (it.contains("no devices/emulators found")) {
+                        } else if (install.contains("no devices/emulators found")) {
                             showError(
                                 """
                                 Не найдено устройство.
@@ -80,7 +81,7 @@ fun main() {
                             """.trimIndent()
                             )
                         } else {
-                            showError(it)
+                            showError(install)
                         }
                     }
                 }
