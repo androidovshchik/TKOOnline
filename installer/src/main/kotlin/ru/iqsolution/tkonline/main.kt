@@ -23,20 +23,16 @@ fun main() {
     button.addEventListener("click", {
         waitDialog = bootbox.dialog(BootboxWaitDialog())
         waitDialog?.on("hidden.bs.modal") {
-            promptMessage?.let {
+            promptMessage?.also {
                 bootbox.alert(BootboxAlert(it))
+                promptMessage = null
             }
         }
-        Neutralino.filesystem.readDirectory(".", { data ->
-            val apkFilename = data?.files?.firstOrNull { it.type == FileType.FILE && it.name.endsWith(".apk") }?.name
-            if (apkFilename == null) {
-                showPrompt("Не найден apk файл")
-                return@readDirectory
+        findFile(".", ".apk") { apk ->
+            findFile("tools", "adb") {
+
             }
-            showPrompt("success: $apkFilename")
-        }, {
-            showPrompt()
-        })
+        }
         /*Neutralino.os.runCommand("app/tools/adb-linux install -r -t app/assets/tkoonline-release.apk", {
             bootbox.confirm(BootboxConfirm("success: ${it.stdout}"))
         }, {
@@ -45,7 +41,20 @@ fun main() {
     })
 }
 
-private fun showPrompt(message: String = "Неизвестная ошибка") {
+private fun findFile(path: String, filename: String, complete: (String) -> Unit) {
+    Neutralino.filesystem.readDirectory(path, { data ->
+        val file = data?.files?.firstOrNull { it.type == FileType.FILE && it.name.contains(filename) }?.name
+        if (file != null) {
+            complete(file)
+        } else {
+            showPrompt("Ошибка: не найден файл $path/$filename".replace(".", "*"))
+        }
+    }, {
+        showPrompt("Ошибка при поиске файла $path/$filename".replace(".", "*"))
+    })
+}
+
+private fun showPrompt(message: String) {
     promptMessage = message
     window.setTimeout({
         waitDialog?.modal("hide")
