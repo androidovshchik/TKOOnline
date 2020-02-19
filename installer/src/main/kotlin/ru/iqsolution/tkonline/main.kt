@@ -19,9 +19,10 @@ var alertTitle: String? = null
 
 var alertMessage: String? = null
 
+@Suppress("SpellCheckingInspection", "CascadeIf")
 fun main() {
     window.onerror = { message, _, _, _, _ ->
-        Neutralino.debug.log(LogType.ERROR, "${Date().toLocaleString()}: $message", {}, {})
+        Neutralino.debug.log(LogType.ERROR, "${Date().toLocaleString()}: $message".trim(), {}, {})
     }
     bootbox.setLocale("ru")
     val button = document.getElementById("install") as HTMLButtonElement
@@ -49,21 +50,37 @@ fun main() {
                 return@addEventListener
             }
         }
+        val packageName = "ru.iqsolution.tkoonline"
         findFile(".", ".apk") { apk ->
             findFile("app/tools", adb.substringAfterLast("/")) {
                 execCommand("$adb kill-server && $adb start-server") {
                     execCommand("$adb install -r -t $apk") {
-                        when {
-                            it.contains("no devices/emulators found") -> showError(
+                        if (it.contains("Success")) {
+                            execCommand(
                                 """
-                            Не найдено устройство.
-                            Проверьте, подключено ли устройство к ПК, включен ли режим разработчика и отладка по USB
-                        """.trimIndent()
-                            )
-                            it.contains("Success") -> {
-
+                                $adb shell pm grant $packageName android.permission.CAMERA && \
+                                $adb shell pm grant $packageName android.permission.ACCESS_FINE_LOCATION && \
+                                $adb shell dumpsys deviceidle whitelist +$packageName
+                            """.trimIndent()
+                            ) {
+                                if (it.contains("Added: $packageName")) {
+                                    execCommand("$adb shell dpm set-device-owner $packageName/.receivers.AdminReceiver") {
+                                        "Success: Device owner"
+                                        showError(it)
+                                    }
+                                } else {
+                                    showError(it)
+                                }
                             }
-                            else -> showError(it)
+                        } else if (it.contains("no devices/emulators found")) {
+                            showError(
+                                """
+                                Не найдено устройство.
+                                Проверьте, подключено ли устройство к ПК, включен ли режим разработчика и отладка по USB
+                            """.trimIndent()
+                            )
+                        } else {
+                            showError(it)
                         }
                     }
                 }
@@ -86,9 +103,9 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
 }
 
 private fun execCommand(command: String, success: (String) -> Unit) {
-    Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: $command", {
+    Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: $command".trim(), {
         Neutralino.os.runCommand(command, { data ->
-            Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: ${data.stdout}", {
+            Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: ${data.stdout}".trim(), {
                 success(data.stdout)
             }, {
                 showError("При сохранении лога вывода команды")
