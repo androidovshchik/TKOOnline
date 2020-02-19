@@ -1,5 +1,14 @@
 @file:Suppress("unused")
 
+class BootboxButton {
+
+    var label: String? = null
+
+    var className: String? = null
+
+    var callback: (() -> Any)? = null
+}
+
 external interface BootboxStatic {
 
     fun alert(message: String, callback: (() -> Unit)?): dynamic /* JQuery */

@@ -11,10 +11,13 @@ import org.js.neutralino.core.LogType
 import org.w3c.dom.HTMLButtonElement
 import kotlin.browser.document
 import kotlin.browser.window
+import kotlin.js.Date
 
 var waitDialog: dynamic = null
 
-var promptMessage: String? = null
+var alertTitle: String? = null
+
+var alertMessage: String? = null
 
 fun main() {
     window.onerror = { message, _, _, _, _ ->
@@ -26,7 +29,7 @@ fun main() {
         waitDialog = bootbox.dialog(BootboxWaitDialog())
         waitDialog?.on("hidden.bs.modal") {
             promptMessage?.also {
-                bootbox.alert(BootboxAlert(it))
+                bootbox.dialog(BootboxAlertDialog("title", it))
                 promptMessage = null
             }
         }
@@ -39,9 +42,15 @@ fun main() {
             }
         }
         findFile(".", ".apk") { apk ->
-            findFile("app/tools", adb) { _ ->
+            findFile("app/tools", adb) {
                 execCommand("app/tools/$adb install -r -t $apk") {
+                    when {
+                        it.contains("no devices/emulators found") -> showError("Не найдено устройство")
+                        it.contains("Success") -> {
 
+                        }
+                        else -> showPrompt("it.stdout")
+                    }
                 }
             }
         }
@@ -61,14 +70,14 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
     })
 }
 
-private fun execCommand(command: String, success: () -> Unit) {
-    Neutralino.debug.log(LogType.INFO, command, {
-        Neutralino.os.runCommand(command, {
-            Neutralino.debug.log(LogType.INFO, it.stdout, {}, {})
-            when {
-                it.stdout.contains("no devices/emulators found") -> showError("Не найдено устройство")
-                else -> showPrompt(it.stdout)
-            }
+private fun execCommand(command: String, success: (String) -> Unit) {
+    Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: $command", {
+        Neutralino.os.runCommand(command, { data ->
+            Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: ${data.stdout}", {
+                success(data.stdout)
+            }, {
+                showPrompt("Ошибка при сохранении лога команды")
+            })
         }, {
             showPrompt("Ошибка при выполнении команды $command")
         })
