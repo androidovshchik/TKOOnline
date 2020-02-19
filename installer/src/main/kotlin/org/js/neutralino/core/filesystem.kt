@@ -14,7 +14,7 @@ external class FileData {
 
 external class DirectoryData {
 
-    var files: List<FileData>
+    var files: Array<FileData>
 }
 
 external class FilesystemData {

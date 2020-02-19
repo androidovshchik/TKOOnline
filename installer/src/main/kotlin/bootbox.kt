@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-external interface BootboxBaseOptions<T> {
+external interface BootboxBaseOptions {
 
     var title: dynamic /* String | Element */
 
@@ -27,7 +27,7 @@ external interface BootboxBaseOptions<T> {
     var scrollable: Boolean?
 }
 
-external interface BootboxDialogOptions<T> : BootboxBaseOptions<T> {
+external interface BootboxDialogOptions : BootboxBaseOptions {
 
     var message: dynamic /* JQuery | Array<Any> | Element | DocumentFragment | Text | String | (index: Number, html: String) -> dynamic */
 
@@ -36,14 +36,14 @@ external interface BootboxDialogOptions<T> : BootboxBaseOptions<T> {
     var centerVertical: Boolean?
 }
 
-external interface BootboxAlertOptions : BootboxDialogOptions<Unit> {
+external interface BootboxAlertOptions : BootboxDialogOptions {
 
     override var callback: (() -> Any)?
 
     override var buttons: BootboxAlertButtonMap?
 }
 
-external interface BootboxConfirmOptions : BootboxDialogOptions<Boolean> {
+external interface BootboxConfirmOptions : BootboxDialogOptions {
 
     override var callback: (result: Boolean) -> Any
 
@@ -59,7 +59,7 @@ external interface InputOption {
     var group: String?
 }
 
-external interface BootboxPromptOptions : BootboxBaseOptions<String> {
+external interface BootboxPromptOptions : BootboxBaseOptions {
 
     override var title: String
 
@@ -122,29 +122,33 @@ external interface BootboxConfirmPromptButtonMap : BootboxButtonMap {
     var cancel: dynamic /* BootboxButton | Function<*> */
 }
 
+@Suppress("PropertyName")
 external interface BootboxLocaleValues {
+
     var OK: String
+
     var CANCEL: String
+
     var CONFIRM: String
 }
 
 external interface BootboxStatic {
 
-    fun alert(message: String, callback: () -> Unit = definedExternally): Any /* JQuery */
+    fun alert(message: String, callback: () -> Unit = definedExternally): dynamic /* JQuery */
 
-    fun alert(options: BootboxAlertOptions): Any /* JQuery */
+    fun alert(options: BootboxAlertOptions): dynamic /* JQuery */
 
-    fun confirm(message: String, callback: (result: Boolean) -> Unit): Any /* JQuery */
+    fun confirm(message: String, callback: (result: Boolean) -> Unit): dynamic /* JQuery */
 
-    fun confirm(options: BootboxConfirmOptions): Any /* JQuery */
+    fun confirm(options: BootboxConfirmOptions): dynamic /* JQuery */
 
-    fun prompt(message: String, callback: (result: String) -> Unit): Any /* JQuery */
+    fun prompt(message: String, callback: (result: String) -> Unit): dynamic /* JQuery */
 
-    fun prompt(options: BootboxPromptOptions): Any /* JQuery */
+    fun prompt(options: BootboxPromptOptions): dynamic /* JQuery */
 
-    fun dialog(message: String, callback: (result: String) -> Unit = definedExternally): Any /* JQuery */
+    fun dialog(message: String, callback: (result: String) -> Unit = definedExternally): dynamic /* JQuery */
 
-    fun dialog(options: BootboxDialogOptions<String>): Any /* JQuery */
+    fun dialog(options: BootboxDialogOptions/*<String>*/): dynamic /* JQuery */
 
     fun setDefaults(options: BootboxDefaultOptions)
 
