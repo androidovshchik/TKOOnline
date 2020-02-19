@@ -132,15 +132,12 @@ fun main() {
 
 private fun findFile(path: String, filename: String, success: (String) -> Unit) {
     Neutralino.filesystem.readDirectory(path, { data ->
-        data?.files?.forEach {
-            Neutralino.debug.log(LogType.INFO, "${it.name}- name", {}, {})
-        }
         val file = data?.files?.firstOrNull { it.type == FileType.FILE && it.name.contains(filename) }?.name
         if (file != null) {
             success(file.trim())
         } else {
-            showError(
-                """
+            showPrompt(
+                "Внимание", """
                 Не найден файл $path/$filename".
                 Используйте другую копию этой программы
             """.trimIndent().replace("/.", "/*.")
