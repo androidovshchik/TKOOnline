@@ -84,11 +84,11 @@ fun main() {
                                             """.trimIndent()
                                             )
                                         } else {
-                                            showError(owner)
+                                            showError(owner, true)
                                         }
                                     }
                                 } else {
-                                    showError(grant)
+                                    showError(grant, true)
                                 }
                             }
                         } else if (install.contains("no devices/emulators found")) {
@@ -121,7 +121,7 @@ fun main() {
                             """.trimIndent()
                             )
                         } else {
-                            showError(install)
+                            showError(install, true)
                         }
                     }
                 }
@@ -164,8 +164,12 @@ private fun execCommand(command: String, success: (String) -> Unit) {
     })
 }
 
-private fun showError(message: String) {
-    showPrompt("Ошибка", message)
+private fun showError(message: String, unknown: Boolean = false) {
+    if (unknown) {
+        showPrompt("Неизвестная ошибка", message)
+    } else {
+        showPrompt("Ошибка", message)
+    }
 }
 
 private fun showPrompt(title: String, message: String) {
