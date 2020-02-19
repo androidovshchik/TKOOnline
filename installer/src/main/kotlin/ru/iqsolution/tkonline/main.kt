@@ -3,7 +3,9 @@
 package ru.iqsolution.tkonline
 
 import bootbox
+import org.js.neutralino.NL_OS
 import org.js.neutralino.Neutralino
+import org.js.neutralino.OSName
 import org.js.neutralino.core.FileType
 import org.js.neutralino.core.LogType
 import org.w3c.dom.HTMLButtonElement
@@ -28,9 +30,19 @@ fun main() {
                 promptMessage = null
             }
         }
+        val adb = when (NL_OS) {
+            OSName.WINDOWS -> "adb.exe"
+            OSName.LINUX -> "adb-linux"
+            else -> {
+                showError("Текущая ОС не поддерживается")
+                return@addEventListener
+            }
+        }
         findFile(".", ".apk") { apk ->
-            findFile("tools", "adb") {
+            findFile("tools", adb) { _ ->
+                execCommand("") {
 
+                }
             }
         }
         /*Neutralino.os.runCommand("app/tools/adb-linux install -r -t app/assets/tkoonline-release.apk", {
@@ -41,17 +53,25 @@ fun main() {
     })
 }
 
-private fun findFile(path: String, filename: String, complete: (String) -> Unit) {
+private fun findFile(path: String, filename: String, success: (String) -> Unit) {
     Neutralino.filesystem.readDirectory(path, { data ->
         val file = data?.files?.firstOrNull { it.type == FileType.FILE && it.name.contains(filename) }?.name
         if (file != null) {
-            complete(file)
+            success(file)
         } else {
-            showPrompt("Ошибка: не найден файл $path/$filename".replace(".", "*"))
+            showError("Не найден файл $path/$filename".replace("/.", "*"))
         }
     }, {
-        showPrompt("Ошибка при поиске файла $path/$filename".replace(".", "*"))
+        showPrompt("Ошибка при поиске файла $path/$filename".replace("/.", "*"))
     })
+}
+
+private fun execCommand(command: String, success: () -> Unit) {
+
+}
+
+private fun showError(message: String) {
+    showPrompt("Ошибка: ${message.decapitalize()}")
 }
 
 private fun showPrompt(message: String) {

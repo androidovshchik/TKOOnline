@@ -2,6 +2,15 @@ package org.js.neutralino
 
 import org.js.neutralino.core.*
 
+object OSName {
+
+    const val WINDOWS = "Windows"
+
+    const val LINUX = "Linux"
+
+    const val MAC_OS = "MacOS(Darwin)"
+}
+
 external var NL_OS: String
 
 external var NL_NAME: String
