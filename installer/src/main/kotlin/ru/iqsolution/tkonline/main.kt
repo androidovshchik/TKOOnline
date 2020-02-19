@@ -139,7 +139,7 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
             showPrompt(
                 "Внимание", """
                 Не найден файл $path/$filename".
-                Используйте другую копию этой программы
+                Попробуйте запустить программу от имени администратора
             """.trimIndent().replace("/.", "/*.")
             )
         }
