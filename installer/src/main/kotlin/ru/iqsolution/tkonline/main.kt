@@ -48,7 +48,7 @@ fun main() {
             else -> {
                 showError(
                     """
-                    Данная ОС не поддерживается
+                    Данная ОС не поддерживается.
                     Откройте эту программу на ПК с ОС Windows или Linux
                 """.trimIndent()
                 )
@@ -79,8 +79,8 @@ fun main() {
                                         } else if (owner.isEmpty()) {
                                             showPrompt(
                                                 "Внимание", """
-                                                Если вы входили в аккаунт Google, то требуется сброс до заводских настроек
-                                                В другом случае на устройстве уже есть приложение в режиме киоска
+                                                Если вы входили в аккаунт Google, то требуется сброс до заводских настроек.
+                                                В противном случае, на устройстве уже есть приложение в режиме киоска
                                             """.trimIndent()
                                             )
                                         } else {
@@ -106,7 +106,7 @@ fun main() {
                                 Попробуйте заново подключить устройство через USB
                             """.trimIndent()
                             )
-                        } else if (install.contains("set: cannot connect to daemon")) {
+                        } else if (install.contains("set: cannot connect to daemon") || install.contains("set: device still authorizing")) {
                             showError(
                                 """
                                 Не удалось подключиться к устройству.
@@ -138,7 +138,7 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
         } else {
             showError(
                 """
-                Не найден файл $path/$filename"
+                Не найден файл $path/$filename".
                 Используйте другую копию этой программы
             """.trimIndent().replace("/.", "/*.")
             )
