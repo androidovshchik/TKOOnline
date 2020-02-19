@@ -46,7 +46,12 @@ fun main() {
             OSName.WINDOWS -> "app/tools/adb.exe"
             OSName.LINUX -> "app/tools/adb-linux"
             else -> {
-                showError("Данная ОС не поддерживается")
+                showError(
+                    """
+                    Данная ОС не поддерживается
+                    Откройте эту программу на ПК с ОС Windows или Linux
+                """.trimIndent()
+                )
                 return@addEventListener
             }
         }
@@ -65,10 +70,16 @@ fun main() {
                             ) { grant ->
                                 if (grant.contains("Added: $packageName")) {
                                     execCommand("$adb shell dpm set-device-owner $packageName/.receivers.AdminReceiver") { owner ->
-                                        if (owner.contains("Success: Device owner") || owner.isEmpty()) {
+                                        if (owner.contains("Success: Device owner")) {
                                             showPrompt(
                                                 "Готово", """
-                                                Приложение успешно установлено в режиме киоска
+                                                Приложение успешно установлено в режиме киоска на устройстве
+                                            """.trimIndent()
+                                            )
+                                        } else if (owner.isEmpty()) {
+                                            showPrompt(
+                                                "Готово", """
+                                                вапвапвап
                                             """.trimIndent()
                                             )
                                         } else {
@@ -87,6 +98,27 @@ fun main() {
                                 включен ли режим разработчика и отладка по USB
                             """.trimIndent()
                             )
+                        } else if (install.contains("set: device offline")) {
+                            showError(
+                                """
+                                Устройство недоступно.
+                                Попробуйте заново подключить устройство через USB
+                            """.trimIndent()
+                            )
+                        } else if (install.contains("set: cannot connect to daemon")) {
+                            showError(
+                                """
+                                Не удалось подключиться к устройству.
+                                Попробуйте повторить установку приложения
+                            """.trimIndent()
+                            )
+                        } else if (install.contains("set: device unauthorized")) {
+                            showError(
+                                """
+                                Требуется разрешение на отладку по USB.
+                                Подтвердите это во всплывающем диалоге на устройстве
+                            """.trimIndent()
+                            )
                         } else {
                             showError(install)
                         }
@@ -103,7 +135,12 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
         if (file != null) {
             success(file.trim())
         } else {
-            showError("Не найден файл $path/$filename".replace("/.", "/*."))
+            showError(
+                """
+                Не найден файл $path/$filename"
+                Используйте другую копию этой программы
+            """.trimIndent().replace("/.", "/*.")
+            )
         }
     }, {
         showError("При поиске файла $path/$filename".replace("/.", "/*."))
