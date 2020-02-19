@@ -42,27 +42,29 @@ fun main() {
             }
         }
         val adb = when (NL_OS) {
-            OSName.WINDOWS -> "adb.exe"
-            OSName.LINUX -> "adb-linux"
+            OSName.WINDOWS -> "app/tools/adb.exe"
+            OSName.LINUX -> "app/tools/adb-linux"
             else -> {
                 showError("Данная ОС не поддерживается")
                 return@addEventListener
             }
         }
         findFile(".", ".apk") { apk ->
-            findFile("app/tools", adb) {
-                execCommand("app/tools/$adb install -r -t $apk") {
-                    when {
-                        it.contains("no devices/emulators found") -> showError(
-                            """
+            findFile("app/tools", adb.substringAfterLast("/")) {
+                execCommand("$adb kill-server && $adb start-server") {
+                    execCommand("$adb install -r -t $apk") {
+                        when {
+                            it.contains("no devices/emulators found") -> showError(
+                                """
                             Не найдено устройство.
                             Проверьте, подключено ли устройство к ПК, включен ли режим разработчика и отладка по USB
                         """.trimIndent()
-                        )
-                        it.contains("Success") -> {
+                            )
+                            it.contains("Success") -> {
 
+                            }
+                            else -> showError(it)
                         }
-                        else -> showError(it)
                     }
                 }
             }
