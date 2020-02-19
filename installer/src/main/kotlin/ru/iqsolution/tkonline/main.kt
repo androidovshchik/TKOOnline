@@ -21,23 +21,26 @@ var alertMessage: String? = null
 
 fun main() {
     window.onerror = { message, _, _, _, _ ->
-        Neutralino.debug.log(LogType.ERROR, message, {}, {})
+        Neutralino.debug.log(LogType.ERROR, "${Date().toLocaleString()}: $message", {}, {})
     }
     bootbox.setLocale("ru")
     val button = document.getElementById("install") as HTMLButtonElement
     button.addEventListener("click", {
         waitDialog = bootbox.dialog(BootboxWaitDialog())
         waitDialog?.on("hidden.bs.modal") {
-            promptMessage?.also {
-                bootbox.dialog(BootboxAlertDialog("title", it))
-                promptMessage = null
+            alertTitle?.also { title ->
+                alertMessage?.also { message ->
+                    bootbox.dialog(BootboxAlertDialog(title, message))
+                    alertMessage = null
+                }
+                alertTitle = null
             }
         }
         val adb = when (NL_OS) {
             OSName.WINDOWS -> "adb.exe"
             OSName.LINUX -> "adb-linux"
             else -> {
-                showError("Данная ОС не поддерживается")
+                showError("Данная ОС не поддерживается\nВ")
                 return@addEventListener
             }
         }
@@ -45,11 +48,16 @@ fun main() {
             findFile("app/tools", adb) {
                 execCommand("app/tools/$adb install -r -t $apk") {
                     when {
-                        it.contains("no devices/emulators found") -> showError("Не найдено устройство")
+                        it.contains("no devices/emulators found") -> showError(
+                            """
+                            Не найдено устройство
+                        """.trimIndent()
+                        )
                         it.contains("Success") -> {
 
                         }
-                        else -> showPrompt("it.stdout")
+                        else -> {
+                        }
                     }
                 }
             }
@@ -66,7 +74,7 @@ private fun findFile(path: String, filename: String, success: (String) -> Unit) 
             showError("Не найден файл $path/$filename".replace("/.", "*"))
         }
     }, {
-        showPrompt("Ошибка при поиске файла $path/$filename".replace("/.", "*"))
+        showError("При поиске файла $path/$filename".replace("/.", "*"))
     })
 }
 
@@ -76,22 +84,23 @@ private fun execCommand(command: String, success: (String) -> Unit) {
             Neutralino.debug.log(LogType.INFO, "${Date().toLocaleString()}: ${data.stdout}", {
                 success(data.stdout)
             }, {
-                showPrompt("Ошибка при сохранении лога команды")
+                showError("При сохранении лога вывода команды")
             })
         }, {
-            showPrompt("Ошибка при выполнении команды $command")
+            showError("При выполнении команды\n$command")
         })
     }, {
-        showPrompt("Ошибка при сохранении лога команды")
+        showError("При сохранении лога команды")
     })
 }
 
 private fun showError(message: String) {
-    showPrompt("Ошибка: ${message.decapitalize()}")
+    showPrompt("Ошибка", message)
 }
 
-private fun showPrompt(message: String) {
-    promptMessage = message
+private fun showPrompt(title: String, message: String) {
+    alertTitle = title
+    alertMessage = message
     window.setTimeout({
         waitDialog?.modal("hide")
     }, 500)
