@@ -6,6 +6,7 @@ import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.IBasePresenter
 import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.screens.common.confirm.ConfirmListener
 
 interface PlatformContract {
 

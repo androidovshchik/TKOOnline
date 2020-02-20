@@ -12,6 +12,7 @@ import ru.iqsolution.tkoonline.extensions.cancelAll
 import ru.iqsolution.tkoonline.local.FileManager
 import timber.log.Timber
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class DownloadWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
@@ -21,6 +22,7 @@ class DownloadWorker(context: Context, params: WorkerParameters) : BaseWorker(co
 
     override fun doWork(): Result {
         val url = inputData.getString(PARAM_URL) ?: return Result.failure()
+        val path = inputData.getString(PARAM_PATH) ?: return Result.failure()
         try {
             val request = Request.Builder()
                 .url(url)
@@ -31,21 +33,21 @@ class DownloadWorker(context: Context, params: WorkerParameters) : BaseWorker(co
             if (response.isSuccessful) {
                 val body = response.body
                 if (body != null) {
-                    val result = fileManager.writeFile(File(fileManager.externalDir, "app.apk")) {
+                    val result = fileManager.writeFile(File(path)) {
                         it.write(body.bytes())
                         it.flush()
                     }
                     return if (result) {
                         Result.success()
                     } else {
-                        Result.failure()
+                        Result.retry()
                     }
                 }
             }
         } catch (e: Throwable) {
             Timber.e(e)
         }
-        return Result.failure()
+        return Result.retry()
     }
 
     override fun onStopped() {
@@ -59,13 +61,17 @@ class DownloadWorker(context: Context, params: WorkerParameters) : BaseWorker(co
 
         private const val PARAM_URL = "url"
 
-        fun launch(context: Context, url: String): LiveData<WorkInfo> {
+        private const val PARAM_PATH = "path"
+
+        fun launch(context: Context, url: String, path: String): LiveData<WorkInfo> {
             val request = OneTimeWorkRequestBuilder<DownloadWorker>()
                 .setInputData(
                     Data.Builder()
                         .putString(PARAM_URL, url)
+                        .putString(PARAM_PATH, path)
                         .build()
                 )
+                .setBackoffCriteria(BackoffPolicy.LINEAR, WorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
                 .build()
             WorkManager.getInstance(context).apply {
                 enqueueUniqueWork(NAME, ExistingWorkPolicy.REPLACE, request)

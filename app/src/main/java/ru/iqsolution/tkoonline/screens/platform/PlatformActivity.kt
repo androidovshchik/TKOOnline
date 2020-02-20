@@ -24,6 +24,7 @@ import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.common.confirm.ConfirmDialog
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity

@@ -2,9 +2,9 @@ package ru.iqsolution.tkoonline.screens.platforms
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.collection.SimpleArrayMap
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.LocationSettingsStates
@@ -27,6 +27,7 @@ import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
+import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
@@ -80,9 +81,9 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             presenter.logout(applicationContext)
         }
         if (preferences.allowPhotoRefKp) {
-            platforms_placeholder.visibility = View.VISIBLE
+            platforms_placeholder.isVisible = true
             platforms_photo.apply {
-                visibility = View.VISIBLE
+                isVisible = true
                 setOnClickListener {
                     if (platformClicked) {
                         return@setOnClickListener

@@ -11,6 +11,7 @@ import ru.iqsolution.tkoonline.screens.base.AdapterListener
 import ru.iqsolution.tkoonline.screens.base.IBasePresenter
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
+import ru.iqsolution.tkoonline.screens.common.wait.WaitListener
 
 interface PlatformsContract {
 

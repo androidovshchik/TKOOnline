@@ -9,6 +9,7 @@ import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.include_status.*
 import org.jetbrains.anko.locationManager
@@ -129,12 +130,12 @@ class StatusFragment : BaseFragment(), SyncListener {
                 text = if (photoCount < 10) {
                     photoCount.toString()
                 } else "*"
-                visibility = View.VISIBLE
+                isVisible = true
             }
         } else {
             status_count.apply {
                 text = ""
-                visibility = View.GONE
+                isVisible = false
             }
         }
     }
