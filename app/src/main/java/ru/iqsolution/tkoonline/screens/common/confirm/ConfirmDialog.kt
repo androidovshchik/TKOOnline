@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens.platform
+package ru.iqsolution.tkoonline.screens.common.confirm
 
 import android.app.Activity
 import android.os.Bundle

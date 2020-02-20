@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens.platforms
+package ru.iqsolution.tkoonline.screens.common.wait
 
 import android.app.Activity
 import android.os.Bundle

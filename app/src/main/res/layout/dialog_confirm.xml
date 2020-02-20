@@ -14,12 +14,12 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="12dp"
         android:layout_marginStart="2dp"
-        android:text="Вы уверены?"
         android:textSize="20sp"
         android:textColor="@color/colorTextBlack87"
         android:lineSpacingExtra="3sp"
         tools:textStyle="bold"
-        fontPath="fonts/Roboto-Bold.ttf"/>
+        fontPath="fonts/Roboto-Bold.ttf"
+        tools:text="Вы уверены?"/>
 
     <TextView
         android:id="@+id/dialog_caption"
@@ -29,11 +29,11 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="2dp"
         android:layout_marginEnd="15dp"
-        android:text="Все данные и фотографии сделанные ранее не будут отправлены"
         android:textSize="16sp"
         android:textColor="#89000000"
         android:lineSpacingExtra="8sp"
-        fontPath="fonts/Roboto-Medium.ttf"/>
+        fontPath="fonts/Roboto-Medium.ttf"
+        tools:text="Все данные и фотографии сделанные ранее не будут отправлены"/>
 
     <Button
         android:id="@+id/dialog_exit"
@@ -43,11 +43,12 @@
         android:layout_marginBottom="10dp"
         android:layout_toStartOf="@+id/dialog_continue"
         android:layout_below="@+id/dialog_caption"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textColor="@color/colorAccent"
+        android:textAllCaps="false"
         android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"
-        android:text="Выйти"/>
+        tools:text="Выйти"/>
 
     <Button
         android:id="@+id/dialog_continue"
@@ -59,10 +60,11 @@
         android:layout_alignParentEnd="true"
         android:paddingStart="15dp"
         android:paddingEnd="0dp"
-        android:text="Отмена"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textColor="@color/colorAccent"
+        android:textAllCaps="false"
         android:lineSpacingExtra="2sp"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:background="?android:attr/selectableItemBackground"
+        tools:text="Отмена"/>
 
 </RelativeLayout>

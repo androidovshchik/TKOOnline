@@ -14,11 +14,11 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="12dp"
         android:layout_marginStart="2dp"
-        android:text="Пароль"
         android:textSize="20sp"
         android:textColor="@color/colorTextBlack87"
         android:lineSpacingExtra="3sp"
         tools:textStyle="bold"
+        tools:text="Пароль"
         fontPath="fonts/Roboto-Bold.ttf"/>
 
     <EditText
@@ -59,11 +59,12 @@
         android:layout_marginEnd="15dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:text="Подтвердить"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textColor="@color/colorAccent"
+        android:textAllCaps="false"
         android:lineSpacingExtra="2sp"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:background="?android:attr/selectableItemBackground"
+        tools:text="Подтвердить"/>
 
     <ImageButton
         android:id="@+id/dialog_close"
@@ -74,6 +75,8 @@
         android:layout_marginEnd="20dp"
         android:layout_alignParentEnd="true"
         android:src="@drawable/ic_close"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:background="?android:attr/selectableItemBackground"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </RelativeLayout>
