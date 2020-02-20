@@ -48,4 +48,8 @@ class MainApp : BaseApp() {
         //preferences.clear()
         //deleteDatabase("app.db")
     }
+
+    override fun saveLogs(enable: Boolean) {
+        DevTree.saveToFile = enable
+    }
 }

@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Switch
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_settings.*
-import ru.iqsolution.tkoonline.LogTree
+import org.jetbrains.anko.find
+import ru.iqsolution.tkoonline.BaseApp
+import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.setTextSelection
 import ru.iqsolution.tkoonline.local.Preferences
@@ -22,28 +25,33 @@ class SettingsDialog : BaseDialogFragment() {
         return inflater.inflate(R.layout.dialog_settings, container, false)
     }
 
+    @Suppress("ConstantConditionIf")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val preferences = Preferences(context).apply {
             dialog_main_server.setTextSelection(mainServerAddress)
             dialog_telemetry_server.setTextSelection(mainTelemetryAddress)
-            file_logs.isChecked = enableLogs
-            build_route.isChecked = showRoute
+            if (!BuildConfig.PROD) {
+                find<Switch>(R.id.dev_file_logs).isChecked = enableLogs
+                find<Switch>(R.id.dev_build_route).isChecked = showRoute
+            }
             setAsLocked(enableLock)
         }
-        file_logs.setOnCheckedChangeListener { _, isChecked ->
-            preferences.enableLogs = isChecked
-            LogTree.saveToFile = isChecked
-        }
-        build_route.setOnCheckedChangeListener { _, isChecked ->
-            preferences.showRoute = isChecked
+        if (!BuildConfig.PROD) {
+            find<Switch>(R.id.dev_file_logs).setOnCheckedChangeListener { _, isChecked ->
+                preferences.enableLogs = isChecked
+                (activity?.application as? BaseApp)?.saveLogs(isChecked)
+            }
+            find<Switch>(R.id.dev_build_route).setOnCheckedChangeListener { _, isChecked ->
+                preferences.showRoute = isChecked
+            }
+            find<View>(R.id.dev_build_route).setOnClickListener {
+                makeCallback<SettingsListener> {
+                    exportDb()
+                }
+            }
         }
         dialog_unlock.setOnClickListener {
             setLocked(!mEnableLock, preferences)
-        }
-        export_db.setOnClickListener {
-            makeCallback<SettingsListener> {
-                exportDb()
-            }
         }
         dialog_save.setOnClickListener {
             val slashRegex = "/+$".toRegex()

@@ -41,7 +41,7 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
 
     override fun getCameraXConfig() = Camera2Config.defaultConfig()
 
-    abstract fun init()
+    protected open fun init() {}
 
     override fun onCreate() {
         super.onCreate()
@@ -77,4 +77,6 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
         )
         MidnightWorker.launch(applicationContext)
     }
+
+    open fun saveLogs(enable: Boolean) {}
 }

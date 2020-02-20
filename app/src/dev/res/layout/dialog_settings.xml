@@ -80,7 +80,7 @@
         tools:text="msknt.iqsolution.ru:4568"/>
 
     <Switch
-        android:id="@id/file_logs"
+        android:id="@id/dev_file_logs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_telemetry_server"
@@ -95,10 +95,10 @@
         fontPath="fonts/Roboto-Bold.ttf"/>
 
     <Switch
-        android:id="@id/build_route"
+        android:id="@id/dev_build_route"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/file_logs"
+        android:layout_below="@id/dev_file_logs"
         android:layout_marginStart="5dp"
         android:layout_marginBottom="6dp"
         android:text="Строить маршрут"
@@ -115,7 +115,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
         android:layout_marginBottom="10dp"
-        android:layout_below="@+id/build_route"
+        android:layout_below="@id/dev_build_route"
         android:textSize="15sp"
         android:textColor="@color/colorAccent"
         android:textAllCaps="false"
@@ -124,12 +124,12 @@
         tools:text="Разблокировать"/>
 
     <ImageButton
-        android:id="@id/export_db"
+        android:id="@id/dev_export_db"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/dialog_unlock"
         android:layout_alignBottom="@+id/dialog_unlock"
-        android:layout_below="@+id/build_route"
+        android:layout_below="@id/dev_build_route"
         android:layout_marginStart="3dp"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
@@ -142,7 +142,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="10dp"
-        android:layout_below="@+id/build_route"
+        android:layout_below="@id/dev_build_route"
         android:layout_alignParentEnd="true"
         android:text="Сохранить"
         android:textSize="15sp"
