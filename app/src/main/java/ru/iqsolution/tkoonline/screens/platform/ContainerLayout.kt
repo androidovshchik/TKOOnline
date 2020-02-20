@@ -43,6 +43,7 @@ class ContainerLayout : RelativeLayout {
     }
 
     @SuppressLint("Recycle")
+    @Suppress("UNUSED_PARAMETER")
     private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_container, this)
         arrow_up_count.setOnClickListener {

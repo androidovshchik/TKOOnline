@@ -102,7 +102,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         platformClicked = false
     }
 
-    override fun onAdapterEvent(position: Int, item: PlatformContainers, param: Any?) {
+    override fun onAdapterEvent(position: Int, item: PlatformContainers) {
         if (platformClicked) {
             return
         }

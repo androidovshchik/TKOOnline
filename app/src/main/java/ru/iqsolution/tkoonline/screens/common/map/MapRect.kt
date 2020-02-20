@@ -4,15 +4,19 @@ import ru.iqsolution.tkoonline.models.Location
 import kotlin.math.PI
 import kotlin.math.cos
 
+/**
+ * Latitude : max/min +90 to -90
+ * Longitude : max/min +180 to -180
+ */
 class MapRect {
 
-    var minLat = Double.MAX_VALUE
+    var minLat = 360.0
 
-    var maxLat = Double.MIN_VALUE
+    var maxLat = -360.0
 
-    var minLon = Double.MAX_VALUE
+    var minLon = 360.0
 
-    var maxLon = Double.MIN_VALUE
+    var maxLon = -360.0
 
     private var updateCount = 0
 
@@ -33,12 +37,14 @@ class MapRect {
         if (latitude != null && longitude != null) {
             if (latitude < minLat) {
                 minLat = latitude
-            } else if (latitude > maxLat) {
+            }
+            if (latitude > maxLat) {
                 maxLat = latitude
             }
             if (longitude < minLon) {
                 minLon = longitude
-            } else if (longitude > maxLon) {
+            }
+            if (longitude > maxLon) {
                 maxLon = longitude
             }
             updateCount++
