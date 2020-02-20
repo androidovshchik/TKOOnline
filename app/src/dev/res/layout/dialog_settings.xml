@@ -116,8 +116,9 @@
         android:layout_marginStart="3dp"
         android:layout_marginBottom="10dp"
         android:layout_below="@+id/build_route"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textColor="@color/colorAccent"
+        android:textAllCaps="false"
         android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"
         tools:text="Разблокировать"/>
@@ -144,8 +145,9 @@
         android:layout_below="@+id/build_route"
         android:layout_alignParentEnd="true"
         android:text="Сохранить"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textColor="@color/colorAccent"
+        android:textAllCaps="false"
         android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"/>
 
