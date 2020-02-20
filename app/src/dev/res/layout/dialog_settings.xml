@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="10dp"
+    android:paddingEnd="0dp"
+    tools:ignore="MissingPrefix">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="2dp"
+        android:text="Настройки"
+        android:textSize="20sp"
+        android:textColor="@color/colorTextBlack87"
+        android:lineSpacingExtra="3sp"
+        tools:textStyle="bold"
+        fontPath="fonts/Roboto-Bold.ttf"/>
+
+    <TextView
+        android:id="@+id/dialog_caption1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_title"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="2dp"
+        android:text="Основной сервер:"
+        android:textSize="16sp"
+        android:textColor="#89000000"
+        android:lineSpacingExtra="8sp"
+        fontPath="fonts/Roboto-Bold.ttf"/>
+
+    <EditText
+        android:id="@+id/dialog_main_server"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="20dp"
+        android:layout_below="@+id/dialog_caption1"
+        android:inputType="textUri"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        android:textSize="16sp"
+        android:textColor="@color/colorTextBlack87"
+        android:lineSpacingExtra="8sp"
+        tools:text="msknt.iqsolution.ru:4567"/>
+
+    <TextView
+        android:id="@+id/dialog_caption2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_main_server"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="2dp"
+        android:text="Сервер телеметрии:"
+        android:textSize="16sp"
+        android:textColor="#89000000"
+        android:lineSpacingExtra="8sp"
+        fontPath="fonts/Roboto-Bold.ttf"/>
+
+    <EditText
+        android:id="@+id/dialog_telemetry_server"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/dialog_caption2"
+        android:inputType="textUri"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        android:textSize="16sp"
+        android:textColor="@color/colorTextBlack87"
+        android:lineSpacingExtra="8sp"
+        tools:text="msknt.iqsolution.ru:4568"/>
+
+    <Switch
+        android:id="@+id/file_logs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_telemetry_server"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="12dp"
+        android:text="Сохранять логи"
+        android:textSize="16sp"
+        android:textColor="#89000000"
+        android:lineSpacingExtra="8sp"
+        android:switchPadding="12dp"
+        android:background="?android:attr/selectableItemBackground"
+        fontPath="fonts/Roboto-Bold.ttf"/>
+
+    <Switch
+        android:id="@+id/build_route"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/file_logs"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="6dp"
+        android:text="Строить маршрут"
+        android:textSize="16sp"
+        android:textColor="#89000000"
+        android:lineSpacingExtra="8sp"
+        android:switchPadding="12dp"
+        android:background="?android:attr/selectableItemBackground"
+        fontPath="fonts/Roboto-Bold.ttf"/>
+
+    <Button
+        android:id="@+id/dialog_unlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/build_route"
+        android:textSize="14sp"
+        android:textColor="@color/colorAccent"
+        android:lineSpacingExtra="2sp"
+        android:background="?android:attr/selectableItemBackground"
+        tools:text="Разблокировать"/>
+
+    <ImageButton
+        android:id="@+id/export_db"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/dialog_unlock"
+        android:layout_alignBottom="@+id/dialog_unlock"
+        android:layout_below="@+id/build_route"
+        android:layout_marginStart="3dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:src="@drawable/ic_db"
+        android:background="?android:attr/selectableItemBackground"/>
+
+    <Button
+        android:id="@+id/dialog_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/build_route"
+        android:layout_alignParentEnd="true"
+        android:text="Сохранить"
+        android:textSize="14sp"
+        android:textColor="@color/colorAccent"
+        android:lineSpacingExtra="2sp"
+        android:background="?android:attr/selectableItemBackground"/>
+
+    <ImageButton
+        android:id="@+id/dialog_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_close"
+        android:background="?android:attr/selectableItemBackground"/>
+
+</RelativeLayout>
