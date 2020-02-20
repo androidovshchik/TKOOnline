@@ -1,17 +1,18 @@
 package ru.iqsolution.tkoonline.screens.login.qrcode
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.*
 import android.widget.FrameLayout
-import org.jetbrains.anko.UI
-import org.jetbrains.anko.frameLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.surfaceView
-import ru.iqsolution.tkoonline.DANGER_PERMISSIONS
+import org.jetbrains.anko.*
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
+import timber.log.Timber
 
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {
@@ -40,6 +41,7 @@ class QrCodeFragment : BaseFragment() {
                     holder.addCallback(object : SurfaceHolder.Callback {
 
                         override fun surfaceCreated(holder: SurfaceHolder) {
+                            Timber.e("surfaceCreated")
                             startPreview()
                         }
 
@@ -54,12 +56,6 @@ class QrCodeFragment : BaseFragment() {
         }.view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (context?.areGranted(*DANGER_PERMISSIONS) != true) {
-            requestPermissions(DANGER_PERMISSIONS, REQUEST_PERMISSIONS)
-        }
-    }
-
     override fun onStart() {
         super.onStart()
         isActive = true
@@ -67,7 +63,7 @@ class QrCodeFragment : BaseFragment() {
 
     @SuppressLint("MissingPermission")
     private fun startPreview() {
-        if (context?.areGranted(*DANGER_PERMISSIONS) != true) {
+        if (!checkPermissions()) {
             return
         }
         cameraView.apply {
@@ -78,6 +74,26 @@ class QrCodeFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun checkPermissions(): Boolean {
+        if (context?.areGranted(*DANGER_PERMISSIONS) != true) {
+            DANGER_PERMISSIONS.forEach {
+                if (shouldShowRequestPermissionRationale(it)) {
+                    startActivity(
+                        Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", context?.packageName, null)
+                        )
+                    )
+                    longToast("Пожалуйста, предоставьте разрешения")
+                    return false
+                }
+            }
+            requestPermissions(DANGER_PERMISSIONS, REQUEST_PERMISSIONS)
+            return false
+        }
+        return true
     }
 
     override fun onStop() {
@@ -102,5 +118,10 @@ class QrCodeFragment : BaseFragment() {
     companion object {
 
         private const val REQUEST_PERMISSIONS = 100
+
+        private val DANGER_PERMISSIONS = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
     }
 }

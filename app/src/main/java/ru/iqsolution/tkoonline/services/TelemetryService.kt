@@ -2,6 +2,7 @@
 
 package ru.iqsolution.tkoonline.services
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -414,7 +415,7 @@ class TelemetryService : BaseService(), TelemetryListener {
          */
         @Throws(SecurityException::class)
         fun start(context: Context, vararg params: Pair<String, Any?>): Boolean = context.run {
-            if (!areGranted(*DANGER_PERMISSIONS)) {
+            if (!areGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 return false
             }
             return if (!activityManager.isRunning<TelemetryService>()) {

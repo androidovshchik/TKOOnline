@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline
 
-import android.Manifest
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 
@@ -9,11 +8,6 @@ const val DB_NAME = "app.db"
 const val CHANNEL_DEFAULT = "default_channel"
 
 const val PASSWORD_RETRY = 5 * 60 * 1000L
-
-val DANGER_PERMISSIONS = arrayOf(
-    Manifest.permission.CAMERA,
-    Manifest.permission.ACCESS_FINE_LOCATION
-)
 
 val PATTERN_DATE: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd")
 

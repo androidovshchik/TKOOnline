@@ -45,7 +45,6 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         preferences.bulk {
             logout()
         }
-        DeleteWorker.launch(applicationContext)
         login_background.load(R.drawable.login_background)
         statusBarHeight.let {
             (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = it
@@ -64,6 +63,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
                 )
             )
         }
+        DeleteWorker.launch(applicationContext)
     }
 
     /**

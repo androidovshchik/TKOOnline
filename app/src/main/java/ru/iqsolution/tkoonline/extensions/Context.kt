@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.widget.Toast
-import androidx.core.content.PermissionChecker.PermissionResult
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startService
 import ru.iqsolution.tkoonline.receivers.ToastReceiver
@@ -37,7 +36,6 @@ inline fun <reified T> Context.makeCallback(action: T.() -> Unit) {
     }
 }
 
-@PermissionResult
 fun Context.areGranted(vararg permissions: String): Boolean {
     for (permission in permissions) {
         if (checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
