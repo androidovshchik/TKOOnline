@@ -11,8 +11,8 @@ import android.widget.FrameLayout
 import org.jetbrains.anko.*
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
+import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
-import timber.log.Timber
 
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {
@@ -41,7 +41,6 @@ class QrCodeFragment : BaseFragment() {
                     holder.addCallback(object : SurfaceHolder.Callback {
 
                         override fun surfaceCreated(holder: SurfaceHolder) {
-                            Timber.e("surfaceCreated")
                             startPreview()
                         }
 
@@ -76,24 +75,45 @@ class QrCodeFragment : BaseFragment() {
         }
     }
 
+    @SuppressLint("BatteryLife")
     private fun checkPermissions(): Boolean {
-        if (context?.areGranted(*DANGER_PERMISSIONS) != true) {
+        val context = context ?: return false
+        // NOTICE this violates Google Play policy
+        if (!context.powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
+            startActivityForResult(
+                Intent(
+                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                    Uri.fromParts("package", context.packageName, null)
+                ), REQUEST_BATTERY
+            )
+            return false
+        }
+        if (!context.areGranted(*DANGER_PERMISSIONS)) {
             DANGER_PERMISSIONS.forEach {
                 if (shouldShowRequestPermissionRationale(it)) {
-                    startActivity(
-                        Intent(
-                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.fromParts("package", context?.packageName, null)
-                        )
-                    )
-                    longToast("Пожалуйста, предоставьте разрешения")
+                    promptUser("Пожалуйста, предоставьте все разрешения", Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     return false
                 }
             }
             requestPermissions(DANGER_PERMISSIONS, REQUEST_PERMISSIONS)
             return false
         }
+        if (isOreoPlus()) {
+            if (!context.packageManager.canRequestPackageInstalls()) {
+                promptUser("Пожалуйста, разрешите установку обновлений", Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                return false
+            }
+        }
         return true
+    }
+
+    private fun promptUser(message: String, action: String) {
+        alert(message) {
+            isCancelable = false
+            positiveButton("Открыть") {
+                startActivity(Intent(action, Uri.fromParts("package", context?.packageName, null)))
+            }
+        }.show()
     }
 
     override fun onStop() {
@@ -110,6 +130,14 @@ class QrCodeFragment : BaseFragment() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_BATTERY) {
+            if (isActive) {
+                startPreview()
+            }
+        }
+    }
+
     override fun onDestroyView() {
         scannerManager?.destroy()
         super.onDestroyView()
@@ -118,6 +146,8 @@ class QrCodeFragment : BaseFragment() {
     companion object {
 
         private const val REQUEST_PERMISSIONS = 100
+
+        private const val REQUEST_BATTERY = 110
 
         private val DANGER_PERMISSIONS = arrayOf(
             Manifest.permission.CAMERA,

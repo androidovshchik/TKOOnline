@@ -5,16 +5,12 @@ package ru.iqsolution.tkoonline.screens.login
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.FragmentTransaction
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.ViewGroup
 import coil.api.load
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
-import org.jetbrains.anko.powerManager
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
 import org.kodein.di.generic.instance
@@ -38,7 +34,8 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     private var hasPrompted = false
 
-    @SuppressLint("SetTextI18n", "BatteryLife")
+    @SuppressLint("SetTextI18n")
+    @Suppress("ConstantConditionIf")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -53,15 +50,10 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         login_menu.setOnClickListener {
             openDialog()
         }
-        app_version.text = BuildConfig.VERSION_NAME
-        // NOTICE this violates Google Play policy
-        if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
-            startActivity(
-                Intent(
-                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                    Uri.parse("package:$packageName")
-                )
-            )
+        app_version.text = if (BuildConfig.PROD) {
+            BuildConfig.VERSION_NAME
+        } else {
+            "v.${BuildConfig.VERSION_CODE}"
         }
         DeleteWorker.launch(applicationContext)
     }

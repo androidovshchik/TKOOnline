@@ -113,10 +113,10 @@ class BasePoint(
             )
         }
         if (BuildConfig.DEBUG) {
-            Timber.i("base $baseDirection current $currentDirection")
-            Timber.i("distance $distance")
-            Timber.i("space $space")
-            Timber.i("millis $millis")
+            Timber.i("Base $baseDirection current $currentDirection")
+            Timber.i("Distance $distance")
+            Timber.i("Space $space")
+            Timber.i("Millis $millis")
             Timber.i(speedMap.toString())
         }
         lastLocation = location
