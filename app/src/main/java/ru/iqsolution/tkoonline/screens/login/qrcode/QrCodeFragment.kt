@@ -13,6 +13,7 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
+import ru.iqsolution.tkoonline.screens.login.LoginContract
 
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {
@@ -103,6 +104,9 @@ class QrCodeFragment : BaseFragment() {
                 promptUser("Пожалуйста, разрешите установку обновлений", Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                 return false
             }
+        }
+        makeCallback<LoginContract.View> {
+            onCanUpdate()
         }
         return true
     }

@@ -2,7 +2,6 @@ package ru.iqsolution.tkoonline.screens.platforms
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
@@ -21,7 +20,7 @@ import ru.iqsolution.tkoonline.services.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 
 class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.View>(context),
-    PlatformsContract.Presenter, Observer<WorkInfo> {
+    PlatformsContract.Presenter {
 
     private val server: Server by instance()
 
