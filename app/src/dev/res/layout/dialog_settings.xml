@@ -80,7 +80,7 @@
         tools:text="msknt.iqsolution.ru:4568"/>
 
     <Switch
-        android:id="@+id/file_logs"
+        android:id="@id/file_logs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_telemetry_server"
@@ -95,7 +95,7 @@
         fontPath="fonts/Roboto-Bold.ttf"/>
 
     <Switch
-        android:id="@+id/build_route"
+        android:id="@id/build_route"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/file_logs"
@@ -124,7 +124,7 @@
         tools:text="Разблокировать"/>
 
     <ImageButton
-        android:id="@+id/export_db"
+        android:id="@id/export_db"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/dialog_unlock"

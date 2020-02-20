@@ -9,9 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import org.jetbrains.anko.inputMethodManager
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.closestKodein
 import ru.iqsolution.tkoonline.extensions.makeCallback
 
-abstract class BaseDialogFragment : DialogFragment() {
+abstract class BaseDialogFragment : DialogFragment(), KodeinAware {
+
+    override val kodein by closestKodein()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)

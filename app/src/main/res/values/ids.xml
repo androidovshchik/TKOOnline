@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- dialog_settings.xml -->
+    <item type="id" name="file_logs"/>
+    <item type="id" name="build_route"/>
+    <item type="id" name="export_db"/>
+</resources>
