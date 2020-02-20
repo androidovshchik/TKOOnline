@@ -1,12 +1,12 @@
 package ru.iqsolution.tkoonline
 
+import android.content.Context
 import com.elvishew.xlog.LogConfiguration
 import com.elvishew.xlog.XLog
 import com.elvishew.xlog.flattener.PatternFlattener
 import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.backup.NeverBackupStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
-import com.facebook.stetho.Stetho
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.Preferences
 import timber.log.Timber
@@ -15,10 +15,10 @@ import java.io.File
 @Suppress("unused")
 class MainApp : BaseApp() {
 
-    private val preferences: Preferences by instance()
+    val preferences: Preferences by instance()
 
-    @Suppress("SpellCheckingInspection")
-    override fun init() {
+    override fun onCreate() {
+        super.onCreate()
         getExternalFilesDir(null)?.let {
             val folder = File(it, "logs").apply {
                 mkdirs()
@@ -33,19 +33,14 @@ class MainApp : BaseApp() {
                 .build()
             XLog.init(config, filePrinter)
         }
-        Timber.plant(DevTree(preferences.enableLogs))
-        Stetho.initialize(
-            Stetho.newInitializerBuilder(applicationContext)
-                .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(applicationContext))
-                .build()
-        )
-    }
-
-    @Suppress("RedundantOverride")
-    override fun onCreate() {
-        super.onCreate()
-        //FileManager(applicationContext).deleteAllFiles()
+        Timber.plant(LogTree(preferences.enableLogs))
+        if (BuildConfig.DEBUG) {
+            Class.forName("com.facebook.stetho.Stetho")
+                .getDeclaredMethod("initializeWithDefaults", Context::class.java)
+                .invoke(null, applicationContext)
+        }
+        /*FileManager(applicationContext).deleteAllFiles()
         //preferences.clear()
-        //deleteDatabase("app.db")
+        deleteDatabase("app.db")*/
     }
 }

@@ -69,8 +69,8 @@ android {
         }
     }
     lintOptions {
-        //checkReleaseBuilds false
-        //abortOnError false
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 
@@ -83,10 +83,10 @@ andResGuard {
     keepRoot = false
     whiteList = []
     compressFilePattern = [
-            "*.png",
-            "*.jpg",
-            "*.jpeg",
-            "*.gif"
+        "*.png",
+        "*.jpg",
+        "*.jpeg",
+        "*.gif"
     ]
     sevenzip {
         artifact = "com.tencent.mm:SevenZip:${Versions.andresguard}"
@@ -126,8 +126,8 @@ dependencies {
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     devImplementation 'com.elvishew:xlog:1.6.1'
-    debugImplementation "com.facebook.stetho:stetho:${Versions.stetho}"
-    debugImplementation "com.facebook.stetho:stetho-okhttp3:${Versions.stetho}"
+    devImplementation "com.facebook.stetho:stetho:${Versions.stetho}"
+    devImplementation "com.facebook.stetho:stetho-okhttp3:${Versions.stetho}"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

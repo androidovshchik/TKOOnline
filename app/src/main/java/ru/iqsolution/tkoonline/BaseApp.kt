@@ -41,8 +41,11 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
 
     override fun getCameraXConfig() = Camera2Config.defaultConfig()
 
+    abstract fun init()
+
     override fun onCreate() {
         super.onCreate()
+        init()
         if (isOreoPlus()) {
             notificationManager.createNotificationChannel(
                 NotificationChannel(CHANNEL_DEFAULT, CHANNEL_DEFAULT, NotificationManager.IMPORTANCE_LOW).also {
@@ -51,7 +54,6 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
             )
         }
         DateTimeZone.setProvider(ResourceZoneInfoProvider(applicationContext))
-        MidnightWorker.launch(applicationContext)
         Coil.setDefaultImageLoader(ImageLoader(applicationContext) {
             availableMemoryPercentage(0.5)
             bitmapPoolPercentage(0.5)
@@ -73,5 +75,6 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
                 )
                 .build()
         )
+        MidnightWorker.launch(applicationContext)
     }
 }

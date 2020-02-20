@@ -3,7 +3,7 @@ package ru.iqsolution.tkoonline
 import com.elvishew.xlog.XLog
 import timber.log.Timber
 
-class LogTree(enableLogs: Boolean) : Timber.DebugTree() {
+class DevTree(enableLogs: Boolean) : Timber.DebugTree() {
 
     init {
         saveToFile = enableLogs

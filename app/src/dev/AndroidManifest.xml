@@ -4,7 +4,8 @@
     package="ru.iqsolution.tkoonline">
 
     <application
+        android:debuggable="true"
         android:name=".MainApp"
-        tools:ignore="GoogleAppIndexingWarning"/>
+        tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode"/>
 
 </manifest>

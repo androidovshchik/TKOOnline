@@ -17,7 +17,7 @@ external class DialogData {
 
 external interface OS {
 
-    fun runCommand(command: String, s: Success<CommandData>, e: Error)
+    fun runCommand(command: String, s: Success<CommandData?>, e: Error)
 
     fun getEnvar(key: String, s: Success<EnvarData>, e: Error)
 

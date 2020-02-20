@@ -43,3 +43,7 @@
 -dontwarn javax.naming.**
 -dontwarn javax.security.**
 -dontwarn java.beans.**
+
+# stetho
+-keep class com.facebook.stetho.** { *; }
+-dontwarn com.facebook.stetho.**
