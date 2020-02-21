@@ -10,14 +10,18 @@ import android.provider.Settings
 import android.view.*
 import android.widget.FrameLayout
 import org.jetbrains.anko.*
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.login.LoginContract
+import ru.iqsolution.tkoonline.services.AdminManager
 
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {
+
+    private val adminManager: AdminManager by instance()
 
     private var scannerManager: ScannerManager? = null
 
@@ -103,9 +107,11 @@ class QrCodeFragment : BaseFragment() {
             return false
         }
         if (isOreoPlus()) {
-            if (!context.packageManager.canRequestPackageInstalls()) {
-                promptUser("Пожалуйста, разрешите установку обновлений", Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                return false
+            if (!adminManager.isDeviceOwner) {
+                if (!context.packageManager.canRequestPackageInstalls()) {
+                    promptUser("Пожалуйста, разрешите установку обновлений", Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                    return false
+                }
             }
         }
         makeCallback<LoginContract.View> {
