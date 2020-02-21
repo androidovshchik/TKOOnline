@@ -118,8 +118,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         GlobalScope.launch(Dispatchers.Main) {
             try {
                 val response = server.checkVersion()
-                if (response.version.toInt() != BuildConfig.VERSION_CODE) {
-                    updateUrl = "http://192.168.0.11:8000/tkonline.apk"
+                if (response.version.toInt() > BuildConfig.VERSION_CODE) {
+                    updateUrl = response.url
                     reference.get()?.onUpdateAvailable()
                 }
             } catch (e: Throwable) {

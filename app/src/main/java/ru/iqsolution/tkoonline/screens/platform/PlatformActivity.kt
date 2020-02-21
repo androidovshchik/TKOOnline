@@ -112,7 +112,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 return@setOnClickListener
             }
             val errorMessage = when {
-                platform.errors.size <= 0 -> "Зарегистрируйте тип проблемы вместе с фото"
+                platform.errors.size <= 0 -> "Зарегистрируйте хотя бы один тип проблемы с фото"
                 gallery_after.photoEvents.size > 0 -> "Удалите фотографии после уборки или отметьте что КП убрана"
                 else -> null
             }
@@ -135,7 +135,8 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 return@setOnClickListener
             }
             val errorMessage = when {
-                linkedPlatforms.sumBy { it.containerCount } <= 0 -> "Укажите сколько контейнеров было убрано"
+                platform.containerCount <= 0 && (linkedPlatforms.isEmpty() || linkedPlatforms.sumBy { it.containerCount } <= 0) ->
+                    "Укажите сколько контейнеров было убрано"
                 gallery_before.photoEvents.size <= 0 -> "Добавьте хотя бы одно фото до уборки"
                 gallery_after.photoEvents.size <= 0 -> "Добавьте хотя бы одно фото после уборки"
                 else -> null
