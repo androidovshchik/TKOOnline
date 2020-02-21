@@ -115,8 +115,7 @@ class QrCodeFragment : BaseFragment() {
     }
 
     private fun promptUser(message: String, action: String) {
-        alertDialog = alert(message) {
-            isCancelable = false
+        alertDialog = alert(message, "Разрешения") {
             positiveButton("Открыть") {
                 startActivity(Intent(action, Uri.fromParts("package", context?.packageName, null)))
             }

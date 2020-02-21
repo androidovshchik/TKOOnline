@@ -198,8 +198,8 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         toast(if (success) "БД успешно экспортирована" else "Не удалось экспортировать БД")
     }
 
-    override fun showError(e: Throwable?) {
-        super.showError(e)
+    override fun showError(message: CharSequence?) {
+        super.showError(message)
         presenter.reset()
     }
 
