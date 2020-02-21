@@ -6,7 +6,6 @@ import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.IBasePresenter
 import ru.iqsolution.tkoonline.screens.base.IBaseView
-import ru.iqsolution.tkoonline.screens.common.confirm.ConfirmListener
 
 interface PlatformContract {
 
@@ -21,12 +20,14 @@ interface PlatformContract {
         fun savePlatformEvents(platform: PlatformContainers, platforms: List<Platform>)
     }
 
-    interface View : IBaseView, ConfirmListener, GalleryListener {
+    interface View : IBaseView, GalleryListener {
 
         fun onLinkedPlatforms(platforms: List<Platform>)
 
         fun onCleanEvents(event: CleanEventRelated)
 
         fun onPhotoEvents(events: List<PhotoEvent>)
+
+        fun closeDetails(hasCleanChanges: Boolean)
     }
 }

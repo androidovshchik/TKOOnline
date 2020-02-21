@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.core.view.isVisible
 import coil.api.load
 import coil.transform.CircleCropTransformation
 import kotlinx.android.synthetic.main.merge_gallery.view.*
@@ -25,7 +26,7 @@ class GalleryLayout : RelativeLayout {
 
     private var photoType = PhotoType.Default.OTHER
 
-    private val photoEvents = mutableListOf<PhotoEvent>()
+    val photoEvents = mutableListOf<PhotoEvent>()
 
     private var enableShoot = false
 
@@ -118,7 +119,7 @@ class GalleryLayout : RelativeLayout {
             if (diff > 0) {
                 removeViews(photoEvents.size, diff)
             }
-            photo_add.visibility = if (photoEvents.size >= MAX_PHOTO_COUNT) GONE else VISIBLE
+            photo_add.isVisible = photoEvents.size < MAX_PHOTO_COUNT
         }
     }
 

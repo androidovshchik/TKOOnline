@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platform
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
@@ -10,9 +11,7 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.wrapContent
+import org.jetbrains.anko.*
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
@@ -24,7 +23,6 @@ import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
-import ru.iqsolution.tkoonline.screens.common.confirm.ConfirmDialog
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
@@ -47,7 +45,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
 
     private val photoErrors = SimpleArrayMap<Int, String>()
 
-    private var confirmDialog: ConfirmDialog? = null
+    private var alertDialog: AlertDialog? = null
 
     private var hasPhotoChanges = false
 
@@ -72,17 +70,16 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             if (preFinishing) {
                 return@setOnClickListener
             }
-            if (!hasPhotoChanges) {
+            if (hasPhotoChanges) {
+                alertDialog = alert("Все данные и фотографии сделанные ранее не будут отправлены", "Вы уверены?") {
+                    isCancelable = false
+                    cancelButton {}
+                    positiveButton("Выйти") {
+                        closeDetails(false)
+                    }
+                }.show()
+            } else {
                 closeDetails(false)
-                return@setOnClickListener
-            }
-            if (confirmDialog == null) {
-                confirmDialog = ConfirmDialog(this)
-            }
-            confirmDialog?.let {
-                if (!it.isShowing) {
-                    it.show()
-                }
             }
         }
         toolbar_title.text = platform.address
@@ -115,20 +112,43 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             if (preFinishing) {
                 return@setOnClickListener
             }
-            preFinishing = true
-            platform.reset()
-            presenter.savePlatformEvents(platform, linkedPlatforms.apply {
-                forEach {
-                    it.reset()
-                }
-            })
+            val errorMessage = when {
+                platform.errors.size <= 0 -> "Зарегистрируйте тип проблемы вместе с фото"
+                gallery_after.photoEvents.size > 0 -> "Удалите фотографии после уборки или отметьте что КП убрана"
+                else -> null
+            }
+            if (errorMessage != null) {
+                alertDialog = alert(errorMessage, "Ошибка") {
+                    okButton {}
+                }.show()
+            } else {
+                preFinishing = true
+                platform.reset()
+                presenter.savePlatformEvents(platform, linkedPlatforms.apply {
+                    forEach {
+                        it.reset()
+                    }
+                })
+            }
         }
         platform_cleaned.setOnClickListener {
             if (preFinishing) {
                 return@setOnClickListener
             }
-            preFinishing = true
-            presenter.savePlatformEvents(platform, linkedPlatforms)
+            val errorMessage = when {
+                linkedPlatforms.sumBy { it.containerCount } <= 0 -> "Укажите сколько контейнеров было убрано"
+                gallery_before.photoEvents.size <= 0 -> "Добавьте хотя бы одно фото до уборки"
+                gallery_after.photoEvents.size <= 0 -> "Добавьте хотя бы одно фото после уборки"
+                else -> null
+            }
+            if (errorMessage != null) {
+                alertDialog = alert(errorMessage, "Ошибка") {
+                    okButton {}
+                }.show()
+            } else {
+                preFinishing = true
+                presenter.savePlatformEvents(platform, linkedPlatforms)
+            }
         }
         attach(ContainerLayout(applicationContext).apply {
             initContainer(platform)
@@ -240,7 +260,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     }
 
     override fun onDestroy() {
-        confirmDialog?.dismiss()
+        alertDialog?.dismiss()
         platform_map.release()
         platform_content.children.forEach {
             if (it is ContainerLayout) {
