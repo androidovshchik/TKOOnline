@@ -4,33 +4,39 @@ package ru.iqsolution.tkoonline.screens.login
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
+import android.app.AlertDialog
 import android.app.FragmentTransaction
 import android.os.Bundle
 import android.view.ViewGroup
 import coil.api.load
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
-import org.jetbrains.anko.activityManager
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.topPadding
+import org.jetbrains.anko.*
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
-import ru.iqsolution.tkoonline.services.TelemetryService
+import ru.iqsolution.tkoonline.services.AdminManager
 import ru.iqsolution.tkoonline.services.workers.DeleteWorker
+import ru.iqsolution.tkoonline.services.workers.UpdateWorker
 
 class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.View {
 
     override val presenter: LoginPresenter by instance()
 
+    private val adminManager: AdminManager by instance()
+
+    private val waitDialog: WaitDialog by instance()
+
     private val settingsDialog = SettingsDialog()
 
     private val passwordDialog = PasswordDialog()
+
+    private var alertDialog: AlertDialog? = null
 
     private var hasPrompted = false
 
@@ -62,10 +68,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
      * Here permissions are granted
      */
     override fun onQrCode(value: String) {
-        if (activityManager.isRunning<TelemetryService>()) {
-            return
-        }
-        presenter.login(value)
+        presenter.login(applicationContext, value)
     }
 
     override fun openDialog() {
@@ -99,10 +102,6 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         }
     }
 
-    override fun exportDb() {
-        presenter.export(applicationContext)
-    }
-
     override fun enterKioskMode() {
         hasPrompted = false
         preferences.enableLock = true
@@ -125,7 +124,43 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         finish()
     }
 
-    override fun onExported(success: Boolean) {
+    override fun onCanUpdate() {
+        presenter.checkUpdates()
+    }
+
+    override fun onUpdateAvailable() {
+        alertDialog = alert("Обновление", "Доступна новая версия приложения") {
+            cancelButton {}
+            positiveButton(if (adminManager.isDeviceOwner) "Установить" else "Скачать") {
+                waitDialog.show()
+                presenter.installUpdate(applicationContext)
+            }
+        }.show()
+    }
+
+    override fun cancelWork() {
+        UpdateWorker.cancel(applicationContext)
+    }
+
+    override fun onUpdateEnd(success: Boolean) {
+        if (success) {
+            waitDialog.dismiss()
+        } else {
+            alertDialog = alert("Не удалось скачать обновление для приложения", "Ошибка обновления") {
+                okButton {}
+                neutralPressed("Повторить") {
+                    waitDialog.show()
+                    presenter.installUpdate(applicationContext)
+                }
+            }.show()
+        }
+    }
+
+    override fun exportDb() {
+        presenter.exportDb(applicationContext)
+    }
+
+    override fun onExportedDb(success: Boolean) {
         toast(if (success) "БД успешно экспортирована" else "Не удалось экспортировать БД")
     }
 
@@ -147,6 +182,12 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
             finishAffinity()
         }
+    }
+
+    override fun onDestroy() {
+        alertDialog?.dismiss()
+        waitDialog.dismiss()
+        super.onDestroy()
     }
 
     @SuppressLint("CommitTransaction")
