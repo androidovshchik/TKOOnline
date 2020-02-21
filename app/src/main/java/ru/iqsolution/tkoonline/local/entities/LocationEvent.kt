@@ -87,7 +87,7 @@ class LocationEvent() : SendEvent {
                 satellites = it.satellites
             }
             speed = basePoint.lastSpeed
-            direction = basePoint.currentDirection?.roundToInt()
+            direction = basePoint.currentDirection?.roundToInt() ?: 0
             mileage = distance
         }
     }
