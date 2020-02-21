@@ -102,7 +102,10 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
     override fun onChanged(t: WorkInfo?) {
         when (t?.state) {
             WorkInfo.State.SUCCEEDED -> {
-                reference.get()?.onLoggedOut()
+                reference.get()?.onLoggedOut(true)
+            }
+            WorkInfo.State.FAILED -> {
+                reference.get()?.onLoggedOut(false)
             }
             WorkInfo.State.CANCELLED -> {
                 observer?.removeObserver(this)

@@ -86,9 +86,8 @@
         android:layout_marginStart="3dp"
         android:layout_marginBottom="10dp"
         android:layout_below="@+id/dialog_telemetry_server"
-        android:textSize="15sp"
+        android:textSize="14sp"
         android:textColor="@color/colorAccent"
-        android:textAllCaps="false"
         android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"
         tools:text="Разблокировать"/>
@@ -102,9 +101,8 @@
         android:layout_below="@+id/dialog_telemetry_server"
         android:layout_alignParentEnd="true"
         android:text="Сохранить"
-        android:textSize="15sp"
+        android:textSize="14sp"
         android:textColor="@color/colorAccent"
-        android:textAllCaps="false"
         android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"/>
 

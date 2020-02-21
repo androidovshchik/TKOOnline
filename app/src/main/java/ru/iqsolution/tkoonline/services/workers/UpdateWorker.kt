@@ -30,6 +30,7 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
 
     override fun doWork(): Result {
         val url = inputData.getString(PARAM_URL) ?: return Result.failure()
+        val file = File(fileManager.externalDir, "app.apk")
         try {
             val request = Request.Builder()
                 .url(url)
@@ -58,12 +59,11 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
                         }
                         return Result.success()
                     } else {
-                        val file = File(fileManager.externalDir, "app.apk")
-                        val result = fileManager.writeFile(file) {
+                        val hasWritten = fileManager.writeFile(file) {
                             body.byteStream().copyTo(it)
                             it.flush()
                         }
-                        if (result) {
+                        if (hasWritten) {
                             applicationContext.startActivity(Intent(Intent.ACTION_VIEW).apply {
                                 type = "application/vnd.android.package-archive"
                                 data = FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", file)
@@ -76,6 +76,7 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
             }
         } catch (e: Throwable) {
             Timber.e(e)
+            fileManager.deleteFile(file)
         }
         return if (runAttemptCount >= 2) Result.failure() else Result.retry()
     }

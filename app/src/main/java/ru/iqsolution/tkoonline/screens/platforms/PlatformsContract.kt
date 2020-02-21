@@ -36,6 +36,6 @@ interface PlatformsContract {
 
         fun highlightItem(kpId: Int)
 
-        fun onLoggedOut()
+        fun onLoggedOut(success: Boolean)
     }
 }

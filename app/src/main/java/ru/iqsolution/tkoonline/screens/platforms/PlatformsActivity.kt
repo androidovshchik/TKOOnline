@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.collection.SimpleArrayMap
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platforms.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.okButton
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
@@ -43,11 +46,13 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
 
     private val platformsAdapter: PlatformsAdapter by instance()
 
+    private val waitDialog: WaitDialog by instance()
+
+    private var alertDialog: AlertDialog? = null
+
     private val photoTypes = mutableListOf<PhotoType>()
 
     private val photoErrors = SimpleArrayMap<Int, String>()
-
-    private var waitDialog: WaitDialog? = null
 
     private var refreshTime: DateTime? = null
 
@@ -77,7 +82,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             if (platformClicked) {
                 return@setOnClickListener
             }
-            showLoading()
+            waitDialog.show()
             presenter.logout(applicationContext)
         }
         if (preferences.allowPhotoRefKp) {
@@ -213,25 +218,25 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         TelemetryService.start(applicationContext, EXTRA_TELEMETRY_TASK to true)
     }
 
-    override fun onLoggedOut() {
-        startActivityNoop<LoginActivity>()
-        finish()
+    override fun onLoggedOut(success: Boolean) {
+        waitDialog.dismiss()
+        if (success) {
+            startActivityNoop<LoginActivity>()
+            finish()
+        } else {
+            alertDialog = alert("Не удалось отправить некоторые данные", "Ошибка отправки") {
+                okButton {}
+                neutralPressed("Завершить") {
+                    startActivityNoop<LoginActivity>()
+                    finish()
+                }
+            }.show()
+        }
     }
 
     override fun showError(e: Throwable?) {
         super.showError(e)
         platforms_refresh.isRefreshing = false
-    }
-
-    private fun showLoading() {
-        if (waitDialog == null) {
-            waitDialog = WaitDialog(this)
-        }
-        waitDialog?.let {
-            if (!it.isShowing) {
-                it.show()
-            }
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -254,7 +259,8 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
     }
 
     override fun onDestroy() {
-        waitDialog?.dismiss()
+        alertDialog?.dismiss()
+        waitDialog.dismiss()
         platforms_map.release()
         super.onDestroy()
     }
