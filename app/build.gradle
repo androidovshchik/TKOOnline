@@ -56,7 +56,7 @@ android {
     }
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "tkonline-${variant.versionName}-${variant.buildType.name}${variant.versionCode}.apk"
+            outputFileName = "tkonline-${variant.productFlavors[0].name}-${variant.buildType.name}${variant.versionCode}.apk"
         }
         variant.assembleProvider.configure { assemble ->
             assemble.doLast {

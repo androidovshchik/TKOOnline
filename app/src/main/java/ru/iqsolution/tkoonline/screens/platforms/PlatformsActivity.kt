@@ -82,8 +82,16 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             if (platformClicked) {
                 return@setOnClickListener
             }
-            waitDialog.show()
-            presenter.logout(applicationContext)
+            alertDialog = alert("Загрузить данные на сервер?", "Выход") {
+                okButton {
+                    waitDialog.show()
+                    presenter.logout(applicationContext)
+                }
+                neutralPressed("Пропустить") {
+                    startActivityNoop<LoginActivity>()
+                    finish()
+                }
+            }.show()
         }
         if (preferences.allowPhotoRefKp) {
             platforms_placeholder.isVisible = true
@@ -226,7 +234,11 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         } else {
             alertDialog = alert("Не удалось отправить часть данных", "Ошибка отправки") {
                 okButton {}
-                neutralPressed("Завершить") {
+                neutralPressed("Повторить") {
+                    waitDialog.show()
+                    presenter.logout(applicationContext)
+                }
+                negativeButton("Завершить") {
                     startActivityNoop<LoginActivity>()
                     finish()
                 }
