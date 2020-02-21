@@ -72,7 +72,6 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             }
             if (hasPhotoChanges) {
                 alertDialog = alert("Все данные и фотографии сделанные ранее не будут отправлены", "Вы уверены?") {
-                    isCancelable = false
                     cancelButton {}
                     positiveButton("Выйти") {
                         closeDetails(false)
@@ -109,7 +108,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             )
         }
         platform_not_cleaned.setOnClickListener {
-            if (preFinishing) {
+            if (preFinishing || !hasLatestPhotos) {
                 return@setOnClickListener
             }
             val errorMessage = when {
@@ -118,7 +117,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 else -> null
             }
             if (errorMessage != null) {
-                alertDialog = alert(errorMessage, "Ошибка") {
+                alertDialog = alert(errorMessage, "Ошибка заполнения") {
                     okButton {}
                 }.show()
             } else {
@@ -132,7 +131,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             }
         }
         platform_cleaned.setOnClickListener {
-            if (preFinishing) {
+            if (preFinishing || !hasLatestPhotos) {
                 return@setOnClickListener
             }
             val errorMessage = when {
@@ -142,7 +141,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 else -> null
             }
             if (errorMessage != null) {
-                alertDialog = alert(errorMessage, "Ошибка") {
+                alertDialog = alert(errorMessage, "Ошибка заполнения") {
                     okButton {}
                 }.show()
             } else {

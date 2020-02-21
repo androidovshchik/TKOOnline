@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.login.qrcode
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -21,6 +22,8 @@ class QrCodeFragment : BaseFragment() {
     private var scannerManager: ScannerManager? = null
 
     private lateinit var cameraView: SurfaceView
+
+    private var alertDialog: AlertDialog? = null
 
     private var maxSize = 0
 
@@ -112,7 +115,7 @@ class QrCodeFragment : BaseFragment() {
     }
 
     private fun promptUser(message: String, action: String) {
-        alert(message) {
+        alertDialog = alert(message) {
             isCancelable = false
             positiveButton("Открыть") {
                 startActivity(Intent(action, Uri.fromParts("package", context?.packageName, null)))
@@ -143,6 +146,7 @@ class QrCodeFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
+        alertDialog?.dismiss()
         scannerManager?.destroy()
         super.onDestroyView()
     }

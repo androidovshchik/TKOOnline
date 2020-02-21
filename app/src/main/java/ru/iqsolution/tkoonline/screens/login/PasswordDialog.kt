@@ -6,7 +6,8 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.dialog_password.*
+import androidx.core.view.isVisible
+import kotlinx.android.synthetic.main.dialog_input.*
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.setMaxLength
@@ -21,14 +22,16 @@ class PasswordDialog : BaseDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(R.layout.dialog_password, container, false)
+        return inflater.inflate(R.layout.dialog_input, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val preferences = Preferences(context)
         val password = preferences.lockPassword
         var time = preferences.blockTime
-        dialog_password.apply {
+        dialog_close.isVisible = true
+        dialog_title.text = "Пароль"
+        dialog_input.apply {
             setOnlyNumbers()
             setMaxLength(4)
             if (password != null) {
@@ -38,8 +41,9 @@ class PasswordDialog : BaseDialogFragment() {
         if (SystemClock.elapsedRealtime() - time < PASSWORD_RETRY) {
             retryLater()
         }
-        dialog_accept.setOnClickListener {
-            val input = dialog_password.text.toString()
+        dialog_action.text = "Подтвердить"
+        dialog_action.setOnClickListener {
+            val input = dialog_input.text.toString()
             dialog_error.text = ""
             when {
                 SystemClock.elapsedRealtime() - time < PASSWORD_RETRY -> retryLater()
@@ -71,12 +75,12 @@ class PasswordDialog : BaseDialogFragment() {
     }
 
     private fun retryLater() {
-        dialog_password.setText("")
+        dialog_input.setText("")
         dialog_error.text = "Попробуйте позже"
     }
 
     private fun onPrompted(afterSetup: Boolean) {
-        dialog_password.setText("")
+        dialog_input.setText("")
         makeCallback<SettingsListener> {
             if (afterSetup) {
                 enterKioskMode()
