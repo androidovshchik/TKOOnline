@@ -15,6 +15,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.BuildConfig
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 val remoteModule = Kodein.Module("remote") {
 
@@ -29,6 +30,8 @@ val remoteModule = Kodein.Module("remote") {
 
     bind<OkHttpClient>() with singleton {
         OkHttpClient.Builder().apply {
+            readTimeout(30, TimeUnit.SECONDS)
+            writeTimeout(30, TimeUnit.SECONDS)
             addInterceptor(DomainInterceptor(instance()))
             addInterceptor(TagInterceptor())
             addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
