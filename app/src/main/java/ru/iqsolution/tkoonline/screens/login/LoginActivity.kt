@@ -6,8 +6,10 @@ import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.AlertDialog
 import android.app.FragmentTransaction
+import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.core.content.FileProvider
 import coil.api.load
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
@@ -16,6 +18,7 @@ import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
@@ -29,6 +32,8 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     override val presenter: LoginPresenter by instance()
 
     private val adminManager: AdminManager by instance()
+
+    private val fileManager: FileManager by instance()
 
     private val waitDialog: WaitDialog by instance()
 
@@ -68,7 +73,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
      * Here permissions are granted
      */
     override fun onQrCode(value: String) {
-        presenter.login(applicationContext, value)
+        presenter.login(value)
     }
 
     override fun openDialog() {
@@ -129,13 +134,23 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     }
 
     override fun onUpdateAvailable() {
-        alertDialog = alert("Обновление", "Доступна новая версия приложения") {
-            cancelButton {}
-            positiveButton(if (adminManager.isDeviceOwner) "Установить" else "Скачать") {
-                waitDialog.show()
-                presenter.installUpdate(applicationContext)
-            }
-        }.show()
+        alertDialog = if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_LOCKED) {
+            alert("Требуется ", "Обновление") {
+                okButton {}
+                positiveButton(if (!adminManager.isDeviceOwner) "Установить" else "Скачать") {
+                    waitDialog.show()
+                    presenter.installUpdate(applicationContext)
+                }
+            }.show()
+        } else {
+            alert("Доступна новая версия приложения", "Обновление") {
+                cancelButton {}
+                positiveButton(if (!adminManager.isDeviceOwner) "Установить" else "Скачать") {
+                    waitDialog.show()
+                    presenter.installUpdate(applicationContext)
+                }
+            }.show()
+        }
     }
 
     override fun cancelWork() {
@@ -143,10 +158,30 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     }
 
     override fun onUpdateEnd(success: Boolean) {
-        if (success) {
-            waitDialog.dismiss()
+        waitDialog.dismiss()
+        alertDialog = if (success) {
+            if (!adminManager.isDeviceOwner) {
+                alert("Сейчас приложение будет закрыто", "Обновление") {
+                    isCancelable = false
+                }.show()
+            } else {
+                alert("Все готово для установки", "Обновление") {
+                    cancelButton {}
+                    positiveButton("Установить") {
+                        startActivity(Intent(Intent.ACTION_VIEW).apply {
+                            type = "application/vnd.android.package-archive"
+                            data = FileProvider.getUriForFile(
+                                applicationContext,
+                                "$packageName.fileprovider",
+                                fileManager.apkFile
+                            )
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        })
+                    }
+                }.show()
+            }
         } else {
-            alertDialog = alert("Не удалось скачать обновление для приложения", "Ошибка обновления") {
+            alert("Не удалось скачать обновление", "Ошибка обновления") {
                 okButton {}
                 neutralPressed("Повторить") {
                     waitDialog.show()

@@ -34,6 +34,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     private val gson: Gson by instance()
 
+    private val activityManager = context.activityManager
+
     private var observer: LiveData<WorkInfo>? = null
 
     private var qrCodeJson: String? = null
@@ -42,13 +44,13 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     private var isExportingDb = false
 
-    override fun login(context: Context, data: String) {
+    override fun login(data: String) {
         // ignoring duplicated values
         if (data == qrCodeJson) {
             return
         }
         // waiting until service will finish job
-        if (context.activityManager.isRunning<TelemetryService>()) {
+        if (activityManager.isRunning<TelemetryService>()) {
             return
         }
         val qrCode = try {
@@ -116,8 +118,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         GlobalScope.launch(Dispatchers.Main) {
             try {
                 val response = server.checkVersion()
-                if (response.version.toInt() > BuildConfig.VERSION_CODE) {
-                    updateUrl = response.url
+                if (response.version.toInt() != BuildConfig.VERSION_CODE) {
+                    updateUrl = "http://192.168.0.11:8000/tkonline.apk"
                     reference.get()?.onUpdateAvailable()
                 }
             } catch (e: Throwable) {

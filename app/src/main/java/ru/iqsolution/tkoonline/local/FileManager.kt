@@ -33,6 +33,8 @@ class FileManager(context: Context) {
         mkdirs()
     }
 
+    val apkFile = File(externalDir, "app.apk")
+
     fun getRandomName(): String {
         return "${UUID.randomUUID()}.jpg"
     }

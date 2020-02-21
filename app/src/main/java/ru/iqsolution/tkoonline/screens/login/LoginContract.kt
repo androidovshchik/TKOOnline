@@ -12,7 +12,7 @@ interface LoginContract {
 
     interface Presenter : IBasePresenter<View>, Observer<WorkInfo> {
 
-        fun login(context: Context, data: String)
+        fun login(data: String)
 
         fun reset()
 

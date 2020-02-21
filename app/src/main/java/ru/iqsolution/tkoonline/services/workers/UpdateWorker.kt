@@ -15,7 +15,6 @@ import ru.iqsolution.tkoonline.extensions.pendingReceiverFor
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.services.AdminManager
 import timber.log.Timber
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
@@ -28,7 +27,6 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
 
     override fun doWork(): Result {
         val url = inputData.getString(PARAM_URL) ?: return Result.failure()
-        val file = File(fileManager.externalDir, "app.apk")
         try {
             val request = Request.Builder()
                 .url(url)
@@ -39,6 +37,10 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
             if (response.isSuccessful) {
                 val body = response.body
                 if (body != null) {
+                    if (body.contentType().toString() != "application/vnd.android.package-archive") {
+                        Timber.e("Invalid mime type of apk ${body.contentType()}")
+                        return Result.failure()
+                    }
                     if (adminManager.isDeviceOwner) {
                         val packageName = applicationContext.packageName
                         val packageInstaller = applicationContext.packageManager.packageInstaller
@@ -57,7 +59,7 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
                         }
                         return Result.success()
                     } else {
-                        val hasWritten = fileManager.writeFile(file) {
+                        val hasWritten = fileManager.writeFile(fileManager.apkFile) {
                             body.byteStream().copyTo(it)
                             it.flush()
                         }
@@ -69,7 +71,7 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
             }
         } catch (e: Throwable) {
             Timber.e(e)
-            fileManager.deleteFile(file)
+            fileManager.deleteFile(fileManager.apkFile)
         }
         return if (runAttemptCount >= 2) Result.failure() else Result.retry()
     }
