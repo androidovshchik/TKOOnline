@@ -36,7 +36,7 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
         preferences.blockingBulk {
             logout()
         }
-        applicationContext.apply {
+        applicationContext.run {
             if (activityManager.getActivities(packageName) > 0) {
                 startActivity(intentFor<LockActivity>().apply {
                     if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
@@ -44,7 +44,8 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
                     } else {
                         clearTop()
                     }
-                }.newTask())
+                    newTask()
+                })
             }
         }
         try {
