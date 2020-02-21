@@ -2,7 +2,6 @@ package ru.iqsolution.tkoonline.screens
 
 import android.app.Activity
 import android.app.ActivityManager
-import android.os.Bundle
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.toast
 import org.kodein.di.KodeinAware
@@ -17,14 +16,9 @@ class LockActivity : Activity(), KodeinAware {
 
     override val kodein by kodein()
 
-    val preferences: Preferences by instance()
+    private val preferences: Preferences by instance()
 
-    private lateinit var adminManager: AdminManager
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        adminManager = AdminManager(applicationContext)
-    }
+    private val adminManager: AdminManager by instance()
 
     override fun onStart() {
         super.onStart()

@@ -90,7 +90,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             val locationCount = db.locationDao().getSendCount()
             if (locationCount > 0) {
                 // awaiting telemetry service
-                return Result.retry()
+                return if (runAttemptCount >= 2) Result.failure() else Result.retry()
             }
             try {
                 server.logout(preferences.authHeader).execute()
@@ -100,7 +100,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             }
         }
         return when {
-            hasErrors -> Result.retry()
+            hasErrors -> if (runAttemptCount >= 2) Result.failure() else Result.retry()
             else -> Result.success()
         }
     }

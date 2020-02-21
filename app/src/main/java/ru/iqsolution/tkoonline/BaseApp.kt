@@ -23,6 +23,7 @@ import org.kodein.di.generic.provider
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.local.localModule
 import ru.iqsolution.tkoonline.remote.remoteModule
+import ru.iqsolution.tkoonline.services.serviceModule
 import ru.iqsolution.tkoonline.services.workers.MidnightWorker
 
 @Suppress("unused")
@@ -37,6 +38,8 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
         import(localModule)
 
         import(remoteModule)
+
+        import(serviceModule)
     }
 
     override fun getCameraXConfig() = Camera2Config.defaultConfig()
