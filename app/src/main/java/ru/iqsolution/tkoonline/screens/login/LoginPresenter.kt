@@ -22,6 +22,7 @@ import ru.iqsolution.tkoonline.models.QrCode
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.services.TelemetryService
+import ru.iqsolution.tkoonline.services.workers.UpdateWorker
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -37,7 +38,9 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     private var qrCodeJson: String? = null
 
-    private var isExporting = false
+    private var updateUrl: String? = null
+
+    private var isExportingDb = false
 
     override fun login(context: Context, data: String) {
         // ignoring duplicated values
@@ -106,38 +109,53 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
     }
 
     override fun checkUpdates() {
+        if (updateUrl != null) {
+            return
+        }
+        updateUrl = ""
         GlobalScope.launch(Dispatchers.Main) {
             try {
                 val response = server.checkVersion()
-                if (response.version > BuildConfig.VERSION_CODE) {
+                if (response.version.toInt() > BuildConfig.VERSION_CODE) {
+                    updateUrl = response.url
                     reference.get()?.onUpdateAvailable()
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
+                updateUrl = null
             }
         }
     }
 
-    override fun export(context: Context) {
-        if (isExporting) {
+    override fun installUpdate(context: Context) {
+        observer = UpdateWorker.launch(context, updateUrl ?: return).also {
+            it.observeForever(this)
+        }
+    }
+
+    override fun exportDb(context: Context) {
+        if (isExportingDb) {
             return
         }
-        isExporting = true
+        isExportingDb = true
         val contextRef = WeakReference(context)
         GlobalScope.launch(Dispatchers.Main) {
             val result = withContext(Dispatchers.IO) {
                 db.baseDao().checkpoint(SimpleSQLiteQuery("pragma wal_checkpoint(full)"))
                 fileManager.copyDb(contextRef.get())
             }
-            reference.get()?.onExported(result)
-            isExporting = false
+            reference.get()?.onExportedDb(result)
+            isExportingDb = false
         }
     }
 
     override fun onChanged(t: WorkInfo?) {
         when (t?.state) {
             WorkInfo.State.SUCCEEDED -> {
-
+                reference.get()?.onUpdateEnd(true)
+            }
+            WorkInfo.State.FAILED -> {
+                reference.get()?.onUpdateEnd(false)
             }
             WorkInfo.State.CANCELLED -> {
                 observer?.removeObserver(this)

@@ -5,6 +5,7 @@ import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
 import ru.iqsolution.tkoonline.screens.base.IBasePresenter
 import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.screens.common.wait.WaitListener
 import ru.iqsolution.tkoonline.screens.login.qrcode.ScannerListener
 
 interface LoginContract {
@@ -17,17 +18,21 @@ interface LoginContract {
 
         fun checkUpdates()
 
-        fun export(context: Context)
+        fun installUpdate(context: Context)
+
+        fun exportDb(context: Context)
     }
 
-    interface View : IBaseView, ScannerListener, SettingsListener {
-
-        fun onExported(success: Boolean)
+    interface View : IBaseView, ScannerListener, SettingsListener, WaitListener {
 
         fun onLoggedIn()
 
         fun onCanUpdate()
 
         fun onUpdateAvailable()
+
+        fun onUpdateEnd(success: Boolean)
+
+        fun onExportedDb(success: Boolean)
     }
 }

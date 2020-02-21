@@ -224,7 +224,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             startActivityNoop<LoginActivity>()
             finish()
         } else {
-            alertDialog = alert("Не удалось отправить некоторые данные", "Ошибка отправки") {
+            alertDialog = alert("Не удалось отправить часть данных", "Ошибка отправки") {
                 okButton {}
                 neutralPressed("Завершить") {
                     startActivityNoop<LoginActivity>()
