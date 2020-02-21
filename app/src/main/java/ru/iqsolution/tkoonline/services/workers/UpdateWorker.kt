@@ -9,8 +9,9 @@ import androidx.lifecycle.LiveData
 import androidx.work.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.extensions.cancelAll
+import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.extensions.pendingReceiverFor
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.services.AdminManager
@@ -27,6 +28,9 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
 
     override fun doWork(): Result {
         val url = inputData.getString(PARAM_URL) ?: return Result.failure()
+        if (!applicationContext.connectivityManager.isConnected) {
+            return Result.failure()
+        }
         try {
             val request = Request.Builder()
                 .url(url)
@@ -74,11 +78,6 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
             fileManager.deleteFile(fileManager.apkFile)
         }
         return if (runAttemptCount >= 2) Result.failure() else Result.retry()
-    }
-
-    override fun onStopped() {
-        val url = inputData.getString(PARAM_URL)
-        client.cancelAll(url)
     }
 
     companion object {

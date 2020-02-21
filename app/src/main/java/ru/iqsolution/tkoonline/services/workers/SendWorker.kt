@@ -10,10 +10,12 @@ import androidx.work.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.extensions.cancelAll
+import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
@@ -39,6 +41,9 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
     override fun doWork(): Result {
         var hasErrors = false
         val exit = inputData.getBoolean(PARAM_EXIT, false)
+        if (!applicationContext.connectivityManager.isConnected) {
+            return Result.failure()
+        }
         val cleanEvents = db.cleanDao().getSendEvents()
         cleanEvents.forEach {
             try {

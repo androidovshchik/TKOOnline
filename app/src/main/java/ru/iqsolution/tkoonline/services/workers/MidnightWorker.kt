@@ -12,7 +12,6 @@ import org.jetbrains.anko.*
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.extensions.cancelAll
 import ru.iqsolution.tkoonline.extensions.getActivities
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.Server
@@ -54,10 +53,6 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
             Timber.e(e)
         }
         return Result.success()
-    }
-
-    override fun onStopped() {
-        client.cancelAll("logout")
     }
 
     companion object {
