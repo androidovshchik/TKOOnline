@@ -135,17 +135,16 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     override fun onUpdateAvailable() {
         alertDialog = if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_LOCKED) {
-            alert("Требуется ", "Обновление") {
-                okButton {}
-                positiveButton(if (!adminManager.isDeviceOwner) "Установить" else "Скачать") {
-                    waitDialog.show()
-                    presenter.installUpdate(applicationContext)
+            alert("Для установки требуется разблокировка", "Обновление") {
+                cancelButton {}
+                positiveButton("Продолжить") {
+                    openPasswordDialog()
                 }
             }.show()
         } else {
             alert("Доступна новая версия приложения", "Обновление") {
                 cancelButton {}
-                positiveButton(if (!adminManager.isDeviceOwner) "Установить" else "Скачать") {
+                positiveButton(if (adminManager.isDeviceOwner) "Установить" else "Скачать") {
                     waitDialog.show()
                     presenter.installUpdate(applicationContext)
                 }
@@ -160,7 +159,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     override fun onUpdateEnd(success: Boolean) {
         waitDialog.dismiss()
         alertDialog = if (success) {
-            if (!adminManager.isDeviceOwner) {
+            if (adminManager.isDeviceOwner) {
                 alert("Сейчас приложение будет закрыто", "Обновление") {
                     isCancelable = false
                 }.show()
