@@ -109,7 +109,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                 DEFAULT_PORT
             }
         }
-        val executor = Executors.newScheduledThreadPool(1)
+        val executor = Executors.newSingleThreadScheduledExecutor()
         timer = executor.scheduleAtFixedRate({
             // background thread here
             if (!checkActivity()) {
