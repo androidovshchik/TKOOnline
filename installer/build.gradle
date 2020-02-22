@@ -23,6 +23,7 @@ kotlinFrontend {
     npm {
         dependency "bootstrap"
         dependency "bootbox"
+        dependency "axios"
         devDependency "concat"
         devDependency "terser-webpack-plugin"
     }

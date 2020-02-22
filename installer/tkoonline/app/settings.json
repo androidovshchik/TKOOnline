@@ -1,7 +1,7 @@
 {
-    "appname": "TKOnline",
-    "appport": "0",
-    "mode": "window",
+    "appname": "TKOOnline",
+    "appport": "8080",
+    "mode": "browser",
     "window": {
         "width": "600",
         "height": "480",
