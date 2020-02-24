@@ -6,7 +6,7 @@ import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
-class Preferences(context: Context) : KotprefModel(context), ThreadStorage, Location<Float> {
+class Preferences(context: Context) : KotprefModel(context), MemoryStorage, Location<Float> {
 
     override val kotprefName: String = "preferences"
 
@@ -103,6 +103,7 @@ class Preferences(context: Context) : KotprefModel(context), ThreadStorage, Loca
      */
     override fun logout() {
         super.logout()
+        accessToken = null
         expiresWhen = null
         allowPhotoRefKp = false
         serverTime = null
@@ -111,6 +112,7 @@ class Preferences(context: Context) : KotprefModel(context), ThreadStorage, Loca
         queName = null
         carId = 0
         locationTime = null
+        tokenId = 0L
         enableLight = false
     }
 }

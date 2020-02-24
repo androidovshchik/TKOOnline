@@ -2,15 +2,15 @@ package ru.iqsolution.tkoonline.services.telemetry
 
 import androidx.annotation.UiThread
 import com.chibatching.kotpref.bulk
+import ru.iqsolution.tkoonline.local.MemoryStorage
 import ru.iqsolution.tkoonline.local.Preferences
-import ru.iqsolution.tkoonline.local.ThreadStorage
 
-class PreferenceHolder : ThreadStorage {
+class PreferenceHolder : MemoryStorage {
 
-    @Volatile
+    // Unused
     override var accessToken: String? = null
 
-    @Volatile
+    // Only read and doesn't update
     override var tokenId = 0L
 
     @Volatile
@@ -21,7 +21,6 @@ class PreferenceHolder : ThreadStorage {
 
     @UiThread
     fun init(preferences: Preferences) {
-        accessToken = preferences.accessToken
         tokenId = preferences.tokenId
         mileage = preferences.mileage
         packageId = preferences.packageId
@@ -31,8 +30,6 @@ class PreferenceHolder : ThreadStorage {
     fun save(preferences: Preferences) {
         let {
             preferences.bulk {
-                accessToken = it.accessToken
-                tokenId = it.tokenId
                 mileage = it.mileage
                 packageId = it.packageId
             }
