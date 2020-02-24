@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package ru.iqsolution.tkoonline.services
+package ru.iqsolution.tkoonline.services.telemetry
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.IBinder
-import android.os.PowerManager
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -22,7 +21,10 @@ import com.rabbitmq.client.ConnectionFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.*
+import org.jetbrains.anko.activityManager
+import org.jetbrains.anko.connectivityManager
+import org.jetbrains.anko.startService
+import org.jetbrains.anko.stopService
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
@@ -33,6 +35,8 @@ import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.BasePoint
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.models.TelemetryState
+import ru.iqsolution.tkoonline.services.BaseService
+import ru.iqsolution.tkoonline.services.LocationManager
 import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -50,17 +54,15 @@ import kotlin.math.roundToInt
 // https://www.rabbitmq.com/api-guide.html
 class TelemetryService : BaseService(), TelemetryListener {
 
-    val db: Database by instance()
+    private val db: Database by instance()
 
-    val preferences: Preferences by instance()
+    private val preferences: Preferences by instance()
 
-    val gson: Gson by instance()
+    private val gson: Gson by instance()
 
     private lateinit var locationManager: LocationManager
 
     private lateinit var broadcastManager: LocalBroadcastManager
-
-    private var wakeLock: PowerManager.WakeLock? = null
 
     private var timer: ScheduledFuture<*>? = null
 
@@ -69,6 +71,8 @@ class TelemetryService : BaseService(), TelemetryListener {
     private var connection: Connection? = null
 
     private var channel: Channel? = null
+
+    private val preferenceHolder = PreferenceHolder()
 
     @Volatile
     private var isRunning = false
@@ -85,6 +89,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         return null
     }
 
+    @Suppress("ConstantConditionIf")
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
@@ -123,7 +128,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                 if (locationDelay > LOCATION_MAX_DELAY) {
                     lastEventTime = null
                     basePoint = null
-                    if (BuildConfig.DEBUG) {
+                    if (!BuildConfig.PROD) {
                         bgToast("Не удается определить местоположение")
                     }
                     return@addEventSync null
@@ -226,15 +231,6 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
-    @SuppressLint("WakelockTimeout")
-    private fun acquireWakeLock() {
-        if (wakeLock == null) {
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, javaClass.name).apply {
-                acquire()
-            }
-        }
-    }
-
     override fun onLocationStart(enabled: Boolean, ttffMillis: Int) {
         if (!enabled || ttffMillis > 0) {
             locationCounter.set(0L)
@@ -273,12 +269,12 @@ class TelemetryService : BaseService(), TelemetryListener {
                         val space = it.updateLocation(newLocation)
                         val distance: Float
                         if (it.state != TelemetryState.PARKING) {
-                            distance = preferences.mileage + space
+                            distance = preferences.mileage1 + space
                             preferences.blockingBulk {
-                                mileage = distance
+                                mileage1 = distance
                             }
                         } else {
-                            distance = preferences.mileage
+                            distance = preferences.mileage1
                         }
                         it.replaceWith()?.let { state ->
                             val event = preferences.insertEvent(it, distance, false)
@@ -300,7 +296,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         preferences.bulk {
             latitude = location.latitude.toFloat()
             longitude = location.longitude.toFloat()
-            locationTime = location.locationTime.toString(PATTERN_DATETIME)
+            locationTime = location.locationTime.toString(PATTERN_DATETIME_ZONE)
         }
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_LOCATION, location)
@@ -318,7 +314,7 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     @WorkerThread
     private fun checkActivity(): Boolean {
-        if (activityManager.getActivities(packageName) <= 0 || !preferences.isLoggedIn) {
+        if (activityManager.getTopActivity(packageName) == null || !preferences.isLoggedIn) {
             abortConnection()
             stopForeground(true)
             stopSelf()
@@ -340,13 +336,6 @@ class TelemetryService : BaseService(), TelemetryListener {
             connection?.abort()
         } catch (e: Throwable) {
             Timber.e(e)
-        }
-    }
-
-    private fun releaseWakeLock() {
-        wakeLock?.let {
-            it.release()
-            wakeLock = null
         }
     }
 
@@ -373,15 +362,15 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private fun Preferences.insertEvent(
         basePoint: BasePoint,
-        distance: Float = mileage,
+        distance: Float = mileage1,
         waiting: Boolean = true
     ): LocationEvent? {
         blockingBulk {
-            val event = LocationEvent(basePoint, tokenId, packageId, distance.roundToInt()).also {
+            val event = LocationEvent(basePoint, tokenId1, packageId1, distance.roundToInt()).also {
                 // debug info
                 it.waiting = waiting
             }
-            packageId++
+            packageId1++
             lastEventTime = event.data.whenTime
             return event
         }
