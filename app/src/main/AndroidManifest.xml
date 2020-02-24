@@ -90,7 +90,7 @@
             android:screenOrientation="sensorPortrait">
         </activity>
         <service
-            android:name=".services.TelemetryService"
+            android:name=".services.telemetry.TelemetryService"
             android:enabled="true"
             android:exported="false"/>
         <receiver

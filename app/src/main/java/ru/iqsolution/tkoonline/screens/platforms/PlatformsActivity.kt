@@ -34,7 +34,7 @@ import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
-import ru.iqsolution.tkoonline.services.TelemetryService
+import ru.iqsolution.tkoonline.services.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 import java.util.*
 

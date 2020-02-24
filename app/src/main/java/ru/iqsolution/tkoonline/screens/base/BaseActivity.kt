@@ -29,8 +29,8 @@ import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.common.status.StatusFragment
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.screenModule
-import ru.iqsolution.tkoonline.services.TelemetryRunnable
-import ru.iqsolution.tkoonline.services.TelemetryService
+import ru.iqsolution.tkoonline.services.telemetry.TelemetryRunnable
+import ru.iqsolution.tkoonline.services.telemetry.TelemetryService
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")

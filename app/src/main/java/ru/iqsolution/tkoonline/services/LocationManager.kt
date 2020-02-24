@@ -8,6 +8,7 @@ import android.location.LocationManager
 import android.location.LocationProvider
 import android.os.Bundle
 import org.jetbrains.anko.locationManager
+import ru.iqsolution.tkoonline.services.telemetry.TelemetryListener
 import java.lang.ref.WeakReference
 
 @SuppressLint("MissingPermission")

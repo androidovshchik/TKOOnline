@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.services
+package ru.iqsolution.tkoonline.services.telemetry
 
 import android.content.Context
 import android.os.Handler
