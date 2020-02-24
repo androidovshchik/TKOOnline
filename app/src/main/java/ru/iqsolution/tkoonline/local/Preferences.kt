@@ -6,12 +6,12 @@ import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
-class Preferences(context: Context) : KotprefModel(context), Location<Float> {
+class Preferences(context: Context) : KotprefModel(context), ThreadStorage, Location<Float> {
 
     override val kotprefName: String = "preferences"
 
     // Logout on background thread
-    var accessToken by nullableStringPref(null, "0x00")
+    override var accessToken by nullableStringPref(null, "0x00")
 
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
@@ -77,11 +77,11 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
      */
     var locationTime by nullableStringPref(null, "0x0f")
 
-    var tokenId by longPref(0L, "0x10")
+    override var tokenId by longPref(0L, "0x10")
 
-    var mileage by floatPref(0f, "0x11")
+    override var mileage by floatPref(0f, "0x11")
 
-    var packageId by intPref(0, "0x12")
+    override var packageId by intPref(0, "0x12")
 
     var enableLogs by booleanPref(false, "0x13")
 
@@ -89,17 +89,6 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     // Logout on background thread
     var enableLight by booleanPref(false, "0x15")
-
-    // Read on background thread
-    val isLoggedIn: Boolean
-        get() = accessToken != null
-
-    // Read on background thread
-    val authHeader: String
-        get() = "Bearer $accessToken"
-
-    val telemetryUri: String
-        get() = "amqp://$carId:$accessToken@$mainTelemetryAddress"
 
     val serverDay: String
         get() = serverTime?.substringBefore("T").toString()
@@ -111,10 +100,9 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     /**
      * It's needed to be bulked
-     * Write on background thread
      */
-    fun logout() {
-        accessToken = null
+    override fun logout() {
+        super.logout()
         expiresWhen = null
         allowPhotoRefKp = false
         serverTime = null
@@ -123,9 +111,6 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
         queName = null
         carId = 0
         locationTime = null
-        tokenId = 0L
-        mileage = 0f
-        packageId = 0
         enableLight = false
     }
 }
