@@ -70,7 +70,7 @@ class LocationEvent() : SendEvent {
             return false
         }
 
-    constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Int) : this() {
+    constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Float) : this() {
         tokenId = token
         packageId = pckg
         // debug info
@@ -88,7 +88,7 @@ class LocationEvent() : SendEvent {
             }
             speed = basePoint.lastSpeed
             direction = basePoint.currentDirection?.roundToInt() ?: 0
-            mileage = distance
+            mileage = distance.roundToInt()
         }
     }
 
