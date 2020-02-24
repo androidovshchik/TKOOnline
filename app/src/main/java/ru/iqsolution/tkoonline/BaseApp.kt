@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline
 
 import android.app.*
 import android.content.Context
+import androidx.annotation.WorkerThread
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.CameraXConfig
 import coil.Coil
@@ -17,6 +18,7 @@ import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.provider
+import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.extensions.longBgToast
@@ -85,12 +87,16 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
     open fun saveLogs(enable: Boolean) {}
 }
 
-fun Context.exitUnexpected(): Boolean {
+@WorkerThread
+fun Context.exitUnexpected(apiError: Boolean = false): Boolean {
     SendWorker.cancel(applicationContext)
     UpdateWorker.cancel(applicationContext)
     when (activityManager.getTopActivity(packageName)) {
         null -> return false
         LockActivity::class.java.name, LoginActivity::class.java.name -> {
+            if (apiError) {
+                bgToast("Кто-то другой уже авторизовался на данной TC")
+            }
         }
         else -> {
             startActivity(intentFor<LockActivity>().apply {

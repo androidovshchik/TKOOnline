@@ -43,7 +43,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
-import kotlin.math.roundToInt
 
 /**
  * МП должно исключать генерацию более одного события в одну секунду.
@@ -252,6 +251,7 @@ class TelemetryService : BaseService(), TelemetryListener {
     override fun onLocationState(state: LocationSettingsStates?) {}
 
     override fun onLocationAvailability(available: Boolean) {
+        preferenceHolder.save(preferences)
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_AVAILABILITY, available)
         })
@@ -294,6 +294,9 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
+    /**
+     * Called also from [onLocationChanged]
+     */
     override fun onLocationResult(location: SimpleLocation) {
         preferences.bulk {
             latitude = location.latitude.toFloat()
@@ -373,7 +376,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         distance: Float = mileage,
         waiting: Boolean = true
     ): LocationEvent? {
-        val event = LocationEvent(basePoint, tokenId, packageId, distance.roundToInt()).also {
+        val event = LocationEvent(basePoint, tokenId, packageId, distance).also {
             // debug info
             it.waiting = waiting
         }
