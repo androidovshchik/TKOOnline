@@ -6,7 +6,7 @@ import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
-class Preferences(context: Context) : KotprefModel(context), MemoryStorage, Location<Float> {
+class Preferences(context: Context) : KotprefModel(context), Memory, Location<Float> {
 
     override val kotprefName: String = "preferences"
 

@@ -2,10 +2,10 @@ package ru.iqsolution.tkoonline.services.telemetry
 
 import androidx.annotation.UiThread
 import com.chibatching.kotpref.bulk
-import ru.iqsolution.tkoonline.local.MemoryStorage
+import ru.iqsolution.tkoonline.local.Memory
 import ru.iqsolution.tkoonline.local.Preferences
 
-class PreferenceHolder : MemoryStorage {
+class PreferenceHolder : Memory {
 
     // Unused
     override var accessToken: String? = null

@@ -3,7 +3,7 @@ package ru.iqsolution.tkoonline.local
 /**
  * This class determines which vars and functions of [Preferences] are used in different threads
  */
-interface MemoryStorage {
+interface Memory {
 
     // Logout on background thread
     var accessToken: String?

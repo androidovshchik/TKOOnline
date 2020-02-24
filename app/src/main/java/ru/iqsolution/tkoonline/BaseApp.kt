@@ -89,7 +89,8 @@ fun Context.exitUnexpected(): Boolean {
     SendWorker.cancel(applicationContext)
     UpdateWorker.cancel(applicationContext)
     when (activityManager.getTopActivity(packageName)) {
-        null, LockActivity::class.java.name, LoginActivity::class.java.name -> {
+        null -> return false
+        LockActivity::class.java.name, LoginActivity::class.java.name -> {
         }
         else -> {
             startActivity(intentFor<LockActivity>().apply {
@@ -101,8 +102,7 @@ fun Context.exitUnexpected(): Boolean {
                 newTask()
             })
             longBgToast("Требуется повторно авторизоваться")
-            return true
         }
     }
-    return false
+    return true
 }
