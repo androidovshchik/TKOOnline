@@ -9,7 +9,7 @@ import org.jetbrains.anko.clearTop
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
-import ru.iqsolution.tkoonline.extensions.getActivities
+import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.LockActivity
 
@@ -21,7 +21,7 @@ class RebootReceiver : BroadcastReceiver() {
         preferences.blockTime = -PASSWORD_RETRY
         if (preferences.enableLock) {
             context.apply {
-                if (activityManager.getActivities(packageName) <= 0) {
+                if (activityManager.getTopActivity(packageName) == null) {
                     startActivity(
                         intentFor<LockActivity>().clearTop()
                             .newTask()

@@ -1,8 +1,8 @@
 package ru.iqsolution.tkoonline.services.workers
 
 import android.content.Context
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.chibatching.kotpref.blockingBulk
@@ -46,11 +46,11 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
         fun launch(context: Context) {
             val now = DateTime.now()
             val delay = Duration(now, now.plusDays(1).withTime(0, 0, 0, 0)).millis
-            val request = PeriodicWorkRequestBuilder<MidnightWorker>(24, TimeUnit.HOURS)
+            val request = OneTimeWorkRequestBuilder<UpdateWorker>()
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .build()
             WorkManager.getInstance(context).apply {
-                enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.REPLACE, request)
+                enqueueUniqueWork(NAME, ExistingWorkPolicy.REPLACE, request)
             }
         }
     }

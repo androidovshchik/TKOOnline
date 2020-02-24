@@ -6,7 +6,7 @@ import android.app.ActivityManager
 import android.app.Service
 
 inline fun <reified T : Service> ActivityManager.isRunning(): Boolean {
-    for (service in getRunningServices(Integer.MAX_VALUE)) {
+    for (service in getRunningServices(Int.MAX_VALUE)) {
         if (T::class.java.name == service.service.className) {
             return true
         }
@@ -14,11 +14,13 @@ inline fun <reified T : Service> ActivityManager.isRunning(): Boolean {
     return false
 }
 
-fun ActivityManager.getActivities(packageName: String): Int {
-    for (task in getRunningTasks(Integer.MAX_VALUE)) {
-        if (task.baseActivity?.packageName?.startsWith(packageName) == true) {
-            return task.numActivities
+fun ActivityManager.getTopActivity(packageName: String): String? {
+    for (task in getRunningTasks(Int.MAX_VALUE)) {
+        task.topActivity?.let {
+            if (it.packageName == packageName) {
+                return it.className
+            }
         }
     }
-    return -1
+    return null
 }
