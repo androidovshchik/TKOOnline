@@ -171,6 +171,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                     checkCount()
                     return@scheduleAtFixedRate
                 }
+                Timber.d(it.toString())
                 val user = it.token.carId.toString()
                 val pswd = it.token.token
                 it.location.authKey = it.token.token
