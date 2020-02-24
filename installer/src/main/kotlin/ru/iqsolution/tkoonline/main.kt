@@ -25,9 +25,9 @@ fun main() {
         else -> {
             showError(
                 """
-                    Данная ОС не поддерживается.
-                    Откройте эту программу на ПК с ОС Windows или Linux
-                """.trimIndent()
+                Данная ОС не поддерживается.
+                Используйте эту программу на ПК с ОС Windows или Linux
+            """.trimIndent()
             )
         }
     }
@@ -42,7 +42,7 @@ fun findFile(path: String, filename: String, success: (String) -> Unit) {
             showPrompt(
                 "Внимание", """
                 Не найден файл $path/$filename".
-                Попробуйте запустить программу от имени администратора
+                Попробуйте запустить программу с правами администратора
             """.trimIndent().replace("/.", "/*.")
             )
         }
@@ -61,7 +61,7 @@ fun execCommand(command: String, success: (String) -> Unit) {
                     showPrompt(
                         "Внимание", """
                         Не удалось выполнить команду.
-                        Попробуйте запустить программу через BAT файл
+                        Попробуйте запустить эту программу через BAT файл
                     """.trimIndent().replace("/.", "/*.")
                     )
                 }

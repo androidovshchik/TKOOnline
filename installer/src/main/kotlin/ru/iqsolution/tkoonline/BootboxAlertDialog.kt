@@ -1,4 +1,4 @@
-package ru.iqsolution.tkonline
+package ru.iqsolution.tkoonline
 
 import BootboxButton
 

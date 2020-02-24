@@ -1,16 +1,14 @@
 package ru.iqsolution.tkoonline.remote
 
-import android.app.ActivityManager
 import android.content.Context
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response
-import org.jetbrains.anko.*
 import retrofit2.Invocation
+import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.longBgToast
 import ru.iqsolution.tkoonline.local.Preferences
-import ru.iqsolution.tkoonline.screens.LockActivity
 import java.lang.ref.WeakReference
 
 @MustBeDocumented
@@ -50,14 +48,7 @@ class AppInterceptor(context: Context) : Interceptor {
             when (response.code) {
                 400 -> bgToast("Сервер не смог обработать запрос, некорректные данные в запросе")
                 401, 403 -> {
-                    startActivity(intentFor<LockActivity>().apply {
-                        if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
-                            clearTask()
-                        } else {
-                            clearTop()
-                        }
-                        newTask()
-                    })
+                    exitUnexpected()
                     longBgToast("Требуется повторно авторизоваться")
                 }
                 404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
