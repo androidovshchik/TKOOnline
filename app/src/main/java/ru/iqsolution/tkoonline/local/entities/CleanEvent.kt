@@ -54,7 +54,7 @@ class CleanEvent() : Container, SendEvent {
     var relatedId: Long? = null
 
     /**
-     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     * [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
      */
     @ColumnInfo(name = "ce_when_time")
     @SerializedName("time")

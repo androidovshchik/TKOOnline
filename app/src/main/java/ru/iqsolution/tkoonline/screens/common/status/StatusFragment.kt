@@ -15,8 +15,8 @@ import kotlinx.android.synthetic.main.include_status.*
 import org.jetbrains.anko.locationManager
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import ru.iqsolution.tkoonline.FORMAT_TIME
-import ru.iqsolution.tkoonline.PATTERN_DATETIME
+import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.PATTERN_TIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -52,7 +52,7 @@ class StatusFragment : BaseFragment(), SyncListener {
         syncManager = SyncManager(context, this)
         preferences = Preferences(context)
         try {
-            serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME)
+            serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME_ZONE)
         } catch (e: Throwable) {
             Timber.e(e)
         }
@@ -86,7 +86,7 @@ class StatusFragment : BaseFragment(), SyncListener {
             val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
             status_time.text = it.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
                 .withZone(zone)
-                .toString(FORMAT_TIME)
+                .toString(PATTERN_TIME)
         }
     }
 

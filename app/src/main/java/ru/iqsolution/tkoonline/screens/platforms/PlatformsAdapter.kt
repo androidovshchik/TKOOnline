@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.item_platform.view.*
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
-import ru.iqsolution.tkoonline.FORMAT_TIME
+import ru.iqsolution.tkoonline.PATTERN_TIME
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.inflate
 import ru.iqsolution.tkoonline.models.PlatformContainers
@@ -66,8 +66,8 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
             address.text = item.address
             range.text = appContext.getString(
                 R.string.platform_range_n,
-                item.timeLimitFrom.toString(FORMAT_TIME),
-                item.timeLimitTo.toString(FORMAT_TIME)
+                item.timeLimitFrom.toString(PATTERN_TIME),
+                item.timeLimitTo.toString(PATTERN_TIME)
             )
             oval.apply {
                 layoutParams.apply {

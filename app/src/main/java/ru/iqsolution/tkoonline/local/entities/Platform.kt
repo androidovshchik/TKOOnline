@@ -69,14 +69,14 @@ open class Platform : Serializable, Container, Location<Double> {
     override var containerCount = 0
 
     /**
-     * [ru.iqsolution.tkoonline.PATTERN_TIME]
+     * [ru.iqsolution.tkoonline.PATTERN_TIME_ZONE]
      */
     @SerializedName("time_limit_from")
     @ColumnInfo(name = "p_time_from")
     lateinit var timeLimitFrom: DateTime
 
     /**
-     * [ru.iqsolution.tkoonline.PATTERN_TIME]
+     * [ru.iqsolution.tkoonline.PATTERN_TIME_ZONE]
      */
     @SerializedName("time_limit_to")
     @ColumnInfo(name = "p_time_to")

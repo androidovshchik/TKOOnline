@@ -48,7 +48,7 @@ interface Server {
     ): Call<ResponseClean>
 
     /**
-     * @param time [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     * @param time [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
      */
     @Tag("photo")
     @Multipart

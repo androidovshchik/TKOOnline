@@ -11,21 +11,21 @@ const val PASSWORD_RETRY = 5 * 60 * 1000L
 
 val PATTERN_DATE: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd")
 
-val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm:ssZZ").withOffsetParsed()
+val PATTERN_TIME_ZONE: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm:ssZZ").withOffsetParsed()
 
-val PATTERN_DATETIME: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd'T'HHmmssZ").withOffsetParsed()
+val PATTERN_DATETIME_ZONE: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd'T'HHmmssZ").withOffsetParsed()
 
-val FORMAT_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
+val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
 const val ACTION_LOCATION = "action_location"
 
-const val ACTION_ROUTE = "action_route"
-
 const val ACTION_CLOUD = "action_cloud"
+
+const val ACTION_ROUTE = "action_route"
 
 const val EXTRA_TELEMETRY_TASK = "telemetry_task"
 
-const val EXTRA_SYNC_LOCATION = "sync_coordinates"
+const val EXTRA_SYNC_LOCATION = "sync_location"
 
 const val EXTRA_SYNC_AVAILABILITY = "sync_availability"
 

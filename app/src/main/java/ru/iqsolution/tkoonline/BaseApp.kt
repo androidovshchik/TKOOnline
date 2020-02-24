@@ -19,6 +19,7 @@ import org.kodein.di.generic.bind
 import org.kodein.di.generic.provider
 import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
+import ru.iqsolution.tkoonline.extensions.longBgToast
 import ru.iqsolution.tkoonline.local.localModule
 import ru.iqsolution.tkoonline.remote.remoteModule
 import ru.iqsolution.tkoonline.screens.LockActivity
@@ -99,6 +100,7 @@ fun Context.exitUnexpected(): Boolean {
                 }
                 newTask()
             })
+            longBgToast("Требуется повторно авторизоваться")
             return true
         }
     }

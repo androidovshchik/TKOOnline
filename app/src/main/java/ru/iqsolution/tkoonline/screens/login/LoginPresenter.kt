@@ -13,7 +13,7 @@ import org.jetbrains.anko.activityManager
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
-import ru.iqsolution.tkoonline.PATTERN_DATETIME
+import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
@@ -71,7 +71,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 accessToken = responseAuth.accessKey
                 expiresWhen = responseAuth.expireTime
                 allowPhotoRefKp = responseAuth.noKpPhoto == 1
-                serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
+                serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME_ZONE)
                 elapsedTime = SystemClock.elapsedRealtime()
                 vehicleNumber = qrCode.regNum
                 queName = responseAuth.queName
@@ -81,7 +81,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                         token = responseAuth.accessKey
                         queName = responseAuth.queName
                         carId = qrCode.carId
-                        expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME)
+                        expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE)
                     })
                 }
             }

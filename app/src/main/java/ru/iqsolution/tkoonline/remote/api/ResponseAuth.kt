@@ -12,7 +12,7 @@ class ResponseAuth {
     lateinit var expireTime: String
 
     /**
-     * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     * [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
      */
     @SerializedName("current_time")
     lateinit var currentTime: DateTime

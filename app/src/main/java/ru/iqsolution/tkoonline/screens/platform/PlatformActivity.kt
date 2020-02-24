@@ -93,8 +93,8 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         platform_range.setTextBoldSpan(
             getString(
                 R.string.platform_range,
-                platform.timeLimitFrom.toString(FORMAT_TIME),
-                platform.timeLimitTo.toString(FORMAT_TIME)
+                platform.timeLimitFrom.toString(PATTERN_TIME),
+                platform.timeLimitTo.toString(PATTERN_TIME)
             ), 2, 7, 11, 16
         )
         platform_report.setOnClickListener {

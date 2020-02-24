@@ -7,7 +7,6 @@ import okhttp3.Response
 import retrofit2.Invocation
 import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.bgToast
-import ru.iqsolution.tkoonline.extensions.longBgToast
 import ru.iqsolution.tkoonline.local.Preferences
 import java.lang.ref.WeakReference
 
@@ -47,11 +46,7 @@ class AppInterceptor(context: Context) : Interceptor {
         reference.get()?.apply {
             when (response.code) {
                 400 -> bgToast("Сервер не смог обработать запрос, некорректные данные в запросе")
-                401, 403 -> {
-                    if (exitUnexpected()) {
-                        longBgToast("Требуется повторно авторизоваться")
-                    }
-                }
+                401, 403 -> exitUnexpected()
                 404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
                 500 -> bgToast("Сервер не смог обработать запрос, ошибка на стороне сервера")
             }

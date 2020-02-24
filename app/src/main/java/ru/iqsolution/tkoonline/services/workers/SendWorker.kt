@@ -13,7 +13,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
-import ru.iqsolution.tkoonline.PATTERN_DATETIME
+import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
@@ -72,7 +72,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     it.token.authHeader,
                     it.photo.kpId?.toString()?.toRequestBody(TEXT_TYPE),
                     it.photo.typeId.toString().toRequestBody(TEXT_TYPE),
-                    it.photo.whenTime.toString(PATTERN_DATETIME).toRequestBody(TEXT_TYPE),
+                    it.photo.whenTime.toString(PATTERN_DATETIME_ZONE).toRequestBody(TEXT_TYPE),
                     it.photo.latitude.toString().toRequestBody(TEXT_TYPE),
                     it.photo.longitude.toString().toRequestBody(TEXT_TYPE),
                     photo
