@@ -95,14 +95,14 @@ class LocationEvent() : SendEvent {
     class Data {
 
         /**
-         * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+         * [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
          */
         @ColumnInfo(name = "le_when_time")
         @SerializedName("event_time")
         lateinit var whenTime: DateTime
 
         /**
-         * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+         * [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
          */
         @ColumnInfo(name = "le_location_time")
         @SerializedName("time")

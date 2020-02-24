@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
@@ -30,8 +29,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
     private val fileManager: FileManager by instance()
 
     private val preferences: Preferences by instance()
-
-    private val client: OkHttpClient by instance()
 
     private val server: Server by instance()
 

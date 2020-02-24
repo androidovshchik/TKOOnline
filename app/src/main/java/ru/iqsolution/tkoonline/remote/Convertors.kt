@@ -1,10 +1,22 @@
 package ru.iqsolution.tkoonline.remote
 
 import com.google.gson.*
+import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.PATTERN_TIME_ZONE
 import java.lang.reflect.Type
+
+class SerializedNameStrategy : ExclusionStrategy {
+
+    override fun shouldSkipField(attributes: FieldAttributes): Boolean {
+        return attributes.getAnnotation(SerializedName::class.java) == null
+    }
+
+    override fun shouldSkipClass(clazz: Class<*>): Boolean {
+        return false
+    }
+}
 
 class DateTimeSerializer : JsonSerializer<DateTime> {
 

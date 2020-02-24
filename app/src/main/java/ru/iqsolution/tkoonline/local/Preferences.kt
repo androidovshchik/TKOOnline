@@ -77,13 +77,10 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
      */
     var locationTime by nullableStringPref(null, "0x0f")
 
-    // todo Logout, Read on background thread
     var tokenId by longPref(0L, "0x10")
 
-    // todo Write, Logout, Read on background thread
     var mileage by floatPref(0f, "0x11")
 
-    // todo Write, Logout, Read on background thread
     var packageId by intPref(0, "0x12")
 
     var enableLogs by booleanPref(false, "0x13")
