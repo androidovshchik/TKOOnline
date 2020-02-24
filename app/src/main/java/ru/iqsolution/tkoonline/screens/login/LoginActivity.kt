@@ -25,6 +25,7 @@ import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 import ru.iqsolution.tkoonline.services.AdminManager
 import ru.iqsolution.tkoonline.services.workers.DeleteWorker
+import ru.iqsolution.tkoonline.services.workers.MidnightWorker
 import ru.iqsolution.tkoonline.services.workers.UpdateWorker
 
 class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.View {
@@ -67,6 +68,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
             "v.${BuildConfig.VERSION_CODE}"
         }
         DeleteWorker.launch(applicationContext)
+        MidnightWorker.launch(applicationContext)
     }
 
     /**
@@ -198,8 +200,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         toast(if (success) "БД успешно экспортирована" else "Не удалось экспортировать БД")
     }
 
-    override fun showError(message: CharSequence?) {
-        super.showError(message)
+    override fun onUnhandledError(e: Throwable?) {
         presenter.reset()
     }
 

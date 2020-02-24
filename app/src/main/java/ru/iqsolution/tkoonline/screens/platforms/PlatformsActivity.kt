@@ -246,8 +246,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         }
     }
 
-    override fun showError(e: Throwable?) {
-        super.showError(e)
+    override fun onUnhandledError(e: Throwable?) {
         platforms_refresh.isRefreshing = false
     }
 

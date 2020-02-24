@@ -88,6 +88,8 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
         statusBar?.onCloudChanged(allCount > 0, photoCount)
     }
 
+    override fun onUnhandledError(e: Throwable?) {}
+
     @Suppress("ConstantConditionIf")
     override fun showError(e: Throwable?) {
         showError(

@@ -14,6 +14,8 @@ interface IBaseView : KodeinAware, LocationListener {
 
     fun updateCloud(allCount: Int, photoCount: Int)
 
+    fun onUnhandledError(e: Throwable?)
+
     fun showError(e: Throwable?)
 
     fun showError(message: CharSequence?)

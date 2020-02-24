@@ -17,13 +17,13 @@ import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.provider
-import ru.iqsolution.tkoonline.extensions.getActivities
+import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.local.localModule
 import ru.iqsolution.tkoonline.remote.remoteModule
 import ru.iqsolution.tkoonline.screens.LockActivity
+import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.serviceModule
-import ru.iqsolution.tkoonline.services.workers.MidnightWorker
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 import ru.iqsolution.tkoonline.services.workers.UpdateWorker
 
@@ -79,7 +79,6 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
                 )
                 .build()
         )
-        MidnightWorker.launch(applicationContext)
     }
 
     open fun saveLogs(enable: Boolean) {}
@@ -88,16 +87,20 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
 fun Context.exitUnexpected(): Boolean {
     SendWorker.cancel(applicationContext)
     UpdateWorker.cancel(applicationContext)
-    if (activityManager.getActivities(packageName) > 0) {
-        startActivity(intentFor<LockActivity>().apply {
-            if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
-                clearTask()
-            } else {
-                clearTop()
-            }
-            newTask()
-        })
-        return true
+    when (activityManager.getTopActivity(packageName)) {
+        null, LockActivity::class.java.name, LoginActivity::class.java.name -> {
+        }
+        else -> {
+            startActivity(intentFor<LockActivity>().apply {
+                if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
+                    clearTask()
+                } else {
+                    clearTop()
+                }
+                newTask()
+            })
+            return true
+        }
     }
     return false
 }
