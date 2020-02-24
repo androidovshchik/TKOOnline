@@ -11,7 +11,6 @@ import android.os.IBinder
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.chibatching.kotpref.blockingBulk
 import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
@@ -35,6 +34,8 @@ import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.BasePoint
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.models.TelemetryState
+import ru.iqsolution.tkoonline.screens.LockActivity
+import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.BaseService
 import ru.iqsolution.tkoonline.services.LocationManager
 import timber.log.Timber
@@ -50,6 +51,8 @@ import kotlin.math.roundToInt
  * а также по времени не реже чем:
  * · Для состояния стоянка - 5 минут
  * · Для состояния движения и остановка - 1 минута
+ *
+ * Telemetry URI: amqp://$carId:$accessToken@$mainTelemetryAddress
  */
 // https://www.rabbitmq.com/api-guide.html
 class TelemetryService : BaseService(), TelemetryListener {
@@ -103,6 +106,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         acquireWakeLock()
         broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
         locationManager = LocationManager(applicationContext, this)
+        preferenceHolder.init(preferences)
         startTelemetry()
         factory.apply {
             val address = preferences.mainTelemetryAddress.split(":")
@@ -154,7 +158,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                     }
                     if (eventDelay > 0L) {
                         Timber.i("Event after delay $eventDelay")
-                        return@addEventSync preferences.insertEvent(it)
+                        return@addEventSync preferenceHolder.insertEvent(it)
                     }
                 }
                 null
@@ -269,15 +273,13 @@ class TelemetryService : BaseService(), TelemetryListener {
                         val space = it.updateLocation(newLocation)
                         val distance: Float
                         if (it.state != TelemetryState.PARKING) {
-                            distance = preferences.mileage1 + space
-                            preferences.blockingBulk {
-                                mileage1 = distance
-                            }
+                            distance = preferenceHolder.mileage + space
+                            preferenceHolder.mileage = distance
                         } else {
-                            distance = preferences.mileage1
+                            distance = preferenceHolder.mileage
                         }
                         it.replaceWith()?.let { state ->
-                            val event = preferences.insertEvent(it, distance, false)
+                            val event = preferenceHolder.insertEvent(it, distance, false)
                             Timber.i("Replace state with $state")
                             basePoint = BasePoint(newLocation, state)
                             return@addEventSync event
@@ -298,6 +300,7 @@ class TelemetryService : BaseService(), TelemetryListener {
             longitude = location.longitude.toFloat()
             locationTime = location.locationTime.toString(PATTERN_DATETIME_ZONE)
         }
+        preferenceHolder.save(preferences)
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_LOCATION, location)
         })
@@ -314,13 +317,17 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     @WorkerThread
     private fun checkActivity(): Boolean {
-        if (activityManager.getTopActivity(packageName) == null || !preferences.isLoggedIn) {
-            abortConnection()
-            stopForeground(true)
-            stopSelf()
-            return false
+        return when (activityManager.getTopActivity(packageName)) {
+            null, LockActivity::class.java.name, LoginActivity::class.java.name -> {
+                // NOTICE without saving in persistent storage
+                preferenceHolder.logout()
+                abortConnection()
+                stopForeground(true)
+                stopSelf()
+                return false
+            }
+            else -> true
         }
-        return true
     }
 
     /**
@@ -340,6 +347,7 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun onDestroy() {
+        preferenceHolder.save(preferences)
         stopTelemetry()
         timer?.cancel(true)
         releaseWakeLock()
@@ -360,21 +368,18 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
-    private fun Preferences.insertEvent(
+    private fun PreferenceHolder.insertEvent(
         basePoint: BasePoint,
-        distance: Float = mileage1,
+        distance: Float = mileage,
         waiting: Boolean = true
     ): LocationEvent? {
-        blockingBulk {
-            val event = LocationEvent(basePoint, tokenId1, packageId1, distance.roundToInt()).also {
-                // debug info
-                it.waiting = waiting
-            }
-            packageId1++
-            lastEventTime = event.data.whenTime
-            return event
+        val event = LocationEvent(basePoint, tokenId, packageId, distance.roundToInt()).also {
+            // debug info
+            it.waiting = waiting
         }
-        return null
+        packageId++
+        lastEventTime = event.data.whenTime
+        return event
     }
 
     companion object {
