@@ -57,7 +57,7 @@ class MapLayout : FrameLayout, MapListener {
     )
 
     init {
-        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+        WebView.setWebContentsDebuggingEnabled(!BuildConfig.PROD)
         View.inflate(context, R.layout.merge_map, this)
         map_web.addJavascriptInterface(MapJavaScript(this), "Android")
         map_plus.setOnClickListener {

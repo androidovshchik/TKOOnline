@@ -28,6 +28,7 @@ val remoteModule = Kodein.Module("remote") {
             .create()
     }
 
+    @Suppress("ConstantConditionIf")
     bind<OkHttpClient>() with singleton {
         OkHttpClient.Builder().apply {
             readTimeout(30, TimeUnit.SECONDS)
@@ -42,7 +43,7 @@ val remoteModule = Kodein.Module("remote") {
             }).apply {
                 level = HttpLoggingInterceptor.Level.BASIC
             })
-            if (BuildConfig.DEBUG) {
+            if (!BuildConfig.PROD) {
                 addNetworkInterceptor(
                     Class.forName("com.facebook.stetho.okhttp3.StethoInterceptor")
                         .newInstance() as Interceptor

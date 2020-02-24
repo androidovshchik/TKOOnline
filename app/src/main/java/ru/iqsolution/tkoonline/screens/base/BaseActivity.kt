@@ -88,12 +88,13 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
         statusBar?.onCloudChanged(allCount > 0, photoCount)
     }
 
+    @Suppress("ConstantConditionIf")
     override fun showError(e: Throwable?) {
         showError(
-            if (BuildConfig.DEBUG) {
-                e.toString()
-            } else {
+            if (BuildConfig.PROD) {
                 e?.localizedMessage ?: e.toString()
+            } else {
+                e.toString()
             }
         )
     }

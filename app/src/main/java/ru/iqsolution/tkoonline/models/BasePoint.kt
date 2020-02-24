@@ -4,7 +4,6 @@ import android.location.Location
 import android.util.SparseIntArray
 import org.joda.time.DateTime
 import org.joda.time.Duration
-import ru.iqsolution.tkoonline.BuildConfig
 import timber.log.Timber
 import kotlin.math.absoluteValue
 import kotlin.math.min
@@ -112,13 +111,11 @@ class BasePoint(
                 } else 0
             )
         }
-        if (BuildConfig.DEBUG) {
-            Timber.i("Base $baseDirection current $currentDirection")
-            Timber.i("Distance $distance")
-            Timber.i("Space $space")
-            Timber.i("Millis $millis")
-            Timber.i(speedMap.toString())
-        }
+        Timber.i("Base $baseDirection current $currentDirection")
+        Timber.i("Distance $distance")
+        Timber.i("Space $space")
+        Timber.i("Millis $millis")
+        Timber.i(speedMap.toString())
         lastLocation = location
         return space
     }
