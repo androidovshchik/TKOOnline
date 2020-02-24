@@ -56,14 +56,14 @@ android {
     }
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "tkonline-${variant.productFlavors[0].name}-${variant.buildType.name}${variant.versionCode}.apk"
+            outputFileName = "tkoonline-${variant.productFlavors[0].name}-${variant.buildType.name}${variant.versionCode}.apk"
         }
         variant.assembleProvider.configure { assemble ->
             assemble.doLast {
-                delete fileTree(dir: "$rootDir/installer/tkonline", include: '*.apk')
+                delete fileTree(dir: "$rootDir/installer/tkoonline", include: '*.apk')
                 copy {
                     from variant.outputs*.outputFile
-                    into "$rootDir/installer/tkonline"
+                    into "$rootDir/installer/tkoonline"
                 }
             }
         }
