@@ -22,10 +22,9 @@ abstract class BaseService : Service(), KodeinAware, CoroutineScope {
     protected var wakeLock: PowerManager.WakeLock? = null
 
     @SuppressLint("WakelockTimeout")
-    protected fun acquireWakeLock(name: String) {
-        // todo java class
+    protected fun acquireWakeLock() {
         if (wakeLock == null) {
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name).apply {
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, javaClass.name).apply {
                 acquire()
             }
         }

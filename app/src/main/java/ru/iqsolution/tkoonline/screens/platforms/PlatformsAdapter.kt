@@ -49,11 +49,14 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
 
         init {
             itemView.setOnClickListener {
-                val item = when {
-                    adapterPosition < primaryItems.size -> primaryItems[adapterPosition]
-                    else -> items[adapterPosition - primaryItems.size]
+                try {
+                    val item = when {
+                        adapterPosition < primaryItems.size -> primaryItems[adapterPosition]
+                        else -> items[adapterPosition - primaryItems.size]
+                    }
+                    reference?.get()?.onAdapterEvent(adapterPosition, item)
+                } catch (e: Throwable) {
                 }
-                reference?.get()?.onAdapterEvent(adapterPosition, item)
             }
         }
 
