@@ -6,7 +6,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.chibatching.kotpref.blockingBulk
-import okhttp3.OkHttpClient
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.kodein.di.generic.instance
@@ -19,8 +18,6 @@ import java.util.concurrent.TimeUnit
 class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(context, params) {
 
     private val preferences: Preferences by instance()
-
-    private val client: OkHttpClient by instance()
 
     private val server: Server by instance()
 

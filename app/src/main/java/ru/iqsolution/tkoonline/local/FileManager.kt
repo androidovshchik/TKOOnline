@@ -20,7 +20,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.*
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class FileManager(context: Context) {
 
     val externalDir = context.getExternalFilesDir(null)?.apply {

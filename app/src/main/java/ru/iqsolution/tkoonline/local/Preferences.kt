@@ -10,17 +10,21 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     override val kotprefName: String = "preferences"
 
+    // Logout on background thread
     var accessToken by nullableStringPref(null, "0x00")
 
     /**
      * [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     * Logout on background thread
      */
     var expiresWhen by nullableStringPref(null, "0x01")
 
+    // Logout on background thread
     var allowPhotoRefKp by booleanPref(false, "0x02")
 
     /**
      * Server time [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     * Logout on background thread
      */
     var serverTime by nullableStringPref(null, "0x03")
 
@@ -40,15 +44,19 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
      */
     var blockTime by longPref(-PASSWORD_RETRY, "0x08")
 
+    // Logout on background thread
     var vehicleNumber by nullableStringPref(null, "0x09")
 
     /**
      * Boot time synced with server (milliseconds)
+     * Logout on background thread
      */
     var elapsedTime by longPref(0L, "0x0a")
 
+    // Logout on background thread
     var queName by nullableStringPref(null, "0x0b")
 
+    // Logout on background thread
     var carId by intPref(0, "0x0c")
 
     /**
@@ -65,24 +73,31 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     /**
      * Time of last known location [ru.iqsolution.tkoonline.PATTERN_DATETIME]
+     * Logout on background thread
      */
     var locationTime by nullableStringPref(null, "0x0f")
 
+    // todo Logout, Read on background thread
     var tokenId by longPref(0L, "0x10")
 
+    // todo Write, Logout, Read on background thread
     var mileage by floatPref(0f, "0x11")
 
+    // todo Write, Logout, Read on background thread
     var packageId by intPref(0, "0x12")
 
     var enableLogs by booleanPref(false, "0x13")
 
     var showRoute by booleanPref(false, "0x14")
 
+    // Logout on background thread
     var enableLight by booleanPref(false, "0x15")
 
+    // Read on background thread
     val isLoggedIn: Boolean
         get() = accessToken != null
 
+    // Read on background thread
     val authHeader: String
         get() = "Bearer $accessToken"
 
@@ -99,6 +114,7 @@ class Preferences(context: Context) : KotprefModel(context), Location<Float> {
 
     /**
      * It's needed to be bulked
+     * Write on background thread
      */
     fun logout() {
         accessToken = null

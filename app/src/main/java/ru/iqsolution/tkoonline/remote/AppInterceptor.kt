@@ -48,8 +48,9 @@ class AppInterceptor(context: Context) : Interceptor {
             when (response.code) {
                 400 -> bgToast("Сервер не смог обработать запрос, некорректные данные в запросе")
                 401, 403 -> {
-                    exitUnexpected()
-                    longBgToast("Требуется повторно авторизоваться")
+                    if (exitUnexpected()) {
+                        longBgToast("Требуется повторно авторизоваться")
+                    }
                 }
                 404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
                 500 -> bgToast("Сервер не смог обработать запрос, ошибка на стороне сервера")

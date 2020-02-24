@@ -14,7 +14,6 @@ import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
-import ru.iqsolution.tkoonline.extensions.cancelAll
 import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
@@ -107,14 +106,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         return when {
             hasErrors -> if (runAttemptCount >= 2) Result.failure() else Result.retry()
             else -> Result.success()
-        }
-    }
-
-    override fun onStopped() {
-        client.apply {
-            cancelAll("clean")
-            cancelAll("photo")
-            cancelAll("logout")
         }
     }
 
