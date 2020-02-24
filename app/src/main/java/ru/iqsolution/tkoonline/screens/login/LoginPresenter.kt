@@ -12,7 +12,6 @@ import kotlinx.coroutines.*
 import org.jetbrains.anko.activityManager
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
-import retrofit2.HttpException
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.PATTERN_DATETIME
 import ru.iqsolution.tkoonline.extensions.isRunning
@@ -63,39 +62,30 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         qrCodeJson = data
         baseJob.cancelChildren()
         launch {
-            try {
-                val responseAuth = server.login(
-                    qrCode.carId.toString(),
-                    qrCode.pass,
-                    preferences.lockPassword?.toInt()
-                )
-                preferences.bulk {
-                    accessToken = responseAuth.accessKey
-                    expiresWhen = responseAuth.expireTime
-                    allowPhotoRefKp = responseAuth.noKpPhoto == 1
-                    serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
-                    elapsedTime = SystemClock.elapsedRealtime()
-                    vehicleNumber = qrCode.regNum
-                    queName = responseAuth.queName
-                    carId = qrCode.carId
-                    tokenId = withContext(Dispatchers.IO) {
-                        db.tokenDao().insert(AccessToken().apply {
-                            token = responseAuth.accessKey
-                            queName = responseAuth.queName
-                            carId = qrCode.carId
-                            expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME)
-                        })
-                    }
-                }
-                reference.get()?.onLoggedIn()
-            } catch (e: HttpException) {
-                if (e.code() == 404) {
-                    Timber.e(e)
-                    reference.get()?.showError("Сервер не отвечает, проверьте настройки соединения")
-                } else {
-                    throw e
+            val responseAuth = server.login(
+                qrCode.carId.toString(),
+                qrCode.pass,
+                preferences.lockPassword?.toInt()
+            )
+            preferences.bulk {
+                accessToken = responseAuth.accessKey
+                expiresWhen = responseAuth.expireTime
+                allowPhotoRefKp = responseAuth.noKpPhoto == 1
+                serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME)
+                elapsedTime = SystemClock.elapsedRealtime()
+                vehicleNumber = qrCode.regNum
+                queName = responseAuth.queName
+                carId = qrCode.carId
+                tokenId = withContext(Dispatchers.IO) {
+                    db.tokenDao().insert(AccessToken().apply {
+                        token = responseAuth.accessKey
+                        queName = responseAuth.queName
+                        carId = qrCode.carId
+                        expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME)
+                    })
                 }
             }
+            reference.get()?.onLoggedIn()
         }
     }
 

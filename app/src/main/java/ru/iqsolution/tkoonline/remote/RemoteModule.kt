@@ -32,8 +32,7 @@ val remoteModule = Kodein.Module("remote") {
         OkHttpClient.Builder().apply {
             readTimeout(30, TimeUnit.SECONDS)
             writeTimeout(30, TimeUnit.SECONDS)
-            addInterceptor(DomainInterceptor(instance()))
-            addInterceptor(TagInterceptor())
+            addInterceptor(AppInterceptor(instance()))
             addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
 
                 override fun log(message: String) {
