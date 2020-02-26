@@ -3,38 +3,26 @@ package ru.iqsolution.tkoonline.models
 import com.google.gson.annotations.SerializedName
 
 @Suppress("PropertyName")
-class TelemetryConfig {
+open class TelemetryConfig {
 
     /**
      * Событие пройдена дистанция
      * Данное событие генерируется только в состоянии движения при перемещении автомобиля от базовой точки на расстояние больше 200 метров.
      */
     @SerializedName("base_distance.meters")
-    var baseDistance = 200
-
-    @SerializedName("base_distance_desc")
-    val _baseDistance = ""
+    val baseDistance = 200
 
     // Направление движения отклоняется от базового на величину 5 градусов
     @SerializedName("base_degree.degrees")
-    var baseDegree = 5
-
-    @SerializedName("base_degree_desc")
-    val _baseDegree = ""
+    val baseDegree = 5
 
     // Скорость выше параметра минимальной скорости (10км/ч)
     @SerializedName("min_speed.km_h")
-    var minSpeed = 10
-
-    @SerializedName("min_speed_desc")
-    val _minSpeed = ""
+    val minSpeed = 10
 
     // минимальное время - 30 секунд
     @SerializedName("min_time.seconds")
-    var minTime = 30
-
-    @SerializedName("min_time_desc")
-    val _minTime = ""
+    val minTime = 30
 
     /**
      * Событие стоянка
@@ -42,10 +30,7 @@ class TelemetryConfig {
      */
     // in seconds
     @SerializedName("parking_time.seconds")
-    var parkingTime = 2 * 60
-
-    @SerializedName("parking_time_desc")
-    val _parkingTime = ""
+    val parkingTime = 2 * 60
 }
 
 // Для состояния стоянка - 5 минут
