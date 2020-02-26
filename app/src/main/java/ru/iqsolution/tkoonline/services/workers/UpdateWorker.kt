@@ -41,7 +41,7 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
             if (response.isSuccessful) {
                 val body = response.body
                 if (body != null) {
-                    if (body.contentType().toString() != "application/vnd.android.package-archive") {
+                    if (body.contentType()?.type != "application") {
                         Timber.e("Invalid mime type of apk ${body.contentType()}")
                         return Result.failure()
                     }

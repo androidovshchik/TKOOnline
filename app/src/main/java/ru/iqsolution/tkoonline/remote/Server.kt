@@ -71,8 +71,6 @@ interface Server {
     ): Call<Unit>
 
     @Tag("version")
-    @GET
-    suspend fun checkVersion(
-        @Url url: String = "https://msknt3.iqsolution.ru/mobile/version.json"
-    ): ResponseVersion
+    @GET("version.json")
+    suspend fun checkVersion(): ResponseVersion
 }
