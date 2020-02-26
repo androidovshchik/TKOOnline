@@ -88,8 +88,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                     presenter.logout(applicationContext)
                 }
                 neutralPressed("Пропустить") {
-                    startActivityNoop<LoginActivity>()
-                    finish()
+                    exit()
                 }
             }.show()
         }
@@ -229,8 +228,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
     override fun onLoggedOut(success: Boolean) {
         waitDialog.dismiss()
         if (success) {
-            startActivityNoop<LoginActivity>()
-            finish()
+            exit()
         } else {
             alertDialog = alert("Не удалось отправить часть данных", "Ошибка отправки") {
                 okButton {}
@@ -239,8 +237,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                     presenter.logout(applicationContext)
                 }
                 negativeButton("Завершить") {
-                    startActivityNoop<LoginActivity>()
-                    finish()
+                    exit()
                 }
             }.show()
         }
@@ -267,6 +264,11 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         if (preferences.showRoute) {
             updateRoute()
         }
+    }
+
+    private fun exit() {
+        startActivityNoop<LoginActivity>()
+        finish()
     }
 
     override fun onDestroy() {

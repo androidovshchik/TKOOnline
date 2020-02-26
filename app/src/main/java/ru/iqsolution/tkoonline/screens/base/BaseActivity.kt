@@ -3,7 +3,6 @@ package ru.iqsolution.tkoonline.screens.base
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.IntentSender
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.MenuItem
@@ -129,7 +128,7 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
                     if (it is ResolvableApiException) {
                         try {
                             it.startResolutionForResult(this, REQUEST_LOCATION)
-                        } catch (e: IntentSender.SendIntentException) {
+                        } catch (e: Throwable) {
                             Timber.e(e)
                         }
                     } else {

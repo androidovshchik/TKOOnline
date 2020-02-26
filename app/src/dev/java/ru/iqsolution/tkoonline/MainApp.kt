@@ -23,7 +23,10 @@ class MainApp : BaseApp() {
     private val preferences: Preferences by instance()
 
     @Suppress("SpellCheckingInspection", "ConstantConditionIf")
-    override fun init() {
+    override fun init(): Boolean {
+        if (ACRA.isACRASenderServiceProcess()) {
+            return false
+        }
         getExternalFilesDir(null)?.let {
             val folder = File(it, "logs").apply {
                 mkdirs()
@@ -64,6 +67,7 @@ class MainApp : BaseApp() {
                         .setEnabled(true)
                 })
         }
+        return true
     }
 
     @Suppress("RedundantOverride")

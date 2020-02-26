@@ -28,11 +28,12 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
 
     override fun loadPlatformsTypes(refresh: Boolean) {
         baseJob.cancelChildren()
-        val header = preferences.authHeader
+        val day = preferences.serverDay
+        val header = preferences.authHeader.orEmpty()
         launch {
             val responseTypes = server.getPhotoTypes(header)
             reference.get()?.onReceivedTypes(responseTypes.data)
-            val responsePlatforms = server.getPlatforms(header, preferences.serverDay)
+            val responsePlatforms = server.getPlatforms(header, day)
             val mapRect = MapRect()
             val primary = mutableListOf<PlatformContainers>()
             val secondary = mutableListOf<PlatformContainers>()

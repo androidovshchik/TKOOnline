@@ -48,11 +48,13 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
 
     override fun getCameraXConfig() = Camera2Config.defaultConfig()
 
-    protected open fun init() {}
+    protected open fun init(): Boolean = true
 
     override fun onCreate() {
         super.onCreate()
-        init()
+        if (!init()) {
+            return
+        }
         if (isOreoPlus()) {
             notificationManager.createNotificationChannel(
                 NotificationChannel(CHANNEL_DEFAULT, CHANNEL_DEFAULT, NotificationManager.IMPORTANCE_LOW).also {

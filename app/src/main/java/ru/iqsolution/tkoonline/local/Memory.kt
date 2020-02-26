@@ -24,8 +24,8 @@ interface Memory {
     var packageId: Int
 
     // Read on background thread
-    val authHeader: String
-        get() = "Bearer $accessToken"
+    val authHeader: String?
+        get() = if (accessToken != null) "Bearer $accessToken" else null
 
     fun logout() {
         mileage = 0f

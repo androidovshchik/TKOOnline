@@ -22,10 +22,7 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
     private val server: Server by instance()
 
     override fun doWork(): Result {
-        val header = preferences.authHeader
-        if (header.endsWith("null", true)) {
-            return Result.success()
-        }
+        val header = preferences.authHeader ?: return Result.success()
         preferences.blockingBulk {
             logout()
         }
