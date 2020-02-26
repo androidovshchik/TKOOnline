@@ -16,10 +16,7 @@ import org.jetbrains.anko.okButton
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.EXTRA_PHOTO_TYPES
-import ru.iqsolution.tkoonline.EXTRA_PLATFORM
-import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
-import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
@@ -88,7 +85,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                     presenter.logout(applicationContext)
                 }
                 neutralPressed("Пропустить") {
-                    exit()
+                    exit(EXTRA_SKIP_AUTH to true)
                 }
             }.show()
         }
@@ -237,7 +234,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                     presenter.logout(applicationContext)
                 }
                 negativeButton("Завершить") {
-                    exit()
+                    exit(EXTRA_SKIP_AUTH to true)
                 }
             }.show()
         }
@@ -266,8 +263,8 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         }
     }
 
-    private fun exit() {
-        startActivityNoop<LoginActivity>()
+    private fun exit(vararg params: Pair<String, Any?>) {
+        startActivityNoop<LoginActivity>(null, *params)
         finish()
     }
 

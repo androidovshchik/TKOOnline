@@ -212,7 +212,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 REQUEST_PHOTO,
                 EXTRA_PHOTO_TITLE to photoType.description,
                 EXTRA_PHOTO_EVENT to event,
-                EXTRA_PHOTO_LINKED_IDS to platform.linkedIds.toList()
+                EXTRA_PHOTO_IDS to platform.linkedIds.toList()
             )
         }
     }
