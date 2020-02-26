@@ -45,7 +45,7 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
 
         fun launch(context: Context) {
             val now = DateTime.now()
-            val delay = Duration(now, now.plusDays(1).withTime(0, 0, 0, 0)).millis
+            val delay = Duration(now, now.plusDays(1).withTime(2, 0, 0, 0)).millis
             val request = OneTimeWorkRequestBuilder<UpdateWorker>()
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .build()
