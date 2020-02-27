@@ -108,18 +108,28 @@ class TelemetryService : BaseService(), TelemetryListener {
         acquireWakeLock()
         locationManager = LocationManager(applicationContext, this)
         broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
-        if (BuildConfig.PROD) {
-            config = TelemetryConfig()
-        } else {
-            fileManager.apply {
-                if (!configFile.exists()) {
-                    config = TelemetryDesc()
-                    writeFile(configFile) {
-                        it.write(gson.toJson(config).toByteArray())
+        config = try {
+            if (BuildConfig.PROD) {
+                TelemetryConfig()
+            } else {
+                fileManager.run {
+                    if (configFile.exists()) {
+                        gson.fromJson(configFile.readText(), TelemetryConfig::class.java)
+                    } else {
+                        launch {
+                            withContext(Dispatchers.IO) {
+                                writeFile(configFile) {
+                                    it.write(gson.toJson(TelemetryDesc()).toByteArray())
+                                }
+                            }
+                        }
+                        TelemetryConfig()
                     }
                 }
-                gson.fromJson(fileManager)
             }
+        } catch (e: Throwable) {
+            Timber.e(e)
+            TelemetryConfig()
         }
         preferenceHolder.init(preferences)
         startTelemetry()
