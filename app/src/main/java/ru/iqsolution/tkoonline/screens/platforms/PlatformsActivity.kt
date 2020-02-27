@@ -12,6 +12,7 @@ import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platforms.*
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -79,13 +80,13 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             if (platformClicked) {
                 return@setOnClickListener
             }
-            alertDialog = alert("Загрузить данные на сервер?", "Выход") {
+            alertDialog = alert("Отправить данные на сервер?", "Выход") {
+                neutralPressed("Выйти") {
+                    exit(EXTRA_SKIP_AUTH to true)
+                }
                 okButton {
                     waitDialog.show()
                     presenter.logout(applicationContext)
-                }
-                neutralPressed("Пропустить") {
-                    exit(EXTRA_SKIP_AUTH to true)
                 }
             }.show()
         }
@@ -227,14 +228,14 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         if (success) {
             exit()
         } else {
-            alertDialog = alert("Не удалось отправить часть данных", "Ошибка отправки") {
-                okButton {}
-                neutralPressed("Повторить") {
+            alertDialog = alert("Не все данные отправлены на сервер", "Ошибка отправки") {
+                neutralPressed("Выйти") {
+                    exit(EXTRA_SKIP_AUTH to true)
+                }
+                cancelButton {}
+                positiveButton("Повторить") {
                     waitDialog.show()
                     presenter.logout(applicationContext)
-                }
-                negativeButton("Завершить") {
-                    exit(EXTRA_SKIP_AUTH to true)
                 }
             }.show()
         }

@@ -191,8 +191,8 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
             }
         } else {
             alert("Не удалось скачать обновление", "Ошибка обновления") {
-                okButton {}
-                neutralPressed("Повторить") {
+                cancelButton {}
+                positiveButton("Повторить") {
                     waitDialog.show()
                     presenter.installUpdate(applicationContext)
                 }

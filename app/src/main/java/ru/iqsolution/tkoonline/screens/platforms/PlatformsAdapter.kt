@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.item_platform.view.*
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
 import ru.iqsolution.tkoonline.PATTERN_TIME
 import ru.iqsolution.tkoonline.R
@@ -63,9 +61,11 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: PlatformContainers) {
             val size = if (item.meters < 80) maxSize else minSize
-            itemView.backgroundColor = if (item.highlighted) {
-                Color.parseColor("#804D4A5B")
-            } else Color.WHITE
+            itemView.setBackgroundColor(
+                if (item.highlighted) {
+                    Color.parseColor("#804D4A5B")
+                } else Color.WHITE
+            )
             address.text = item.address
             range.text = appContext.getString(
                 R.string.platform_range_n,
@@ -77,7 +77,7 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
                     height = size
                     width = size
                 }
-                backgroundResource = item.toPlatformStatus().drawable
+                setBackgroundResource(item.toPlatformStatus().drawable)
             }
         }
     }
