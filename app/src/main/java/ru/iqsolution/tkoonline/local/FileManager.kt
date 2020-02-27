@@ -23,21 +23,21 @@ import java.util.*
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class FileManager(context: Context) {
 
-    val externalDir = context.getExternalFilesDir(null)?.apply {
-        mkdirs()
-    }
+    val externalDir = context.getExternalFilesDir(null)?.also { it.mkdirs() }
 
     val internalDir: File = context.filesDir
 
-    val photosDir = File(internalDir, "photos").apply {
-        mkdirs()
-    }
+    val photosDir: File
+        get() = File(internalDir, "photos").also { it.mkdirs() }
 
-    val apkFile = File(externalDir, "app.apk")
+    val configFile: File
+        get() = File(externalDir, "config.json")
 
-    fun getRandomName(): String {
-        return "${UUID.randomUUID()}.jpg"
-    }
+    val apkFile: File
+        get() = File(externalDir, "app.apk")
+
+    val randomName: String
+        get() = "${UUID.randomUUID()}.jpg"
 
     fun copyDb(context: Context?): Boolean {
         context?.apply {

@@ -32,9 +32,9 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
         }
     }
 
-    fun requestUpdates() {
+    fun requestUpdates(interval: Long) {
         locationClient.also {
-            it.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, 0f, this)
+            it.requestLocationUpdates(LocationManager.GPS_PROVIDER, interval, 0f, this)
             it.registerGnssStatusCallback(gnssCallback)
         }
     }
@@ -96,10 +96,5 @@ class LocationManager(context: Context, listener: TelemetryListener) : android.l
         override fun onStopped() {
             reference.get()?.onLocationStop(false)
         }
-    }
-
-    companion object {
-
-        private const val LOCATION_INTERVAL = 5000L
     }
 }

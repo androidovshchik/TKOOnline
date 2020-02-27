@@ -21,7 +21,7 @@ class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(conte
             fileManager.externalDir, if (photoEvent.id != null) {
                 File(photoEvent.path).name
             } else {
-                fileManager.getRandomName()
+                fileManager.randomName
             }
         )
     }
@@ -32,9 +32,11 @@ class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(conte
     override fun saveEvent(photoEvent: PhotoEvent, linkedIds: List<Int>, externalFile: File) {
         val internalPhoto = File(fileManager.photosDir, externalFile.name)
         photoEvent.apply {
-            tokenId = preferences.tokenId
-            latitude = preferences.latitude.toDouble()
-            longitude = preferences.longitude.toDouble()
+            preferences.also {
+                tokenId = it.tokenId
+                latitude = it.latitude.toDouble()
+                longitude = it.longitude.toDouble()
+            }
             // previously it may be empty when there is a new event
             path = internalPhoto.path
             whenTime = DateTime.now()
