@@ -191,9 +191,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                     if (eventDelay > 0L) {
                         Timber.i("Event after delay $eventDelay")
                         preferenceHolder.run {
-                            return@addEventSync LocationEvent(it, tokenId, packageId, mileage).also { event ->
-                                // debug info
-                                event.waiting = true
+                            return@addEventSync LocationEvent(it, tokenId, packageId, mileage, true).also { event ->
                                 packageId++
                                 lastEventTime = event.data.whenTime
                             }

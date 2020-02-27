@@ -70,11 +70,12 @@ class LocationEvent() : SendEvent {
             return false
         }
 
-    constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Float) : this() {
+    constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Float, wait: Boolean = false) : this() {
         tokenId = token
         packageId = pckg
         // debug info
         state = basePoint.state.name
+        waiting = wait
         data = Data().apply {
             // time is correct here
             whenTime = DateTime.now()

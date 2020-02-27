@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.models
 
 import android.location.Location
 import android.util.SparseIntArray
+import org.joda.time.DateTime
 import org.joda.time.Duration
 import timber.log.Timber
 import kotlin.math.absoluteValue
@@ -150,6 +151,12 @@ class BasePoint(
                             }
                         }
                     }
+                }
+            }
+            TelemetryState.STOPPING -> {
+                val now = DateTime.now()
+                if (now.millis - locationTime.withZone(now.zone).millis >= config.parkingTime) {
+                    return TelemetryState.PARKING
                 }
             }
             else -> {
