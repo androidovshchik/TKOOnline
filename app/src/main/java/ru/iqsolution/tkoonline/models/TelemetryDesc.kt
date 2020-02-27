@@ -15,7 +15,7 @@ class TelemetryDesc : TelemetryConfig() {
     val _minSpeed = "Мин скорость для \"Движения\" или \"Остановки\""
 
     @SerializedName("min_time_desc")
-    val _minTime = "Мин время для определения minSpeed из отрезков"
+    val _minTime = "Мин время для min_speed из отрезков location_interval"
 
     @SerializedName("parking_time_desc")
     val _parkingTime = "Мин время для \"Стоянки\" только в \"Остановке\""
@@ -33,8 +33,8 @@ class TelemetryDesc : TelemetryConfig() {
     val _locationMaxDelay = "Мин время для сброса базовой т. без геолокации"
 
     @SerializedName("location_interval_desc")
-    val _locationInterval = ""
+    val _locationInterval = "Мин время для обновления геолокации"
 
     @SerializedName("timer_interval_desc")
-    val _timerInterval = "Цикл работы таймера телеметрии"
+    val _timerInterval = "Мин время таймера телеметрии"
 }

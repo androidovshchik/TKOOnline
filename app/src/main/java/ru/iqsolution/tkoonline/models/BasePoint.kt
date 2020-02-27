@@ -107,7 +107,7 @@ class BasePoint(
         if (seconds > 0) {
             speedMap.put(
                 seconds.toInt(), if (millis > 0) {
-                    (MMS2KMH * space / millis).roundToInt()
+                    (M_MS2KM_H * space / millis).roundToInt()
                 } else 0
             )
         }
@@ -123,20 +123,20 @@ class BasePoint(
     /**
      * Should be called after [updateLocation]
      */
-    fun replaceWith(): TelemetryState? {
-        if (distance >= BASE_DISTANCE) {
+    fun replaceWith(config: TelemetryConfig): TelemetryState? {
+        if (distance >= config.baseDistance) {
             return TelemetryState.MOVING
         }
-        getMinSpeed(MIN_TIME)?.let {
+        getMinSpeed(config.minTime)?.let {
             Timber.i("Min speed is $it")
             if (state != TelemetryState.MOVING) {
-                if (it > MIN_SPEED) {
+                if (it > config.minSpeed) {
                     return TelemetryState.MOVING
                 }
             }
             // parking cannot be replaced with stopping
             if (state != TelemetryState.STOPPING && state != TelemetryState.PARKING) {
-                if (it < MIN_SPEED) {
+                if (it < config.minSpeed) {
                     return TelemetryState.STOPPING
                 }
             }
@@ -145,8 +145,8 @@ class BasePoint(
             TelemetryState.MOVING -> {
                 baseDirection?.let { b ->
                     currentDirection?.let { c ->
-                        if ((c - b).absoluteValue >= BASE_DEGREE) {
-                            if (lastSpeed >= MIN_SPEED) {
+                        if ((c - b).absoluteValue >= config.baseDegree) {
+                            if (lastSpeed >= config.minSpeed) {
                                 return TelemetryState.MOVING
                             }
                         }
@@ -155,7 +155,7 @@ class BasePoint(
             }
             TelemetryState.STOPPING -> {
                 val now = DateTime.now()
-                if (now.millis - locationTime.withZone(now.zone).millis >= PARKING_TIME) {
+                if (now.millis - locationTime.withZone(now.zone).millis >= config.parkingTime * 1000L) {
                     return TelemetryState.PARKING
                 }
             }
@@ -202,27 +202,6 @@ class BasePoint(
 
     companion object {
 
-        private const val MMS2KMH = 3600f
-
-        /**
-         * Событие стоянка
-         * Данное событие генерируется в состоянии остановка если данное состояние не изменено в течение 2 минут
-         */
-        private const val PARKING_TIME = 2 * 60_000L
-
-        // Направление движения отклоняется от базового на величину 5 градусов
-        private const val BASE_DEGREE = 5
-
-        // Скорость выше параметра минимальной скорости (10км/ч)
-        private const val MIN_SPEED = 10
-
-        // минимальное время - 30 секунд
-        private const val MIN_TIME = 30
-
-        /**
-         * Событие пройдена дистанция
-         * Данное событие генерируется только в состоянии движения при перемещении автомобиля от базовой точки на расстояние больше 200 метров.
-         */
-        private const val BASE_DISTANCE = 200
+        private const val M_MS2KM_H = 3600f
     }
 }
