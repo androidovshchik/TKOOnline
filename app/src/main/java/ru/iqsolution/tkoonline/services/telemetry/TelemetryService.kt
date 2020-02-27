@@ -109,7 +109,6 @@ class TelemetryService : BaseService(), TelemetryListener {
                 .build()
         )
         acquireWakeLock()
-        locationManager = LocationManager(applicationContext, this)
         broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
         config = try {
             if (BuildConfig.PROD) {
@@ -138,6 +137,7 @@ class TelemetryService : BaseService(), TelemetryListener {
             Timber.e(e)
             TelemetryConfig()
         }
+        locationManager = LocationManager(applicationContext, this)
         preferenceHolder.init(preferences)
         startTelemetry()
         factory.apply {

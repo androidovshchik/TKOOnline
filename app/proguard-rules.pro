@@ -5,7 +5,7 @@
 # -keep class ru.iqsolution.tkoonline.** { *; }
 
 # keep telemetry desc
--keepclassmembers ru.iqsolution.tkoonline.models.TelemetryDesc { *; }
+-keep class ru.iqsolution.tkoonline.models.TelemetryDesc { *; }
 
 # common case
 -dontwarn org.slf4j.**
