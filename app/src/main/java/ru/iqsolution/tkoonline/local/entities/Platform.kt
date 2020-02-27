@@ -90,17 +90,4 @@ open class Platform : Serializable, Container, Location<Double> {
         get() = !BuildConfig.PROD || status != PlatformStatus.NO_TASK.id
 
     fun toPlatformStatus() = PlatformStatus.fromId(status)
-
-    override fun toString(): String {
-        return "Platform(" +
-            "kpId=$kpId, " +
-            "linkedKpId=$linkedKpId, " +
-            "latitude=$latitude, " +
-            "longitude=$longitude, " +
-            "containerType='$containerType', " +
-            "containerVolume=$containerVolume, " +
-            "containerCount=$containerCount, " +
-            "status=$status" +
-            ")"
-    }
 }

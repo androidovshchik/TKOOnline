@@ -36,5 +36,5 @@ class TelemetryDesc : TelemetryConfig() {
     val _locationInterval = "Мин время для обновления геолокации"
 
     @SerializedName("timer_interval_desc")
-    val _timerInterval = "Мин время таймера телеметрии"
+    val _timerInterval = "Мин время для таймера телеметрии"
 }

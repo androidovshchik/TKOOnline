@@ -81,11 +81,4 @@ class PlatformContainers() : Platform() {
         val dLon = (l.longitude - longitude) * PI / 180
         meters = 6378137 * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dLon))
     }
-
-    override fun toString(): String {
-        return "PlatformContainers(" +
-            "linkedIds=$linkedIds, " +
-            "errors=$errors, " +
-            ") ${super.toString()}"
-    }
 }

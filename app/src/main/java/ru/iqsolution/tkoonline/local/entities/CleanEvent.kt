@@ -86,19 +86,4 @@ class CleanEvent() : Container, SendEvent {
         // required for initialization only
         containerType = ContainerType.UNKNOWN.id
     }
-
-    override fun toString(): String {
-        return "CleanEvent(" +
-            "id=$id, " +
-            "tokenId=$tokenId, " +
-            "kpId=$kpId, " +
-            "linkedId=$linkedId, " +
-            "relatedId=$relatedId, " +
-            "whenTime=$whenTime, " +
-            "containerType='$containerType', " +
-            "containerVolume=$containerVolume, " +
-            "containerCount=$containerCount, " +
-            "sent=$sent" +
-            ")"
-    }
 }
