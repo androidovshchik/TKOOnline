@@ -8,7 +8,6 @@ import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.activity_problem.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
-import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
 import org.kodein.di.generic.instance
@@ -63,7 +62,7 @@ class ProblemActivity : BaseActivity<ProblemContract.Presenter>(), ProblemContra
                 it.setMargins(dip(20), 0, dip(20), dip(20))
             }
             text = photoType.description
-            backgroundResource = R.drawable.button_gray
+            setBackgroundResource(R.drawable.button_gray)
             setOnClickListener {
                 startActivityNoop<PhotoActivity>(
                     REQUEST_PHOTO,

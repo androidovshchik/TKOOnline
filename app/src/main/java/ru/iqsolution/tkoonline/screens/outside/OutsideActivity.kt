@@ -7,7 +7,6 @@ import android.widget.Button
 import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.activity_outside.*
 import kotlinx.android.synthetic.main.include_toolbar.*
-import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
 import org.kodein.di.generic.instance
@@ -54,7 +53,7 @@ class OutsideActivity : BaseActivity<OutsideContract.Presenter>(), OutsideContra
                 it.setMargins(dip(20), 0, dip(20), dip(20))
             }
             text = photoType.description
-            backgroundResource = if (photoType.isError == 1) R.drawable.button_gray else R.drawable.button_green
+            setBackgroundResource(if (photoType.isError == 1) R.drawable.button_gray else R.drawable.button_green)
             setOnClickListener {
                 startActivityNoop<PhotoActivity>(
                     REQUEST_PHOTO,
