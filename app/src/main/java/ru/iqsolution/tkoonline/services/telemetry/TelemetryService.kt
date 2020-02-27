@@ -29,11 +29,10 @@ import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.*
 import ru.iqsolution.tkoonline.local.Database
+import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
-import ru.iqsolution.tkoonline.models.BasePoint
-import ru.iqsolution.tkoonline.models.SimpleLocation
-import ru.iqsolution.tkoonline.models.TelemetryState
+import ru.iqsolution.tkoonline.models.*
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.BaseService
@@ -58,6 +57,8 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private val db: Database by instance()
 
+    private val fileManager: FileManager by instance()
+
     private val preferences: Preferences by instance()
 
     private val gson: Gson by instance()
@@ -65,6 +66,8 @@ class TelemetryService : BaseService(), TelemetryListener {
     private lateinit var locationManager: LocationManager
 
     private lateinit var broadcastManager: LocalBroadcastManager
+
+    private lateinit var config: TelemetryConfig
 
     private var timer: ScheduledFuture<*>? = null
 
@@ -103,8 +106,21 @@ class TelemetryService : BaseService(), TelemetryListener {
                 .build()
         )
         acquireWakeLock()
-        broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
         locationManager = LocationManager(applicationContext, this)
+        broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
+        if (BuildConfig.PROD) {
+            config = TelemetryConfig()
+        } else {
+            fileManager.apply {
+                if (!configFile.exists()) {
+                    config = TelemetryDesc()
+                    writeFile(configFile) {
+                        it.write(gson.toJson(config).toByteArray())
+                    }
+                }
+                gson.fromJson(fileManager)
+            }
+        }
         preferenceHolder.init(preferences)
         startTelemetry()
         factory.apply {
@@ -171,7 +187,6 @@ class TelemetryService : BaseService(), TelemetryListener {
                     checkCount()
                     return@scheduleAtFixedRate
                 }
-                Timber.d(it.toString())
                 val user = it.token.carId.toString()
                 val pswd = it.token.token
                 it.location.authKey = it.token.token
@@ -205,7 +220,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                     abortConnection()
                 }
             }
-        }, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS)
+        }, 0L, config.timerInterval, TimeUnit.MILLISECONDS)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -223,7 +238,7 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     override fun startTelemetry() {
         isRunning = true
-        locationManager.requestUpdates()
+        locationManager.requestUpdates(config.locationInterval)
     }
 
     override fun stopTelemetry() {
@@ -271,19 +286,23 @@ class TelemetryService : BaseService(), TelemetryListener {
                 }
                 addEventSync {
                     if (it != null) {
-                        val space = it.updateLocation(newLocation)
-                        val distance: Float
-                        if (it.state != TelemetryState.PARKING) {
-                            distance = preferenceHolder.mileage + space
-                            preferenceHolder.mileage = distance
-                        } else {
-                            distance = preferenceHolder.mileage
-                        }
-                        it.replaceWith()?.let { state ->
-                            val event = preferenceHolder.insertEvent(it, distance, false)
-                            Timber.i("Replace state with $state")
-                            basePoint = BasePoint(newLocation, state)
-                            return@addEventSync event
+                        preferenceHolder.apply {
+                            val space = it.updateLocation(newLocation)
+                            val distance: Float
+                            if (it.state != TelemetryState.PARKING) {
+                                distance = mileage + space
+                                mileage = distance
+                            } else {
+                                distance = mileage
+                            }
+                            it.replaceWith(config)?.let { state ->
+                                Timber.i("Replace state with $state")
+                                basePoint = BasePoint(newLocation, state)
+                                return@addEventSync LocationEvent(it, tokenId, packageId, distance).also { event ->
+                                    packageId++
+                                    lastEventTime = event.data.whenTime
+                                }
+                            }
                         }
                     } else {
                         Timber.i("Init base point")
@@ -372,41 +391,9 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
-    private fun PreferenceHolder.insertEvent(
-        basePoint: BasePoint,
-        distance: Float = mileage,
-        waiting: Boolean = true
-    ): LocationEvent? {
-        val event = LocationEvent(basePoint, tokenId, packageId, distance).also {
-            // debug info
-            it.waiting = waiting
-        }
-        packageId++
-        lastEventTime = event.data.whenTime
-        return event
-    }
-
     companion object {
 
         private const val DEFAULT_PORT = 5672
-
-        private const val TIMER_INTERVAL = 1500L
-
-        // Для состояния стоянка - 5 минут
-        private const val PARKING_DELAY = 5 * 60_000L
-
-        // Для состояния движения и остановка - 1 минута
-        private const val MOVING_DELAY = 60_000L
-
-        /**
-         * Min timeout of no input locations
-         */
-        private const val LOCATION_MIN_DELAY = 15_000L
-
-        /**
-         * Max timeout of no input locations
-         */
-        private const val LOCATION_MAX_DELAY = 60_000L
 
         /**
          * @return true if service is running

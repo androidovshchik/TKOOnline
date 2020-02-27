@@ -13,7 +13,6 @@ import androidx.core.view.isVisible
 import coil.api.load
 import coil.transform.CircleCropTransformation
 import kotlinx.android.synthetic.main.merge_gallery.view.*
-import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.leftPadding
 import ru.iqsolution.tkoonline.R
@@ -73,11 +72,13 @@ class GalleryLayout : RelativeLayout {
             R.string.platform_gallery,
             photoType.description.toLowerCase()
         )
-        mark.backgroundResource = when (photoType) {
-            PhotoType.Default.BEFORE -> R.drawable.ic_rect_red
-            PhotoType.Default.AFTER -> R.drawable.ic_rect_green
-            else -> 0
-        }
+        mark.setBackgroundResource(
+            when (photoType) {
+                PhotoType.Default.BEFORE -> R.drawable.ic_rect_red
+                PhotoType.Default.AFTER -> R.drawable.ic_rect_green
+                else -> 0
+            }
+        )
     }
 
     fun updatePhotos(events: List<PhotoEvent>) {
