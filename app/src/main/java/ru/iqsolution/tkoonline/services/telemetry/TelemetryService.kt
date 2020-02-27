@@ -149,12 +149,12 @@ class TelemetryService : BaseService(), TelemetryListener {
             if (!checkActivity()) {
                 return@scheduleAtFixedRate
             }
-            val locationDelay = locationCounter.incrementAndGet() * TIMER_INTERVAL
-            if (locationDelay > LOCATION_MIN_DELAY) {
+            val locationDelay = locationCounter.incrementAndGet() * config.timerInterval
+            if (locationDelay > config.locationMinDelay) {
                 onLocationAvailability(false)
             }
             addEventSync {
-                if (locationDelay > LOCATION_MAX_DELAY) {
+                if (locationDelay > config.locationMaxDelay) {
                     lastEventTime = null
                     basePoint = null
                     if (!BuildConfig.PROD) {
@@ -168,14 +168,14 @@ class TelemetryService : BaseService(), TelemetryListener {
                     when (it.state) {
                         TelemetryState.MOVING, TelemetryState.STOPPING -> {
                             val now = DateTime.now()
-                            if (now.millis - lastTime.withZone(now.zone).millis >= MOVING_DELAY) {
-                                eventDelay = MOVING_DELAY
+                            if (now.millis - lastTime.withZone(now.zone).millis >= config.movingDelay) {
+                                eventDelay = config.movingDelay
                             }
                         }
                         TelemetryState.PARKING -> {
                             val now = DateTime.now()
-                            if (now.millis - lastTime.withZone(now.zone).millis >= PARKING_DELAY) {
-                                eventDelay = PARKING_DELAY
+                            if (now.millis - lastTime.withZone(now.zone).millis >= config.parkingDelay) {
+                                eventDelay = config.parkingDelay
                             }
                         }
                         else -> {
@@ -183,7 +183,6 @@ class TelemetryService : BaseService(), TelemetryListener {
                     }
                     if (eventDelay > 0L) {
                         Timber.i("Event after delay $eventDelay")
-                        return@addEventSync preferenceHolder.insertEvent(it)
                     }
                 }
                 null

@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
 
+@Suppress("PropertyName")
 open class TelemetryConfig {
 
     /**
@@ -28,27 +29,37 @@ open class TelemetryConfig {
      * Данное событие генерируется в состоянии остановка если данное состояние не изменено в течение 2 минут
      */
     @SerializedName("parking_time.seconds")
-    val parkingTime = 2 * 60
+    private val _parkingTime = 2 * 60
+
+    val parkingTime = _parkingTime * 1000L
 
     // Для состояния стоянка - 5 минут
     @SerializedName("parking_delay.seconds")
-    val parkingDelay = 5 * 60
+    private val _parkingDelay = 5 * 60
+
+    val parkingDelay = _parkingDelay * 1000L
 
     // Для состояния движения и остановка - 1 минута
     @SerializedName("moving_delay.seconds")
-    val movingDelay = 60
+    private val _movingDelay = 60
+
+    val movingDelay = _movingDelay * 1000L
 
     /**
      * Min timeout of no input locations
      */
     @SerializedName("location_min_delay.seconds")
-    val locationMinDelay = 15
+    private val _locationMinDelay = 15
+
+    val locationMinDelay = _locationMinDelay * 1000L
 
     /**
      * Max timeout of no input locations
      */
     @SerializedName("location_max_delay.seconds")
-    val locationMaxDelay = 60
+    private val _locationMaxDelay = 60
+
+    val locationMaxDelay = _locationMaxDelay * 1000L
 
     @SerializedName("location_interval.millis")
     val locationInterval = 5000L
