@@ -18,7 +18,9 @@ class MapWebView : WebView {
         context,
         attrs,
         defStyleAttr
-    )
+    ) {
+        init(attrs)
+    }
 
     @Suppress("unused")
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -27,9 +29,12 @@ class MapWebView : WebView {
         attrs,
         defStyleAttr,
         defStyleRes
-    )
+    ) {
+        init(attrs)
+    }
 
-    init {
+    @Suppress("UNUSED_PARAMETER")
+    private fun init(attrs: AttributeSet?) {
         isNestedScrollingEnabled = true
         webViewClient = MapWebClient()
         settings.apply {

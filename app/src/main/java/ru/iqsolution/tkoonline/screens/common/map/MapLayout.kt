@@ -26,8 +26,6 @@ class MapLayout : FrameLayout, MapListener {
 
     private var isReady = false
 
-    private var hasInteracted = true
-
     private val calls = mutableListOf<String>()
 
     private val readyRunnable = Runnable {
@@ -40,12 +38,30 @@ class MapLayout : FrameLayout, MapListener {
         }
     }
 
+    private var hasInteracted = true
+        set(value) {
+            field = value
+            map_location.apply {
+                setBackgroundResource(
+                    if (value) {
+                        setImageResource(R.drawable.ic_direction_black)
+                        R.drawable.control_oval
+                    } else {
+                        setImageResource(R.drawable.ic_direction_white)
+                        R.drawable.control_oval_dark
+                    }
+                )
+            }
+        }
+
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
         context,
         attrs,
         defStyleAttr
-    )
+    ) {
+        init(attrs)
+    }
 
     @Suppress("unused")
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -54,18 +70,20 @@ class MapLayout : FrameLayout, MapListener {
         attrs,
         defStyleAttr,
         defStyleRes
-    )
+    ) {
+        init(attrs)
+    }
 
-    init {
+    @Suppress("UNUSED_PARAMETER")
+    private fun init(attrs: AttributeSet?) {
         WebView.setWebContentsDebuggingEnabled(!BuildConfig.PROD)
         View.inflate(context, R.layout.merge_map, this)
+        hasInteracted = true
         map_web.addJavascriptInterface(MapJavaScript(this), "Android")
         map_plus.setOnClickListener {
-            hasInteracted = true
             zoomIn()
         }
         map_minus.setOnClickListener {
-            hasInteracted = true
             zoomOut()
         }
         map_location.setOnClickListener {
