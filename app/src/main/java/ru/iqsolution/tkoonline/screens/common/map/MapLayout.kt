@@ -40,17 +40,19 @@ class MapLayout : FrameLayout, MapListener {
 
     private var hasInteracted = true
         set(value) {
-            field = value
-            map_location.apply {
-                setBackgroundResource(
-                    if (value) {
-                        setImageResource(R.drawable.ic_direction_black)
-                        R.drawable.control_oval
-                    } else {
-                        setImageResource(R.drawable.ic_direction_white)
-                        R.drawable.control_oval_dark
-                    }
-                )
+            if (field != value) {
+                field = value
+                map_location.apply {
+                    setBackgroundResource(
+                        if (value) {
+                            setImageResource(R.drawable.ic_direction_black)
+                            R.drawable.control_oval
+                        } else {
+                            setImageResource(R.drawable.ic_direction_white)
+                            R.drawable.control_oval_dark
+                        }
+                    )
+                }
             }
         }
 
@@ -140,13 +142,13 @@ class MapLayout : FrameLayout, MapListener {
         runCall("_1_mapZoomOut($duration)")
     }
 
-    fun moveTo(location: SimpleLocation?, zoom: Int = 12, duration: Int = 500) {
+    fun moveTo(location: SimpleLocation?, zoom: Int? = null, duration: Int = 500) {
         location?.let {
             moveTo(it.latitude, it.longitude, zoom, duration)
         }
     }
 
-    fun moveTo(latitude: Double, longitude: Double, zoom: Int = 12, duration: Int = 500) {
+    fun moveTo(latitude: Double, longitude: Double, zoom: Int? = null, duration: Int = 500) {
         runCall("_2_mapMoveTo($latitude, $longitude, $zoom, $duration)")
     }
 

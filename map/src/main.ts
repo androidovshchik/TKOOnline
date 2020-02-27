@@ -98,7 +98,7 @@ window._1_mapZoomOut = function (duration: number = 500) {
 };
 
 // @ts-ignore
-window._2_mapMoveTo = function (latitude: number, longitude: number, zoom: number = 12, duration: number = 800) {
+window._2_mapMoveTo = function (latitude: number, longitude: number, zoom: number = null, duration: number = 800) {
     if (map == null) {
         return
     }
