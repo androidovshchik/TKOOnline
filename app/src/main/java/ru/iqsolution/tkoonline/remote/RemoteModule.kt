@@ -8,8 +8,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.joda.time.DateTime
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
+import org.kodein.di.generic.factory
 import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
 import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -19,12 +19,17 @@ import java.util.concurrent.TimeUnit
 
 val remoteModule = Kodein.Module("remote") {
 
-    bind<Gson>() with provider {
+    bind<Gson>() with factory { pretty: Boolean ->
         GsonBuilder()
             .setLenient()
             .setExclusionStrategies(SerializedNameStrategy())
             .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
             .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
+            .apply {
+                if (pretty) {
+                    setPrettyPrinting()
+                }
+            }
             .create()
     }
 

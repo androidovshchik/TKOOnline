@@ -35,7 +35,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
 
     override val presenter: PlatformPresenter by instance()
 
-    private val gson: Gson by instance()
+    private val gson: Gson by instance(arg = false)
 
     private lateinit var platform: PlatformContainers
 

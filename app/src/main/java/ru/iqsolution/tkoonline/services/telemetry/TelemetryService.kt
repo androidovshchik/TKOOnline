@@ -64,7 +64,7 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private val preferences: Preferences by instance()
 
-    private val gson: Gson by instance()
+    private val gson: Gson by instance(arg = true)
 
     private lateinit var locationManager: LocationManager
 

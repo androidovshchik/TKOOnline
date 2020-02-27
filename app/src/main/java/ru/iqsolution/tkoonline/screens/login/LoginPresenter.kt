@@ -31,7 +31,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     private val fileManager: FileManager by instance()
 
-    private val gson: Gson by instance()
+    private val gson: Gson by instance(arg = false)
 
     private val activityManager = context.activityManager
 

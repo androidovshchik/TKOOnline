@@ -40,7 +40,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
 
     override val presenter: PlatformsPresenter by instance()
 
-    private val gson: Gson by instance()
+    private val gson: Gson by instance(arg = false)
 
     private val platformsAdapter: PlatformsAdapter by instance()
 
@@ -82,7 +82,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             }
             alertDialog = alert("Отправить данные на сервер?", "Выход") {
                 neutralPressed("Выйти") {
-                    exit(EXTRA_SKIP_AUTH to true)
+                    exit()
                 }
                 okButton {
                     waitDialog.show()
@@ -230,7 +230,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         } else {
             alertDialog = alert("Не все данные отправлены на сервер", "Ошибка отправки") {
                 neutralPressed("Выйти") {
-                    exit(EXTRA_SKIP_AUTH to true)
+                    exit()
                 }
                 cancelButton {}
                 positiveButton("Повторить") {
@@ -264,8 +264,8 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         }
     }
 
-    private fun exit(vararg params: Pair<String, Any?>) {
-        startActivityNoop<LoginActivity>(null, *params)
+    private fun exit() {
+        startActivityNoop<LoginActivity>(null, EXTRA_SKIP_AUTH to true)
         finish()
     }
 
