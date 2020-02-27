@@ -7,11 +7,11 @@ import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.work.WorkInfo
 import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.*
 import org.jetbrains.anko.activityManager
 import org.joda.time.DateTime
 import org.kodein.di.generic.instance
+import retrofit2.awaitResponse
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.isRunning
@@ -54,19 +54,27 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         }
         val qrCode = try {
             gson.fromJson(data, QrCode::class.java)
-        } catch (e: JsonSyntaxException) {
+        } catch (e: Throwable) {
             Timber.e(e)
             return
         }
         Timber.d("QrCode: $data")
         qrCodeJson = data
         baseJob.cancelChildren()
+        val header = preferences.authHeader
+        val lockPassword = preferences.lockPassword?.toInt()
         launch {
-            val responseAuth = server.login(
-                qrCode.carId.toString(),
-                qrCode.pass,
-                preferences.lockPassword?.toInt()
-            )
+            if (header != null) {
+                try {
+                    val responseLogout = server.logout(header).awaitResponse()
+                    Timber.d("Logout code: ${responseLogout.code()}")
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                    return@launch
+                }
+                preferences.accessToken = null
+            }
+            val responseAuth = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
             preferences.bulk {
                 accessToken = responseAuth.accessKey
                 expiresWhen = responseAuth.expireTime
@@ -84,6 +92,9 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                         expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE)
                     })
                 }
+                // telemetry
+                mileage = 0f
+                packageId = 0
             }
             reference.get()?.onLoggedIn()
         }
@@ -94,7 +105,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
             try {
                 // short toast time
                 delay(2000)
-            } catch (e: CancellationException) {
+            } catch (e: Throwable) {
             }
             qrCodeJson = null
         }
