@@ -2,7 +2,9 @@ package ru.iqsolution.tkoonline.local
 
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel
+import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
+import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 
@@ -89,6 +91,25 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
 
     // Logout on background thread
     var enableLight by booleanPref(false, "0x15")
+
+    val isLoggedIn: Boolean
+        get() = try {
+            check(accessToken != null)
+            expiresWhen.let {
+                check(it != null)
+                val today = DateTime.now().withTimeAtStartOfDay()
+                check(DateTime.parse(it, PATTERN_DATETIME_ZONE).withZone(today.zone).millis >= today.millis)
+            }
+            check(serverTime != null)
+            check(elapsedTime > 0L)
+            check(vehicleNumber != null)
+            check(queName != null)
+            check(carId > 0)
+            check(tokenId > 0L)
+            true
+        } catch (e: Throwable) {
+            false
+        }
 
     val serverDay: String
         get() = serverTime?.substringBefore("T").toString()

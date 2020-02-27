@@ -93,11 +93,14 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 // awaiting telemetry service
                 return if (runAttemptCount >= 2) Result.failure() else Result.retry()
             }
-            try {
-                server.logout(preferences.authHeader).execute()
-            } catch (e: Throwable) {
-                Timber.e(e)
-                hasErrors = true
+            val header = preferences.authHeader
+            if (header != null) {
+                try {
+                    server.logout(header).execute()
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                    hasErrors = true
+                }
             }
         }
         return when {

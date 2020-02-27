@@ -70,6 +70,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                     Timber.d("Logout code: ${responseLogout.code()}")
                 } catch (e: Throwable) {
                     Timber.e(e)
+                    reference.get()?.showError("Не удалось авторизоваться")
+                    reset()
                     return@launch
                 }
                 preferences.accessToken = null
