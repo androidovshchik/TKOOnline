@@ -32,7 +32,10 @@ import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
-import ru.iqsolution.tkoonline.models.*
+import ru.iqsolution.tkoonline.models.BasePoint
+import ru.iqsolution.tkoonline.models.SimpleLocation
+import ru.iqsolution.tkoonline.models.TelemetryConfig
+import ru.iqsolution.tkoonline.models.TelemetryState
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.BaseService
@@ -94,8 +97,8 @@ class TelemetryService : BaseService(), TelemetryListener {
         return null
     }
 
-    @Suppress("ConstantConditionIf")
     @SuppressLint("MissingPermission")
+    @Suppress("ConstantConditionIf", "SpellCheckingInspection")
     override fun onCreate() {
         super.onCreate()
         startForeground(
@@ -119,7 +122,11 @@ class TelemetryService : BaseService(), TelemetryListener {
                         launch {
                             withContext(Dispatchers.IO) {
                                 writeFile(configFile) {
-                                    it.write(gson.toJson(TelemetryDesc()).toByteArray())
+                                    it.write(
+                                        gson.toJson(
+                                            Class.forName("$packageName.models.TelemetryDesc").newInstance()
+                                        ).toByteArray()
+                                    )
                                 }
                             }
                         }
@@ -183,6 +190,14 @@ class TelemetryService : BaseService(), TelemetryListener {
                     }
                     if (eventDelay > 0L) {
                         Timber.i("Event after delay $eventDelay")
+                        preferenceHolder.run {
+                            return@addEventSync LocationEvent(it, tokenId, packageId, mileage).also { event ->
+                                // debug info
+                                event.waiting = true
+                                packageId++
+                                lastEventTime = event.data.whenTime
+                            }
+                        }
                     }
                 }
                 null
