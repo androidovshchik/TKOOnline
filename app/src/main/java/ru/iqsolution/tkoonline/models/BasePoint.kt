@@ -2,7 +2,6 @@ package ru.iqsolution.tkoonline.models
 
 import android.location.Location
 import android.util.SparseIntArray
-import org.joda.time.DateTime
 import org.joda.time.Duration
 import timber.log.Timber
 import kotlin.math.absoluteValue
@@ -111,7 +110,7 @@ class BasePoint(
                 } else 0
             )
         }
-        Timber.i("Base $baseDirection current $currentDirection")
+        Timber.i("Base dir $baseDirection current dir $currentDirection")
         Timber.i("Distance $distance")
         Timber.i("Space $space")
         Timber.i("Millis $millis")
@@ -153,12 +152,6 @@ class BasePoint(
                     }
                 }
             }
-            TelemetryState.STOPPING -> {
-                val now = DateTime.now()
-                if (now.millis - locationTime.withZone(now.zone).millis >= config.parkingTime * 1000L) {
-                    return TelemetryState.PARKING
-                }
-            }
             else -> {
             }
         }
@@ -166,23 +159,21 @@ class BasePoint(
     }
 
     @Suppress("SameParameterValue")
-    private fun getMinSpeed(interval: Int): Int? {
+    private fun getMinSpeed(interval: Int): Int? = speedMap.run {
         var minSpeed: Int? = null
-        speedMap.apply {
-            if (size() > 0) {
-                val lastIndex = size() - 1
-                val maxSeconds = keyAt(lastIndex)
-                if (interval > maxSeconds) {
-                    return null
-                }
-                for (i in lastIndex downTo 0) {
-                    if (keyAt(i) in (maxSeconds - interval)..maxSeconds) {
-                        minSpeed = minSpeed?.let {
-                            min(it, valueAt(i))
-                        } ?: valueAt(i)
-                    } else {
-                        removeAt(i)
-                    }
+        if (size() > 0) {
+            val lastIndex = size() - 1
+            val maxSeconds = keyAt(lastIndex)
+            if (interval > maxSeconds) {
+                return null
+            }
+            for (i in lastIndex downTo 0) {
+                if (keyAt(i) in (maxSeconds - interval)..maxSeconds) {
+                    minSpeed = minSpeed?.let {
+                        min(it, valueAt(i))
+                    } ?: valueAt(i)
+                } else {
+                    removeAt(i)
                 }
             }
         }

@@ -27,26 +27,25 @@ open class TelemetryConfig {
      * Событие стоянка
      * Данное событие генерируется в состоянии остановка если данное состояние не изменено в течение 2 минут
      */
-    // in seconds
     @SerializedName("parking_time.seconds")
     val parkingTime = 2 * 60
 
-    // Для состояния стоянка - 5 минут (in seconds)
+    // Для состояния стоянка - 5 минут
     @SerializedName("parking_delay.seconds")
     val parkingDelay = 5 * 60
 
-    // Для состояния движения и остановка - 1 минута (in seconds)
+    // Для состояния движения и остановка - 1 минута
     @SerializedName("moving_delay.seconds")
     val movingDelay = 60
 
     /**
-     * Min timeout of no input locations (in seconds)
+     * Min timeout of no input locations
      */
     @SerializedName("location_min_delay.seconds")
     val locationMinDelay = 15
 
     /**
-     * Max timeout of no input locations (in seconds)
+     * Max timeout of no input locations
      */
     @SerializedName("location_max_delay.seconds")
     val locationMaxDelay = 60
