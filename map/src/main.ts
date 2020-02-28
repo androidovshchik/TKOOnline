@@ -102,7 +102,7 @@ window._2_mapMoveTo = function (latitude: number, longitude: number, zoom: numbe
     if (map == null) {
         return
     }
-    map.setCenter([latitude, longitude], zoom, {
+    map.setCenter([latitude, longitude], zoom ? zoom : map.getZoom(), {
         duration: duration
     });
 };
