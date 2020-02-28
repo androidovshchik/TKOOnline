@@ -85,9 +85,9 @@ class MapLayout : FrameLayout, MapListener {
             zoomOut()
         }
         map_location.setOnClickListener {
+            hasInteracted = !hasInteracted
             mLatitude?.let { latitude ->
                 mLongitude?.let { longitude ->
-                    hasInteracted = false
                     moveTo(latitude, longitude)
                 }
             }

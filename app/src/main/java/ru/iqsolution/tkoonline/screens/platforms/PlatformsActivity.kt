@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
+import android.app.ActivityManager
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platforms.*
+import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
@@ -82,7 +84,11 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             }
             alertDialog = alert("Отправить данные на сервер?", "Выход") {
                 neutralPressed("Выйти") {
-                    exit()
+                    if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
+                        finishAffinity()
+                    } else {
+                        exit()
+                    }
                 }
                 okButton {
                     waitDialog.show()
@@ -230,7 +236,11 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         } else {
             alertDialog = alert("Не все данные отправлены на сервер", "Ошибка отправки") {
                 neutralPressed("Выйти") {
-                    exit()
+                    if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
+                        finishAffinity()
+                    } else {
+                        exit()
+                    }
                 }
                 cancelButton {}
                 positiveButton("Повторить") {

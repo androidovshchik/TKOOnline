@@ -144,19 +144,19 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     }
 
     override fun onUpdateAvailable() {
-        alertDialog = if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_LOCKED) {
-            alert("Для установки требуется разблокировка", "Обновление") {
-                cancelButton {}
-                positiveButton("Продолжить") {
-                    openPasswordDialog()
-                }
-            }.show()
-        } else {
+        alertDialog = if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
             alert("Доступна новая версия приложения", "Обновление") {
                 cancelButton {}
                 positiveButton(if (adminManager.isDeviceOwner) "Установить" else "Скачать") {
                     waitDialog.show()
                     presenter.installUpdate(applicationContext)
+                }
+            }.show()
+        } else {
+            alert("Для установки требуется разблокировка", "Обновление") {
+                cancelButton {}
+                positiveButton("Продолжить") {
+                    openPasswordDialog()
                 }
             }.show()
         }
@@ -222,7 +222,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         }
 
     override fun onBackPressed() {
-        if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
+        if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
             finishAffinity()
         }
     }
