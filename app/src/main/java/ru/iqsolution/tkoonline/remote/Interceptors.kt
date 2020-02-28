@@ -39,7 +39,7 @@ class AppInterceptor(context: Context) : Interceptor {
         val request = chain.request()
         val url = request.url.toString()
         // NOTICE refreshing address only on login request
-        if (url.endsWith("auth")) {
+        if (url.endsWith("v1/auth")) {
             address = preferences.mainServerAddress
         }
         val builder = request.newBuilder()
@@ -54,13 +54,11 @@ class AppInterceptor(context: Context) : Interceptor {
             when (response.code) {
                 //400 -> bgToast("Сервер не смог обработать запрос, некорректные данные в запросе")
                 401 -> {
-                    if (url.endsWith("auth")) {
+                    if (url.endsWith("v1/auth")) {
                         val errors = response.parseErrors(gson)
                         when {
                             errors.contains("fail to auth") -> bgToast("Неправильный логин или пароль")
                             errors.contains("car already taken") -> bgToast("Кто-то другой уже авторизовался на данной TC")
-                            else -> {
-                            }
                         }
                     } else {
                         exitUnexpected()

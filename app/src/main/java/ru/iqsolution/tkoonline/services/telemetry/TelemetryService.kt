@@ -64,7 +64,9 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private val preferences: Preferences by instance()
 
-    private val gson: Gson by instance(arg = true)
+    private val gsonPretty: Gson by instance(arg = true)
+
+    private val gsonMin: Gson by instance(arg = false)
 
     private lateinit var locationManager: LocationManager
 
@@ -116,13 +118,13 @@ class TelemetryService : BaseService(), TelemetryListener {
             } else {
                 fileManager.run {
                     if (configFile.exists()) {
-                        gson.fromJson(configFile.readText(), TelemetryConfig::class.java)
+                        gsonMin.fromJson(configFile.readText(), TelemetryConfig::class.java)
                     } else {
                         launch {
                             withContext(Dispatchers.IO) {
                                 writeFile(configFile) {
                                     it.write(
-                                        gson.toJson(
+                                        gsonPretty.toJson(
                                             Class.forName("$packageName.models.TelemetryDesc").newInstance()
                                         ).toByteArray()
                                     )
@@ -222,7 +224,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                             }
                         }
                     }
-                    val json = gson.toJson(it)
+                    val json = gsonMin.toJson(it)
                     Timber.d("LocationEvent: $json")
                     channel?.apply {
                         txSelect()
