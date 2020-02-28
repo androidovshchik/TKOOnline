@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline
 
+import android.webkit.WebView
 import com.elvishew.xlog.LogConfiguration
 import com.elvishew.xlog.XLog
 import com.elvishew.xlog.flattener.PatternFlattener
@@ -67,6 +68,7 @@ class MainApp : BaseApp() {
                         .setEnabled(true)
                 })
         }
+        WebView.setWebContentsDebuggingEnabled(true)
         return true
     }
 

@@ -5,13 +5,10 @@ import android.content.Context
 import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
-import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.WorkerThread
 import kotlinx.android.synthetic.main.merge_map.view.*
-import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.makeCallback
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -38,7 +35,7 @@ class MapLayout : FrameLayout, MapListener {
         }
     }
 
-    private var hasInteracted = true
+    var hasInteracted = false
         set(value) {
             if (field != value) {
                 field = value
@@ -78,7 +75,6 @@ class MapLayout : FrameLayout, MapListener {
 
     @Suppress("UNUSED_PARAMETER")
     private fun init(attrs: AttributeSet?) {
-        WebView.setWebContentsDebuggingEnabled(!BuildConfig.PROD)
         View.inflate(context, R.layout.merge_map, this)
         hasInteracted = true
         map_web.addJavascriptInterface(MapJavaScript(this), "Android")
@@ -224,15 +220,6 @@ class MapLayout : FrameLayout, MapListener {
         } catch (e: Throwable) {
         }
         map_web.destroy()
-    }
-
-    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                hasInteracted = true
-            }
-        }
-        return super.dispatchTouchEvent(event)
     }
 
     override fun hasOverlappingRendering() = false

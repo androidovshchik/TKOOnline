@@ -55,5 +55,14 @@ class MapWebView : WebView {
         return super.onTouchEvent(event)
     }
 
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                (parent as? MapLayout)?.hasInteracted = true
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
     override fun hasOverlappingRendering() = false
 }
