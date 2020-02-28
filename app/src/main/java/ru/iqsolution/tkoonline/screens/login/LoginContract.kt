@@ -6,7 +6,6 @@ import androidx.work.WorkInfo
 import ru.iqsolution.tkoonline.screens.base.IBasePresenter
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 import ru.iqsolution.tkoonline.screens.common.wait.WaitListener
-import ru.iqsolution.tkoonline.screens.login.qrcode.ScannerListener
 
 interface LoginContract {
 
@@ -23,7 +22,9 @@ interface LoginContract {
         fun exportDb(context: Context)
     }
 
-    interface View : IBaseView, ScannerListener, SettingsListener, WaitListener {
+    interface View : IBaseView, SettingsListener, WaitListener {
+
+        fun onQrCode(value: String)
 
         fun onLoggedIn()
 
