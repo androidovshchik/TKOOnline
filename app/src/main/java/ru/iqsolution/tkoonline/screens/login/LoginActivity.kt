@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.*
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
-import ru.iqsolution.tkoonline.EXTRA_SKIP_AUTH
+import ru.iqsolution.tkoonline.EXTRA_KEEP_AUTH
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.FileManager
@@ -51,17 +51,12 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     @Suppress("ConstantConditionIf")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!intent.hasExtra(EXTRA_SKIP_AUTH)) {
-            if (preferences.isLoggedIn) {
-                onLoggedIn()
-                return
-            } else {
-                preferences.bulk {
-                    logout()
-                }
+        setContentView(R.layout.activity_login)
+        if (!intent.getBooleanExtra(EXTRA_KEEP_AUTH, false)) {
+            preferences.bulk {
+                logout()
             }
         }
-        setContentView(R.layout.activity_login)
         login_background.load(R.drawable.login_background)
         statusBarHeight.let {
             (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = it

@@ -43,11 +43,12 @@ class LockActivity : Activity(), KodeinAware {
                         stopLockTask()
                         launchActivity()
                         finish()
+                        return
                     } else {
                         toast("Требуются права владельца устройства")
-                        launchActivity()
                     }
                 }
+                launchActivity()
             }
         }
     }
@@ -64,8 +65,7 @@ class LockActivity : Activity(), KodeinAware {
 
     private fun launchActivity() {
         when {
-            intent.getBooleanExtra(EXTRA_TROUBLE_EXIT, false) ->
-                startActivityNoop<LoginActivity>(null, EXTRA_TROUBLE_EXIT to true)
+            intent.getBooleanExtra(EXTRA_TROUBLE_EXIT, false) -> startActivityNoop<LoginActivity>()
             preferences.isLoggedIn -> startActivityNoop<PlatformsActivity>()
             else -> startActivityNoop<LoginActivity>()
         }

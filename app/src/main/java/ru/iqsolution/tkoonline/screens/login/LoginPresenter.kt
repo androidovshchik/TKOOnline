@@ -66,11 +66,10 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         launch {
             if (header != null) {
                 try {
-                    val responseLogout = server.logout(header).awaitResponse()
-                    Timber.d("Logout code: ${responseLogout.code()}")
+                    server.logout(header).awaitResponse()
                 } catch (e: Throwable) {
                     Timber.e(e)
-                    reference.get()?.showError("Не удалось авторизоваться")
+                    reference.get()?.showError("Не удалось сбросить старую авторизацию")
                     reset()
                     return@launch
                 }

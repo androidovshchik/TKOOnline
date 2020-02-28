@@ -23,17 +23,15 @@ const val ACTION_CLOUD = "action_cloud"
 
 const val ACTION_ROUTE = "action_route"
 
+const val EXTRA_TROUBLE_EXIT = "trouble_exit"
+
+const val EXTRA_KEEP_AUTH = "keep_auth"
+
 const val EXTRA_TELEMETRY_TASK = "telemetry_task"
 
 const val EXTRA_SYNC_LOCATION = "sync_location"
 
 const val EXTRA_SYNC_AVAILABILITY = "sync_availability"
-
-const val EXTRA_TROUBLE_EXIT = "trouble_exit"
-
-const val EXTRA_LOGOUT_EXIT = "logout_exit"
-
-const val EXTRA_LOGIN_EXIT = "login_exit"
 
 const val EXTRA_PLATFORM = "platform"
 
