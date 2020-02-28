@@ -54,13 +54,6 @@ class LocationEvent() : SendEvent {
     @SerializedName("_t")
     override var sent = false
 
-    /**
-     * Duplicates access token value
-     */
-    @Ignore
-    @SerializedName("auth_key")
-    var authKey: String? = null
-
     val isValid: Boolean
         get() {
             val now = DateTime.now()

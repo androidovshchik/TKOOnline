@@ -14,6 +14,7 @@ import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.BuildConfig
+import ru.iqsolution.tkoonline.local.entities.LocationEventToken
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -25,6 +26,7 @@ val remoteModule = Kodein.Module("remote") {
             .setExclusionStrategies(SerializedNameStrategy())
             .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
             .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
+            .registerTypeAdapter(LocationEventToken::class.java, LocationEventTokenSerializer())
             .apply {
                 if (pretty) {
                     setPrettyPrinting()
@@ -61,7 +63,7 @@ val remoteModule = Kodein.Module("remote") {
         Retrofit.Builder()
             .client(instance())
             .baseUrl("https://localhost/mobile/")// "localhost" will be replaced
-            .addConverterFactory(GsonConverterFactory.create(instance()))
+            .addConverterFactory(GsonConverterFactory.create(instance(arg = false)))
             .build()
             .create(Server::class.java)
     }

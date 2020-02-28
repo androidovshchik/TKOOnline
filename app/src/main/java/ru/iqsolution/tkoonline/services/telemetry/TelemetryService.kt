@@ -211,7 +211,6 @@ class TelemetryService : BaseService(), TelemetryListener {
                 }
                 val user = it.token.carId.toString()
                 val pswd = it.token.token
-                it.location.authKey = it.token.token
                 try {
                     factory.apply {
                         if (connection?.isOpen == false || channel?.isOpen == false || username != user || password != pswd) {
@@ -223,7 +222,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                             }
                         }
                     }
-                    val json = gson.toJson(it.location)
+                    val json = gson.toJson(it)
                     Timber.d("LocationEvent: $json")
                     channel?.apply {
                         txSelect()
