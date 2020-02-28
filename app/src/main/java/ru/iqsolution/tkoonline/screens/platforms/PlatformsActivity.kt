@@ -87,7 +87,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                     if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
                         finishAffinity()
                     } else {
-                        exit()
+                        exit(EXTRA_KEEP_AUTH to true)
                     }
                 }
                 okButton {
@@ -239,7 +239,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                     if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
                         finishAffinity()
                     } else {
-                        exit()
+                        exit(EXTRA_KEEP_AUTH to true)
                     }
                 }
                 cancelButton {}
@@ -274,8 +274,8 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         }
     }
 
-    private fun exit() {
-        startActivityNoop<LoginActivity>(null, EXTRA_SKIP_AUTH to true)
+    private fun exit(vararg params: Pair<String, Any?>) {
+        startActivityNoop<LoginActivity>(null, *params)
         finish()
     }
 

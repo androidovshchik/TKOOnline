@@ -53,7 +53,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
      * Boot time synced with server (milliseconds)
      * Logout on background thread
      */
-    var elapsedTime by longPref(0L, "0x0a")
+    //var elapsedTime by longPref(0L, "0x0a")
 
     // Logout on background thread
     var queName by nullableStringPref(null, "0x0b")
@@ -97,11 +97,11 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
             check(accessToken != null)
             expiresWhen.let {
                 check(it != null)
-                val today = DateTime.now().withTimeAtStartOfDay()
-                check(DateTime.parse(it, PATTERN_DATETIME_ZONE).withZone(today.zone).millis >= today.millis)
+                val now = DateTime.now()
+                check(DateTime.parse(it, PATTERN_DATETIME_ZONE).withZone(now.zone).millis >= now.millis)
             }
             check(serverTime != null)
-            check(elapsedTime > 0L)
+            //check(elapsedTime > 0L)
             check(vehicleNumber != null)
             check(queName != null)
             check(carId > 0)
@@ -128,7 +128,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
         expiresWhen = null
         allowPhotoRefKp = false
         serverTime = null
-        elapsedTime = 0L
+        //elapsedTime = 0L
         vehicleNumber = null
         queName = null
         carId = 0

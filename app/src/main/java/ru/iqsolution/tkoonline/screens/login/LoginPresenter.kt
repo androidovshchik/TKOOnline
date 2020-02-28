@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.screens.login
 
 import android.content.Context
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.work.WorkInfo
@@ -81,7 +80,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 expiresWhen = responseAuth.expireTime
                 allowPhotoRefKp = responseAuth.noKpPhoto == 1
                 serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME_ZONE)
-                elapsedTime = SystemClock.elapsedRealtime()
+                //elapsedTime = SystemClock.elapsedRealtime()
                 vehicleNumber = qrCode.regNum
                 queName = responseAuth.queName
                 carId = qrCode.carId
