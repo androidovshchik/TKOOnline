@@ -50,7 +50,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 ).execute()
                 when {
                     responseClean.isSuccessful -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
-                    responseClean.code() == 401 -> return Result.success()
+                    responseClean.code() in 401..403 -> return Result.success()
                     else -> hasErrors = true
                 }
             } catch (e: Throwable) {
@@ -76,7 +76,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 ).execute()
                 when {
                     responsePhoto.isSuccessful -> db.photoDao().markAsSent(it.photo.id ?: 0L)
-                    responsePhoto.code() == 401 -> return Result.success()
+                    responsePhoto.code() in 401..403 -> return Result.success()
                     else -> hasErrors = true
                 }
             } catch (e: Throwable) {
