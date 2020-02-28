@@ -9,6 +9,7 @@ fun Response<*>.parseErrors(gson: Gson): List<String> {
     try {
         val body = errorBody()?.string()
         if (body != null) {
+            Timber.d(body)
             val error = gson.fromJson(body, ResponseError::class.java)
             if (error.status == "error") {
                 return error.errors.map { it.code }

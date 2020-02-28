@@ -5,7 +5,6 @@ import android.location.LocationManager
 import android.os.BatteryManager
 import android.os.Bundle
 import android.os.Looper
-import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,6 @@ import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.include_status.*
 import org.jetbrains.anko.locationManager
 import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.PATTERN_TIME
 import ru.iqsolution.tkoonline.R
@@ -24,7 +22,6 @@ import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 import ru.iqsolution.tkoonline.services.LocationListener
 import timber.log.Timber
-import java.util.*
 
 /**
  * NOTICE should have an id [R.id.status_fragment]
@@ -83,10 +80,11 @@ class StatusFragment : BaseFragment(), SyncListener {
             return
         }
         serverTime?.let {
-            val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
+            /*val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
             status_time.text = it.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
                 .withZone(zone)
-                .toString(PATTERN_TIME)
+                .toString(PATTERN_TIME)*/
+            status_time.text = DateTime.now().toString(PATTERN_TIME)
         }
     }
 

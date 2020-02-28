@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
+import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.anko.connectivityManager
@@ -14,6 +15,7 @@ import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
 import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.isConnected
+import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
@@ -32,6 +34,8 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
     private val server: Server by instance()
 
+    private val gson: Gson by instance(arg = false)
+
     private val broadcastManager = LocalBroadcastManager.getInstance(context)
 
     override fun doWork(): Result {
@@ -43,15 +47,21 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         val cleanEvents = db.cleanDao().getSendEvents()
         cleanEvents.forEach {
             try {
-                val responseClean = server.sendClean(
+                val response = server.sendClean(
                     it.token.authHeader,
                     it.clean.kpId,
                     RequestClean(it.clean)
                 ).execute()
+                val code = response.code()
                 when {
-                    responseClean.isSuccessful -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
-                    responseClean.code() in 401..403 -> return Result.success()
-                    else -> hasErrors = true
+                    response.isSuccessful -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
+                    code == 401 || code == 403 -> return Result.success()
+                    else -> {
+                        val errors = response.parseErrors(gson)
+                        if (!errors.contains("closed token")) {
+                            hasErrors = true
+                        }
+                    }
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
@@ -65,7 +75,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         photoEvents.forEach {
             val photo = fileManager.readFile(it.photo.path) ?: return@forEach
             try {
-                val responsePhoto = server.sendPhoto(
+                val response = server.sendPhoto(
                     it.token.authHeader,
                     it.photo.kpId?.toString()?.toRequestBody(TEXT_TYPE),
                     it.photo.typeId.toString().toRequestBody(TEXT_TYPE),
@@ -74,10 +84,16 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     it.photo.longitude.toString().toRequestBody(TEXT_TYPE),
                     photo
                 ).execute()
+                val code = response.code()
                 when {
-                    responsePhoto.isSuccessful -> db.photoDao().markAsSent(it.photo.id ?: 0L)
-                    responsePhoto.code() in 401..403 -> return Result.success()
-                    else -> hasErrors = true
+                    response.isSuccessful -> db.photoDao().markAsSent(it.photo.id ?: 0L)
+                    code == 401 || code == 403 -> return Result.success()
+                    else -> {
+                        val errors = response.parseErrors(gson)
+                        if (!errors.contains("closed token")) {
+                            hasErrors = true
+                        }
+                    }
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
