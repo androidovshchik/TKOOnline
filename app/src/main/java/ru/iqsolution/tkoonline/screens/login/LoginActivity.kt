@@ -9,6 +9,7 @@ import android.app.FragmentTransaction
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import coil.api.load
 import com.chibatching.kotpref.bulk
@@ -43,6 +44,8 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     private val passwordDialog = PasswordDialog()
 
+    private lateinit var qrCode: QrCodeFragment
+
     private var alertDialog: AlertDialog? = null
 
     private var hasPrompted = false
@@ -52,6 +55,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        qrCode = fragmentManager.findFragmentById(R.id.barcode_fragment) as QrCodeFragment
         if (!intent.getBooleanExtra(EXTRA_KEEP_AUTH, false)) {
             preferences.bulk {
                 logout()
@@ -77,6 +81,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     /**
      * Here permissions are granted
      */
+    @WorkerThread
     override fun onQrCode(value: String) {
         presenter.login(value)
     }
@@ -204,7 +209,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     }
 
     override fun onUnhandledError(e: Throwable?) {
-        presenter.reset()
+        qrCode.codeScanner.startPreview()
     }
 
     private val statusBarHeight: Int

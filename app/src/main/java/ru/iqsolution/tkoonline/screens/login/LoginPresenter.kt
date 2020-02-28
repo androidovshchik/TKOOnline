@@ -36,17 +36,11 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     private var observer: LiveData<WorkInfo>? = null
 
-    private var qrCodeJson: String? = null
-
     private var updateUrl: String? = null
 
     private var isExportingDb = false
 
     override fun login(data: String) {
-        // ignoring duplicated values
-        if (data == qrCodeJson) {
-            return
-        }
         // waiting until service will finish job
         if (activityManager.isRunning<TelemetryService>()) {
             return
@@ -58,7 +52,6 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
             return
         }
         Timber.d("QrCode: $data")
-        qrCodeJson = data
         baseJob.cancelChildren()
         val header = preferences.authHeader
         val lockPassword = preferences.lockPassword?.toInt()
@@ -68,8 +61,10 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                     server.logout(header).awaitResponse()
                 } catch (e: Throwable) {
                     Timber.e(e)
-                    reference.get()?.showError("Не удалось сбросить старую авторизацию")
-                    reset()
+                    reference.get()?.apply {
+                        showError("Не удалось сбросить предыдущую авторизацию")
+                        onUnhandledError(e)
+                    }
                     return@launch
                 }
                 preferences.accessToken = null
@@ -97,17 +92,6 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 packageId = 0
             }
             reference.get()?.onLoggedIn()
-        }
-    }
-
-    override fun reset() {
-        launch {
-            try {
-                // short toast time
-                delay(2000)
-            } catch (e: Throwable) {
-            }
-            qrCodeJson = null
         }
     }
 

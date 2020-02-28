@@ -12,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.DecodeCallback
+import com.budiyev.android.codescanner.ErrorCallback
+import com.google.zxing.BarcodeFormat
 import kotlinx.android.synthetic.main.fragment_qr.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.powerManager
@@ -20,6 +22,7 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
+import ru.iqsolution.tkoonline.screens.base.IBaseView
 import ru.iqsolution.tkoonline.services.AdminManager
 
 @Suppress("DEPRECATION")
@@ -27,7 +30,7 @@ class QrCodeFragment : BaseFragment() {
 
     private val adminManager: AdminManager by instance()
 
-    private lateinit var codeScanner: CodeScanner
+    lateinit var codeScanner: CodeScanner
 
     private var alertDialog: AlertDialog? = null
 
@@ -36,10 +39,19 @@ class QrCodeFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        codeScanner = CodeScanner(activity, qr_scanner)
+        codeScanner = CodeScanner(activity, qr_scanner).apply {
+            formats = listOf(BarcodeFormat.QR_CODE)
+        }
         codeScanner.decodeCallback = DecodeCallback {
-            activity.runOnUiThread {
-
+            makeCallback<LoginContract.View> {
+                onQrCode(it.text)
+            }
+        }
+        codeScanner.errorCallback = ErrorCallback {
+            makeCallback<IBaseView> {
+                activity?.runOnUiThread {
+                    showError(it)
+                }
             }
         }
     }

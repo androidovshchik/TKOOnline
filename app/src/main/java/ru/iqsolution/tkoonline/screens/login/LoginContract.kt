@@ -13,8 +13,6 @@ interface LoginContract {
 
         fun login(data: String)
 
-        fun reset()
-
         fun checkUpdates()
 
         fun installUpdate(context: Context)
