@@ -101,11 +101,11 @@ fun Context.exitUnexpected(apiError: Boolean = false): Boolean {
             }
         }
         else -> {
-            startActivity(intentFor<LockActivity>().apply {
-                if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_LOCKED) {
-                    clearTask()
-                } else {
+            startActivity(intentFor<LockActivity>(EXTRA_TROUBLE_EXIT to true).apply {
+                if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
                     clearTop()
+                } else {
+                    clearTask()
                 }
                 newTask()
             })
