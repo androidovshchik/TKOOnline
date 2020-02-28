@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.screens.login.qrcode
+package ru.iqsolution.tkoonline.screens.login
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -7,15 +7,19 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.view.*
-import android.widget.FrameLayout
-import org.jetbrains.anko.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.budiyev.android.codescanner.CodeScanner
+import com.budiyev.android.codescanner.DecodeCallback
+import kotlinx.android.synthetic.main.fragment_qr.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.powerManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
-import ru.iqsolution.tkoonline.screens.login.LoginContract
 import ru.iqsolution.tkoonline.services.AdminManager
 
 @Suppress("DEPRECATION")
@@ -23,63 +27,27 @@ class QrCodeFragment : BaseFragment() {
 
     private val adminManager: AdminManager by instance()
 
-    private var scannerManager: ScannerManager? = null
-
-    private lateinit var cameraView: SurfaceView
+    private lateinit var codeScanner: CodeScanner
 
     private var alertDialog: AlertDialog? = null
 
-    private var maxSize = 0
-
-    private var isActive = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        maxSize = context.resources.getDimensionPixelSize(R.dimen.barcode_max_size)
-        makeCallback<ScannerListener> {
-            scannerManager = ScannerManager(context, this)
-        }
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return UI {
-            frameLayout {
-                layoutParams = ViewGroup.LayoutParams(matchParent, matchParent)
-                cameraView = surfaceView {
-                    holder.addCallback(object : SurfaceHolder.Callback {
+        return inflater.inflate(R.layout.fragment_qr, container, false)
+    }
 
-                        override fun surfaceCreated(holder: SurfaceHolder) {
-                            startPreview()
-                        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        codeScanner = CodeScanner(activity, qr_scanner)
+        codeScanner.decodeCallback = DecodeCallback {
+            activity.runOnUiThread {
 
-                        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
-
-                        override fun surfaceDestroyed(holder: SurfaceHolder) {
-                            scannerManager?.stop()
-                        }
-                    })
-                }.lparams()
             }
-        }.view
-    }
-
-    override fun onStart() {
-        super.onStart()
-        isActive = true
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun startPreview() {
-        if (!checkPermissions()) {
-            return
         }
-        cameraView.apply {
-            scannerManager?.start(holder)?.let {
-                // NOTICE supported only the portrait orientation
-                layoutParams = FrameLayout.LayoutParams(maxSize * it.height / it.width, maxSize).apply {
-                    gravity = Gravity.CENTER
-                }
-            }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (checkPermissions()) {
+            codeScanner.startPreview()
         }
     }
 
@@ -128,31 +96,13 @@ class QrCodeFragment : BaseFragment() {
         }.show()
     }
 
-    override fun onStop() {
-        isActive = false
-        super.onStop()
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_PERMISSIONS) {
-            if (isActive) {
-                startPreview()
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_BATTERY) {
-            if (isActive) {
-                startPreview()
-            }
-        }
+    override fun onPause() {
+        codeScanner.releaseResources()
+        super.onPause()
     }
 
     override fun onDestroyView() {
         alertDialog?.dismiss()
-        scannerManager?.destroy()
         super.onDestroyView()
     }
 
