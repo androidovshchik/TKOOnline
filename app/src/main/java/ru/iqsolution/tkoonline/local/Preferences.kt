@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.local
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.models.Location
@@ -85,7 +86,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
 
     override var packageId by intPref(0, "0x12")
 
-    var enableLogs by booleanPref(false, "0x13")
+    var enableLogs by booleanPref(!BuildConfig.PROD, "0x13")
 
     var showRoute by booleanPref(false, "0x14")
 
