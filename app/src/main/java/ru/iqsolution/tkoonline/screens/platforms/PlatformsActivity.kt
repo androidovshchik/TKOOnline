@@ -234,7 +234,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         if (success) {
             exit()
         } else {
-            alertDialog = alert("Не все данные отправлены на сервер", "Ошибка отправки") {
+            alertDialog = alert("Не все данные отправлены на сервер, все равно выйти?", "Ошибка отправки") {
                 neutralPressed("Выйти") {
                     if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
                         finishAffinity()

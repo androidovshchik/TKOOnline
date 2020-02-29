@@ -60,12 +60,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 try {
                     server.logout(header).awaitResponse()
                 } catch (e: Throwable) {
-                    Timber.e(e)
-                    reference.get()?.apply {
-                        showError("Не удалось сбросить предыдущую авторизацию")
-                        onUnhandledError(e)
-                    }
-                    return@launch
+                    reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
+                    throw e
                 }
                 preferences.accessToken = null
             }

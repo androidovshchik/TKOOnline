@@ -86,7 +86,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
 
     override var packageId by intPref(0, "0x12")
 
-    var enableLogs by booleanPref(!BuildConfig.PROD, "0x13")
+    var enableLogs by booleanPref(!BuildConfig.PROD && !BuildConfig.DEBUG, "0x13")
 
     var showRoute by booleanPref(false, "0x14")
 
