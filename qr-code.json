@@ -1,5 +1,9 @@
 {
   "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": "https://msknt2.iqsolution.ru/appupdate/tkoonline-dev-release14.apk",
   "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": "oGpn7esNpNd3XuIkZo__CbiFe_Det45-cxvzAhpBCYQ=",
-  "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "ru.iqsolution.tkoonline/.receivers.AdminReceiver"
+  "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "ru.iqsolution.tkoonline/.receivers.AdminReceiver",
+  "android.app.extra.PROVISIONING_LOCALE": "ru_RU",
+  "android.app.extra.PROVISIONING_TIME_ZONE": "Europe/Moscow",
+  "android.app.extra.PROVISIONING_SKIP_EDUCATION_SCREENS": true,
+  "android.app.extra.PROVISIONING_SKIP_ENCRYPTION": true
 }
