@@ -1,0 +1,5 @@
+{
+  "android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION": "https://msknt2.iqsolution.ru/appupdate/tkoonline-dev-release14.apk",
+  "android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM": "oGpn7esNpNd3XuIkZo__CbiFe_Det45-cxvzAhpBCYQ=",
+  "android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME": "ru.iqsolution.tkoonline/.receivers.AdminReceiver"
+}
