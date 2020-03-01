@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
-import android.app.ActivityManager
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -12,14 +11,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platforms.*
-import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.cancelButton
-import org.jetbrains.anko.okButton
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.*
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_TYPES
+import ru.iqsolution.tkoonline.EXTRA_PLATFORM
+import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
+import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
@@ -82,17 +82,12 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             if (platformClicked) {
                 return@setOnClickListener
             }
-            alertDialog = alert("Отправить данные на сервер?", "Выход") {
+            alertDialog = alert("Требуется отправка данных на сервер", "Выход") {
                 neutralPressed("Выйти") {
-                    if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
-                        finishAffinity()
-                    } else {
-                        exit(EXTRA_KEEP_AUTH to true)
-                    }
+                    logout(false)
                 }
-                okButton {
-                    waitDialog.show()
-                    presenter.logout(applicationContext)
+                positiveButton("Отправить") {
+                    logout(true)
                 }
             }.show()
         }
@@ -229,23 +224,32 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         TelemetryService.start(applicationContext, EXTRA_TELEMETRY_TASK to true)
     }
 
-    override fun onLoggedOut(success: Boolean) {
+    private fun logout(send: Boolean) {
+        waitDialog.show()
+        presenter.logout(send, applicationContext)
+    }
+
+    override fun onLoggedOut(send: Boolean, success: Boolean) {
         waitDialog.dismiss()
-        if (success) {
-            exit()
-        } else {
-            alertDialog = alert("Не все данные отправлены на сервер, все равно выйти?", "Ошибка отправки") {
+        alertDialog = when {
+            success -> {
+                startActivityNoop<LoginActivity>()
+                finish()
+                return
+            }
+            send -> alert("Не все данные отправлены на сервер", "Ошибка отправки") {
                 neutralPressed("Выйти") {
-                    if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
-                        finishAffinity()
-                    } else {
-                        exit(EXTRA_KEEP_AUTH to true)
-                    }
+                    logout(false)
                 }
                 cancelButton {}
                 positiveButton("Повторить") {
-                    waitDialog.show()
-                    presenter.logout(applicationContext)
+                    logout(true)
+                }
+            }.show()
+            else -> alert("Не удалось разлогиниться на сервере", "Ошибка выхода") {
+                cancelButton {}
+                positiveButton("Повторить") {
+                    logout(false)
                 }
             }.show()
         }
@@ -272,11 +276,6 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         if (preferences.showRoute) {
             updateRoute()
         }
-    }
-
-    private fun exit(vararg params: Pair<String, Any?>) {
-        startActivityNoop<LoginActivity>(null, *params)
-        finish()
     }
 
     override fun onDestroy() {

@@ -25,8 +25,6 @@ const val ACTION_ROUTE = "action_route"
 
 const val EXTRA_TROUBLE_EXIT = "trouble_exit"
 
-const val EXTRA_KEEP_AUTH = "keep_auth"
-
 const val EXTRA_TELEMETRY_TASK = "telemetry_task"
 
 const val EXTRA_SYNC_LOCATION = "sync_location"

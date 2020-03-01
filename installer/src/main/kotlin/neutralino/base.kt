@@ -1,4 +1,4 @@
-package org.js.neutralino.core
+package neutralino
 
 internal typealias Success<T> = (T) -> Unit
 

@@ -1,4 +1,4 @@
-package org.js.neutralino.core
+package neutralino
 
 external class StorageData {
 

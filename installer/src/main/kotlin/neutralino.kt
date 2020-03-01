@@ -1,5 +1,4 @@
-package org.js.neutralino
-
+import neutralino.*
 import org.js.neutralino.core.*
 
 object OSName {
