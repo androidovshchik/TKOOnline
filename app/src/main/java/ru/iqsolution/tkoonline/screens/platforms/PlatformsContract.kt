@@ -21,7 +21,7 @@ interface PlatformsContract {
 
         fun loadPhotoCleanEvents()
 
-        fun logout(context: Context)
+        fun logout(send: Boolean, context: Context)
     }
 
     interface View : IBaseView, WaitListener, AdapterListener<PlatformContainers> {

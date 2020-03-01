@@ -93,9 +93,9 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
         }
     }
 
-    override fun logout(context: Context) {
+    override fun logout(send: Boolean, context: Context) {
         TelemetryService.start(context, EXTRA_TELEMETRY_TASK to false)
-        observer = SendWorker.launch(context, true).also {
+        observer = SendWorker.launch(context, send, true).also {
             it?.observeForever(this)
         }
     }

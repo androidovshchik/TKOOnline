@@ -57,7 +57,7 @@ class AppInterceptor(context: Context) : Interceptor {
                     if (url.endsWith("v1/auth")) {
                         val errors = response.parseErrors(gson)
                         when {
-                            errors.contains("fail to auth") -> bgToast("Неправильный логин или пароль")
+                            errors.contains("fail to auth") -> bgToast("Неверный логин или пароль")
                             errors.contains("car already taken") -> bgToast("Кто-то другой уже авторизовался на данной TC")
                         }
                     } else {

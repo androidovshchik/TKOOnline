@@ -40,75 +40,73 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
     override fun doWork(): Result {
         var hasErrors = false
+        val send = inputData.getBoolean(PARAM_SEND, true)
         val exit = inputData.getBoolean(PARAM_EXIT, false)
         if (!applicationContext.connectivityManager.isConnected) {
             return Result.failure()
         }
-        val cleanEvents = db.cleanDao().getSendEvents()
-        cleanEvents.forEach {
-            try {
-                val response = server.sendClean(
-                    it.token.authHeader,
-                    it.clean.kpId,
-                    RequestClean(it.clean)
-                ).execute()
-                val code = response.code()
-                when {
-                    response.isSuccessful -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
-                    code == 401 || code == 403 -> return Result.success()
-                    else -> {
-                        val errors = response.parseErrors(gson)
-                        if (!errors.contains("closed token")) {
-                            hasErrors = true
+        if (send) {
+            val cleanEvents = db.cleanDao().getSendEvents()
+            cleanEvents.forEach {
+                try {
+                    val response = server.sendClean(
+                        it.token.authHeader,
+                        it.clean.kpId,
+                        RequestClean(it.clean)
+                    ).execute()
+                    val code = response.code()
+                    when {
+                        response.isSuccessful -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
+                        code == 401 || code == 403 -> return Result.success()
+                        else -> {
+                            val errors = response.parseErrors(gson)
+                            if (!errors.contains("closed token")) {
+                                hasErrors = true
+                            }
                         }
                     }
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                    hasErrors = true
                 }
-            } catch (e: Throwable) {
-                Timber.e(e)
-                hasErrors = true
             }
-        }
-        if (cleanEvents.isNotEmpty()) {
-            broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
-        }
-        val photoEvents = db.photoDao().getSendEvents()
-        photoEvents.forEach {
-            val photo = fileManager.readFile(it.photo.path) ?: return@forEach
-            try {
-                val response = server.sendPhoto(
-                    it.token.authHeader,
-                    it.photo.kpId?.toString()?.toRequestBody(TEXT_TYPE),
-                    it.photo.typeId.toString().toRequestBody(TEXT_TYPE),
-                    it.photo.whenTime.toString(PATTERN_DATETIME_ZONE).toRequestBody(TEXT_TYPE),
-                    it.photo.latitude.toString().toRequestBody(TEXT_TYPE),
-                    it.photo.longitude.toString().toRequestBody(TEXT_TYPE),
-                    photo
-                ).execute()
-                val code = response.code()
-                when {
-                    response.isSuccessful -> db.photoDao().markAsSent(it.photo.id ?: 0L)
-                    code == 401 || code == 403 -> return Result.success()
-                    else -> {
-                        val errors = response.parseErrors(gson)
-                        if (!errors.contains("closed token")) {
-                            hasErrors = true
+            if (cleanEvents.isNotEmpty()) {
+                broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+            }
+            val photoEvents = db.photoDao().getSendEvents()
+            photoEvents.forEach {
+                val photo = fileManager.readFile(it.photo.path) ?: return@forEach
+                try {
+                    val response = server.sendPhoto(
+                        it.token.authHeader,
+                        it.photo.kpId?.toString()?.toRequestBody(TEXT_TYPE),
+                        it.photo.typeId.toString().toRequestBody(TEXT_TYPE),
+                        it.photo.whenTime.toString(PATTERN_DATETIME_ZONE).toRequestBody(TEXT_TYPE),
+                        it.photo.latitude.toString().toRequestBody(TEXT_TYPE),
+                        it.photo.longitude.toString().toRequestBody(TEXT_TYPE),
+                        photo
+                    ).execute()
+                    val code = response.code()
+                    when {
+                        response.isSuccessful -> db.photoDao().markAsSent(it.photo.id ?: 0L)
+                        code == 401 || code == 403 -> return Result.success()
+                        else -> {
+                            val errors = response.parseErrors(gson)
+                            if (!errors.contains("closed token")) {
+                                hasErrors = true
+                            }
                         }
                     }
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                    hasErrors = true
                 }
-            } catch (e: Throwable) {
-                Timber.e(e)
-                hasErrors = true
             }
-        }
-        if (photoEvents.isNotEmpty()) {
-            broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+            if (photoEvents.isNotEmpty()) {
+                broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+            }
         }
         if (exit) {
-            val locationCount = db.locationDao().getSendCount()
-            if (locationCount > 0) {
-                // awaiting telemetry service
-                return if (runAttemptCount >= 2) Result.failure() else Result.retry()
-            }
             val header = preferences.authHeader
             if (header != null) {
                 try {
@@ -129,14 +127,17 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
         private const val NAME = "SEND"
 
+        private const val PARAM_SEND = "send"
+
         private const val PARAM_EXIT = "exit"
 
         private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
 
-        fun launch(context: Context, exit: Boolean = false): LiveData<WorkInfo>? {
+        fun launch(context: Context, send: Boolean = true, exit: Boolean = false): LiveData<WorkInfo>? {
             val request = OneTimeWorkRequestBuilder<SendWorker>()
                 .setInputData(
                     Data.Builder()
+                        .putBoolean(PARAM_SEND, send)
                         .putBoolean(PARAM_EXIT, exit)
                         .build()
                 )
