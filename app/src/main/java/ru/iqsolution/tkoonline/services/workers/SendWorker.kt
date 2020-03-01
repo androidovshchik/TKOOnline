@@ -42,8 +42,9 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         var hasErrors = false
         val send = inputData.getBoolean(PARAM_SEND, true)
         val exit = inputData.getBoolean(PARAM_EXIT, false)
+        val output = mapOf(PARAM_SEND to send)
         if (!applicationContext.connectivityManager.isConnected) {
-            return Result.failure()
+            return failure(output)
         }
         if (send) {
             val cleanEvents = db.cleanDao().getSendEvents()
@@ -57,7 +58,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     val code = response.code()
                     when {
                         response.isSuccessful -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
-                        code == 401 || code == 403 -> return Result.success()
+                        code == 401 || code == 403 -> return success(output)
                         else -> {
                             val errors = response.parseErrors(gson)
                             if (!errors.contains("closed token")) {
@@ -89,7 +90,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     val code = response.code()
                     when {
                         response.isSuccessful -> db.photoDao().markAsSent(it.photo.id ?: 0L)
-                        code == 401 || code == 403 -> return Result.success()
+                        code == 401 || code == 403 -> return success(output)
                         else -> {
                             val errors = response.parseErrors(gson)
                             if (!errors.contains("closed token")) {
@@ -118,8 +119,8 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             }
         }
         return when {
-            hasErrors -> if (runAttemptCount >= 2) Result.failure() else Result.retry()
-            else -> Result.success()
+            hasErrors -> if (runAttemptCount >= 2) failure(output) else Result.retry()
+            else -> success(output)
         }
     }
 
@@ -127,7 +128,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
         private const val NAME = "SEND"
 
-        private const val PARAM_SEND = "send"
+        const val PARAM_SEND = "send"
 
         private const val PARAM_EXIT = "exit"
 

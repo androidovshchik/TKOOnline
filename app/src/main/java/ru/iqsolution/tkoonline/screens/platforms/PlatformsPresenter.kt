@@ -101,12 +101,13 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
     }
 
     override fun onChanged(t: WorkInfo?) {
+        val send = t?.outputData?.getBoolean(SendWorker.PARAM_SEND, false) ?: false
         when (t?.state) {
             WorkInfo.State.SUCCEEDED -> {
-                reference.get()?.onLoggedOut(true)
+                reference.get()?.onLoggedOut(send, true)
             }
             WorkInfo.State.FAILED -> {
-                reference.get()?.onLoggedOut(false)
+                reference.get()?.onLoggedOut(send, false)
             }
             WorkInfo.State.CANCELLED -> {
                 observer?.removeObserver(this)
