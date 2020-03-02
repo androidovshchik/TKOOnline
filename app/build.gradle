@@ -126,7 +126,6 @@ dependencies {
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     devImplementation 'com.elvishew:xlog:1.6.1'
-    devImplementation "ch.acra:acra-mail:${Versions.acra}"
     devImplementation "ch.acra:acra-dialog:${Versions.acra}"
     devImplementation "com.facebook.stetho:stetho:${Versions.stetho}"
     devImplementation "com.facebook.stetho:stetho-okhttp3:${Versions.stetho}"

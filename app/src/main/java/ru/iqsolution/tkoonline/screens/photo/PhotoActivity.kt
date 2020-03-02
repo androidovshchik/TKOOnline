@@ -29,8 +29,6 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
 
     private lateinit var externalPhoto: File
 
-    private var preFinishing = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo)
@@ -38,9 +36,6 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
         externalPhoto = presenter.getExternalFile(photoEvent)
         val linkedIds = intent.getIntegerArrayListExtra(EXTRA_PHOTO_IDS).orEmpty()
         toolbar_back.setOnClickListener {
-            if (preFinishing) {
-                return@setOnClickListener
-            }
             closePreview(RESULT_CANCELED)
         }
         toolbar_title.apply {
@@ -52,23 +47,14 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
             text = intent.getStringExtra(EXTRA_PHOTO_TITLE) ?: PhotoType.Default.OTHER.description
         }
         photo_delete.setOnClickListener {
-            if (preFinishing) {
-                return@setOnClickListener
-            }
-            preFinishing = true
+            toggleAvailability(false)
             presenter.deleteEvent(photoEvent)
         }
         photo_retake.setOnClickListener {
-            if (preFinishing) {
-                return@setOnClickListener
-            }
             takePhoto()
         }
         photo_save.setOnClickListener {
-            if (preFinishing) {
-                return@setOnClickListener
-            }
-            preFinishing = true
+            toggleAvailability(false)
             presenter.saveEvent(photoEvent, linkedIds, externalPhoto)
         }
         if (photoEvent.sent) {
@@ -88,7 +74,7 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
     }
 
     override fun closePreview(result: Int) {
-        preFinishing = true
+        toggleAvailability(false)
         setResult(result)
         finish()
     }

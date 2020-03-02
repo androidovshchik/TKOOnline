@@ -80,10 +80,6 @@ class StatusFragment : BaseFragment(), SyncListener {
             return
         }
         serverTime?.let {
-            /*val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-            status_time.text = it.plus(SystemClock.elapsedRealtime() - preferences.elapsedTime)
-                .withZone(zone)
-                .toString(PATTERN_TIME)*/
             status_time.text = DateTime.now().toString(PATTERN_TIME)
         }
     }
