@@ -17,7 +17,6 @@ import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.*
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
-import ru.iqsolution.tkoonline.EXTRA_KEEP_AUTH
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.FileManager
@@ -56,10 +55,8 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         qrCode = fragmentManager.findFragmentById(R.id.barcode_fragment) as QrCodeFragment
-        if (!intent.getBooleanExtra(EXTRA_KEEP_AUTH, false)) {
-            preferences.bulk {
-                logout()
-            }
+        preferences.bulk {
+            logout()
         }
         login_background.load(R.drawable.login_background)
         statusBarHeight.let {

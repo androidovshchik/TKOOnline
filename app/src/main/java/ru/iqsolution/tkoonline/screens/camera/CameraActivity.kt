@@ -85,6 +85,7 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
         }
         shot.setOnClickListener {
             imageCapture?.let {
+                toggleAvailability(false)
                 val file = File(intent.getStringExtra(EXTRA_PHOTO_PATH) ?: return@let)
                 val output = ImageCapture.OutputFileOptions.Builder(file)
                     .setMetadata(ImageCapture.Metadata())
