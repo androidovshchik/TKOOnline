@@ -158,7 +158,8 @@ class TelemetryService : BaseService(), TelemetryListener {
             if (!checkActivity()) {
                 return@scheduleAtFixedRate
             }
-            val locationDelay = locationCounter.incrementAndGet() * config.timerInterval
+            val counter = locationCounter.incrementAndGet()
+            val locationDelay = counter * config.timerInterval
             if (locationDelay > config.locationMinDelay) {
                 onLocationAvailability(false)
             }
@@ -167,7 +168,9 @@ class TelemetryService : BaseService(), TelemetryListener {
                     lastEventTime = null
                     basePoint = null
                     if (!BuildConfig.PROD) {
-                        bgToast("Не удается определить местоположение")
+                        if (counter % 2 == 0L) {
+                            bgToast("Не удается определить местоположение")
+                        }
                     }
                     return@addEventSync null
                 }
