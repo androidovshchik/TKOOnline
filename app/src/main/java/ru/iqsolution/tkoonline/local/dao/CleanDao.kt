@@ -57,22 +57,27 @@ abstract class CleanDao {
 
     /**
      * Normally one of events should be valid
-     * @return list of kp ids of inserted events
+     * @return list of kp ids of valid events
      */
     @Transaction
     open fun insertMultiple(primaryEvent: CleanEvent, events: List<CleanEvent>): List<Int> {
         val validKpIds = mutableListOf<Int>()
-        if (primaryEvent.isInvalid) {
-            primaryEvent.sent = true
-        } else {
-            validKpIds.add(primaryEvent.kpId)
+        val relatedId = primaryEvent.let {
+            if (it.isInvalid) {
+                it.sent = true
+            } else {
+                if (it.isEmpty) {
+                    it.sent = true
+                }
+                validKpIds.add(it.kpId)
+            }
+            insert(it)
         }
-        val relatedId = insert(primaryEvent)
         if (events.isNotEmpty()) {
             insertAll(events.apply {
                 forEach {
                     it.relatedId = relatedId
-                    if (it.isInvalid) {
+                    if (it.isInvalid || it.isEmpty) {
                         it.sent = true
                     }
                 }
