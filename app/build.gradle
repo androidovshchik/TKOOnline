@@ -58,15 +58,6 @@ android {
         variant.outputs.all {
             outputFileName = "tkoonline-${variant.productFlavors[0].name}-${variant.buildType.name}${variant.versionCode}.apk"
         }
-        variant.assembleProvider.configure { assemble ->
-            assemble.doLast {
-                delete fileTree(dir: "$rootDir/installer/tkoonline", include: '*.apk')
-                copy {
-                    from variant.outputs*.outputFile
-                    into "$rootDir/installer/tkoonline"
-                }
-            }
-        }
     }
     lintOptions {
         checkReleaseBuilds false

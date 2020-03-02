@@ -5,17 +5,17 @@ import com.google.gson.annotations.SerializedName
 class ServerError {
 
     @SerializedName("code")
-    lateinit var code: String
+    var code: String? = null
 
     @SerializedName("description")
-    lateinit var description: String
+    var description: String? = null
 }
 
 class ResponseError {
 
     @SerializedName("status")
-    lateinit var status: String
+    var status: String? = null
 
     @SerializedName("errors")
-    lateinit var errors: List<ServerError>
+    var errors = listOf<ServerError>()
 }

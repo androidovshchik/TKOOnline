@@ -53,18 +53,18 @@ class AppInterceptor(context: Context) : Interceptor {
         reference.get()?.apply {
             when (response.code) {
                 //400 -> bgToast("Сервер не смог обработать запрос, некорректные данные в запросе")
-                401 -> {
-                    if (url.endsWith("v1/auth")) {
-                        val errors = response.parseErrors(gson)
-                        when {
-                            errors.contains("fail to auth") -> bgToast("Неверный логин или пароль")
-                            errors.contains("car already taken") -> bgToast("Кто-то другой уже авторизовался на данной TC")
-                        }
-                    } else {
-                        exitUnexpected()
+                401 -> if (url.endsWith("v1/auth")) {
+                    val errors = response.parseErrors(gson)
+                    when {
+                        errors.contains("fail to auth") -> bgToast("Неверный логин или пароль")
+                        errors.contains("car already taken") -> bgToast("Кто-то другой уже авторизовался на данной TC")
                     }
+                } else {
+                    exitUnexpected()
                 }
-                403 -> exitUnexpected()
+                403 -> if (!url.contains("v1/auth")) {
+                    exitUnexpected()
+                }
                 404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
                 500 -> bgToast("Сервер не смог обработать запрос, ошибка на стороне сервера")
             }
