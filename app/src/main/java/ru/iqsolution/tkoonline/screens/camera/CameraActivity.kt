@@ -37,10 +37,6 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
 
     private var imageCapture: ImageCapture? = null
 
-    private lateinit var externalPhoto: File
-
-    private var preFinishing = false
-
     private val lifecycleRegistry = LifecycleRegistry(this)
 
     override fun getLifecycle() = lifecycleRegistry
@@ -50,7 +46,6 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         setContentView(R.layout.activity_camera)
         cameraExecutor = ContextCompat.getMainExecutor(applicationContext)
-        externalPhoto = File(intent.getStringExtra(EXTRA_PHOTO_PATH)!!)
         val scaleGestureDetector =
             ScaleGestureDetector(applicationContext, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
 
@@ -63,26 +58,21 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
                 }
             })
         camera_preview.setOnTouchListener { _, event ->
-            if (!preFinishing) {
-                scaleGestureDetector.onTouchEvent(event)
-                if (event.action == MotionEvent.ACTION_UP) {
-                    camera?.let {
-                        val factory = SurfaceOrientedMeteringPointFactory(
-                            camera_preview.width.toFloat(), camera_preview.height.toFloat()
-                        )
-                        val point = factory.createPoint(event.x, event.y)
-                        it.cameraControl.startFocusAndMetering(
-                            FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).build()
-                        )
-                    }
+            scaleGestureDetector.onTouchEvent(event)
+            if (event.action == MotionEvent.ACTION_UP) {
+                camera?.let {
+                    val factory = SurfaceOrientedMeteringPointFactory(
+                        camera_preview.width.toFloat(), camera_preview.height.toFloat()
+                    )
+                    val point = factory.createPoint(event.x, event.y)
+                    it.cameraControl.startFocusAndMetering(
+                        FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).build()
+                    )
                 }
             }
             return@setOnTouchListener true
         }
         turn_light.setOnClickListener {
-            if (preFinishing) {
-                return@setOnClickListener
-            }
             camera?.let {
                 val toggled = when (it.cameraInfo.torchState.value) {
                     TorchState.ON -> toggleLight(false)
@@ -94,12 +84,9 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
             }
         }
         shot.setOnClickListener {
-            if (preFinishing) {
-                return@setOnClickListener
-            }
             imageCapture?.let {
-                preFinishing = true
-                val output = ImageCapture.OutputFileOptions.Builder(externalPhoto)
+                val file = File(intent.getStringExtra(EXTRA_PHOTO_PATH) ?: return@let)
+                val output = ImageCapture.OutputFileOptions.Builder(file)
                     .setMetadata(ImageCapture.Metadata())
                     .build()
                 it.takePicture(output, cameraExecutor, this)
@@ -170,13 +157,13 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
     }
 
     override fun onError(exception: ImageCaptureException) {
-        preFinishing = false
+        toggleAvailability(true)
         Timber.e(exception)
         showError(exception)
     }
 
     override fun onBackPressed() {
-        if (!preFinishing) {
+        if (isAvailable) {
             setResult(RESULT_CANCELED)
             finish()
         }

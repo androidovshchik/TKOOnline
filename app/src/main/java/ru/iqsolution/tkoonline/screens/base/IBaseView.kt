@@ -6,6 +6,10 @@ import ru.iqsolution.tkoonline.services.LocationListener
 
 interface IBaseView : KodeinAware, LocationListener {
 
+    val isAvailable: Boolean
+
+    fun toggleAvailability(enable: Boolean)
+
     fun updateRoute()
 
     fun onRoute(locationEvents: List<LocationEvent>)
@@ -13,8 +17,6 @@ interface IBaseView : KodeinAware, LocationListener {
     fun updateCloud()
 
     fun updateCloud(allCount: Int, photoCount: Int)
-
-    fun toggleAvailability(enable: Boolean)
 
     fun onUnhandledError(e: Throwable?)
 

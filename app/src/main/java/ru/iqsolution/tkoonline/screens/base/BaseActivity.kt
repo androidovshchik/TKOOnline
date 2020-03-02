@@ -73,6 +73,20 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
         }
     }
 
+    override val isAvailable: Boolean
+        get() = window.attributes.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE == 0
+
+    override fun toggleAvailability(enable: Boolean) {
+        if (enable) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        } else {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+        }
+    }
+
     override fun updateRoute() {
         presenter.loadRoute()
     }
@@ -85,17 +99,6 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
 
     override fun updateCloud(allCount: Int, photoCount: Int) {
         statusBar?.onCloudChanged(allCount > 0, photoCount)
-    }
-
-    override fun toggleAvailability(enable: Boolean) {
-        if (enable) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-        } else {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            )
-        }
     }
 
     override fun onUnhandledError(e: Throwable?) {}
