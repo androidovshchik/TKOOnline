@@ -99,8 +99,8 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         }
         platform_not_cleaned.setOnClickListener {
             val errorMessage = when {
-                platform.errors.size <= 0 -> "Зарегистрируйте хотя бы один тип проблемы с фото"
                 gallery_after.photoEvents.size > 0 -> "Удалите фотографии после уборки или отметьте что КП убрана"
+                platform.errors.size <= 0 -> "Зарегистрируйте хотя бы один тип проблемы с фото"
                 else -> null
             }
             if (errorMessage != null) {
