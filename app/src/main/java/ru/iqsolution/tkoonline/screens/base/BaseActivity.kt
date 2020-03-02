@@ -87,6 +87,17 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
         statusBar?.onCloudChanged(allCount > 0, photoCount)
     }
 
+    override fun toggleAvailability(enable: Boolean) {
+        if (enable) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        } else {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+        }
+    }
+
     override fun onUnhandledError(e: Throwable?) {}
 
     @Suppress("ConstantConditionIf")

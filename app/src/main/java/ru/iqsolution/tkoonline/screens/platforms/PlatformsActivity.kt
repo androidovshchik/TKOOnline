@@ -56,8 +56,6 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
 
     private var refreshTime: DateTime? = null
 
-    private var platformClicked = false
-
     private var locationCount = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,13 +77,11 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             adapter = platformsAdapter
         }
         platforms_complete.setOnClickListener {
-            if (platformClicked) {
-                return@setOnClickListener
-            }
             alertDialog = alert("Требуется отправка данных на сервер", "Выход") {
                 neutralPressed("Выйти") {
                     logout(false)
                 }
+                cancelButton {}
                 positiveButton("Отправить") {
                     logout(true)
                 }
@@ -96,9 +92,6 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             platforms_photo.apply {
                 isVisible = true
                 setOnClickListener {
-                    if (platformClicked) {
-                        return@setOnClickListener
-                    }
                     startActivityNoop<OutsideActivity>(
                         REQUEST_OUTSIDE,
                         EXTRA_PHOTO_TYPES to photoTypes
@@ -111,14 +104,11 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
 
     override fun onStart() {
         super.onStart()
-        platformClicked = false
+        toggleAvailability(true)
     }
 
     override fun onAdapterEvent(position: Int, item: PlatformContainers) {
-        if (platformClicked) {
-            return
-        }
-        platformClicked = true
+        toggleAvailability(false)
         startActivityNoop<PlatformActivity>(
             REQUEST_PLATFORM,
             EXTRA_PLATFORM to item,
