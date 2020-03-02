@@ -51,14 +51,14 @@ class MainApp : BaseApp() {
                     .setBuildConfigClass(BuildConfig::class.java)
                     .setReportFormat(StringFormat.KEY_VALUE_LIST)
                     .setApplicationLogFileDir(Directory.EXTERNAL_FILES)
-                .setEnabled(true).apply {
+                    .setEnabled(true).apply {
                         getPluginConfigurationBuilder(DialogConfigurationBuilder::class.java)
                             .setResTheme(android.R.style.Theme_Material_Light_Dialog)
                             .setTitle("Произошла ошибка")
                             .setText("Отчет об ошибке находится по пути ${fileManager.externalDir?.path}")
                             .setCommentPrompt("Пару слов о случившемся")
-                        .setEnabled(true)
-                })
+                            .setEnabled(true)
+                    })
         }
         WebView.setWebContentsDebuggingEnabled(true)
         return true

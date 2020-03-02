@@ -49,10 +49,6 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
 
     private var hasPhotoChanges = false
 
-    private var hasLatestPhotos = false
-
-    private var preFinishing = false
-
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,9 +63,6 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             }
         }
         toolbar_back.setOnClickListener {
-            if (preFinishing) {
-                return@setOnClickListener
-            }
             if (hasPhotoChanges) {
                 alertDialog = alert("Все данные и фотографии сделанные ранее не будут отправлены", "Вы уверены?") {
                     cancelButton {}
@@ -98,9 +91,6 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             ), 2, 7, 11, 16
         )
         platform_report.setOnClickListener {
-            if (preFinishing) {
-                return@setOnClickListener
-            }
             startActivityNoop<ProblemActivity>(
                 REQUEST_PROBLEM,
                 EXTRA_PLATFORM to platform,
@@ -108,9 +98,6 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             )
         }
         platform_not_cleaned.setOnClickListener {
-            if (preFinishing || !hasLatestPhotos) {
-                return@setOnClickListener
-            }
             val errorMessage = when {
                 platform.errors.size <= 0 -> "Зарегистрируйте хотя бы один тип проблемы с фото"
                 gallery_after.photoEvents.size > 0 -> "Удалите фотографии после уборки или отметьте что КП убрана"
@@ -121,7 +108,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                     okButton {}
                 }.show()
             } else {
-                preFinishing = true
+                toggleAvailability(false)
                 platform.reset()
                 presenter.savePlatformEvents(platform, linkedPlatforms.apply {
                     forEach {
@@ -131,9 +118,6 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             }
         }
         platform_cleaned.setOnClickListener {
-            if (preFinishing || !hasLatestPhotos) {
-                return@setOnClickListener
-            }
             val errorMessage = when {
                 platform.containerCount <= 0 && (linkedPlatforms.isEmpty() || linkedPlatforms.sumBy { it.containerCount } <= 0) ->
                     "Укажите сколько контейнеров было убрано"
@@ -146,13 +130,14 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                     okButton {}
                 }.show()
             } else {
-                preFinishing = true
+                toggleAvailability(false)
                 presenter.savePlatformEvents(platform, linkedPlatforms)
             }
         }
         attach(ContainerLayout(applicationContext).apply {
             initContainer(platform)
         }, 2)
+        toggleAvailability(false)
         presenter.apply {
             loadLinkedPlatforms(platform.linkedIds.toList())
             loadPhotoEvents(platform.kpId)
@@ -201,24 +186,22 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         platform_map.setMarkers("[${gson.toJson(platform)}]")
         gallery_before.updatePhotos(events)
         gallery_after.updatePhotos(events)
-        hasLatestPhotos = true
+        toggleAvailability(true)
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {
-        if (hasLatestPhotos) {
-            hasLatestPhotos = false
-            val event = photoEvent ?: PhotoEvent(platform.kpId, photoType.id)
-            startActivityNoop<PhotoActivity>(
-                REQUEST_PHOTO,
-                EXTRA_PHOTO_TITLE to photoType.description,
-                EXTRA_PHOTO_EVENT to event,
-                EXTRA_PHOTO_IDS to platform.linkedIds.toList()
-            )
-        }
+        toggleAvailability(false)
+        val event = photoEvent ?: PhotoEvent(platform.kpId, photoType.id)
+        startActivityNoop<PhotoActivity>(
+            REQUEST_PHOTO,
+            EXTRA_PHOTO_TITLE to photoType.description,
+            EXTRA_PHOTO_EVENT to event,
+            EXTRA_PHOTO_IDS to platform.linkedIds.toList()
+        )
     }
 
     override fun closeDetails(hasCleanChanges: Boolean) {
-        preFinishing = true
+        toggleAvailability(false)
         setResult(
             if (hasPhotoChanges || hasCleanChanges) {
                 if (hasCleanChanges) {
@@ -253,7 +236,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                     hasPhotoChanges = true
                     presenter.loadPhotoEvents(platform.kpId)
                 } else {
-                    hasLatestPhotos = true
+                    toggleAvailability(true)
                 }
             }
         }

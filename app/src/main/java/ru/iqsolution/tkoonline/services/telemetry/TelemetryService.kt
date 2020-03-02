@@ -303,6 +303,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         val newLocation = SimpleLocation(location).apply {
             satellites = satellitesCount
         }
+        onLocationAvailability(true)
         onLocationResult(newLocation)
         locationCounter.set(0L)
         launch {
