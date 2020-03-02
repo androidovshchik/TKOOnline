@@ -63,12 +63,17 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
                         }
                         return Result.success()
                     } else {
-                        val hasWritten = fileManager.writeFile(fileManager.apkFile) {
-                            body.byteStream().copyTo(it)
-                            it.flush()
-                        }
-                        if (hasWritten) {
-                            return Result.success()
+                        val apkFile = fileManager.apkFile
+                        if (apkFile != null) {
+                            val hasWritten = fileManager.writeFile(apkFile) {
+                                body.byteStream().copyTo(it)
+                                it.flush()
+                            }
+                            if (hasWritten) {
+                                return Result.success()
+                            }
+                        } else {
+                            return Result.failure()
                         }
                     }
                 }

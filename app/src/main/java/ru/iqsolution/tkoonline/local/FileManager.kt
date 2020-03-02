@@ -167,10 +167,19 @@ class FileManager(context: Context) {
     fun deleteOldFiles() {
         val now = System.currentTimeMillis()
         externalDir?.listFiles()?.forEach {
-            deleteFile(it)
+            when (it.extension) {
+                "log", "json" -> {
+                }
+                else -> deleteFile(it)
+            }
         }
         photosDir.listFiles()?.forEach {
-            if (now - it.lastModified() >= LIFETIME) {
+            if (now - it.lastModified() >= FILE_LIFETIME) {
+                deleteFile(it)
+            }
+        }
+        logsDir.listFiles()?.forEach {
+            if (now - it.lastModified() >= FILE_LIFETIME) {
                 deleteFile(it)
             }
         }
@@ -184,7 +193,7 @@ class FileManager(context: Context) {
         externalDir?.listFiles()?.forEach {
             deleteFile(it)
         }
-        photosDir.listFiles()?.forEach {
+        internalDir.listFiles()?.forEach {
             deleteFile(it)
         }
     }
@@ -223,7 +232,7 @@ class FileManager(context: Context) {
 
         private const val MAX_SIZE = 1600
 
-        private const val LIFETIME = 4 * 24 * 60 * 60 * 1000L
+        private const val FILE_LIFETIME = 4 * 24 * 60 * 60 * 1000L
 
         private val IMAGE_TYPE = "image/jpeg".toMediaTypeOrNull()
 

@@ -41,6 +41,7 @@ class QrCodeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         codeScanner = CodeScanner(activity, qr_scanner).apply {
             formats = listOf(BarcodeFormat.QR_CODE)
+            zoom = 8
         }
         codeScanner.decodeCallback = DecodeCallback {
             makeCallback<LoginContract.View> {
