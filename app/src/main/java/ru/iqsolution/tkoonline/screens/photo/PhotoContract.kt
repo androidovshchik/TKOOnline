@@ -9,7 +9,7 @@ interface PhotoContract {
 
     interface Presenter : IBasePresenter<View> {
 
-        fun getExternalFile(photoEvent: PhotoEvent): File
+        fun getExternalFile(photoEvent: PhotoEvent): File?
 
         fun saveEvent(photoEvent: PhotoEvent, linkedIds: List<Int>, externalFile: File)
 

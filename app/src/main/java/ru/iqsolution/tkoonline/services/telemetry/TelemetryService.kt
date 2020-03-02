@@ -350,7 +350,6 @@ class TelemetryService : BaseService(), TelemetryListener {
             longitude = location.longitude.toFloat()
             locationTime = location.locationTime.toString(PATTERN_DATETIME_ZONE)
         }
-        preferenceHolder.save(preferences)
         broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_LOCATION, location)
         })

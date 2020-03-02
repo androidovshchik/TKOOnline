@@ -16,14 +16,14 @@ class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(conte
 
     private val fileManager: FileManager by instance()
 
-    override fun getExternalFile(photoEvent: PhotoEvent): File {
-        return File(
-            fileManager.externalDir, if (photoEvent.id != null) {
-                File(photoEvent.path).name
-            } else {
-                fileManager.randomName
-            }
-        )
+    override fun getExternalFile(photoEvent: PhotoEvent): File? {
+        val externalDir = fileManager.externalDir
+        return if (externalDir != null) {
+            File(externalDir, if (photoEvent.id != null) File(photoEvent.path).name else fileManager.randomName)
+        } else {
+            reference.get()?.closePreview(Activity.RESULT_CANCELED)
+            null
+        }
     }
 
     /**

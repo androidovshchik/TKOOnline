@@ -33,7 +33,7 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo)
         photoEvent = intent.getSerializableExtra(EXTRA_PHOTO_EVENT) as PhotoEvent
-        externalPhoto = presenter.getExternalFile(photoEvent)
+        externalPhoto = presenter.getExternalFile(photoEvent) ?: return
         val linkedIds = intent.getIntegerArrayListExtra(EXTRA_PHOTO_IDS).orEmpty()
         toolbar_back.setOnClickListener {
             closePreview(RESULT_CANCELED)
