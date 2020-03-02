@@ -179,7 +179,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
                             data = FileProvider.getUriForFile(
                                 applicationContext,
                                 "$packageName.fileprovider",
-                                fileManager.apkFile
+                                fileManager.apkFile ?: return@positiveButton
                             )
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         })

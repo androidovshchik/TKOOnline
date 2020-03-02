@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="crash_subject">Отчет об ошибке</string>
-    <string name="crash_title">Произошла ошибка</string>
-    <string name="crash_text">Отправьте, пожалуйста, письмо разработчику для решения проблемы</string>
-    <string name="crash_email">Ваш e-mail для обратной связи</string>
-    <string name="crash_comment">Напишите пару слов о случившемся</string>
-</resources>
