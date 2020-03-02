@@ -1,1 +1,0 @@
-powershell -Command "Invoke-WebRequest -OutFile .\..\..\app.apk -Uri %1"

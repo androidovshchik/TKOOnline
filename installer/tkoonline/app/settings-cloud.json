@@ -1,8 +1,0 @@
-{
-    "appname": "TKOOnline",
-    "appport": "8080",
-    "mode": "cloud",
-    "cloud": {
-        "blacklist": []
-    }
-}
