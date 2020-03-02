@@ -107,14 +107,16 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
             }
         }
-        if (exit) {
-            val header = preferences.authHeader
-            if (header != null) {
-                try {
-                    server.logout(header).execute()
-                } catch (e: Throwable) {
-                    Timber.e(e)
-                    hasErrors = true
+        if (!send || !hasErrors) {
+            if (exit) {
+                val header = preferences.authHeader
+                if (header != null) {
+                    try {
+                        server.logout(header).execute()
+                    } catch (e: Throwable) {
+                        Timber.e(e)
+                        hasErrors = true
+                    }
                 }
             }
         }
