@@ -67,7 +67,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
             openDialog()
         }
         app_version.text = if (BuildConfig.PROD) {
-            BuildConfig.VERSION_NAME
+            "1.${BuildConfig.VERSION_CODE}"
         } else {
             "v.${BuildConfig.VERSION_CODE}"
         }

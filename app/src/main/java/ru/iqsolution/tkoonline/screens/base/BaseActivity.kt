@@ -87,8 +87,11 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
         }
     }
 
+    @Suppress("ConstantConditionIf")
     override fun updateRoute() {
-        presenter.loadRoute()
+        if (!BuildConfig.PROD) {
+            presenter.loadRoute()
+        }
     }
 
     override fun onRoute(locationEvents: List<LocationEvent>) {}
