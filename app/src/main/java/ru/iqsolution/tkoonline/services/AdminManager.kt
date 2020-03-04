@@ -25,7 +25,7 @@ class AdminManager(context: Context) {
     fun setKioskMode(enable: Boolean): Boolean {
         if (isDeviceOwner) {
             setRestrictions(enable)
-            setKeyGuardEnabled(enable)
+            deviceManager.setKeyguardDisabled(adminComponent, enable)
             setLockTask(enable)
             return true
         }
@@ -35,27 +35,18 @@ class AdminManager(context: Context) {
     /**
      * @throws SecurityException if {@code admin} is not a device or profile owner.
      */
-    private fun setRestrictions(disallow: Boolean) {
+    private fun setRestrictions(enable: Boolean) {
         arrayOf(
             UserManager.DISALLOW_FACTORY_RESET,
             UserManager.DISALLOW_SAFE_BOOT,
-            UserManager.DISALLOW_USER_SWITCH,
             UserManager.DISALLOW_ADD_USER
         ).forEach {
-            if (disallow) {
+            if (enable) {
                 deviceManager.addUserRestriction(adminComponent, it)
             } else {
                 deviceManager.clearUserRestriction(adminComponent, it)
             }
         }
-    }
-
-    /**
-     * @throws SecurityException if {@code admin} is not the device owner, or a profile owner of
-     * secondary user that is affiliated with the device.
-     */
-    private fun setKeyGuardEnabled(enable: Boolean) {
-        deviceManager.setKeyguardDisabled(adminComponent, !enable)
     }
 
     /**
