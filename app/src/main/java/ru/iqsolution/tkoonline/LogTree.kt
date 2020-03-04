@@ -3,10 +3,10 @@ package ru.iqsolution.tkoonline
 import com.elvishew.xlog.XLog
 import timber.log.Timber
 
-class DevTree(enableLogs: Boolean) : Timber.DebugTree() {
+class LogTree(enableLogs: Boolean) : Timber.DebugTree() {
 
     init {
-        saveToFile = enableLogs
+        saveToFile = BuildConfig.PROD || enableLogs
     }
 
     override fun createStackElementTag(element: StackTraceElement): String {

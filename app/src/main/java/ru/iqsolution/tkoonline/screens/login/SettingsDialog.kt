@@ -8,8 +8,8 @@ import android.widget.Switch
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_settings.*
 import org.jetbrains.anko.find
-import ru.iqsolution.tkoonline.BaseApp
 import ru.iqsolution.tkoonline.BuildConfig
+import ru.iqsolution.tkoonline.LogTree
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.setTextSelection
 import ru.iqsolution.tkoonline.local.Preferences
@@ -39,7 +39,7 @@ class SettingsDialog : BaseDialogFragment() {
         if (!BuildConfig.PROD) {
             find<Switch>(R.id.dev_file_logs).setOnCheckedChangeListener { _, isChecked ->
                 preferences.enableLogs = isChecked
-                (activity?.application as? BaseApp)?.saveLogs(isChecked)
+                LogTree.saveToFile = isChecked
             }
             find<Switch>(R.id.dev_build_route).setOnCheckedChangeListener { _, isChecked ->
                 preferences.showRoute = isChecked

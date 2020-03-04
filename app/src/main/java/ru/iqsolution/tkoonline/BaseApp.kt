@@ -7,6 +7,12 @@ import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.CameraXConfig
 import coil.Coil
 import coil.ImageLoader
+import com.elvishew.xlog.LogConfiguration
+import com.elvishew.xlog.XLog
+import com.elvishew.xlog.flattener.PatternFlattener
+import com.elvishew.xlog.printer.file.FilePrinter
+import com.elvishew.xlog.printer.file.backup.NeverBackupStrategy
+import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
@@ -17,10 +23,13 @@ import org.joda.time.DateTimeZone
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
+import org.kodein.di.generic.instance
 import org.kodein.di.generic.provider
 import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.extensions.longBgToast
+import ru.iqsolution.tkoonline.local.FileManager
+import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.localModule
 import ru.iqsolution.tkoonline.remote.remoteModule
 import ru.iqsolution.tkoonline.screens.LockActivity
@@ -28,6 +37,7 @@ import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.serviceModule
 import ru.iqsolution.tkoonline.services.workers.SendWorker
 import ru.iqsolution.tkoonline.services.workers.UpdateWorker
+import timber.log.Timber
 
 @Suppress("unused")
 abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
@@ -47,7 +57,23 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
 
     override fun getCameraXConfig() = Camera2Config.defaultConfig()
 
-    protected open fun init(): Boolean = true
+    private val preferences: Preferences by instance()
+
+    protected val fileManager: FileManager by instance()
+
+    protected open fun init(): Boolean {
+        val config = LogConfiguration.Builder()
+            .t()
+            .build()
+        val filePrinter = FilePrinter.Builder(fileManager.logsDir.path)
+            .fileNameGenerator(DateFileNameGenerator())
+            .backupStrategy(NeverBackupStrategy())
+            .flattener(PatternFlattener("{d yyyy-MM-dd HH:mm:ss.SSS} {l}: {m}"))
+            .build()
+        XLog.init(config, filePrinter)
+        Timber.plant(LogTree(preferences.enableLogs))
+        return true
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -84,8 +110,6 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
                 .build()
         )
     }
-
-    open fun saveLogs(enable: Boolean) {}
 }
 
 @WorkerThread
