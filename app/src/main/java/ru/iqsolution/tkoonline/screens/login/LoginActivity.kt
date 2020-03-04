@@ -47,6 +47,8 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     private var alertDialog: AlertDialog? = null
 
+    private var skipCheckUpdates = false
+
     private var hasPrompted = false
 
     @SuppressLint("SetTextI18n")
@@ -73,6 +75,15 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         }
         DeleteWorker.launch(applicationContext)
         MidnightWorker.launch(applicationContext)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if (hasFocus) {
+            if (!skipCheckUpdates) {
+                presenter.checkUpdates()
+            }
+            skipCheckUpdates = false
+        }
     }
 
     /**
@@ -136,11 +147,8 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         finish()
     }
 
-    override fun onCanUpdate() {
-        presenter.checkUpdates()
-    }
-
     override fun onUpdateAvailable() {
+        skipCheckUpdates = true
         alertDialog = if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
             alert("Доступна новая версия приложения", "Обновление") {
                 cancelButton {}

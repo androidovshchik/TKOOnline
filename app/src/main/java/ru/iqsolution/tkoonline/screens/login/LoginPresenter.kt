@@ -50,8 +50,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
             Timber.e(e)
             return
         }
-        Timber.d("QrCode: $data")
-        baseJob.cancelChildren()
+        Timber.d("Qr code: $data")
         val header = preferences.authHeader
         val lockPassword = preferences.lockPassword?.toInt()
         launch {
@@ -91,11 +90,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
     }
 
     override fun checkUpdates() {
-        if (updateUrl != null) {
-            return
-        }
-        updateUrl = ""
-        GlobalScope.launch(Dispatchers.Main) {
+        baseJob.cancelChildren()
+        launch {
             try {
                 val response = server.checkVersion()
                 if (response.version.toInt() > BuildConfig.VERSION_CODE) {

@@ -95,9 +95,6 @@ class QrCodeFragment : BaseFragment() {
                 }
             }
         }
-        makeCallback<LoginContract.View> {
-            onCanUpdate()
-        }
         return true
     }
 

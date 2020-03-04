@@ -26,8 +26,6 @@ interface LoginContract {
 
         fun onLoggedIn()
 
-        fun onCanUpdate()
-
         fun onUpdateAvailable()
 
         fun onUpdateEnd(success: Boolean)
