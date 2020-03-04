@@ -198,7 +198,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     }
 
     override fun exportDb() {
-        presenter.exportDb(applicationContext)
+        presenter.exportDb()
     }
 
     override fun onExportedDb(success: Boolean) {
