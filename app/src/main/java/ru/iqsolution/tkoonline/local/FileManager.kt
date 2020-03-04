@@ -23,15 +23,23 @@ import java.util.*
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class FileManager(context: Context) {
 
-    val externalDir: File? = context.getExternalFilesDir(null)?.also { it.mkdirs() }
+    val externalDir: File? = context.getExternalFilesDir(null)?.apply { mkdirs() }
 
     val internalDir: File = context.filesDir
 
     val photosDir: File
-        get() = File(internalDir, "photos").also { it.mkdirs() }
+        get() = File(internalDir, "photos").apply { mkdirs() }
 
     val logsDir: File
-        get() = File(externalDir ?: internalDir, "logs").also { it.mkdirs() }
+        get() = File(externalDir ?: internalDir, "logs").apply { mkdirs() }
+
+    val reportsDir: File
+        get() = File(externalDir ?: internalDir, "reports").apply { mkdirs() }
+
+    val backupDir: File?
+        get() = externalDir?.let {
+            File(it, "backup").apply { mkdirs() }
+        }
 
     val configFile: File
         get() = File(externalDir ?: internalDir, "config.json")
@@ -46,12 +54,9 @@ class FileManager(context: Context) {
 
     fun copyDb(context: Context?): Boolean {
         context?.apply {
-            externalDir?.let {
-                val folder = File(it, "backup").apply {
-                    mkdirs()
-                }
+            backupDir?.let {
                 val datetime = DateTime.now().toString(FORMATTER)
-                val distFile = File(folder, "app_${datetime}.db")
+                val distFile = File(it, "app_${datetime}.db")
                 val dbFile = getDatabasePath(DB_NAME)
                 return writeFile(distFile) { output ->
                     FileInputStream(dbFile).use { input ->
@@ -157,7 +162,9 @@ class FileManager(context: Context) {
 
     fun deleteFile(file: File?) {
         try {
-            file?.delete()
+            if (file?.isFile == true) {
+                file.delete()
+            }
         } catch (e: Throwable) {
             Timber.e(e)
         }
@@ -168,21 +175,15 @@ class FileManager(context: Context) {
         val now = System.currentTimeMillis()
         externalDir?.listFiles()?.forEach {
             when (it.extension) {
-                "log", "json" -> {
+                "json" -> {
                 }
                 else -> deleteFile(it)
             }
         }
-        photosDir.listFiles()?.forEach {
-            if (now - it.lastModified() >= FILE_LIFETIME) {
-                deleteFile(it)
-            }
-        }
-        logsDir.listFiles()?.forEach {
-            if (now - it.lastModified() >= FILE_LIFETIME) {
-                deleteFile(it)
-            }
-        }
+        photosDir.deleteFiles { now - it.lastModified() >= FILE_LIFETIME }
+        backupDir?.deleteFiles { now - it.lastModified() >= FILE_LIFETIME }
+        reportsDir.deleteFiles { now - it.lastModified() >= FILE_LIFETIME }
+        logsDir.deleteFiles { now - it.lastModified() >= FILE_LIFETIME }
     }
 
     /**
@@ -190,11 +191,19 @@ class FileManager(context: Context) {
      */
     @WorkerThread
     fun deleteAllFiles() {
-        externalDir?.listFiles()?.forEach {
-            deleteFile(it)
-        }
-        internalDir.listFiles()?.forEach {
-            deleteFile(it)
+        logsDir.deleteFiles { true }
+        reportsDir.deleteFiles { true }
+        backupDir?.deleteFiles { true }
+        photosDir.deleteFiles { true }
+        internalDir.deleteFiles { true }
+        externalDir?.deleteFiles { true }
+    }
+
+    private inline fun File.deleteFiles(predicate: (File) -> Boolean) {
+        listFiles()?.forEach {
+            if (it.isFile && predicate(it)) {
+                deleteFile(it)
+            }
         }
     }
 
@@ -203,6 +212,7 @@ class FileManager(context: Context) {
         return try {
             FileOutputStream(dist).use { output ->
                 block(output)
+                output.flush()
             }
             true
         } catch (e: Throwable) {

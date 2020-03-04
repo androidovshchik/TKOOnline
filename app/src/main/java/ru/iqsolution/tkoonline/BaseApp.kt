@@ -7,6 +7,7 @@ import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.CameraXConfig
 import coil.Coil
 import coil.ImageLoader
+import com.balsikandar.crashreporter.CrashReporter
 import com.elvishew.xlog.LogConfiguration
 import com.elvishew.xlog.XLog
 import com.elvishew.xlog.flattener.PatternFlattener
@@ -61,7 +62,7 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
 
     protected val fileManager: FileManager by instance()
 
-    protected open fun init(): Boolean {
+    protected open fun init() {
         val config = LogConfiguration.Builder()
             .t()
             .build()
@@ -72,14 +73,12 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
             .build()
         XLog.init(config, filePrinter)
         Timber.plant(LogTree(preferences.enableLogs))
-        return true
+        CrashReporter.initialize(applicationContext, fileManager.reportsDir.path)
     }
 
     override fun onCreate() {
         super.onCreate()
-        if (!init()) {
-            return
-        }
+        init()
         if (isOreoPlus()) {
             notificationManager.createNotificationChannel(
                 NotificationChannel(CHANNEL_DEFAULT, CHANNEL_DEFAULT, NotificationManager.IMPORTANCE_LOW).also {
