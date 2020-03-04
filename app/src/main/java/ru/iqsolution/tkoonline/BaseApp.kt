@@ -7,7 +7,6 @@ import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.CameraXConfig
 import coil.Coil
 import coil.ImageLoader
-import com.balsikandar.crashreporter.CrashReporter
 import com.elvishew.xlog.LogConfiguration
 import com.elvishew.xlog.XLog
 import com.elvishew.xlog.flattener.PatternFlattener
@@ -73,7 +72,9 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
             .build()
         XLog.init(config, filePrinter)
         Timber.plant(LogTree(preferences.enableLogs))
-        CrashReporter.initialize(applicationContext, fileManager.reportsDir.path)
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            XLog.e(t.name, e)
+        }
     }
 
     override fun onCreate() {

@@ -35,9 +35,6 @@ class FileManager(context: Context) {
             File(it, "backup").apply { mkdirs() }
         }
 
-    val reportsDir: File
-        get() = File(externalDir ?: internalDir, "reports").apply { mkdirs() }
-
     val logsDir: File
         get() = File(externalDir ?: internalDir, "logs").apply { mkdirs() }
 
@@ -175,7 +172,6 @@ class FileManager(context: Context) {
         externalDir?.deleteFiles { it.extension != "json" }
         photosDir.deleteFiles { now - it.lastModified() >= FILE_LIFETIME }
         backupDir?.deleteFiles { now - it.lastModified() >= FILE_LIFETIME }
-        reportsDir.deleteFiles { now - it.lastModified() >= FILE_LIFETIME }
         logsDir.deleteFiles { now - it.lastModified() >= FILE_LIFETIME }
     }
 
@@ -187,7 +183,6 @@ class FileManager(context: Context) {
         externalDir?.deleteFiles { true }
         photosDir.deleteFiles { true }
         backupDir?.deleteFiles { true }
-        reportsDir.deleteFiles { true }
         logsDir.deleteFiles { true }
     }
 
