@@ -22,7 +22,6 @@ import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.services.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.services.workers.UpdateWorker
 import timber.log.Timber
-import java.lang.ref.WeakReference
 
 class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(context), LoginContract.Presenter {
 
@@ -116,16 +115,15 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         }
     }
 
-    override fun exportDb(context: Context) {
+    override fun exportDb() {
         if (isExportingDb) {
             return
         }
         isExportingDb = true
-        val contextRef = WeakReference(context)
         GlobalScope.launch(Dispatchers.Main) {
             val result = withContext(Dispatchers.IO) {
                 db.baseDao().checkpoint(SimpleSQLiteQuery("pragma wal_checkpoint(full)"))
-                fileManager.copyDb(contextRef.get())
+                fileManager.copyDb()
             }
             reference.get()?.onExportedDb(result)
             isExportingDb = false

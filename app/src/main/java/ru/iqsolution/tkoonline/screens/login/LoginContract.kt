@@ -17,7 +17,7 @@ interface LoginContract {
 
         fun installUpdate(context: Context)
 
-        fun exportDb(context: Context)
+        fun exportDb()
     }
 
     interface View : IBaseView, SettingsListener, WaitListener {

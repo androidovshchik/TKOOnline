@@ -60,7 +60,7 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
 
     private val preferences: Preferences by instance()
 
-    protected val fileManager: FileManager by instance()
+    private val fileManager: FileManager by instance()
 
     protected open fun init() {
         val config = LogConfiguration.Builder()

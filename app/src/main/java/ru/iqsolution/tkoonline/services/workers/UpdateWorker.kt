@@ -67,7 +67,6 @@ class UpdateWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
                         if (apkFile != null) {
                             val hasWritten = fileManager.writeFile(apkFile) {
                                 body.byteStream().copyTo(it)
-                                it.flush()
                             }
                             if (hasWritten) {
                                 return Result.success()
