@@ -156,6 +156,6 @@ class LocationEvent() : SendEvent {
 
         private const val VALID_TIME = 5000L
 
-        private const val LIFE_TIME = 48 * 60_000L
+        private const val LIFE_TIME = 48 * 60 * 60 * 1000L
     }
 }
