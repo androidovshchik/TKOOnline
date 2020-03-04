@@ -9,7 +9,7 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 17
+        versionCode 18
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         kapt {
@@ -117,7 +117,7 @@ dependencies {
     implementation 'io.github.inflationx:viewpump:2.0.3'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.elvishew:xlog:1.6.1'
-    devImplementation "ch.acra:acra-dialog:${Versions.acra}"
+    implementation 'com.balsikandar.android:crashreporter:1.1.0'
     devImplementation "com.facebook.stetho:stetho:${Versions.stetho}"
     devImplementation "com.facebook.stetho:stetho-okhttp3:${Versions.stetho}"
     testImplementation 'junit:junit:4.12'
