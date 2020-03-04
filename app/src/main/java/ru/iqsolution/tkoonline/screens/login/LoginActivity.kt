@@ -82,7 +82,6 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
             if (!skipCheckUpdates) {
                 presenter.checkUpdates()
             }
-            skipCheckUpdates = false
         }
     }
 
@@ -111,6 +110,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     override fun openSettingsDialog() {
         hasPrompted = true
+        skipCheckUpdates = false
         transact {
             remove(passwordDialog)
             remove(settingsDialog)
