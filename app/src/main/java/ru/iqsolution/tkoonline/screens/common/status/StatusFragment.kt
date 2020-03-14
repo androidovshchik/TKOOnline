@@ -27,9 +27,9 @@ import timber.log.Timber
  * NOTICE should have an id [R.id.status_fragment]
  */
 @Suppress("DEPRECATION")
-class StatusFragment : BaseFragment(), SyncListener {
+class StatusFragment : BaseFragment(), StatusListener {
 
-    private lateinit var syncManager: SyncManager
+    private lateinit var statusManager: StatusManager
 
     private lateinit var preferences: Preferences
 
@@ -46,7 +46,7 @@ class StatusFragment : BaseFragment(), SyncListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        syncManager = SyncManager(context, this)
+        statusManager = StatusManager(context, this)
         preferences = Preferences(context)
         try {
             serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME_ZONE)
@@ -69,7 +69,7 @@ class StatusFragment : BaseFragment(), SyncListener {
         super.onStart()
         onTimeChanged()
         onLocationChanged(context.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-        syncManager.register(context)
+        statusManager.register(context)
     }
 
     /**
@@ -197,7 +197,7 @@ class StatusFragment : BaseFragment(), SyncListener {
     }
 
     override fun onStop() {
-        syncManager.unregister(context)
+        statusManager.unregister(context)
         super.onStop()
     }
 }

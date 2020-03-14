@@ -2,7 +2,7 @@ package ru.iqsolution.tkoonline.screens.common.status
 
 import ru.iqsolution.tkoonline.services.LocationListener
 
-interface SyncListener : LocationListener {
+interface StatusListener : LocationListener {
 
     fun onTimeChanged()
 

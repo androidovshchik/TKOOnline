@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
-class SyncManager(context: Context, listener: SyncListener) {
+class StatusManager(context: Context, listener: StatusListener) {
 
     private val reference = WeakReference(listener)
 

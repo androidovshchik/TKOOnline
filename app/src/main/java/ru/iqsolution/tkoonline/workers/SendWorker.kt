@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package ru.iqsolution.tkoonline.services.workers
+package ru.iqsolution.tkoonline.workers
 
 import android.content.Context
 import android.content.Intent

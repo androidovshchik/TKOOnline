@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.services.workers
+package ru.iqsolution.tkoonline.workers
 
 import android.content.Context
 import androidx.work.Data
