@@ -64,6 +64,16 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 preferences.accessToken = null
             }
             val responseAuth = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
+            try {
+                val now = DateTime.now()
+                require(
+                    DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE)
+                        .withZone(now.zone).millis >= now.millis
+                )
+            } catch (e: Throwable) {
+                reference.get()?.showError("Невалидное системное время")
+                throw e
+            }
             preferences.bulk {
                 accessToken = responseAuth.accessKey
                 expiresWhen = responseAuth.expireTime
