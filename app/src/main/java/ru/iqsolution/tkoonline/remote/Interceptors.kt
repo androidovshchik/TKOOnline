@@ -11,6 +11,7 @@ import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.isAccessError
 import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.remote.api.ServerError
 import java.lang.ref.WeakReference
 
 @MustBeDocumented
@@ -49,38 +50,53 @@ class AppInterceptor(context: Context) : Interceptor {
         if (tag == "login") {
             address = preferences.mainServerAddress
         }
-        builder.url(
-            request.url.toString().replace("localhost", address).toHttpUrlOrNull() ?: request.url
-        )
+        builder.url(request.url.toString().replace("localhost", address).toHttpUrlOrNull()!!)
         val response = chain.proceed(builder.build())
         if (response.isSuccessful) {
             return response
         }
-        val context = reference.get() ?: return response
         val errors = response.parseErrors(gson)
+        val error = errors.firstOrNull()
+        val codes = errors.map { it.code }
         when {
             errors.contains("fail to auth") -> bgToast("Неверный логин или пароль")
             errors.contains("car already taken") -> bgToast("Кто-то другой уже авторизовался на данной TC")
         }
+        reference.get()?.run {
+            when (tag) {
+                "login" -> {
+                    when (response.code) {
+                        301 -> {
+                        }
+                        400 -> echoError(error)
+                        401 -> {
+                            when {
+                                codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
+                                codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
+                                else -> echoError(error)
+                            }
+                        }
+                        403 -> bgToast("Доступ запрещен, обратитесь к администратору")
+                        404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
+                        else -> echoError(error, true)
+                    }
+                    if (response.code == 401) {
 
-        when (tag) {
-            "login" -> {
-                if (response.code == 401) {
-
+                    }
                 }
-            }
-            "platforms", "photos" -> {
-                if (response.isAccessError) {
-                    exitUnexpected()
+                "platforms", "photos" -> {
+                    if (response.isAccessError) {
+                        exitUnexpected()
+                    }
                 }
-            }
-            "clean" -> {
-            }
-            "photo" -> {
-            }
-            "logout" -> {
-            }
-            "version" -> {
+                "clean" -> {
+                }
+                "photo" -> {
+                }
+                "logout" -> {
+                }
+                "version" -> {
+                }
             }
         }
         when (response.code) {
@@ -101,5 +117,11 @@ class AppInterceptor(context: Context) : Interceptor {
             500 -> bgToast("Сервер не смог обработать запрос, ошибка на стороне сервера")
         }
         return response
+    }
+
+    private fun Context.echoError(error: ServerError?, unknown: Boolean = false) {
+        if (error != null) {
+            bgToast("Ошибка ${error.code}: \"${error.description}\" попробуйте позже${""}")
+        }
     }
 }
