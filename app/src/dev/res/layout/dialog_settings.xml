@@ -9,155 +9,155 @@
 
     <TextView
         android:id="@+id/dialog_title"
+        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="12dp"
-        android:layout_marginStart="2dp"
-        android:text="Настройки"
-        android:textSize="20sp"
-        android:textColor="@color/colorTextBlack87"
         android:lineSpacingExtra="3sp"
-        tools:textStyle="bold"
-        fontPath="fonts/Roboto-Bold.ttf"/>
+        android:text="Настройки"
+        android:textColor="@color/colorTextBlack87"
+        android:textSize="20sp"
+        tools:textStyle="bold" />
 
     <TextView
         android:id="@+id/dialog_caption1"
+        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_title"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="2dp"
-        android:text="Основной сервер:"
-        android:textSize="16sp"
-        android:textColor="#89000000"
+        android:layout_marginBottom="8dp"
         android:lineSpacingExtra="8sp"
-        fontPath="fonts/Roboto-Bold.ttf"/>
+        android:text="Основной сервер:"
+        android:textColor="#89000000"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/dialog_main_server"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_caption1"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="20dp"
-        android:layout_below="@+id/dialog_caption1"
+        android:imeOptions="actionNext"
         android:inputType="textUri"
+        android:lineSpacingExtra="8sp"
         android:maxLines="1"
         android:singleLine="true"
-        android:imeOptions="actionNext"
-        android:textSize="16sp"
         android:textColor="@color/colorTextBlack87"
-        android:lineSpacingExtra="8sp"
-        tools:text="msknt.iqsolution.ru:4567"/>
+        android:textSize="16sp"
+        tools:text="msknt.iqsolution.ru:4567" />
 
     <TextView
         android:id="@+id/dialog_caption2"
+        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_main_server"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="2dp"
-        android:text="Сервер телеметрии:"
-        android:textSize="16sp"
-        android:textColor="#89000000"
+        android:layout_marginBottom="8dp"
         android:lineSpacingExtra="8sp"
-        fontPath="fonts/Roboto-Bold.ttf"/>
+        android:text="Сервер телеметрии:"
+        android:textColor="#89000000"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/dialog_telemetry_server"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_caption2"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="10dp"
-        android:layout_below="@+id/dialog_caption2"
+        android:imeOptions="actionDone"
         android:inputType="textUri"
+        android:lineSpacingExtra="8sp"
         android:maxLines="1"
         android:singleLine="true"
-        android:imeOptions="actionDone"
-        android:textSize="16sp"
         android:textColor="@color/colorTextBlack87"
-        android:lineSpacingExtra="8sp"
-        tools:text="msknt.iqsolution.ru:4568"/>
+        android:textSize="16sp"
+        tools:text="msknt.iqsolution.ru:4568" />
 
     <Switch
         android:id="@id/dev_file_logs"
+        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_telemetry_server"
         android:layout_marginStart="5dp"
         android:layout_marginBottom="12dp"
-        android:text="Сохранять логи"
-        android:textSize="16sp"
-        android:textColor="#89000000"
+        android:background="?android:attr/selectableItemBackground"
         android:lineSpacingExtra="8sp"
         android:switchPadding="12dp"
-        android:background="?android:attr/selectableItemBackground"
-        fontPath="fonts/Roboto-Bold.ttf"/>
+        android:text="Сохранять логи"
+        android:textColor="#89000000"
+        android:textSize="16sp" />
 
     <Switch
         android:id="@id/dev_build_route"
+        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/dev_file_logs"
         android:layout_marginStart="5dp"
         android:layout_marginBottom="6dp"
-        android:text="Строить маршрут"
-        android:textSize="16sp"
-        android:textColor="#89000000"
+        android:background="?android:attr/selectableItemBackground"
         android:lineSpacingExtra="8sp"
         android:switchPadding="12dp"
-        android:background="?android:attr/selectableItemBackground"
-        fontPath="fonts/Roboto-Bold.ttf"/>
+        android:text="Строить маршрут"
+        android:textColor="#89000000"
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/dialog_unlock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/dev_build_route"
         android:layout_marginStart="3dp"
         android:layout_marginBottom="10dp"
-        android:layout_below="@id/dev_build_route"
-        android:textSize="14sp"
-        android:textColor="@color/colorAccent"
-        android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"
-        tools:text="Разблокировать"/>
+        android:lineSpacingExtra="2sp"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        tools:text="Разблокировать" />
 
     <ImageButton
         android:id="@id/dev_export_db"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/dialog_unlock"
-        android:layout_alignBottom="@+id/dialog_unlock"
         android:layout_below="@id/dev_build_route"
+        android:layout_alignBottom="@+id/dialog_unlock"
         android:layout_marginStart="3dp"
+        android:layout_toEndOf="@+id/dialog_unlock"
+        android:background="?android:attr/selectableItemBackground"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
-        android:src="@drawable/ic_db"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:src="@drawable/ic_db" />
 
     <Button
         android:id="@+id/dialog_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="10dp"
         android:layout_below="@id/dev_build_route"
         android:layout_alignParentEnd="true"
-        android:text="Сохранить"
-        android:textSize="14sp"
-        android:textColor="@color/colorAccent"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:background="?android:attr/selectableItemBackground"
         android:lineSpacingExtra="2sp"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:text="Сохранить"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp" />
 
     <ImageButton
         android:id="@+id/dialog_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_close"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="10dp"
+        android:src="@drawable/ic_close" />
 
 </RelativeLayout>
