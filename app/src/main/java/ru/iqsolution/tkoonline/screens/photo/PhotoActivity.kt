@@ -36,7 +36,7 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
         externalPhoto = presenter.getExternalFile(photoEvent) ?: return
         val linkedIds = intent.getIntegerArrayListExtra(EXTRA_PHOTO_IDS).orEmpty()
         toolbar_back.setOnClickListener {
-            closePreview(RESULT_CANCELED)
+            onBackPressed()
         }
         toolbar_title.apply {
             (layoutParams as RelativeLayout.LayoutParams).apply {
@@ -96,6 +96,10 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        closePreview(RESULT_CANCELED)
     }
 
     override fun onDestroy() {

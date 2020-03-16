@@ -77,15 +77,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             adapter = platformsAdapter
         }
         platforms_complete.setOnClickListener {
-            alertDialog = alert("Требуется отправка данных на сервер", "Выход") {
-                neutralPressed("Выйти") {
-                    logout(false)
-                }
-                cancelButton {}
-                positiveButton("Отправить") {
-                    logout(true)
-                }
-            }.show()
+            onBackPressed()
         }
         if (preferences.allowPhotoRefKp) {
             platforms_placeholder.isVisible = true
@@ -266,6 +258,18 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         if (preferences.showRoute) {
             updateRoute()
         }
+    }
+
+    override fun onBackPressed() {
+        alertDialog = alert("Требуется отправка данных на сервер", "Выход") {
+            neutralPressed("Выйти") {
+                logout(false)
+            }
+            cancelButton {}
+            positiveButton("Отправить") {
+                logout(true)
+            }
+        }.show()
     }
 
     override fun onDestroy() {

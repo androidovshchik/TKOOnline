@@ -32,8 +32,7 @@ class OutsideActivity : BaseActivity<OutsideContract.Presenter>(), OutsideContra
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_outside)
         toolbar_back.setOnClickListener {
-            setResult(RESULT_CANCELED)
-            finish()
+            onBackPressed()
         }
         toolbar_title.text = "Фото вне справочника"
         val photoTypes = intent.getSerializableExtra(EXTRA_PHOTO_TYPES) as ArrayList<PhotoType>
@@ -76,6 +75,11 @@ class OutsideActivity : BaseActivity<OutsideContract.Presenter>(), OutsideContra
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        setResult(RESULT_CANCELED)
+        finish()
     }
 
     companion object {

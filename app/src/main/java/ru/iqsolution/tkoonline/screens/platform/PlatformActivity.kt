@@ -64,16 +64,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             }
         }
         toolbar_back.setOnClickListener {
-            if (hasPhotoChanges) {
-                alertDialog = alert("Все данные и фотографии сделанные ранее не будут отправлены", "Вы уверены?") {
-                    cancelButton {}
-                    positiveButton("Выйти") {
-                        closeDetails(false)
-                    }
-                }.show()
-            } else {
-                closeDetails(false)
-            }
+            onBackPressed()
         }
         toolbar_title.text = platform.address
         platform_map.apply {
@@ -240,6 +231,22 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                     setTouchable(true)
                 }
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        if (hasPhotoChanges) {
+            alertDialog = alert(
+                "Все данные и фотографии сделанные ранее не будут отправлены",
+                "Вы уверены?"
+            ) {
+                cancelButton {}
+                positiveButton("Выйти") {
+                    closeDetails(false)
+                }
+            }.show()
+        } else {
+            closeDetails(false)
         }
     }
 

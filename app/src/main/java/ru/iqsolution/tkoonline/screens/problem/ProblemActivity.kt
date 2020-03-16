@@ -36,8 +36,7 @@ class ProblemActivity : BaseActivity<ProblemContract.Presenter>(), ProblemContra
         setContentView(R.layout.activity_problem)
         platform = intent.getSerializableExtra(EXTRA_PLATFORM) as PlatformContainers
         toolbar_back.setOnClickListener {
-            setResult(RESULT_CANCELED)
-            finish()
+            onBackPressed()
         }
         toolbar_title.text = platform.address
         platform_id.setTextBoldSpan(getString(R.string.platform_id, platform.kpId), 0, 3)
@@ -85,6 +84,11 @@ class ProblemActivity : BaseActivity<ProblemContract.Presenter>(), ProblemContra
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        setResult(RESULT_CANCELED)
+        finish()
     }
 
     companion object {
