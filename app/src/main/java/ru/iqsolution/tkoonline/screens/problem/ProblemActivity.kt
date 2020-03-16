@@ -12,6 +12,7 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
+import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent

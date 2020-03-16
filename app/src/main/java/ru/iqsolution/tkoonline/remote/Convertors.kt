@@ -3,8 +3,8 @@ package ru.iqsolution.tkoonline.remote
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
-import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
-import ru.iqsolution.tkoonline.PATTERN_TIME_ZONE
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
 import java.lang.reflect.Type
 

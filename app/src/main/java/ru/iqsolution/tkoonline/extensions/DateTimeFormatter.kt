@@ -12,3 +12,5 @@ val PATTERN_DATETIME_ZONE: DateTimeFormatter =
     DateTimeFormat.forPattern("yyyyMMdd'T'HHmmssZ").withOffsetParsed()
 
 val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
+
+val PATTERN_TIME_MILLIS: DateTimeFormatter = DateTimeFormat.forPattern("HH.mm.ss.SSS")

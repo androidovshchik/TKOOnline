@@ -2,8 +2,8 @@ package ru.iqsolution.tkoonline.local
 
 import androidx.room.TypeConverter
 import org.joda.time.DateTime
-import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
-import ru.iqsolution.tkoonline.PATTERN_TIME_ZONE
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE
 
 @Suppress("unused")
 object Converters {

@@ -1,7 +1,7 @@
 package ru.iqsolution.tkoonline.local.dao
 
 import androidx.room.*
-import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEventToken
 

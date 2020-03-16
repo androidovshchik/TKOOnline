@@ -13,9 +13,9 @@ import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.include_status.*
 import org.jetbrains.anko.locationManager
 import org.joda.time.DateTime
-import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
-import ru.iqsolution.tkoonline.PATTERN_TIME
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseFragment

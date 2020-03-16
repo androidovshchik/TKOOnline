@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.item_platform.view.*
 import org.jetbrains.anko.dip
-import ru.iqsolution.tkoonline.PATTERN_TIME
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
 import ru.iqsolution.tkoonline.extensions.inflate
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter

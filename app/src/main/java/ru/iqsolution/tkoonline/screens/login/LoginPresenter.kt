@@ -12,7 +12,7 @@ import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import retrofit2.awaitResponse
 import ru.iqsolution.tkoonline.BuildConfig
-import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken

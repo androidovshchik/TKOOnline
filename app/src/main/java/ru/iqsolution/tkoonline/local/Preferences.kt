@@ -5,7 +5,7 @@ import com.chibatching.kotpref.KotprefModel
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
-import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber

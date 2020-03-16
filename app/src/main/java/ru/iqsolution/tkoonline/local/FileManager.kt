@@ -10,9 +10,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.DateTimeFormatter
 import ru.iqsolution.tkoonline.DB_NAME
+import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_MILLIS
 import ru.iqsolution.tkoonline.extensions.use
 import timber.log.Timber
 import java.io.File
@@ -53,7 +52,7 @@ class FileManager(context: Context) {
 
     fun copyDb(): Boolean {
         backupDir?.let {
-            val datetime = DateTime.now().toString(FORMATTER)
+            val datetime = DateTime.now().toString(PATTERN_TIME_MILLIS)
             val distFile = File(it, "app_${datetime}.db")
             return writeFile(distFile) { output ->
                 FileInputStream(dbFile).use { input ->
@@ -232,7 +231,5 @@ class FileManager(context: Context) {
         private const val FILE_LIFETIME = 4 * 24 * 60 * 60 * 1000L
 
         private val IMAGE_TYPE = "image/jpeg".toMediaTypeOrNull()
-
-        private val FORMATTER: DateTimeFormatter = DateTimeFormat.forPattern("HH.mm.ss.SSS")
     }
 }
