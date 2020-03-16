@@ -19,8 +19,8 @@ import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.models.QrCode
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
-import ru.iqsolution.tkoonline.services.telemetry.TelemetryService
-import ru.iqsolution.tkoonline.services.workers.UpdateWorker
+import ru.iqsolution.tkoonline.telemetry.TelemetryService
+import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
 
 class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(context), LoginContract.Presenter {

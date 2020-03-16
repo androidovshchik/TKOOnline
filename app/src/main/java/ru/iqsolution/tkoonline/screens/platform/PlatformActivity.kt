@@ -26,7 +26,7 @@ import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
-import ru.iqsolution.tkoonline.services.workers.SendWorker
+import ru.iqsolution.tkoonline.workers.SendWorker
 
 /**
  * Returns [android.app.Activity.RESULT_OK] if there were changes
