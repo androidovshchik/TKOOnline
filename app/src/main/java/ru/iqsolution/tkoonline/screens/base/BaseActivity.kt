@@ -27,9 +27,10 @@ import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.common.status.StatusFragment
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
+import ru.iqsolution.tkoonline.screens.presenterModule
 import ru.iqsolution.tkoonline.screens.screenModule
-import ru.iqsolution.tkoonline.services.telemetry.TelemetryRunnable
-import ru.iqsolution.tkoonline.services.telemetry.TelemetryService
+import ru.iqsolution.tkoonline.telemetry.TelemetryRunnable
+import ru.iqsolution.tkoonline.telemetry.TelemetryService
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -40,6 +41,8 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
     override val kodein: Kodein by Kodein.lazy {
 
         extend(parentKodein)
+
+        import(presenterModule)
 
         import(screenModule)
     }

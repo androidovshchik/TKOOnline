@@ -8,6 +8,7 @@ import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import timber.log.Timber
 
 class Preferences(context: Context) : KotprefModel(context), Memory, Location<Float> {
 
@@ -109,6 +110,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
             check(tokenId > 0L)
             true
         } catch (e: Throwable) {
+            Timber.e(e)
             false
         }
 

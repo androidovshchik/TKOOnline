@@ -35,8 +35,8 @@ import ru.iqsolution.tkoonline.remote.remoteModule
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.services.serviceModule
-import ru.iqsolution.tkoonline.services.workers.SendWorker
-import ru.iqsolution.tkoonline.services.workers.UpdateWorker
+import ru.iqsolution.tkoonline.workers.SendWorker
+import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
 
 @Suppress("unused")
