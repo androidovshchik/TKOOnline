@@ -6,9 +6,9 @@ import ru.iqsolution.tkoonline.telemetry.LocationListener
 
 interface IBaseView : KodeinAware, LocationListener {
 
-    val isAvailable: Boolean
+    val isTouchable: Boolean
 
-    fun toggleAvailability(enable: Boolean)
+    fun setTouchable(enable: Boolean)
 
     fun updateRoute()
 

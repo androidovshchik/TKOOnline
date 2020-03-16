@@ -76,10 +76,10 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
         }
     }
 
-    override val isAvailable: Boolean
+    override val isTouchable: Boolean
         get() = window.attributes.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE == 0
 
-    override fun toggleAvailability(enable: Boolean) {
+    override fun setTouchable(enable: Boolean) {
         if (enable) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         } else {
@@ -202,8 +202,6 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    override fun onBackPressed() {}
 
     override fun onDestroy() {
         presenter.detachView()

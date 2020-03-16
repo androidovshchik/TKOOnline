@@ -82,7 +82,7 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
         }
         shot.setOnClickListener {
             imageCapture?.let {
-                toggleAvailability(false)
+                setTouchable(false)
                 val file = File(intent.getStringExtra(EXTRA_PHOTO_PATH) ?: return@let)
                 val output = ImageCapture.OutputFileOptions.Builder(file)
                     .setMetadata(ImageCapture.Metadata())
@@ -165,13 +165,13 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
     }
 
     override fun onError(exception: ImageCaptureException) {
-        toggleAvailability(true)
+        setTouchable(true)
         Timber.e(exception)
         showError(exception)
     }
 
     override fun onBackPressed() {
-        if (isAvailable) {
+        if (isTouchable) {
             setResult(RESULT_CANCELED)
             finish()
         }

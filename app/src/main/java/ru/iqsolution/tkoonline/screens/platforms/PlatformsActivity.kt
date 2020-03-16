@@ -104,11 +104,11 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
 
     override fun onStart() {
         super.onStart()
-        toggleAvailability(true)
+        setTouchable(true)
     }
 
     override fun onAdapterEvent(position: Int, item: PlatformContainers) {
-        toggleAvailability(false)
+        setTouchable(false)
         startActivityNoop<PlatformActivity>(
             REQUEST_PLATFORM,
             EXTRA_PLATFORM to item,

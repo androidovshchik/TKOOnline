@@ -109,7 +109,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                     okButton {}
                 }.show()
             } else {
-                toggleAvailability(false)
+                setTouchable(false)
                 platform.reset()
                 presenter.savePlatformEvents(platform, linkedPlatforms.apply {
                     forEach {
@@ -131,14 +131,14 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                     okButton {}
                 }.show()
             } else {
-                toggleAvailability(false)
+                setTouchable(false)
                 presenter.savePlatformEvents(platform, linkedPlatforms)
             }
         }
         attach(ContainerLayout(applicationContext).apply {
             initContainer(platform)
         }, 2)
-        toggleAvailability(false)
+        setTouchable(false)
         presenter.apply {
             loadLinkedPlatforms(platform.linkedIds.toList())
             loadPhotoEvents(platform.kpId)
@@ -187,11 +187,11 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         platform_map.setMarkers("[${gson.toJson(platform)}]")
         gallery_before.updatePhotos(events)
         gallery_after.updatePhotos(events)
-        toggleAvailability(true)
+        setTouchable(true)
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {
-        toggleAvailability(false)
+        setTouchable(false)
         val event = photoEvent ?: PhotoEvent(platform.kpId, photoType.id)
         startActivityNoop<PhotoActivity>(
             REQUEST_PHOTO,
@@ -202,7 +202,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     }
 
     override fun closeDetails(hasCleanChanges: Boolean) {
-        toggleAvailability(false)
+        setTouchable(false)
         setResult(
             if (hasPhotoChanges || hasCleanChanges) {
                 if (hasCleanChanges) {
@@ -237,7 +237,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                     hasPhotoChanges = true
                     presenter.loadPhotoEvents(platform.kpId)
                 } else {
-                    toggleAvailability(true)
+                    setTouchable(true)
                 }
             }
         }

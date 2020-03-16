@@ -47,14 +47,14 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
             text = intent.getStringExtra(EXTRA_PHOTO_TITLE) ?: PhotoType.Default.OTHER.description
         }
         photo_delete.setOnClickListener {
-            toggleAvailability(false)
+            setTouchable(false)
             presenter.deleteEvent(photoEvent)
         }
         photo_retake.setOnClickListener {
             takePhoto()
         }
         photo_save.setOnClickListener {
-            toggleAvailability(false)
+            setTouchable(false)
             presenter.saveEvent(photoEvent, linkedIds, externalPhoto)
         }
         if (photoEvent.sent) {
@@ -74,7 +74,7 @@ class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.Vie
     }
 
     override fun closePreview(result: Int) {
-        toggleAvailability(false)
+        setTouchable(false)
         setResult(result)
         finish()
     }
