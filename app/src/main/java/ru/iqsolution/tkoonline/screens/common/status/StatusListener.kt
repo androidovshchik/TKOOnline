@@ -1,6 +1,6 @@
 package ru.iqsolution.tkoonline.screens.common.status
 
-import ru.iqsolution.tkoonline.services.LocationListener
+import ru.iqsolution.tkoonline.telemetry.LocationListener
 
 interface StatusListener : LocationListener {
 

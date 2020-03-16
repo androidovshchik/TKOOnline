@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.services
+package ru.iqsolution.tkoonline
 
 import android.content.ComponentName
 import android.content.Context

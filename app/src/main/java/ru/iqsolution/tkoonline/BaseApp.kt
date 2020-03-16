@@ -25,6 +25,7 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
 import org.kodein.di.generic.provider
+import org.kodein.di.generic.singleton
 import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.extensions.longBgToast
@@ -34,7 +35,6 @@ import ru.iqsolution.tkoonline.local.localModule
 import ru.iqsolution.tkoonline.remote.remoteModule
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import ru.iqsolution.tkoonline.services.serviceModule
 import ru.iqsolution.tkoonline.workers.SendWorker
 import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
@@ -48,11 +48,13 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
             applicationContext
         }
 
+        bind<AdminManager>() with singleton {
+            AdminManager(instance())
+        }
+
         import(localModule)
 
         import(remoteModule)
-
-        import(serviceModule)
     }
 
     override fun getCameraXConfig() = Camera2Config.defaultConfig()

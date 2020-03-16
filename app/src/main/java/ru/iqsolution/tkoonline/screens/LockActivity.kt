@@ -7,12 +7,12 @@ import org.jetbrains.anko.toast
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.EXTRA_TROUBLE_EXIT
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
-import ru.iqsolution.tkoonline.services.AdminManager
 
 class LockActivity : Activity(), KodeinAware {
 

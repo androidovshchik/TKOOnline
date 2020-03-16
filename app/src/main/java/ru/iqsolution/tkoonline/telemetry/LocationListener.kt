@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.services
+package ru.iqsolution.tkoonline.telemetry
 
 import com.google.android.gms.location.LocationSettingsStates
 import ru.iqsolution.tkoonline.models.SimpleLocation

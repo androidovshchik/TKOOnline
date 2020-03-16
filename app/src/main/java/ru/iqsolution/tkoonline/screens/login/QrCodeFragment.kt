@@ -18,12 +18,12 @@ import kotlinx.android.synthetic.main.fragment_qr.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.powerManager
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.IBaseView
-import ru.iqsolution.tkoonline.services.AdminManager
 
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {

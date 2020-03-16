@@ -16,6 +16,7 @@ import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.*
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
@@ -24,7 +25,6 @@ import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
-import ru.iqsolution.tkoonline.services.AdminManager
 import ru.iqsolution.tkoonline.workers.DeleteWorker
 import ru.iqsolution.tkoonline.workers.MidnightWorker
 import ru.iqsolution.tkoonline.workers.UpdateWorker

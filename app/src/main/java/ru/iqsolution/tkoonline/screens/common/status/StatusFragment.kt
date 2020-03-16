@@ -20,7 +20,7 @@ import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.IBaseView
-import ru.iqsolution.tkoonline.services.LocationListener
+import ru.iqsolution.tkoonline.telemetry.LocationListener
 import timber.log.Timber
 
 /**

@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.services
+package ru.iqsolution.tkoonline.telemetry
 
 import android.annotation.SuppressLint
 import android.app.Service

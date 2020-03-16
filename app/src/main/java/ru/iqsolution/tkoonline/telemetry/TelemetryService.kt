@@ -38,8 +38,6 @@ import ru.iqsolution.tkoonline.models.TelemetryConfig
 import ru.iqsolution.tkoonline.models.TelemetryState
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import ru.iqsolution.tkoonline.services.BaseService
-import ru.iqsolution.tkoonline.services.LocationManager
 import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -139,7 +137,10 @@ class TelemetryService : BaseService(), TelemetryListener {
             Timber.e(e)
             TelemetryConfig()
         }
-        locationManager = LocationManager(applicationContext, this)
+        locationManager = LocationManager(
+            applicationContext,
+            this
+        )
         preferenceHolder.init(preferences)
         startTelemetry()
         factory.apply {

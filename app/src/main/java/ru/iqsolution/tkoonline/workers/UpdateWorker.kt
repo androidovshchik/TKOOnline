@@ -11,10 +11,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.extensions.pendingReceiverFor
 import ru.iqsolution.tkoonline.local.FileManager
-import ru.iqsolution.tkoonline.services.AdminManager
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 

@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.services
+package ru.iqsolution.tkoonline.telemetry
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,7 +8,6 @@ import android.location.LocationManager
 import android.location.LocationProvider
 import android.os.Bundle
 import org.jetbrains.anko.locationManager
-import ru.iqsolution.tkoonline.telemetry.TelemetryListener
 import java.lang.ref.WeakReference
 
 @SuppressLint("MissingPermission")
