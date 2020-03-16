@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.services.telemetry
+package ru.iqsolution.tkoonline.telemetry
 
 import androidx.annotation.UiThread
 import com.chibatching.kotpref.bulk

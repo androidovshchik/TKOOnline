@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package ru.iqsolution.tkoonline.services.telemetry
+package ru.iqsolution.tkoonline.telemetry
 
 import android.Manifest
 import android.annotation.SuppressLint
