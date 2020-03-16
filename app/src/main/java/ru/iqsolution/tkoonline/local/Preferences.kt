@@ -18,7 +18,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     override var accessToken by nullableStringPref(null, "0x00")
 
     /**
-     * [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
+     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      * Logout on background thread
      */
     var expiresWhen by nullableStringPref(null, "0x01")
@@ -27,7 +27,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     var allowPhotoRefKp by booleanPref(false, "0x02")
 
     /**
-     * Server time [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
+     * Server time [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      * Logout on background thread
      */
     var serverTime by nullableStringPref(null, "0x03")
@@ -76,7 +76,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     override var longitude by floatPref(0f, "0x0e")
 
     /**
-     * Time of last known location [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
+     * Time of last known location [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      * Logout on background thread
      */
     var locationTime by nullableStringPref(null, "0x0f")

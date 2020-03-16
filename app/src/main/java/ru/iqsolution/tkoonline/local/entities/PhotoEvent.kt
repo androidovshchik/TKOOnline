@@ -70,7 +70,7 @@ class PhotoEvent() : Serializable, SendEvent {
     var longitude = 0.0
 
     /**
-     * [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
+     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      */
     @ColumnInfo(name = "pe_when_time")
     lateinit var whenTime: DateTime

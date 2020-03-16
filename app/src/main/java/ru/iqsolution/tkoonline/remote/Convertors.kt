@@ -45,7 +45,7 @@ class LocationEventTokenSerializer : JsonSerializer<LocationEventToken> {
 class DateTimeSerializer : JsonSerializer<DateTime> {
 
     /**
-     * NOTICE [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE] is only supported
+     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE] is only supported
      */
     override fun serialize(src: DateTime, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         return JsonPrimitive(src.toString(PATTERN_DATETIME_ZONE))
@@ -55,7 +55,7 @@ class DateTimeSerializer : JsonSerializer<DateTime> {
 class DateTimeDeserializer : JsonDeserializer<DateTime> {
 
     /**
-     * NOTICE [ru.iqsolution.tkoonline.PATTERN_DATE] is not supported
+     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATE] is not supported
      */
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DateTime {
         val value = json.asString

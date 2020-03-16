@@ -4,6 +4,9 @@ import com.google.gson.Gson
 import ru.iqsolution.tkoonline.remote.api.ResponseError
 import timber.log.Timber
 
+val okhttp3.Response.isAccessError: Boolean
+    get() = code == 401 || code == 403
+
 fun retrofit2.Response<*>.parseErrors(gson: Gson): List<String?> {
     return parseErrors(gson, errorBody()?.string() ?: return listOf())
 }

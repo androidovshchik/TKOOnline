@@ -9,7 +9,7 @@ import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE
 object Converters {
 
     /**
-     * NOTICE [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE] is only supported
+     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE] is only supported
      */
     @TypeConverter
     @JvmStatic
@@ -18,7 +18,7 @@ object Converters {
     }
 
     /**
-     * NOTICE [ru.iqsolution.tkoonline.PATTERN_DATE] is not supported
+     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATE] is not supported
      */
     @TypeConverter
     @JvmStatic

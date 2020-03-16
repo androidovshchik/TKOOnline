@@ -28,7 +28,7 @@ class AccessToken {
     var carId = 0
 
     /**
-     * [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
+     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      */
     @ColumnInfo(name = "t_expires")
     lateinit var expires: DateTime

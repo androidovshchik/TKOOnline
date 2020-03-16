@@ -21,7 +21,7 @@ interface Server {
     ): ResponseAuth
 
     /**
-     * @param date [ru.iqsolution.tkoonline.PATTERN_DATE]
+     * @param date [ru.iqsolution.tkoonline.extensions.PATTERN_DATE]
      */
     @Tag("platforms")
     @Headers("Accept: application/json")
@@ -48,7 +48,7 @@ interface Server {
     ): Call<ResponseClean>
 
     /**
-     * @param time [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
+     * @param time [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      */
     @Tag("photo")
     @Multipart

@@ -22,7 +22,7 @@ open class SimpleLocation : Serializable, Location<Double> {
     var accuracy = 0f
 
     /**
-     * [ru.iqsolution.tkoonline.PATTERN_DATETIME_ZONE]
+     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      */
     val locationTime: DateTime
 
