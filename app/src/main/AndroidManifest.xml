@@ -28,7 +28,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Fullscreen"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning,LockedOrientationActivity">
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode"/>
@@ -90,7 +90,7 @@
             android:screenOrientation="sensorPortrait">
         </activity>
         <service
-            android:name="ru.iqsolution.tkoonline.telemetry.TelemetryService"
+            android:name=".telemetry.TelemetryService"
             android:enabled="true"
             android:exported="false"/>
         <receiver

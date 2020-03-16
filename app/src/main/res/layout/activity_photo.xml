@@ -83,9 +83,9 @@
         android:layout_below="@+id/photo_toolbar"
         android:layout_above="@+id/photo_buttons"
         android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
         android:src="@drawable/login_background"
-        android:background="@color/colorBackground"/>
+        android:background="@android:color/black" />
 
     <View
         android:layout_width="match_parent"

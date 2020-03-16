@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.screens.camera
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.MotionEvent
+import android.view.OrientationEventListener
 import android.view.ScaleGestureDetector
 import android.view.Surface
 import androidx.camera.core.*
@@ -15,14 +16,10 @@ import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.EXTRA_PHOTO_PATH
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.windowSize
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import timber.log.Timber
 import java.io.File
 import java.util.concurrent.Executor
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Returns [android.app.Activity.RESULT_OK] if photo was captured
@@ -95,19 +92,29 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
         }
         val cameraProvider = ProcessCameraProvider.getInstance(applicationContext)
         cameraProvider.addListener(Runnable {
-            val window = windowManager.windowSize
-            val aspectRatio = getAspectRatio(window.x, window.y)
             val preview = Preview.Builder()
-                .setTargetAspectRatio(aspectRatio)
+                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                 .setTargetRotation(Surface.ROTATION_0)
                 .build()
             preview.setSurfaceProvider(camera_preview.previewSurfaceProvider)
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                .setTargetAspectRatio(aspectRatio)
+                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                 .setTargetRotation(Surface.ROTATION_0)
                 .setFlashMode(ImageCapture.FLASH_MODE_OFF)
                 .build()
+            val orientationEventListener = object : OrientationEventListener(applicationContext) {
+
+                override fun onOrientationChanged(orientation: Int) {
+                    imageCapture?.targetRotation = when (orientation) {
+                        in 45..134 -> Surface.ROTATION_270
+                        in 135..224 -> Surface.ROTATION_180
+                        in 225..314 -> Surface.ROTATION_90
+                        else -> Surface.ROTATION_0
+                    }
+                }
+            }
+            orientationEventListener.enable()
             val cameraSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
@@ -180,17 +187,5 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         CameraX.unbindAll()
         super.onDestroy()
-    }
-
-    companion object {
-
-        private fun getAspectRatio(width: Int, height: Int): Int {
-            val previewRatio = max(width, height).toDouble() / min(width, height)
-            return if (abs(previewRatio - 4.0 / 3.0) <= abs(previewRatio - 16.0 / 9.0)) {
-                AspectRatio.RATIO_4_3
-            } else {
-                AspectRatio.RATIO_16_9
-            }
-        }
     }
 }
