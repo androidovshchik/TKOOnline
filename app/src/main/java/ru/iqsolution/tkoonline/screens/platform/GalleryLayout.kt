@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.merge_gallery.view.*
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.leftPadding
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.makeCallback
+import ru.iqsolution.tkoonline.extensions.activityCallback
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
@@ -62,7 +62,7 @@ class GalleryLayout : RelativeLayout {
         photo_add.setOnClickListener {
             if (enableShoot) {
                 if (photoEvents.size < MAX_PHOTO_COUNT) {
-                    makeCallback<GalleryListener> {
+                    context.activityCallback<GalleryListener> {
                         onPhotoClick(photoType, null)
                     }
                 }
@@ -103,7 +103,7 @@ class GalleryLayout : RelativeLayout {
                         }
                         setOnClickListener {
                             photoEvents.getOrNull(i)?.let {
-                                makeCallback<GalleryListener> {
+                                context.activityCallback<GalleryListener> {
                                     onPhotoClick(photoType, it)
                                 }
                             }

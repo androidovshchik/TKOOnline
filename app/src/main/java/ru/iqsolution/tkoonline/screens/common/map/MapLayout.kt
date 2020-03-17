@@ -10,7 +10,7 @@ import android.widget.FrameLayout
 import androidx.annotation.WorkerThread
 import kotlinx.android.synthetic.main.merge_map.view.*
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.makeCallback
+import ru.iqsolution.tkoonline.extensions.activityCallback
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsContract
 
@@ -102,7 +102,7 @@ class MapLayout : FrameLayout, MapListener {
     @WorkerThread
     override fun onPlatform(kpId: Int) {
         map_web.post {
-            context.makeCallback<PlatformsContract.View> {
+            context.activityCallback<PlatformsContract.View> {
                 highlightItem(kpId)
             }
         }

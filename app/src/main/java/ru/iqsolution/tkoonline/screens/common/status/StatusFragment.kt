@@ -92,7 +92,7 @@ class StatusFragment : BaseFragment(), StatusListener {
     }
 
     override fun onNetworkChanged(available: Boolean) {
-        makeCallback<Any> {
+        activityCallback<Any> {
             connectionIcon = if (available) R.drawable.ic_swap_vert_green else R.drawable.ic_swap_vert
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 connectionRunnable.run()
@@ -103,7 +103,7 @@ class StatusFragment : BaseFragment(), StatusListener {
     }
 
     override fun onCloudChanged() {
-        makeCallback<IBaseView> {
+        activityCallback<IBaseView> {
             updateCloud()
         }
     }
@@ -171,7 +171,7 @@ class StatusFragment : BaseFragment(), StatusListener {
     }
 
     override fun onLocationEvent() {
-        makeCallback<IBaseView> {
+        activityCallback<IBaseView> {
             updateRoute()
         }
     }
@@ -184,14 +184,14 @@ class StatusFragment : BaseFragment(), StatusListener {
     }
 
     override fun onLocationResult(location: SimpleLocation) {
-        makeCallback<LocationListener> {
+        activityCallback<LocationListener> {
             onLocationResult(location)
         }
     }
 
     override fun onLocationAvailability(available: Boolean) {
         onLocationChanged(available)
-        makeCallback<LocationListener> {
+        activityCallback<LocationListener> {
             onLocationAvailability(available)
         }
     }

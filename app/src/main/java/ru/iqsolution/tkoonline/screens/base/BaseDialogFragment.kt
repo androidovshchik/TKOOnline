@@ -11,7 +11,7 @@ import android.view.WindowManager
 import org.jetbrains.anko.inputMethodManager
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
-import ru.iqsolution.tkoonline.extensions.makeCallback
+import ru.iqsolution.tkoonline.extensions.activityCallback
 
 abstract class BaseDialogFragment : DialogFragment(), KodeinAware {
 
@@ -27,7 +27,7 @@ abstract class BaseDialogFragment : DialogFragment(), KodeinAware {
         super.dismiss()
     }
 
-    inline fun <reified T> makeCallback(action: T.() -> Unit) {
-        context?.makeCallback(action)
+    inline fun <reified T> activityCallback(action: T.() -> Unit) {
+        context?.activityCallback(action)
     }
 }

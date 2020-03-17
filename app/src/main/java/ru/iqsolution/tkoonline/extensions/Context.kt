@@ -27,7 +27,7 @@ tailrec fun Context?.activity(): Activity? = when (this) {
     else -> (this as? ContextWrapper)?.baseContext?.activity()
 }
 
-inline fun <reified T> Context.makeCallback(action: T.() -> Unit) {
+inline fun <reified T> Context.activityCallback(action: T.() -> Unit) {
     activity()?.let {
         if (it is T && !it.isFinishing) {
             action(it)

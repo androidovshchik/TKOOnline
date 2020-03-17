@@ -17,7 +17,7 @@ class WaitDialog(activity: Activity) : BaseDialog(activity) {
         setContentView(R.layout.dialog_wait)
         dialog_cancel.setOnClickListener {
             dismiss()
-            makeCallback<WaitListener> {
+            activityCallback<WaitListener> {
                 cancelWork()
             }
         }

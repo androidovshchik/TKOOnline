@@ -44,12 +44,12 @@ class QrCodeFragment : BaseFragment() {
             zoom = 8
         }
         codeScanner.decodeCallback = DecodeCallback {
-            makeCallback<LoginContract.View> {
+            activityCallback<LoginContract.View> {
                 onQrCode(it.text)
             }
         }
         codeScanner.errorCallback = ErrorCallback {
-            makeCallback<IBaseView> {
+            activityCallback<IBaseView> {
                 activity?.runOnUiThread {
                     showError(it)
                 }

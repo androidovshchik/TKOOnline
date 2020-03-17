@@ -81,7 +81,7 @@ class PasswordDialog : BaseDialogFragment() {
 
     private fun onPrompted(afterSetup: Boolean) {
         dialog_input.setText("")
-        makeCallback<SettingsListener> {
+        activityCallback<SettingsListener> {
             if (afterSetup) {
                 enterKioskMode()
             } else {

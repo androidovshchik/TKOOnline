@@ -45,7 +45,7 @@ class SettingsDialog : BaseDialogFragment() {
                 preferences.showRoute = isChecked
             }
             find<View>(R.id.dev_build_route).setOnClickListener {
-                makeCallback<SettingsListener> {
+                activityCallback<SettingsListener> {
                     exportDb()
                 }
             }
@@ -79,7 +79,7 @@ class SettingsDialog : BaseDialogFragment() {
 
     private fun setLocked(enable: Boolean, preferences: Preferences) {
         preferences.lockPassword = null
-        makeCallback<SettingsListener> {
+        activityCallback<SettingsListener> {
             if (enable) {
                 openPasswordDialog()
             } else {
