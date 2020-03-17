@@ -6,7 +6,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response
 import retrofit2.Invocation
-import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.isAccessError
 import ru.iqsolution.tkoonline.extensions.parseErrors
@@ -79,15 +78,12 @@ class AppInterceptor(context: Context) : Interceptor {
                     when (response.code) {
                         400 -> {
                             when {
-                                codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
-                                codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
-                                else -> echoError(firstError)
+                                codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
                             }
                         }
                         401 -> {
                             when {
-                                codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
-                                codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
+                                codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
                                 else -> echoError(firstError)
                             }
                         }
@@ -95,17 +91,30 @@ class AppInterceptor(context: Context) : Interceptor {
                         404, 500 -> echoError(firstError)
                         else -> echoError(firstError, true)
                     }
-                    if (response.isAccessError) {
-                        exitUnexpected()
+                }
+                "clean", "photo" -> {
+                    when (response.code) {
+                        400 -> {
+                            when {
+                                codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
+                            }
+                        }
+                        401 -> {
+                            when {
+                                codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
+                                else -> echoError(firstError)
+                            }
+                        }
+                        403 -> bgToast("Доступ запрещен, обратитесь к администратору")
+                        404, 500 -> echoError(firstError)
+                        else -> echoError(firstError, true)
                     }
                 }
-                "clean" -> {
-                }
-                "photo" -> {
-                }
                 "logout" -> {
-                }
-                "version" -> {
+                    when (response.code) {
+                        400, 404, 500 -> echoError(firstError)
+                        else -> echoError(firstError, true)
+                    }
                 }
             }
         }
