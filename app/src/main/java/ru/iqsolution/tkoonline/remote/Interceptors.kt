@@ -56,35 +56,45 @@ class AppInterceptor(context: Context) : Interceptor {
             return response
         }
         val errors = response.parseErrors(gson)
-        val error = errors.firstOrNull()
+        val firstError = errors.firstOrNull()
         val codes = errors.map { it.code }
-        when {
-            errors.contains("fail to auth") -> bgToast("Неверный логин или пароль")
-            errors.contains("car already taken") -> bgToast("Кто-то другой уже авторизовался на данной TC")
-        }
         reference.get()?.run {
             when (tag) {
                 "login" -> {
                     when (response.code) {
-                        301 -> {
-                        }
-                        400 -> echoError(error)
+                        400, 500 -> echoError(firstError)
                         401 -> {
                             when {
                                 codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
                                 codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
-                                else -> echoError(error)
+                                else -> echoError(firstError)
                             }
                         }
                         403 -> bgToast("Доступ запрещен, обратитесь к администратору")
                         404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
-                        else -> echoError(error, true)
-                    }
-                    if (response.code == 401) {
-
+                        else -> echoError(firstError, true)
                     }
                 }
                 "platforms", "photos" -> {
+                    when (response.code) {
+                        400 -> {
+                            when {
+                                codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
+                                codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
+                                else -> echoError(firstError)
+                            }
+                        }
+                        401 -> {
+                            when {
+                                codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
+                                codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
+                                else -> echoError(firstError)
+                            }
+                        }
+                        403 -> bgToast("Доступ запрещен, обратитесь к администратору")
+                        404, 500 -> echoError(firstError)
+                        else -> echoError(firstError, true)
+                    }
                     if (response.isAccessError) {
                         exitUnexpected()
                     }
@@ -99,29 +109,12 @@ class AppInterceptor(context: Context) : Interceptor {
                 }
             }
         }
-        when (response.code) {
-            //400 -> bgToast("Сервер не смог обработать запрос, некорректные данные в запросе")
-            401 -> if (url.endsWith("v1/auth")) {
-                val errors = response.parseErrors(gson)
-                when {
-                    errors.contains("fail to auth") -> bgToast("Неверный логин или пароль")
-                    errors.contains("car already taken") -> bgToast("Кто-то другой уже авторизовался на данной TC")
-                }
-            } else {
-                exitUnexpected()
-            }
-            403 -> if (!url.contains("v1/auth")) {
-                exitUnexpected()
-            }
-            404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
-            500 -> bgToast("Сервер не смог обработать запрос, ошибка на стороне сервера")
-        }
         return response
     }
 
     private fun Context.echoError(error: ServerError?, unknown: Boolean = false) {
         if (error != null) {
-            bgToast("Ошибка ${error.code}: \"${error.description}\" попробуйте позже${""}")
+            bgToast("Ошибка ${error.code}: \"${error.description}\" ${if (unknown) "Обратитесь к администратору" else "попробуйте позже"}")
         }
     }
 }
