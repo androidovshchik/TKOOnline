@@ -39,7 +39,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     private var isExportingDb = false
 
-    override fun login(data: String) {
+    override fun login(data: String, header: String?) {
         // waiting until service will finish job
         if (activityManager.isRunning<TelemetryService>()) {
             return
@@ -51,7 +51,6 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
             return
         }
         Timber.d("Qr code: $data")
-        val header = preferences.authHeader
         val lockPassword = preferences.lockPassword?.toInt()
         launch {
             if (header != null) {
@@ -61,7 +60,6 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                     reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
                     throw e
                 }
-                preferences.accessToken = null
             }
             val responseAuth = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
             try {

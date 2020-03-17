@@ -47,9 +47,11 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     private var alertDialog: AlertDialog? = null
 
-    private var skipCheckUpdates = false
+    private var authHeader: String? = null
 
     private var hasPrompted = false
+
+    private var skipCheckUpdates = false
 
     @SuppressLint("SetTextI18n")
     @Suppress("ConstantConditionIf")
@@ -57,6 +59,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         qrCode = fragmentManager.findFragmentById(R.id.barcode_fragment) as QrCodeFragment
+        authHeader = preferences.authHeader
         preferences.bulk {
             logout()
         }
@@ -90,7 +93,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
      */
     @WorkerThread
     override fun onQrCode(value: String) {
-        presenter.login(value)
+        presenter.login(value, authHeader)
     }
 
     override fun openDialog() {
