@@ -71,7 +71,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 Timber.e(e)
                 reference.get()?.apply {
                     authHeader = responseAuth.authHeader
-                    showError("Невалидное системное время")
+                    showError("Некорректное системное время")
                 }
                 makeLogout()
                 throw e
@@ -102,7 +102,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
     }
 
     override fun logout() {
-        launch {
+        GlobalScope.launch(Dispatchers.Main) {
             try {
                 makeLogout()
             } catch (e: Throwable) {

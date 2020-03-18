@@ -1,16 +1,17 @@
 package ru.iqsolution.tkoonline.remote
 
 import android.content.Context
-import com.google.gson.GsonBuilder
+import com.google.gson.Gson
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.closestKodein
+import org.kodein.di.generic.instance
 import retrofit2.Invocation
 import ru.iqsolution.tkoonline.extensions.bgToast
-import ru.iqsolution.tkoonline.extensions.isAccessError
 import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.Preferences
-import ru.iqsolution.tkoonline.remote.api.ServerError
 import java.lang.ref.WeakReference
 
 @MustBeDocumented
@@ -22,18 +23,17 @@ import java.lang.ref.WeakReference
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Tag(val value: String)
 
-class AppInterceptor(context: Context) : Interceptor {
+class AppInterceptor(context: Context) : Interceptor, KodeinAware {
+
+    override val kodein by closestKodein(context)
 
     private val reference = WeakReference(context)
 
-    private val preferences = Preferences(context)
+    private val preferences: Preferences by instance()
+
+    private val gson: Gson by instance()
 
     private var address = preferences.mainServerAddress
-
-    private val gson = GsonBuilder()
-        .setLenient()
-        .setExclusionStrategies(SerializedNameStrategy())
-        .create()
 
     @Throws(Exception::class)
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -57,73 +57,71 @@ class AppInterceptor(context: Context) : Interceptor {
         val errors = response.parseErrors(gson)
         val firstError = errors.firstOrNull()
         val codes = errors.map { it.code }
-        reference.get()?.run {
-            when (tag) {
-                "login" -> {
-                    when (response.code) {
-                        400, 500 -> echoError(firstError)
-                        401 -> {
-                            when {
-                                codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
-                                codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
-                                else -> echoError(firstError)
-                            }
+        val message = when (tag) {
+            "login" -> {
+                when (response.code) {
+                    400, 500 -> firstError?.print()
+                    401 -> {
+                        when {
+                            codes.contains("fail to auth") -> "Неверный логин или пароль"
+                            codes.contains("car already taken") -> "Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору"
+                            else -> firstError?.print()
                         }
-                        403 -> bgToast("Доступ запрещен, обратитесь к администратору")
-                        404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
-                        else -> echoError(firstError, true)
                     }
-                }
-                "platforms", "photos" -> {
-                    when (response.code) {
-                        400 -> {
-                            when {
-                                codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
-                            }
-                        }
-                        401 -> {
-                            when {
-                                codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
-                                else -> echoError(firstError)
-                            }
-                        }
-                        403 -> bgToast("Доступ запрещен, обратитесь к администратору")
-                        404, 500 -> echoError(firstError)
-                        else -> echoError(firstError, true)
-                    }
-                }
-                "clean", "photo" -> {
-                    when (response.code) {
-                        400 -> {
-                            when {
-                                codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
-                            }
-                        }
-                        401 -> {
-                            when {
-                                codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
-                                else -> echoError(firstError)
-                            }
-                        }
-                        403 -> bgToast("Доступ запрещен, обратитесь к администратору")
-                        404, 500 -> echoError(firstError)
-                        else -> echoError(firstError, true)
-                    }
-                }
-                "logout" -> {
-                    when (response.code) {
-                        400, 404, 500 -> echoError(firstError)
-                        else -> echoError(firstError, true)
-                    }
+                    403 -> "Доступ запрещен, обратитесь к администратору"
+                    404 -> "Сервер не отвечает, проверьте настройки соединения"
+                    else -> firstError?.print(true)
                 }
             }
+            "platforms", "photos" -> {
+                when (response.code) {
+                    400 -> {
+                        when {
+                            codes.contains("closed token") -> "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                        }
+                    }
+                    401 -> {
+                        when {
+                            codes.contains("closed token") -> "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                            else -> echoError(firstError)
+                        }
+                    }
+                    403 -> "Доступ запрещен, обратитесь к администратору"
+                    404, 500 -> firstError?.print()
+                    else -> firstError?.print(true)
+                }
+            }
+            "clean", "photo" -> {
+                when (response.code) {
+                    400 -> {
+                        when {
+                            codes.contains("closed token") -> "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                        }
+                    }
+                    401 -> {
+                        when {
+                            codes.contains("closed token") -> "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                            else -> firstError?.print()
+                        }
+                    }
+                    403 -> "Доступ запрещен, обратитесь к администратору"
+                    404, 500 -> firstError?.print()
+                    else -> firstError?.print(true)
+                }
+            }
+            "logout" -> {
+                when (response.code) {
+                    400, 401, 403 -> {
+                    }
+                    404, 500 -> firstError?.print()
+                    else -> firstError?.print(true)
+                }
+            }
+            else -> null
+        }
+        if (message != null) {
+            reference.get()?.bgToast("Доступ запрещен, обратитесь к администратору")
         }
         return response
-    }
-
-    private fun Context.echoError(error: ServerError?, unknown: Boolean = false) {
-        if (error != null) {
-            bgToast("Ошибка ${error.code}: \"${error.description}\" ${if (unknown) "Обратитесь к администратору" else "попробуйте позже"}")
-        }
     }
 }

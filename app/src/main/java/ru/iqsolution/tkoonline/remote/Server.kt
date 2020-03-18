@@ -26,17 +26,17 @@ interface Server {
     @Tag("platforms")
     @Headers("Accept: application/json")
     @GET("v1/container-sites/{date}")
-    fun getPlatforms(
+    suspend fun getPlatforms(
         @Header("Authorization") token: String,
         @Path("date") date: String
-    ): Call<ResponsePlatforms>
+    ): ResponsePlatforms
 
     @Tag("photos")
     @Headers("Accept: application/json")
     @GET("v1/photo-types")
-    fun getPhotoTypes(
+    suspend fun getPhotoTypes(
         @Header("Authorization") token: String
-    ): Call<ResponseTypes>
+    ): ResponseTypes
 
     @Tag("clean")
     @Headers("Accept: application/json")
