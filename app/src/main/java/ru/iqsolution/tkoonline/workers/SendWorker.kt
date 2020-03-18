@@ -137,24 +137,21 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         val codes = errors.map { it.code }
         var message: String? = null
         try {
-            when (code) {
-                400 -> {
+            message = when (code) {
+                400, 401 -> {
                     when {
-                        codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
-                    }
-                }
-                401 -> {
-                    when {
-                        codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
-                        else -> firstError?.echo(applicationContext)
+                        codes.contains("closed token") -> {
+                            "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                        }
+                        else -> firstError?.print()
                     }
                 }
                 403 -> {
-                    bgToast("Доступ запрещен, обратитесь к администратору")
+                    message = "Доступ запрещен, обратитесь к администратору"
                     throw AuthException()
                 }
-                404, 500 -> message = firstError?.echo()
-                else -> message = firstError?.echo(true)
+                404, 500 -> firstError?.print()
+                else -> firstError?.print(true)
             }
         } finally {
             if (message != null) {

@@ -10,7 +10,7 @@ class ServerError {
     @SerializedName("description")
     var description: String? = null
 
-    fun echo(unknown: Boolean = false): String {
+    fun print(unknown: Boolean = false): String {
         return "Ошибка $code : \"$description\" ${if (unknown) "Обратитесь к администратору" else "попробуйте позже"}"
     }
 }
