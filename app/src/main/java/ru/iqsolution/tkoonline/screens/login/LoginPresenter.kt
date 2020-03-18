@@ -52,18 +52,19 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         }
         Timber.d("Qr code: $data")
         val lockPassword = preferences.lockPassword?.toInt()
+        val toastDelay = 2000L
         launch {
             try {
                 makeLogout()
             } catch (e: Throwable) {
                 reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
+                delay(toastDelay)
                 throw e
             }
             val responseAuth = try {
                 server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
             } catch (e: Throwable) {
-                // short toast time
-                delay(2000)
+                delay(toastDelay)
                 throw e
             }
             try {
@@ -77,7 +78,13 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                     authHeader = responseAuth.authHeader
                     showError("Некорректное системное время")
                 }
-                makeLogout()
+                try {
+                    makeLogout()
+                } catch (e: Throwable) {
+                    delay(toastDelay)
+                    throw e
+                }
+                delay(toastDelay)
                 throw e
             }
             preferences.bulk {
