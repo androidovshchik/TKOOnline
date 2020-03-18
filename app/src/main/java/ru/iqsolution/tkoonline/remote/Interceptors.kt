@@ -75,15 +75,12 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
                     else -> firstError?.print(true)
                 }
             }
-            "platforms", "photos", "clean", "photo" -> {
+            "platforms", "photos" -> {
                 when (response.code) {
                     400 -> {
                         when {
                             codes.contains("closed token") -> {
-                                exitApp = when (tag) {
-                                    "platforms", "photos" -> true
-                                    else -> false
-                                }
+                                exitApp = true
                                 "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
                             }
                             else -> firstError?.print()
@@ -92,15 +89,24 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
                     401 -> {
                         when {
                             codes.contains("closed token") -> {
-                                exitApp = when (tag) {
-                                    "platforms", "photos" -> true
-                                    else -> false
-                                }
+                                exitApp = true
                                 "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
                             }
                             else -> firstError?.print()
                         }
                     }
+                    403 -> {
+                        exitApp = true
+                        "Доступ запрещен, обратитесь к администратору"
+                    }
+                    404, 500 -> firstError?.print()
+                    else -> firstError?.print(true)
+                }
+            }
+            "clean", "photo" -> {
+                when (response.code) {
+                    // NOTICE omit 400, 401
+                    400, 401 -> null
                     403 -> {
                         exitApp = true
                         "Доступ запрещен, обратитесь к администратору"

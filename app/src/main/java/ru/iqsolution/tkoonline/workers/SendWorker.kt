@@ -13,7 +13,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
+import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.Database
@@ -63,7 +65,15 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                         code == 400 || code == 401 -> {
                             val errors = response.parseErrors(gson)
                             val codes = errors.map { it.code }
-                            if (!codes.contains("closed token") || event.token.authHeader == header) {
+                            if (codes.contains("closed token")) {
+                                if (event.token.authHeader == header) {
+                                    applicationContext.run {
+                                        bgToast("Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново")
+                                        exitUnexpected()
+                                    }
+                                    return success(output)
+                                }
+                            } else {
                                 hasErrors = true
                             }
                         }
@@ -98,7 +108,15 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                         code == 400 || code == 401 -> {
                             val errors = response.parseErrors(gson)
                             val codes = errors.map { it.code }
-                            if (!codes.contains("closed token") || event.token.authHeader == header) {
+                            if (codes.contains("closed token")) {
+                                if (event.token.authHeader == header) {
+                                    applicationContext.run {
+                                        bgToast("Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново")
+                                        exitUnexpected()
+                                    }
+                                    return success(output)
+                                }
+                            } else {
                                 hasErrors = true
                             }
                         }
