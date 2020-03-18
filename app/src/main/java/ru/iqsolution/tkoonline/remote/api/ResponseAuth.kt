@@ -22,4 +22,7 @@ class ResponseAuth {
 
     @SerializedName("que_name")
     lateinit var queName: String
+
+    val authHeader: String
+        get() = "Bearer $accessKey"
 }

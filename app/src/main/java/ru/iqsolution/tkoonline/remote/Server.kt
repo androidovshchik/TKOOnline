@@ -14,11 +14,11 @@ interface Server {
     @FormUrlEncoded
     @Headers("Accept: application/json")
     @POST("v1/auth")
-    fun login(
+    suspend fun login(
         @Field("login") login: String,
         @Field("password") password: String,
         @Field("block_code") blockCode: Int?
-    ): Call<ResponseAuth>
+    ): ResponseAuth
 
     /**
      * @param date [ru.iqsolution.tkoonline.extensions.PATTERN_DATE]
