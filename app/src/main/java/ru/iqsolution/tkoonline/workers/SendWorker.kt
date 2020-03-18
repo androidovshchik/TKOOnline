@@ -116,7 +116,10 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             if (exit) {
                 if (header != null) {
                     try {
-                        server.logout(header).execute()
+                        val response = server.logout(header).execute()
+                        if (!response.isSuccessful) {
+                            hasErrors = true
+                        }
                     } catch (e: Throwable) {
                         Timber.e(e)
                         hasErrors = true

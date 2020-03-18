@@ -47,7 +47,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     private var alertDialog: AlertDialog? = null
 
-    private var authHeader: String? = null
+    override var authHeader: String? = null
 
     private var hasPrompted = false
 
@@ -78,6 +78,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         }
         DeleteWorker.launch(applicationContext)
         MidnightWorker.launch(applicationContext)
+        presenter.logout()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

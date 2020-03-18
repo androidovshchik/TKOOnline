@@ -13,6 +13,8 @@ interface LoginContract {
 
         fun login(data: String, header: String?)
 
+        fun logout()
+
         fun checkUpdates()
 
         fun installUpdate(context: Context)
@@ -21,6 +23,8 @@ interface LoginContract {
     }
 
     interface View : IBaseView, SettingsListener, WaitListener {
+
+        var authHeader: String?
 
         fun onQrCode(value: String)
 

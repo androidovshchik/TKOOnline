@@ -21,7 +21,7 @@ class MainApp : BaseApp() {
     override fun onCreate() {
         super.onCreate()
         //FileManager(applicationContext).deleteAllFiles()
-        //preferences.clear()
+        //Preferences(applicationContext).clear()
         //deleteDatabase("app.db")
     }
 }
