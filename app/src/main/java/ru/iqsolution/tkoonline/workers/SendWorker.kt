@@ -13,7 +13,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
+import ru.iqsolution.tkoonline.exceptions.AuthException
+import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.Database
@@ -59,10 +62,13 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     if (response.isSuccessful) {
                         db.cleanDao().markAsSent(it.clean.id ?: return@forEach)
                     } else {
-                        if (handleError(response.code(), response.parseErrors(gson))) {
+                        if (!handleError(response.code(), response.parseErrors(gson))) {
                             hasErrors = true
                         }
                     }
+                } catch (e: AuthException) {
+                    applicationContext.exitUnexpected()
+                    return success(output)
                 } catch (e: Throwable) {
                     Timber.e(e)
                     hasErrors = true
@@ -87,10 +93,13 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     if (response.isSuccessful) {
                         db.photoDao().markAsSent(it.photo.id ?: return@forEach)
                     } else {
-                        if (handleError(response.code(), response.parseErrors(gson))) {
+                        if (!handleError(response.code(), response.parseErrors(gson))) {
                             hasErrors = true
                         }
                     }
+                } catch (e: AuthException) {
+                    applicationContext.exitUnexpected()
+                    return success(output)
                 } catch (e: Throwable) {
                     Timber.e(e)
                     hasErrors = true
@@ -120,12 +129,14 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
     }
 
     /**
-     * @return true if it cannot ignore the error
+     * @return false if cannot ignore the error
      */
-    private fun handleError(code: Int, errors: List<ServerError>): Boolean =
-        applicationContext.run {
-            val firstError = errors.firstOrNull()
-            val codes = errors.map { it.code }
+    @Throws(AuthException::class)
+    private fun handleError(code: Int, errors: List<ServerError>): Boolean {
+        val firstError = errors.firstOrNull()
+        val codes = errors.map { it.code }
+        var message: String? = null
+        try {
             when (code) {
                 400 -> {
                     when {
@@ -139,14 +150,19 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     }
                 }
                 403 -> {
-                    exitUnexpected()
                     bgToast("Доступ запрещен, обратитесь к администратору")
+                    throw AuthException()
                 }
-                404, 500 -> firstError?.echo(applicationContext)
-                else -> firstError?.echo(applicationContext, true)
+                404, 500 -> message = firstError?.echo()
+                else -> message = firstError?.echo(true)
             }
-            false
+        } finally {
+            if (message != null) {
+                applicationContext.bgToast(message)
+            }
         }
+        return true
+    }
 
     companion object {
 
