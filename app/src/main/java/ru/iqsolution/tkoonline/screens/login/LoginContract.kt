@@ -11,7 +11,7 @@ interface LoginContract {
 
     interface Presenter : IBasePresenter<View>, Observer<WorkInfo> {
 
-        fun login(data: String, header: String?)
+        fun login(data: String)
 
         fun logout()
 

@@ -39,7 +39,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     private var isExportingDb = false
 
-    override fun login(data: String, header: String?) {
+    override fun login(data: String) {
         // waiting until service will finish job
         if (activityManager.isRunning<TelemetryService>()) {
             return
@@ -53,14 +53,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         Timber.d("Qr code: $data")
         val lockPassword = preferences.lockPassword?.toInt()
         launch {
-            if (header != null) {
-                try {
-                    server.logout(header).awaitResponse()
-                } catch (e: Throwable) {
-                    reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
-                    throw e
-                }
-            }
+            logout(true)
             val responseAuth = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
             try {
                 val now = DateTime.now()
@@ -71,6 +64,19 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
             } catch (e: Throwable) {
                 reference.get()?.showError("Невалидное системное время")
                 throw e
+            }
+            when (response.code) {
+                400, 500 -> echoError(firstError)
+                401 -> {
+                    when {
+                        codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
+                        codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
+                        else -> echoError(firstError)
+                    }
+                }
+                403 -> bgToast("Доступ запрещен, обратитесь к администратору")
+                404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
+                else -> echoError(firstError, true)
             }
             preferences.bulk {
                 accessToken = responseAuth.accessKey
@@ -95,6 +101,31 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
             }
             reference.get()?.onLoggedIn()
         }
+    }
+
+    override fun logout() {
+        launch {
+            logout(false)
+        }
+    }
+
+    private suspend fun logout(showError: Boolean): Boolean {
+        val header = reference.get()?.authHeader
+        if (header != null) {
+            try {
+                val response = server.logout(header).awaitResponse()
+                if (!response.isSuccessful) {
+                    return false
+                }
+                reference.get()?.authHeader = null
+            } catch (e: Throwable) {
+                if (showError) {
+                    reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
+                }
+                return false
+            }
+        }
+        return true
     }
 
     override fun checkUpdates() {
