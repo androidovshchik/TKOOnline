@@ -28,7 +28,6 @@ import org.kodein.di.generic.provider
 import org.kodein.di.generic.singleton
 import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
-import ru.iqsolution.tkoonline.extensions.longBgToast
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.localModule
@@ -131,7 +130,6 @@ fun Context.exitUnexpected(): Boolean {
                 }
                 newTask()
             })
-            longBgToast("Требуется повторно авторизоваться")
         }
     }
     return true

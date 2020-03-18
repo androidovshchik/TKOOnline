@@ -13,6 +13,7 @@ import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.include_status.*
 import org.jetbrains.anko.locationManager
 import org.joda.time.DateTime
+import org.joda.time.LocalTime
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
@@ -80,7 +81,7 @@ class StatusFragment : BaseFragment(), StatusListener {
             return
         }
         serverTime?.let {
-            status_time.text = DateTime.now().toString(PATTERN_TIME)
+            status_time.text = LocalTime.now().toString(PATTERN_TIME)
         }
     }
 

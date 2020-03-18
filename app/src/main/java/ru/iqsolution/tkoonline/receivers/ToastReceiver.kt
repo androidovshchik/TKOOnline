@@ -10,7 +10,8 @@ class ToastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.hasExtra(EXTRA_MESSAGE)) {
             Toast.makeText(
-                context, intent.getStringExtra(EXTRA_MESSAGE),
+                context,
+                intent.getStringExtra(EXTRA_MESSAGE),
                 intent.getIntExtra(EXTRA_DURATION, Toast.LENGTH_SHORT)
             ).show()
         }

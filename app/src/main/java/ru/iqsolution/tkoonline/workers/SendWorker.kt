@@ -50,6 +50,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         if (!applicationContext.connectivityManager.isConnected) {
             return failure(output)
         }
+        val header = preferences.authHeader
         if (send) {
             val cleanEvents = db.cleanDao().getSendEvents()
             cleanEvents.forEach {
@@ -62,7 +63,8 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     if (response.isSuccessful) {
                         db.cleanDao().markAsSent(it.clean.id ?: return@forEach)
                     } else {
-                        if (!handleError(response.code(), response.parseErrors(gson))) {
+                        val isLatest = it.token.authHeader == header
+                        if (!handleError(isLatest, response.code(), response.parseErrors(gson))) {
                             hasErrors = true
                         }
                     }
@@ -93,7 +95,8 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     if (response.isSuccessful) {
                         db.photoDao().markAsSent(it.photo.id ?: return@forEach)
                     } else {
-                        if (!handleError(response.code(), response.parseErrors(gson))) {
+                        val isLatest = it.token.authHeader == header
+                        if (!handleError(isLatest, response.code(), response.parseErrors(gson))) {
                             hasErrors = true
                         }
                     }
@@ -111,7 +114,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         }
         if (!send || !hasErrors) {
             if (exit) {
-                val header = preferences.authHeader
                 if (header != null) {
                     try {
                         server.logout(header).execute()
@@ -129,10 +131,10 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
     }
 
     /**
-     * @return false if cannot ignore the error
+     * @return true if can ignore the error
      */
     @Throws(AuthException::class)
-    private fun handleError(code: Int, errors: List<ServerError>): Boolean {
+    private fun handleError(latestToken: Boolean, code: Int, errors: List<ServerError>): Boolean {
         val firstError = errors.firstOrNull()
         val codes = errors.map { it.code }
         var message: String? = null
@@ -141,7 +143,13 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 400, 401 -> {
                     when {
                         codes.contains("closed token") -> {
-                            "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                            if (latestToken) {
+                                message =
+                                    "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                                throw AuthException()
+                            } else {
+                                return true
+                            }
                         }
                         else -> firstError?.print()
                     }
@@ -158,7 +166,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 applicationContext.bgToast(message)
             }
         }
-        return true
+        return false
     }
 
     companion object {
