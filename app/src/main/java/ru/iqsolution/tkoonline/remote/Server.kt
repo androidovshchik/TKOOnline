@@ -14,11 +14,11 @@ interface Server {
     @FormUrlEncoded
     @Headers("Accept: application/json")
     @POST("v1/auth")
-    suspend fun login(
+    fun login(
         @Field("login") login: String,
         @Field("password") password: String,
         @Field("block_code") blockCode: Int?
-    ): ResponseAuth
+    ): Call<ResponseAuth>
 
     /**
      * @param date [ru.iqsolution.tkoonline.extensions.PATTERN_DATE]
@@ -26,17 +26,17 @@ interface Server {
     @Tag("platforms")
     @Headers("Accept: application/json")
     @GET("v1/container-sites/{date}")
-    suspend fun getPlatforms(
+    fun getPlatforms(
         @Header("Authorization") token: String,
         @Path("date") date: String
-    ): ResponsePlatforms
+    ): Call<ResponsePlatforms>
 
     @Tag("photos")
     @Headers("Accept: application/json")
     @GET("v1/photo-types")
-    suspend fun getPhotoTypes(
+    fun getPhotoTypes(
         @Header("Authorization") token: String
-    ): ResponseTypes
+    ): Call<ResponseTypes>
 
     @Tag("clean")
     @Headers("Accept: application/json")

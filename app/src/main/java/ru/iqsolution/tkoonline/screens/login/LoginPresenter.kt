@@ -15,6 +15,7 @@ import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.exceptions.LogoutException
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.isRunning
+import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.models.QrCode
@@ -60,19 +61,34 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
                 throw e
             }
-            val responseAuth = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
-            when (responseAuth.code) {
-                400, 500 -> echoError(firstError)
-                401 -> {
-                    when {
-                        codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
-                        codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
-                        else -> echoError(firstError)
+            val response = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
+                .awaitResponse()
+            val responseAuth = response.body()
+            if (!response.isSuccessful || responseAuth == null) {
+                val errors = response.parseErrors(gson)
+                val firstError = errors.firstOrNull()
+                val codes = errors.map { it.code }
+                var message: String? = null
+                try {
+                    message = when (response.code()) {
+                        400, 500 -> firstError?.print()
+                        401 -> {
+                            when {
+                                codes.contains("fail to auth") -> "Неверный логин или пароль"
+                                codes.contains("car already taken") -> "Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору"
+                                else -> firstError?.print()
+                            }
+                        }
+                        403 -> "Доступ запрещен, обратитесь к администратору"
+                        404 -> "Сервер не отвечает, проверьте настройки соединения"
+                        else -> firstError?.print(true)
+                    }
+                } finally {
+                    if (message != null) {
+                        reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
                     }
                 }
-                403 -> bgToast("Доступ запрещен, обратитесь к администратору")
-                404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
-                else -> echoError(firstError, true)
+                return@launch
             }
             try {
                 val now = DateTime.now()
@@ -81,6 +97,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                         .withZone(now.zone).millis >= now.millis
                 )
             } catch (e: Throwable) {
+                // todo
+                reference.get()?.authHeader = responseAuth.accessKey
                 reference.get()?.showError("Невалидное системное время")
                 throw e
             }
