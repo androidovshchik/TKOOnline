@@ -94,7 +94,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
      */
     @WorkerThread
     override fun onQrCode(value: String) {
-        presenter.login(value, authHeader)
+        presenter.login(value)
     }
 
     override fun openDialog() {

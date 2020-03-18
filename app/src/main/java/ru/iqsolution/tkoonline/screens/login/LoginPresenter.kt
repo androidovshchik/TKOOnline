@@ -53,7 +53,10 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         Timber.d("Qr code: $data")
         val lockPassword = preferences.lockPassword?.toInt()
         launch {
-            logout(true)
+            if (!makeLogout()) {
+                reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
+                return@launch
+            }
             val responseAuth = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
             try {
                 val now = DateTime.now()
@@ -105,23 +108,22 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     override fun logout() {
         launch {
-            logout(false)
+            makeLogout()
         }
     }
 
-    private suspend fun logout(showError: Boolean): Boolean {
+    private suspend fun makeLogout(): Boolean {
         val header = reference.get()?.authHeader
         if (header != null) {
             try {
                 val response = server.logout(header).awaitResponse()
                 if (!response.isSuccessful) {
+                    Timber.e("Login response code: ${response.code()}")
                     return false
                 }
                 reference.get()?.authHeader = null
             } catch (e: Throwable) {
-                if (showError) {
-                    reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
-                }
+                Timber.e(e)
                 return false
             }
         }
