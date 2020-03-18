@@ -9,6 +9,7 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
 import retrofit2.Invocation
+import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.Preferences
@@ -57,6 +58,7 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
         val errors = response.parseErrors(gson)
         val firstError = errors.firstOrNull()
         val codes = errors.map { it.code }
+        var exitApp = false
         val message = when (tag) {
             "login" -> {
                 when (response.code) {
@@ -73,54 +75,56 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
                     else -> firstError?.print(true)
                 }
             }
-            "platforms", "photos" -> {
+            "platforms", "photos", "clean", "photo" -> {
                 when (response.code) {
                     400 -> {
                         when {
-                            codes.contains("closed token") -> "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                            codes.contains("closed token") -> {
+                                exitApp = when (tag) {
+                                    "platforms", "photos" -> true
+                                    else -> false
+                                }
+                                "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                            }
+                            else -> null
                         }
                     }
                     401 -> {
                         when {
-                            codes.contains("closed token") -> "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
-                            else -> echoError(firstError)
-                        }
-                    }
-                    403 -> "Доступ запрещен, обратитесь к администратору"
-                    404, 500 -> firstError?.print()
-                    else -> firstError?.print(true)
-                }
-            }
-            "clean", "photo" -> {
-                when (response.code) {
-                    400 -> {
-                        when {
-                            codes.contains("closed token") -> "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
-                        }
-                    }
-                    401 -> {
-                        when {
-                            codes.contains("closed token") -> "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                            codes.contains("closed token") -> {
+                                exitApp = when (tag) {
+                                    "platforms", "photos" -> true
+                                    else -> false
+                                }
+                                "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                            }
                             else -> firstError?.print()
                         }
                     }
-                    403 -> "Доступ запрещен, обратитесь к администратору"
+                    403 -> {
+                        exitApp = true
+                        "Доступ запрещен, обратитесь к администратору"
+                    }
                     404, 500 -> firstError?.print()
                     else -> firstError?.print(true)
                 }
             }
             "logout" -> {
                 when (response.code) {
-                    400, 401, 403 -> {
-                    }
+                    400, 401, 403 -> null
                     404, 500 -> firstError?.print()
                     else -> firstError?.print(true)
                 }
             }
             else -> null
         }
-        if (message != null) {
-            reference.get()?.bgToast("Доступ запрещен, обратитесь к администратору")
+        reference.get()?.run {
+            if (message != null) {
+                bgToast("Доступ запрещен, обратитесь к администратору")
+            }
+            if (exitApp) {
+                exitUnexpected()
+            }
         }
         return response
     }
