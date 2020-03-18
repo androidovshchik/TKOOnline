@@ -21,6 +21,7 @@ import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.remote.api.RequestClean
+import ru.iqsolution.tkoonline.remote.api.ServerError
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -55,15 +56,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                         it.clean.kpId,
                         RequestClean(it.clean)
                     ).execute()
-                    val code = response.code()
-                    when {
-                        response.isSuccessful -> db.cleanDao().markAsSent(it.clean.id ?: 0L)
-                        code == 401 || code == 403 -> return success(output)
-                        else -> {
-                            val errors = response.parseErrors(gson)
-                            if (!errors.contains("closed token")) {
-                                hasErrors = true
-                            }
+                    if (response.isSuccessful) {
+                        db.cleanDao().markAsSent(it.clean.id ?: return@forEach)
+                    } else {
+                        if (handleError(response.code(), response.parseErrors(gson))) {
+                            hasErrors = true
                         }
                     }
                 } catch (e: Throwable) {
@@ -87,15 +84,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                         it.photo.longitude.toString().toRequestBody(TEXT_TYPE),
                         photo
                     ).execute()
-                    val code = response.code()
-                    when {
-                        response.isSuccessful -> db.photoDao().markAsSent(it.photo.id ?: 0L)
-                        code == 401 || code == 403 -> return success(output)
-                        else -> {
-                            val errors = response.parseErrors(gson)
-                            if (!errors.contains("closed token")) {
-                                hasErrors = true
-                            }
+                    if (response.isSuccessful) {
+                        db.photoDao().markAsSent(it.photo.id ?: return@forEach)
+                    } else {
+                        if (handleError(response.code(), response.parseErrors(gson))) {
+                            hasErrors = true
                         }
                     }
                 } catch (e: Throwable) {
@@ -125,6 +118,35 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
             else -> success(output)
         }
     }
+
+    /**
+     * @return true if it cannot ignore the error
+     */
+    private fun handleError(code: Int, errors: List<ServerError>): Boolean =
+        applicationContext.run {
+            val firstError = errors.firstOrNull()
+            val codes = errors.map { it.code }
+            when (code) {
+                400 -> {
+                    when {
+                        codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
+                    }
+                }
+                401 -> {
+                    when {
+                        codes.contains("closed token") -> bgToast("Ваша авторизация сброшена, пожалуйста авторизуйтесь заново")
+                        else -> firstError?.echo(applicationContext)
+                    }
+                }
+                403 -> {
+                    exitUnexpected()
+                    bgToast("Доступ запрещен, обратитесь к администратору")
+                }
+                404, 500 -> firstError?.echo(applicationContext)
+                else -> firstError?.echo(applicationContext, true)
+            }
+            false
+        }
 
     companion object {
 
