@@ -56,11 +56,16 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
             try {
                 makeLogout()
             } catch (e: Throwable) {
-                Timber.e(e)
                 reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
                 throw e
             }
-            val responseAuth = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
+            val responseAuth = try {
+                server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
+            } catch (e: Throwable) {
+                // short toast time
+                delay(2000)
+                throw e
+            }
             try {
                 val now = DateTime.now()
                 require(
@@ -68,7 +73,6 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                         .withZone(now.zone).millis >= now.millis
                 )
             } catch (e: Throwable) {
-                Timber.e(e)
                 reference.get()?.apply {
                     authHeader = responseAuth.authHeader
                     showError("Некорректное системное время")

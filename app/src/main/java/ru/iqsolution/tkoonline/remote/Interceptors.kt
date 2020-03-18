@@ -32,7 +32,7 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
 
     private val preferences: Preferences by instance()
 
-    private val gson: Gson by instance()
+    private val gson: Gson by instance(arg = false)
 
     private var address = preferences.mainServerAddress
 
@@ -126,7 +126,7 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
         }
         reference.get()?.run {
             if (message != null) {
-                bgToast("Доступ запрещен, обратитесь к администратору")
+                bgToast(message)
             }
             if (exitApp) {
                 exitUnexpected()
