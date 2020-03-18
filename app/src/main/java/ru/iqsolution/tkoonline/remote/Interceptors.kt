@@ -84,9 +84,9 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
                                     "platforms", "photos" -> true
                                     else -> false
                                 }
-                                "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                                "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
                             }
-                            else -> null
+                            else -> firstError?.print()
                         }
                     }
                     401 -> {
@@ -96,7 +96,7 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
                                     "platforms", "photos" -> true
                                     else -> false
                                 }
-                                "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
+                                "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
                             }
                             else -> firstError?.print()
                         }

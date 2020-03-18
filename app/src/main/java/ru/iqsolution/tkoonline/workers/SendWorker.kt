@@ -13,10 +13,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
-import ru.iqsolution.tkoonline.exceptions.AuthException
-import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
-import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.Database
@@ -24,7 +21,6 @@ import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.remote.api.RequestClean
-import ru.iqsolution.tkoonline.remote.api.ServerError
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -53,24 +49,26 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         val header = preferences.authHeader
         if (send) {
             val cleanEvents = db.cleanDao().getSendEvents()
-            cleanEvents.forEach {
+            cleanEvents.forEach { event ->
                 try {
                     val response = server.sendClean(
-                        it.token.authHeader,
-                        it.clean.kpId,
-                        RequestClean(it.clean)
+                        event.token.authHeader,
+                        event.clean.kpId,
+                        RequestClean(event.clean)
                     ).execute()
-                    if (response.isSuccessful) {
-                        db.cleanDao().markAsSent(it.clean.id ?: return@forEach)
-                    } else {
-                        val isLatest = it.token.authHeader == header
-                        if (!handleError(isLatest, response.code(), response.parseErrors(gson))) {
-                            hasErrors = true
+                    val code = response.code()
+                    when {
+                        response.isSuccessful -> db.cleanDao()
+                            .markAsSent(event.clean.id ?: return@forEach)
+                        code == 400 || code == 401 -> {
+                            val errors = response.parseErrors(gson)
+                            val codes = errors.map { it.code }
+                            if (!codes.contains("closed token") || event.token.authHeader == header) {
+                                hasErrors = true
+                            }
                         }
+                        else -> hasErrors = true
                     }
-                } catch (e: AuthException) {
-                    applicationContext.exitUnexpected()
-                    return success(output)
                 } catch (e: Throwable) {
                     Timber.e(e)
                     hasErrors = true
@@ -80,29 +78,32 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
             }
             val photoEvents = db.photoDao().getSendEvents()
-            photoEvents.forEach {
-                val photo = fileManager.readFile(it.photo.path) ?: return@forEach
+            photoEvents.forEach { event ->
+                val photo = fileManager.readFile(event.photo.path) ?: return@forEach
                 try {
                     val response = server.sendPhoto(
-                        it.token.authHeader,
-                        it.photo.kpId?.toString()?.toRequestBody(TEXT_TYPE),
-                        it.photo.typeId.toString().toRequestBody(TEXT_TYPE),
-                        it.photo.whenTime.toString(PATTERN_DATETIME_ZONE).toRequestBody(TEXT_TYPE),
-                        it.photo.latitude.toString().toRequestBody(TEXT_TYPE),
-                        it.photo.longitude.toString().toRequestBody(TEXT_TYPE),
+                        event.token.authHeader,
+                        event.photo.kpId?.toString()?.toRequestBody(TEXT_TYPE),
+                        event.photo.typeId.toString().toRequestBody(TEXT_TYPE),
+                        event.photo.whenTime.toString(PATTERN_DATETIME_ZONE)
+                            .toRequestBody(TEXT_TYPE),
+                        event.photo.latitude.toString().toRequestBody(TEXT_TYPE),
+                        event.photo.longitude.toString().toRequestBody(TEXT_TYPE),
                         photo
                     ).execute()
-                    if (response.isSuccessful) {
-                        db.photoDao().markAsSent(it.photo.id ?: return@forEach)
-                    } else {
-                        val isLatest = it.token.authHeader == header
-                        if (!handleError(isLatest, response.code(), response.parseErrors(gson))) {
-                            hasErrors = true
+                    val code = response.code()
+                    when {
+                        response.isSuccessful -> db.photoDao()
+                            .markAsSent(event.photo.id ?: return@forEach)
+                        code == 400 || code == 401 -> {
+                            val errors = response.parseErrors(gson)
+                            val codes = errors.map { it.code }
+                            if (!codes.contains("closed token") || event.token.authHeader == header) {
+                                hasErrors = true
+                            }
                         }
+                        else -> hasErrors = true
                     }
-                } catch (e: AuthException) {
-                    applicationContext.exitUnexpected()
-                    return success(output)
                 } catch (e: Throwable) {
                     Timber.e(e)
                     hasErrors = true
@@ -133,45 +134,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         }
     }
 
-    /**
-     * @return true if can ignore the error
-     */
-    @Throws(AuthException::class)
-    private fun handleError(latestToken: Boolean, code: Int, errors: List<ServerError>): Boolean {
-        val firstError = errors.firstOrNull()
-        val codes = errors.map { it.code }
-        var message: String? = null
-        try {
-            message = when (code) {
-                400, 401 -> {
-                    when {
-                        codes.contains("closed token") -> {
-                            if (latestToken) {
-                                message =
-                                    "Ваша авторизация сброшена, пожалуйста авторизуйтесь заново"
-                                throw AuthException()
-                            } else {
-                                return true
-                            }
-                        }
-                        else -> firstError?.print()
-                    }
-                }
-                403 -> {
-                    message = "Доступ запрещен, обратитесь к администратору"
-                    throw AuthException()
-                }
-                404, 500 -> firstError?.print()
-                else -> firstError?.print(true)
-            }
-        } finally {
-            if (message != null) {
-                applicationContext.bgToast(message)
-            }
-        }
-        return false
-    }
-
     companion object {
 
         private const val NAME = "SEND"
@@ -182,7 +144,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
         private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
 
-        fun launch(context: Context, send: Boolean = true, exit: Boolean = false): LiveData<WorkInfo>? {
+        fun launch(
+            context: Context,
+            send: Boolean = true,
+            exit: Boolean = false
+        ): LiveData<WorkInfo>? {
             val request = OneTimeWorkRequestBuilder<SendWorker>()
                 .setInputData(
                     Data.Builder()
@@ -192,7 +158,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 )
                 .apply {
                     if (exit) {
-                        setBackoffCriteria(BackoffPolicy.LINEAR, WorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+                        setBackoffCriteria(
+                            BackoffPolicy.LINEAR,
+                            WorkRequest.MIN_BACKOFF_MILLIS,
+                            TimeUnit.MILLISECONDS
+                        )
                     }
                 }
                 .build()
