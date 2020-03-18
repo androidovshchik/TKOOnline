@@ -12,6 +12,7 @@ import org.joda.time.DateTime
 import org.kodein.di.generic.instance
 import retrofit2.awaitResponse
 import ru.iqsolution.tkoonline.BuildConfig
+import ru.iqsolution.tkoonline.exceptions.LogoutException
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.local.FileManager
@@ -53,22 +54,14 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         Timber.d("Qr code: $data")
         val lockPassword = preferences.lockPassword?.toInt()
         launch {
-            if (!makeLogout()) {
-                reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
-                return@launch
-            }
-            val responseAuth = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
             try {
-                val now = DateTime.now()
-                require(
-                    DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE)
-                        .withZone(now.zone).millis >= now.millis
-                )
+                makeLogout()
             } catch (e: Throwable) {
-                reference.get()?.showError("Невалидное системное время")
+                reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
                 throw e
             }
-            when (response.code) {
+            val responseAuth = server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
+            when (responseAuth.code) {
                 400, 500 -> echoError(firstError)
                 401 -> {
                     when {
@@ -80,6 +73,16 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 403 -> bgToast("Доступ запрещен, обратитесь к администратору")
                 404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
                 else -> echoError(firstError, true)
+            }
+            try {
+                val now = DateTime.now()
+                require(
+                    DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE)
+                        .withZone(now.zone).millis >= now.millis
+                )
+            } catch (e: Throwable) {
+                reference.get()?.showError("Невалидное системное время")
+                throw e
             }
             preferences.bulk {
                 accessToken = responseAuth.accessKey
@@ -108,26 +111,23 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     override fun logout() {
         launch {
-            makeLogout()
+            try {
+                makeLogout()
+            } catch (e: Throwable) {
+            }
         }
     }
 
-    private suspend fun makeLogout(): Boolean {
+    private suspend fun makeLogout() {
         val header = reference.get()?.authHeader
         if (header != null) {
-            try {
-                val response = server.logout(header).awaitResponse()
-                if (!response.isSuccessful) {
-                    Timber.e("Login response code: ${response.code()}")
-                    return false
-                }
-                reference.get()?.authHeader = null
-            } catch (e: Throwable) {
-                Timber.e(e)
-                return false
+            val response = server.logout(header).awaitResponse()
+            if (!response.isSuccessful) {
+                Timber.e("Login response code: ${response.code()}")
+                throw LogoutException()
             }
+            reference.get()?.authHeader = null
         }
-        return true
     }
 
     override fun checkUpdates() {
