@@ -122,13 +122,11 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         }
     }
 
+    @Throws(Throwable::class)
     private suspend fun makeLogout() {
         val header = reference.get()?.authHeader
         if (header != null) {
-            val response = server.logout(header).awaitResponse()
-            if (!response.isSuccessful) {
-                throw Throwable("Login response code: ${response.code()}")
-            }
+            server.logout(header).awaitResponse()
             reference.get()?.authHeader = null
         }
     }
