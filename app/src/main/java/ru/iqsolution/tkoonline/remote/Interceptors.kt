@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.remote
 
 import android.content.Context
-import com.google.gson.Gson
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -32,8 +31,6 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
 
     private val preferences: Preferences by instance()
 
-    private val gson: Gson by instance(arg = false)
-
     private var address = preferences.mainServerAddress
 
     @Throws(Exception::class)
@@ -55,7 +52,7 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
         if (response.isSuccessful) {
             return response
         }
-        val errors = response.parseErrors(gson)
+        val errors = response.parseErrors()
         val firstError = errors.firstOrNull()
         val codes = errors.map { it.code }
         var exitApp = false

@@ -1,7 +1,5 @@
 package ru.iqsolution.tkoonline.models
 
-import com.google.gson.annotations.SerializedName
-
 /**
  * "errors": {
  *     "code": "closed token",
@@ -14,10 +12,8 @@ import com.google.gson.annotations.SerializedName
  */
 class ServerError {
 
-    @SerializedName("code")
     var code: String? = null
 
-    @SerializedName("description")
     var description: String? = null
 
     fun print(unknown: Boolean = false): String {

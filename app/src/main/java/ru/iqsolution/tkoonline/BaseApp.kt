@@ -1,6 +1,9 @@
 package ru.iqsolution.tkoonline
 
-import android.app.*
+import android.app.Application
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.WorkerThread
 import androidx.camera.camera2.Camera2Config
@@ -122,14 +125,7 @@ fun Context.exitUnexpected(): Boolean {
         LockActivity::class.java.name, LoginActivity::class.java.name -> {
         }
         else -> {
-            startActivity(intentFor<LockActivity>(EXTRA_TROUBLE_EXIT to true).apply {
-                if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
-                    clearTop()
-                } else {
-                    clearTask()
-                }
-                newTask()
-            })
+            startActivity(intentFor<LockActivity>(EXTRA_TROUBLE_EXIT to true).clearTask().newTask())
         }
     }
     return true

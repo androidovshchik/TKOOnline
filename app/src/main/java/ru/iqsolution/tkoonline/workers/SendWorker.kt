@@ -7,7 +7,6 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
-import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.anko.connectivityManager
@@ -36,8 +35,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
     private val server: Server by instance()
 
-    private val gson: Gson by instance(arg = false)
-
     private val broadcastManager = LocalBroadcastManager.getInstance(context)
 
     override fun doWork(): Result {
@@ -63,7 +60,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                         response.isSuccessful -> db.cleanDao()
                             .markAsSent(event.clean.id ?: return@forEach)
                         code == 400 || code == 401 -> {
-                            val errors = response.parseErrors(gson)
+                            val errors = response.parseErrors()
                             val codes = errors.map { it.code }
                             if (codes.contains("closed token")) {
                                 if (event.token.authHeader == header) {
@@ -106,7 +103,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                         response.isSuccessful -> db.photoDao()
                             .markAsSent(event.photo.id ?: return@forEach)
                         code == 400 || code == 401 -> {
-                            val errors = response.parseErrors(gson)
+                            val errors = response.parseErrors()
                             val codes = errors.map { it.code }
                             if (codes.contains("closed token")) {
                                 if (event.token.authHeader == header) {
