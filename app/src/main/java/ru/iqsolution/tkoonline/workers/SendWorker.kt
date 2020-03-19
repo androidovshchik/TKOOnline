@@ -156,11 +156,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
         private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
 
-        fun launch(
-            context: Context,
-            send: Boolean = true,
-            exit: Boolean = false
-        ): LiveData<WorkInfo>? {
+        fun launch(ctx: Context, send: Boolean = true, exit: Boolean = false): LiveData<WorkInfo>? {
             val request = OneTimeWorkRequestBuilder<SendWorker>()
                 .setInputData(
                     Data.Builder()
@@ -178,7 +174,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     }
                 }
                 .build()
-            WorkManager.getInstance(context).apply {
+            WorkManager.getInstance(ctx).apply {
                 enqueueUniqueWork(NAME, ExistingWorkPolicy.REPLACE, request)
                 return if (exit) {
                     getWorkInfoByIdLiveData(request.id)

@@ -8,6 +8,7 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.kodein.di.generic.instance
+import retrofit2.await
 import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
@@ -33,7 +34,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
         launch {
             val responseTypes = server.getPhotoTypes(header)
             reference.get()?.onReceivedTypes(responseTypes.data)
-            val responsePlatforms = server.getPlatforms(header, day)
+            val responsePlatforms = server.getPlatforms(header, day).await()
             val mapRect = MapRect()
             val primary = mutableListOf<PlatformContainers>()
             val secondary = mutableListOf<PlatformContainers>()
