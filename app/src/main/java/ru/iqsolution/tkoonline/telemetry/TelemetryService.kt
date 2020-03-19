@@ -137,10 +137,7 @@ class TelemetryService : BaseService(), TelemetryListener {
             Timber.e(e)
             TelemetryConfig()
         }
-        locationManager = LocationManager(
-            applicationContext,
-            this
-        )
+        locationManager = LocationManager(applicationContext, this)
         preferenceHolder.init(preferences)
         startTelemetry()
         factory.apply {

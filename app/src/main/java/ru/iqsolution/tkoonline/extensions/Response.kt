@@ -1,27 +1,44 @@
 package ru.iqsolution.tkoonline.extensions
 
-import com.google.gson.Gson
-import ru.iqsolution.tkoonline.remote.api.ResponseError
-import ru.iqsolution.tkoonline.remote.api.ServerError
+import org.json.JSONArray
+import org.json.JSONObject
+import ru.iqsolution.tkoonline.models.ServerError
 import timber.log.Timber
 
-fun retrofit2.Response<*>.parseErrors(gson: Gson): List<ServerError> {
-    return parseErrors(gson, errorBody()?.string() ?: return listOf())
+fun retrofit2.Response<*>.parseErrors(): List<ServerError> {
+    return parseErrors(errorBody()?.string() ?: return listOf())
 }
 
-fun okhttp3.Response.parseErrors(gson: Gson): List<ServerError> {
-    return parseErrors(gson, body?.string() ?: return listOf())
+fun okhttp3.Response.parseErrors(): List<ServerError> {
+    return parseErrors(body?.string() ?: return listOf())
 }
 
-private fun parseErrors(gson: Gson, body: String?): List<ServerError> {
+private fun parseErrors(body: String?): List<ServerError> {
     if (body.isNullOrBlank()) {
         return listOf()
     }
     Timber.d(body)
     try {
-        val responseError = gson.fromJson(body, ResponseError::class.java)
-        if (responseError.status == "error") {
-            return responseError.errors
+        val response = JSONObject(body)
+        if (response.getString("status") == "error") {
+            return when (val errors = response.get("errors")) {
+                is JSONArray -> {
+                    return mutableListOf<ServerError>().apply {
+                        (0 until errors.length()).forEach { i ->
+                            val error = errors.getJSONObject(i)
+                            add(ServerError().apply {
+                                code = error.getString("code")
+                                description = error.getString("description")
+                            })
+                        }
+                    }
+                }
+                is JSONObject -> listOf(ServerError().apply {
+                    code = errors.getString("code")
+                    description = errors.getString("description")
+                })
+                else -> listOf()
+            }
         }
     } catch (e: Throwable) {
         Timber.e(e)

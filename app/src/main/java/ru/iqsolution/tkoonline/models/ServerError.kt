@@ -1,7 +1,17 @@
-package ru.iqsolution.tkoonline.remote.api
+package ru.iqsolution.tkoonline.models
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * "errors": {
+ *     "code": "closed token",
+ *	   "description": "token already closed",
+ *	   "meta": {
+ *		   "valid_from": "2020-03-19T10:19:23+03:00",
+ *		   "valid_till": "2020-03-19T10:19:46+03:00"
+ *	   }
+ * }
+ */
 class ServerError {
 
     @SerializedName("code")
@@ -13,13 +23,4 @@ class ServerError {
     fun print(unknown: Boolean = false): String {
         return "Ошибка $code : \"$description\" ${if (unknown) "Обратитесь к администратору" else "попробуйте позже"}"
     }
-}
-
-class ResponseError {
-
-    @SerializedName("status")
-    var status: String? = null
-
-    @SerializedName("errors")
-    var errors = listOf<ServerError>()
 }
