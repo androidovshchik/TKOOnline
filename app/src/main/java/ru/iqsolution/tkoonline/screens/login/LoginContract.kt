@@ -24,8 +24,6 @@ interface LoginContract {
 
     interface View : IBaseView, SettingsListener, WaitListener {
 
-        var authHeader: String?
-
         fun onQrCode(value: String)
 
         fun onLoggedIn()

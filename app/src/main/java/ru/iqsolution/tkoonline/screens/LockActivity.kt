@@ -65,7 +65,10 @@ class LockActivity : Activity(), KodeinAware {
 
     private fun launchActivity() {
         when {
-            intent.getBooleanExtra(EXTRA_TROUBLE_EXIT, false) -> startActivityNoop<LoginActivity>()
+            intent.getBooleanExtra(EXTRA_TROUBLE_EXIT, false) -> {
+                preferences.invalidAuth = true
+                startActivityNoop<LoginActivity>()
+            }
             preferences.isLoggedIn -> startActivityNoop<PlatformsActivity>()
             else -> startActivityNoop<LoginActivity>()
         }
