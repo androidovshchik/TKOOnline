@@ -22,6 +22,7 @@ import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
+import java.net.UnknownHostException
 
 class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(context), LoginContract.Presenter {
 
@@ -52,42 +53,21 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
         }
         Timber.d("Qr code: $data")
         val lockPassword = preferences.lockPassword?.toInt()
-        val toastDelay = 2000L
         launch {
             try {
                 makeLogout()
             } catch (e: Throwable) {
-                reference.get()?.showError("Не удалось сбросить предыдущую авторизацию")
-                delay(toastDelay)
+                e.delay("Не удалось сбросить предыдущую авторизацию")
                 throw e
             }
             val responseAuth = try {
                 server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)
             } catch (e: Throwable) {
-                delay(toastDelay)
-                throw e
-            }
-            try {
-                val now = DateTime.now()
-                require(
-                    DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE)
-                        .withZone(now.zone).millis >= now.millis
-                )
-            } catch (e: Throwable) {
-                reference.get()?.apply {
-                    authHeader = responseAuth.authHeader
-                    showError("Некорректное системное время")
-                }
-                try {
-                    makeLogout()
-                } catch (e: Throwable) {
-                    delay(toastDelay)
-                    throw e
-                }
-                delay(toastDelay)
+                e.delay()
                 throw e
             }
             preferences.bulk {
+                invalidAuth = false
                 accessToken = responseAuth.accessKey
                 expiresWhen = responseAuth.expireTime
                 allowPhotoRefKp = responseAuth.noKpPhoto == 1
@@ -108,6 +88,22 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 mileage = 0f
                 packageId = 0
             }
+            try {
+                val now = DateTime.now()
+                require(
+                    DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE)
+                        .withZone(now.zone).millis >= now.millis
+                )
+            } catch (e: Throwable) {
+                try {
+                    makeLogout()
+                } catch (e: Throwable) {
+                    e.delay("Некорректное системное время")
+                    throw e
+                }
+                e.delay("Некорректное системное время")
+                throw e
+            }
             reference.get()?.onLoggedIn()
         }
     }
@@ -124,10 +120,12 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     @Throws(Throwable::class)
     private suspend fun makeLogout() {
-        val header = reference.get()?.authHeader
+        val header = preferences.authHeader
         if (header != null) {
             server.logout(header).awaitResponse()
-            reference.get()?.authHeader = null
+            preferences.bulk {
+                logout()
+            }
         }
     }
 
@@ -182,6 +180,17 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
             else -> {
             }
         }
+    }
+
+    private suspend fun Throwable.delay(message: String? = null) {
+        reference.get()?.also {
+            if (this is UnknownHostException) {
+                it.showError("Сервер не доступен - проверьте наличие интернет соединения")
+            } else if (message != null) {
+                it.showError(message)
+            }
+        }
+        delay(2000L)
     }
 
     override fun detachView() {

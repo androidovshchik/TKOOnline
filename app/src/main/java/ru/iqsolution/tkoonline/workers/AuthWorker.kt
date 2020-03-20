@@ -31,7 +31,9 @@ class AuthWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         fun launch(context: Context) {
             val request = PeriodicWorkRequestBuilder<AuthWorker>(
                 PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS, TimeUnit.MILLISECONDS
-            ).build()
+            )
+                .setInitialDelay(5, TimeUnit.MINUTES)
+                .build()
             WorkManager.getInstance(context).apply {
                 enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.REPLACE, request)
             }

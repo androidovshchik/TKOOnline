@@ -142,5 +142,6 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
         locationTime = null
         tokenId = 0L
         enableLight = false
+        invalidAuth = false
     }
 }
