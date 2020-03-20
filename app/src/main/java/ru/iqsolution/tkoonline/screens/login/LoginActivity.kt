@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import coil.api.load
-import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.*
 import org.kodein.di.generic.instance
@@ -47,8 +46,6 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     private var alertDialog: AlertDialog? = null
 
-    override var authHeader: String? = null
-
     private var hasPrompted = false
 
     private var skipCheckUpdates = false
@@ -59,10 +56,6 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         qrCode = fragmentManager.findFragmentById(R.id.barcode_fragment) as QrCodeFragment
-        authHeader = preferences.authHeader
-        preferences.bulk {
-            logout()
-        }
         login_background.load(R.drawable.login_background)
         statusBarHeight.let {
             (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = it

@@ -35,6 +35,7 @@ import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 import ru.iqsolution.tkoonline.telemetry.TelemetryService
+import ru.iqsolution.tkoonline.workers.AuthWorker
 import ru.iqsolution.tkoonline.workers.SendWorker
 import java.util.*
 
@@ -92,6 +93,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             }
         }
         presenter.loadPlatformsTypes(false)
+        AuthWorker.launch(applicationContext)
     }
 
     override fun onStart() {
@@ -215,6 +217,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         waitDialog.dismiss()
         alertDialog = when {
             success -> {
+                AuthWorker.cancel(applicationContext)
                 startActivityNoop<LoginActivity>()
                 finish()
                 return

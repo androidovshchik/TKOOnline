@@ -16,9 +16,8 @@ class AuthWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
 
     override fun doWork(): Result {
         val header = preferences.authHeader ?: return Result.success()
-        val day = preferences.serverDay
         try {
-            server.getPlatforms(header, day).execute()
+            server.getPlatforms(header, preferences.serverDay).execute()
         } catch (e: Throwable) {
             Timber.e(e)
         }
