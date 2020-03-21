@@ -71,8 +71,39 @@ class PlatformContainers() : Platform() {
     }
 
     /**
+     * @return true if [status] was changed to secondary
+     */
+    fun updateStatus(linkedStatus: Int): Boolean {
+        return when (PlatformStatus.fromId(linkedStatus)) {
+            PlatformStatus.CLEANED -> when (status) {
+                PlatformStatus.NOT_CLEANED.id, PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> {
+                    status = linkedStatus
+                    true
+                }
+                else -> true
+            }
+            PlatformStatus.PENDING -> when (status) {
+                PlatformStatus.NOT_VISITED.id -> {
+                    status = linkedStatus
+                    false
+                }
+                else -> false
+            }
+            PlatformStatus.NOT_VISITED -> false // the best
+            PlatformStatus.NOT_CLEANED -> when (status) {
+                PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> {
+                    status = linkedStatus
+                    true
+                }
+                else -> true
+            }
+            else -> throw Throwable() // not allowed
+        }
+    }
+
+    /**
      * Spherical law of cosinuses
-     * angle = acrcos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dlon))
+     * angle = arccos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dlon))
      * distance = radius * angle
      */
     fun setDistanceTo(l: Location<Double>) {
