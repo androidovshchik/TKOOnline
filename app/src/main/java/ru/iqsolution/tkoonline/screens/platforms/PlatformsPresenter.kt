@@ -43,7 +43,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                     Timber.e(e)
                     reference.get()?.onUnhandledError(e)
                     init = false
-                    delay(5 * 60_000L)
+                    delay(REFRESH_TIME)
                     continue
                 }
                 val mapRect = MapRect()
@@ -100,7 +100,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                     onReceivedPlatforms(primary, secondary)
                 }
                 init = false
-                delay(5 * 60_000L)
+                delay(REFRESH_TIME)
             }
         }
     }
@@ -145,5 +145,10 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
     override fun detachView() {
         observer?.removeObserver(this)
         super.detachView()
+    }
+
+    companion object {
+
+        private const val REFRESH_TIME = 5 * 60_000L
     }
 }
