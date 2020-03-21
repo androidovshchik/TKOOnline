@@ -294,55 +294,53 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         photoEvents: List<PhotoEvent>? = null,
         cleanEvents: List<CleanEvent>? = null
     ) {
+        val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
         if (platforms != null) {
             clear()
             addAll(platforms)
         }
-        val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-        forEach {
+        val iterator = listIterator()
+        for (item in iterator) {
             if (location != null) {
-                it.setDistanceTo(location)
+                item.setDistanceTo(location)
             }
             if (photoEvents != null) {
                 for (event in photoEvents) {
-                    if (it.kpId == event.kpId) {
+                    if (item.kpId == event.kpId) {
                         if (!isPrimary) {
                             val millis = event.whenTime.withZone(zone).millis
-                            if (it.timestamp < millis) {
-                                it.timestamp = millis
+                            if (item.timestamp < millis) {
+                                item.timestamp = millis
                             }
                         }
-                        photoErrors.get(event.typeId)?.let { error ->
-                            it.putError(error, 0)
+                        photoErrors.get(event.typeId)?.let {
+                            item.putError(it, 0)
                         }
                     }
                 }
             }
             if (cleanEvents != null) {
-                val iterator = listIterator()
-                for (item in iterator) {
-                    for (event in cleanEvents) {
-                        if (item.kpId == event.kpId) {
-                            val eventTime = event.whenTime.withZone(zone)
-                            if (!isPrimary) {
-                                val millis = eventTime.millis
-                                if (item.timestamp < millis) {
-                                    item.timestamp = millis
+                for (event in cleanEvents) {
+                    if (item.kpId == event.kpId) {
+                        val eventTime = event.whenTime.withZone(zone)
+                        if (!isPrimary) {
+                            val millis = eventTime.millis
+                            if (item.timestamp < millis) {
+                                item.timestamp = millis
+                            }
+                        }
+                        if (refreshTime?.withZone(zone)?.isBefore(eventTime) == true) {
+                            cleanChanges.get(item.kpId)?.let {
+                                item.status = it
+                                if (isPrimary) {
+                                    // the primary item should be in secondary items
+                                    platformsAdapter.items.add(item)
+                                    iterator.remove()
                                 }
                             }
-                            break
                         }
+                        break
                     }
-                }
-            }
-        }
-        if (refreshTime?.withZone(zone)?.isBefore(eventTime) == true) {
-            if (event.isEmpty) {
-                item.status = PlatformStatus.NOT_CLEANED.id
-                if (isPrimary) {
-                    // because of this status the primary item should be in secondary items
-                    platformsAdapter.items.add(item)
-                    iterator.remove()
                 }
             }
         }
