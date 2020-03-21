@@ -16,17 +16,13 @@ import org.jetbrains.anko.cancelButton
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
-import ru.iqsolution.tkoonline.EXTRA_PHOTO_TYPES
-import ru.iqsolution.tkoonline.EXTRA_PLATFORM
-import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
-import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
-import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
@@ -54,6 +50,8 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
     private val photoTypes = mutableListOf<PhotoType>()
 
     private val photoErrors = SimpleArrayMap<Int, String>()
+
+    private val cleanChanges = SimpleArrayMap<Int, Int>()
 
     private var refreshTime: DateTime? = null
 
@@ -129,6 +127,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
 
     override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
         refreshTime = DateTime.now()
+        cleanChanges.clear()
         platformsAdapter.apply {
             primaryItems.notifyItems(true, primary)
             items.notifyItems(false, secondary)
@@ -249,6 +248,9 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         when (requestCode) {
             REQUEST_PLATFORM -> {
                 if (resultCode == RESULT_OK) {
+                    data?.getIntExtra(EXTRA_PLATFORM, -1)?.let {
+                        cleanChanges.put(it, data.getIntExtra(EXTRA_STATUS, -1))
+                    }
                     presenter.loadPhotoCleanEvents()
                 }
             }

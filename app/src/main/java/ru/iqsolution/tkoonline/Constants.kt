@@ -22,7 +22,7 @@ const val EXTRA_SYNC_AVAILABILITY = "sync_availability"
 
 const val EXTRA_PLATFORM = "platform"
 
-const val EXTRA_CLEAN = "clean"
+const val EXTRA_STATUS = "status"
 
 const val EXTRA_PHOTO_TYPES = "photo_types"
 

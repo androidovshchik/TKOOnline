@@ -22,6 +22,7 @@ import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
@@ -198,6 +199,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
 
     override fun closeDetails(hasCleanChanges: Boolean) {
         setTouchable(false)
+        val cleaned = clickedClean
         setResult(
             if (hasPhotoChanges || hasCleanChanges) {
                 if (hasCleanChanges) {
@@ -206,13 +208,16 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 RESULT_OK
             } else {
                 RESULT_CANCELED
-            }, Intent().apply {
-                if (hasCleanChanges) {
-                    clickedClean?.let {
-                        putExtra(EXTRA_PLATFORM, platform.kpId)
-                        putExtra(EXTRA_CLEAN, it)
-                    }
+            }, if (hasCleanChanges && cleaned != null) {
+                Intent().apply {
+                    putExtra(EXTRA_PLATFORM, platform.kpId)
+                    putExtra(
+                        EXTRA_STATUS,
+                        if (cleaned) PlatformStatus.CLEANED.id else PlatformStatus.NOT_CLEANED.id
+                    )
                 }
+            } else {
+                null
             }
         )
         finish()
