@@ -69,15 +69,17 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                     if (platform != null) {
                         platform.linkedIds.add(item.kpId)
                         if (platform.changeStatus(item.status)) {
-                            primary.remove(platform)
-                            secondary.add(platform)
+                            // check if this container is primary before adding to secondary
+                            if (primary.remove(platform)) {
+                                secondary.add(platform)
+                            }
                         }
                     } else when (item.status) {
                         PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(item))
                         else -> secondary.add(PlatformContainers(item))
                     }
                 }
-                // 31 -> 10
+                // top 31 -> 10 bottom
                 secondary.sortByDescending { it.status }
             }
             reference.get()?.apply {

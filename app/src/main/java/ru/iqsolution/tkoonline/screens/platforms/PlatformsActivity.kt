@@ -298,14 +298,12 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             clear()
             addAll(platforms)
         }
-        if (location != null) {
-            forEach {
+        val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
+        forEach {
+            if (location != null) {
                 it.setDistanceTo(location)
             }
-        }
-        val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-        if (photoEvents != null) {
-            forEach {
+            if (photoEvents != null) {
                 for (event in photoEvents) {
                     if (it.kpId == event.kpId) {
                         if (!isPrimary) {
@@ -320,31 +318,31 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                     }
                 }
             }
-        }
-        if (cleanEvents != null) {
-            val iterator = listIterator()
-            for (item in iterator) {
-                for (event in cleanEvents) {
-                    if (item.kpId == event.kpId) {
-                        val eventTime = event.whenTime.withZone(zone)
-                        if (!isPrimary) {
-                            val millis = eventTime.millis
-                            if (item.timestamp < millis) {
-                                item.timestamp = millis
-                            }
-                        }
-                        if (refreshTime?.withZone(zone)?.isBefore(eventTime) == true) {
-                            if (event.isEmpty) {
-                                item.status = PlatformStatus.NOT_CLEANED.id
-                                if (isPrimary) {
-                                    // because of this status the primary item should be in secondary items
-                                    platformsAdapter.items.add(item)
-                                    iterator.remove()
+            if (cleanEvents != null) {
+                val iterator = listIterator()
+                for (item in iterator) {
+                    for (event in cleanEvents) {
+                        if (item.kpId == event.kpId) {
+                            val eventTime = event.whenTime.withZone(zone)
+                            if (!isPrimary) {
+                                val millis = eventTime.millis
+                                if (item.timestamp < millis) {
+                                    item.timestamp = millis
                                 }
                             }
+                            break
                         }
-                        break
                     }
+                }
+            }
+        }
+        if (refreshTime?.withZone(zone)?.isBefore(eventTime) == true) {
+            if (event.isEmpty) {
+                item.status = PlatformStatus.NOT_CLEANED.id
+                if (isPrimary) {
+                    // because of this status the primary item should be in secondary items
+                    platformsAdapter.items.add(item)
+                    iterator.remove()
                 }
             }
         }

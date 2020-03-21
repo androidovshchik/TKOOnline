@@ -75,27 +75,22 @@ class PlatformContainers() : Platform() {
      */
     fun changeStatus(linkedStatus: Int): Boolean {
         return when (PlatformStatus.fromId(linkedStatus)) {
-            PlatformStatus.CLEANED -> when (status) {
-                PlatformStatus.NOT_CLEANED.id, PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> {
-                    status = linkedStatus
-                    true
-                }
-                else -> true
+            PlatformStatus.CLEANED -> {
+                status = linkedStatus // bottom
+                true
             }
-            PlatformStatus.PENDING -> when (status) {
-                PlatformStatus.NOT_VISITED.id -> {
+            PlatformStatus.PENDING -> {
+                if (status != PlatformStatus.NOT_VISITED.id) {
                     status = linkedStatus
-                    false
                 }
-                else -> false
+                false
             }
-            PlatformStatus.NOT_VISITED -> false // the best
-            PlatformStatus.NOT_CLEANED -> when (status) {
-                PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> {
+            PlatformStatus.NOT_VISITED -> false // top
+            PlatformStatus.NOT_CLEANED -> {
+                if (status != PlatformStatus.CLEANED.id) {
                     status = linkedStatus
-                    true
                 }
-                else -> true
+                true
             }
             else -> throw Throwable() // not allowed
         }
