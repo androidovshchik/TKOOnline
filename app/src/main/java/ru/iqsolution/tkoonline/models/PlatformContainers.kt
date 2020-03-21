@@ -92,7 +92,7 @@ class PlatformContainers() : Platform() {
                 }
                 true
             }
-            else -> throw Throwable() // not allowed
+            else -> false // not allowed
         }
     }
 

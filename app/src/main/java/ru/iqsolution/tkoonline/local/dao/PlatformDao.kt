@@ -1,13 +1,10 @@
 package ru.iqsolution.tkoonline.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.Platform
 
 @Dao
-interface PlatformDao {
+abstract class PlatformDao {
 
     @Query(
         """
@@ -16,15 +13,21 @@ interface PlatformDao {
         ORDER BY p_kp_id ASC
     """
     )
-    fun getFromIds(kpIds: List<Int>): List<Platform>
+    abstract fun getFromIds(kpIds: List<Int>): List<Platform>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(item: List<Platform>)
+    abstract fun insertAll(items: List<Platform>)
+
+    @Transaction
+    open fun safeInsert(items: List<Platform>) {
+        deleteAll()
+        insertAll(items)
+    }
 
     @Query(
         """
         DELETE FROM platforms
     """
     )
-    fun deleteAll()
+    abstract fun deleteAll()
 }

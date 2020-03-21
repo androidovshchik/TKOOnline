@@ -17,6 +17,7 @@ import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.workers.SendWorker
+import timber.log.Timber
 
 class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.View>(context),
     PlatformsContract.Presenter {
@@ -30,70 +31,75 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
         val day = preferences.serverDay
         val header = preferences.authHeader.orEmpty()
         launch {
+            var init = !refresh
             while (true) {
-                try {
+                val responsePlatforms = try {
                     val responseTypes = server.getPhotoTypes(header)
                     reference.get()?.onReceivedTypes(responseTypes.data)
-                    val responsePlatforms = server.getPlatforms(header, day).await()
-                    val mapRect = MapRect()
-                    val primary = mutableListOf<PlatformContainers>()
-                    val secondary = mutableListOf<PlatformContainers>()
-                    val allPlatforms = mutableListOf<Platform>()
-                    withContext(Dispatchers.IO) {
-                        allPlatforms.addAll(responsePlatforms.data.filter { it.isValid }
-                            .distinctBy { it.kpId })
-                        db.platformDao().apply {
-                            deleteAll()
-                            insertAll(allPlatforms)
-                        }
-                        allPlatforms.forEach { item ->
-                            if (item.linkedKpId != null) {
-                                return@forEach
-                            }
-                            if (!refresh) {
-                                mapRect.update(item)
-                            }
-                            when (item.status) {
-                                PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id ->
-                                    primary.add(PlatformContainers(item))
-                                else -> secondary.add(PlatformContainers(item))
-                            }
-                        }
-                        allPlatforms.forEach { item ->
-                            if (item.linkedKpId == null) {
-                                return@forEach
-                            }
-                            val platform =
-                                primary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
-                                    ?: secondary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
-                            if (platform != null) {
-                                platform.linkedIds.add(item.kpId)
-                                if (platform.changeStatus(item.status)) {
-                                    // check if this container is primary before adding to secondary
-                                    if (primary.remove(platform)) {
-                                        secondary.add(platform)
-                                    }
-                                }
-                            } else when (item.status) {
-                                PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id ->
-                                    primary.add(PlatformContainers(item))
-                                else -> secondary.add(PlatformContainers(item))
-                            }
-                        }
-                        // top 31 -> 10 bottom
-                        secondary.sortByDescending { it.status }
-                    }
-                    reference.get()?.apply {
-                        if (!refresh) {
-                            if (allPlatforms.isNotEmpty()) {
-                                changeMapBounds(mapRect)
-                            }
-                        }
-                        onReceivedPlatforms(primary, secondary)
-                    }
+                    server.getPlatforms(header, day).await()
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (e: Throwable) {
-
+                    Timber.e(e)
+                    reference.get()?.onUnhandledError(e)
+                    init = false
+                    delay(5 * 60_000L)
+                    continue
                 }
+                val mapRect = MapRect()
+                val primary = mutableListOf<PlatformContainers>()
+                val secondary = mutableListOf<PlatformContainers>()
+                val allPlatforms = mutableListOf<Platform>()
+                withContext(Dispatchers.IO) {
+                    allPlatforms.addAll(responsePlatforms.data.filter { it.isValid }
+                        .distinctBy { it.kpId })
+                    db.platformDao().safeInsert(allPlatforms)
+                    allPlatforms.forEach { item ->
+                        if (item.linkedKpId != null) {
+                            return@forEach
+                        }
+                        if (init) {
+                            mapRect.update(item)
+                        }
+                        when (item.status) {
+                            PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id ->
+                                primary.add(PlatformContainers(item))
+                            else -> secondary.add(PlatformContainers(item))
+                        }
+                    }
+                    allPlatforms.forEach { item ->
+                        if (item.linkedKpId == null) {
+                            return@forEach
+                        }
+                        val platform =
+                            primary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
+                                ?: secondary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
+                        if (platform != null) {
+                            platform.linkedIds.add(item.kpId)
+                            if (platform.changeStatus(item.status)) {
+                                // check if this container is primary before adding to secondary
+                                if (primary.remove(platform)) {
+                                    secondary.add(platform)
+                                }
+                            }
+                        } else when (item.status) {
+                            PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id ->
+                                primary.add(PlatformContainers(item))
+                            else -> secondary.add(PlatformContainers(item))
+                        }
+                    }
+                    // top 31 -> 10 bottom
+                    secondary.sortByDescending { it.status }
+                }
+                reference.get()?.apply {
+                    if (init) {
+                        if (allPlatforms.isNotEmpty()) {
+                            changeMapBounds(mapRect)
+                        }
+                    }
+                    onReceivedPlatforms(primary, secondary)
+                }
+                init = false
                 delay(5 * 60_000L)
             }
         }
