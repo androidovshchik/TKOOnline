@@ -48,6 +48,8 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
 
     private var alertDialog: AlertDialog? = null
 
+    private var clickedClean: Boolean? = null
+
     private var hasPhotoChanges = false
 
     @Suppress("UNCHECKED_CAST")
@@ -101,6 +103,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 }.show()
             } else {
                 setTouchable(false)
+                clickedClean = false
                 platform.reset()
                 presenter.savePlatformEvents(platform, linkedPlatforms.apply {
                     forEach {
@@ -123,6 +126,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 }.show()
             } else {
                 setTouchable(false)
+                clickedClean = true
                 presenter.savePlatformEvents(platform, linkedPlatforms)
             }
         }
@@ -202,6 +206,13 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 RESULT_OK
             } else {
                 RESULT_CANCELED
+            }, Intent().apply {
+                if (hasCleanChanges) {
+                    clickedClean?.let {
+                        putExtra(EXTRA_PLATFORM, platform.kpId)
+                        putExtra(EXTRA_CLEAN, it)
+                    }
+                }
             }
         )
         finish()

@@ -73,7 +73,7 @@ class PlatformContainers() : Platform() {
     /**
      * @return true if [status] was changed to secondary
      */
-    fun updateStatus(linkedStatus: Int): Boolean {
+    fun changeStatus(linkedStatus: Int): Boolean {
         return when (PlatformStatus.fromId(linkedStatus)) {
             PlatformStatus.CLEANED -> when (status) {
                 PlatformStatus.NOT_CLEANED.id, PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> {

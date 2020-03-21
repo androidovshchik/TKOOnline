@@ -12,6 +12,7 @@ import retrofit2.await
 import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
+import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.Server
@@ -38,11 +39,14 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
             val mapRect = MapRect()
             val primary = mutableListOf<PlatformContainers>()
             val secondary = mutableListOf<PlatformContainers>()
-            val allPlatforms = responsePlatforms.data.filter { it.isValid }
-                .distinctBy { it.kpId }
+            val allPlatforms = mutableListOf<Platform>()
             withContext(Dispatchers.IO) {
-                db.platformDao().deleteAll()
-                db.platformDao().insertAll(allPlatforms)
+                allPlatforms.addAll(responsePlatforms.data.filter { it.isValid }
+                    .distinctBy { it.kpId })
+                db.platformDao().apply {
+                    deleteAll()
+                    insertAll(allPlatforms)
+                }
                 allPlatforms.forEach { item ->
                     if (item.linkedKpId != null) {
                         return@forEach
@@ -64,11 +68,17 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                             ?: secondary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
                     if (platform != null) {
                         platform.linkedIds.add(item.kpId)
+                        if (platform.changeStatus(item.status)) {
+                            primary.remove(platform)
+                            secondary.add(platform)
+                        }
                     } else when (item.status) {
                         PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id -> primary.add(PlatformContainers(item))
                         else -> secondary.add(PlatformContainers(item))
                     }
                 }
+                // 31 -> 10
+                secondary.sortByDescending { it.status }
             }
             reference.get()?.apply {
                 if (!refresh) {
