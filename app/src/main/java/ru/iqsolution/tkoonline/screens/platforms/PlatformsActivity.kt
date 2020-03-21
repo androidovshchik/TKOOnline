@@ -31,7 +31,6 @@ import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 import ru.iqsolution.tkoonline.telemetry.TelemetryService
-import ru.iqsolution.tkoonline.workers.AuthWorker
 import ru.iqsolution.tkoonline.workers.SendWorker
 import java.util.*
 
@@ -91,7 +90,6 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             }
         }
         presenter.loadPlatformsTypes(false)
-        AuthWorker.launch(applicationContext)
     }
 
     override fun onStart() {
@@ -216,7 +214,6 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         waitDialog.dismiss()
         alertDialog = when {
             success -> {
-                AuthWorker.cancel(applicationContext)
                 startActivityNoop<LoginActivity>()
                 finish()
                 return
@@ -331,7 +328,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                         }
                         if (refreshTime?.withZone(zone)?.isBefore(eventTime) == true) {
                             cleanChanges.get(item.kpId)?.let {
-                                item.status = it
+                                item.status = it // 31 or 10
                                 if (isPrimary) {
                                     // the primary item should be in secondary items
                                     platformsAdapter.items.add(item)

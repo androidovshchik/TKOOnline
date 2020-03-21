@@ -37,7 +37,6 @@ import ru.iqsolution.tkoonline.local.localModule
 import ru.iqsolution.tkoonline.remote.remoteModule
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import ru.iqsolution.tkoonline.workers.AuthWorker
 import ru.iqsolution.tkoonline.workers.SendWorker
 import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
@@ -119,7 +118,6 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
 
 @WorkerThread
 fun Context.exitUnexpected(): Boolean {
-    AuthWorker.cancel(applicationContext)
     SendWorker.cancel(applicationContext)
     UpdateWorker.cancel(applicationContext)
     when (activityManager.getTopActivity(packageName)) {
