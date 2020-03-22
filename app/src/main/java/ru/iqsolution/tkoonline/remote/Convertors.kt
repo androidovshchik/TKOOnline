@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE
+import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
 import java.lang.reflect.Type
 
@@ -16,6 +17,38 @@ class SerializedNameStrategy : ExclusionStrategy {
 
     override fun shouldSkipClass(clazz: Class<*>): Boolean {
         return false
+    }
+}
+
+class DateTimeSerializer : JsonSerializer<DateTime> {
+
+    /**
+     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE] is only supported
+     */
+    override fun serialize(
+        src: DateTime,
+        typeOfSrc: Type,
+        context: JsonSerializationContext
+    ): JsonElement {
+        return JsonPrimitive(src.toString(PATTERN_DATETIME_ZONE))
+    }
+}
+
+class DateTimeDeserializer : JsonDeserializer<DateTime> {
+
+    /**
+     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATE] is not supported
+     */
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type,
+        context: JsonDeserializationContext
+    ): DateTime {
+        val value = json.asString
+        return when {
+            value.contains("T") -> DateTime.parse(json.asString, PATTERN_DATETIME_ZONE)
+            else -> DateTime.parse(json.asString, PATTERN_TIME_ZONE)
+        }
     }
 }
 
@@ -42,26 +75,20 @@ class LocationEventTokenSerializer : JsonSerializer<LocationEventToken> {
     }
 }
 
-class DateTimeSerializer : JsonSerializer<DateTime> {
+class CleanEventTokenSerializer : JsonSerializer<CleanEventToken> {
 
-    /**
-     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE] is only supported
-     */
-    override fun serialize(src: DateTime, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return JsonPrimitive(src.toString(PATTERN_DATETIME_ZONE))
-    }
-}
-
-class DateTimeDeserializer : JsonDeserializer<DateTime> {
-
-    /**
-     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATE] is not supported
-     */
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DateTime {
-        val value = json.asString
-        return when {
-            value.contains("T") -> DateTime.parse(json.asString, PATTERN_DATETIME_ZONE)
-            else -> DateTime.parse(json.asString, PATTERN_TIME_ZONE)
+    override fun serialize(
+        src: CleanEventToken,
+        typeOfSrc: Type,
+        context: JsonSerializationContext
+    ): JsonElement {
+        return JsonObject().apply {
+            add("data", JsonObject().apply {
+                addProperty("time", src.clean.whenTime.toString(PATTERN_DATETIME_ZONE))
+                addProperty("container_type_fact", src.clean.containerType)
+                addProperty("container_type_volume_fact", src.clean.containerVolume)
+                addProperty("container_count_fact", src.clean.containerCount)
+            })
         }
     }
 }

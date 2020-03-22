@@ -20,8 +20,8 @@ class MainApp : BaseApp() {
     @Suppress("RedundantOverride")
     override fun onCreate() {
         super.onCreate()
-        //FileManager(applicationContext).deleteAllFiles()
-        //Preferences(applicationContext).clear()
+        //ru.iqsolution.tkoonline.local.FileManager(applicationContext).deleteAllFiles()
+        //ru.iqsolution.tkoonline.local.Preferences(applicationContext).clear()
         //deleteDatabase("app.db")
     }
 }

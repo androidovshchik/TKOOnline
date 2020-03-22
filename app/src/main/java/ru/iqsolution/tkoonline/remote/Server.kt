@@ -6,6 +6,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
+import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.remote.api.*
 
 interface Server {
@@ -44,7 +45,7 @@ interface Server {
     fun sendClean(
         @Header("Authorization") token: String,
         @Path("kp_id") kpId: Int,
-        @Body body: RequestClean
+        @Body body: CleanEventToken
     ): Call<ResponseClean>
 
     /**

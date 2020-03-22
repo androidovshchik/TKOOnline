@@ -21,7 +21,6 @@ import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.Server
-import ru.iqsolution.tkoonline.remote.api.RequestClean
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -53,7 +52,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     val response = server.sendClean(
                         event.token.authHeader,
                         event.clean.kpId,
-                        RequestClean(event.clean)
+                        event
                     ).execute()
                     val code = response.code()
                     when {

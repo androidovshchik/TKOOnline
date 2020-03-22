@@ -14,6 +14,7 @@ import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.BuildConfig
+import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -27,6 +28,7 @@ val remoteModule = Kodein.Module("remote") {
             .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
             .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
             .registerTypeAdapter(LocationEventToken::class.java, LocationEventTokenSerializer())
+            .registerTypeAdapter(CleanEventToken::class.java, CleanEventTokenSerializer())
             .apply {
                 if (pretty) {
                     setPrettyPrinting()
