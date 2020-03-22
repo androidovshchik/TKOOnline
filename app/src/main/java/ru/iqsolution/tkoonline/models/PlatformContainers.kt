@@ -75,7 +75,7 @@ class PlatformContainers() : Platform() {
      */
     fun changeStatus(linkedStatus: Int): Boolean {
         return when (PlatformStatus.fromId(linkedStatus)) {
-            PlatformStatus.CLEANED -> {
+            PlatformStatus.CLEANED, PlatformStatus.CLEANED_TIMEOUT -> {
                 status = linkedStatus // bottom
                 true
             }

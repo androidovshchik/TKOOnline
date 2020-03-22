@@ -87,7 +87,7 @@ open class Platform : Serializable, Container, Location<Double> {
     var status = PlatformStatus.NO_TASK.id
 
     val isValid: Boolean
-        get() = !BuildConfig.PROD || status != PlatformStatus.CLEANED_TIMEOUT.id && status != PlatformStatus.NO_TASK.id
+        get() = !BuildConfig.PROD || status != PlatformStatus.NO_TASK.id
 
     fun toPlatformStatus() = PlatformStatus.fromId(status)
 }
