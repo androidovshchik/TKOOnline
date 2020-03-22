@@ -157,7 +157,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         platforms_refresh.isRefreshing = false
     }
 
-    override fun launchSendWorker() {
+    override fun launchSendWork() {
         SendWorker.launch(applicationContext)
     }
 
@@ -258,7 +258,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             }
             REQUEST_OUTSIDE -> {
                 if (resultCode == RESULT_OK) {
-                    launchSendWorker()
+                    launchSendWork()
                 }
             }
         }

@@ -232,6 +232,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     override fun onDestroy() {
         alertDialog?.dismiss()
         waitDialog.dismiss()
+        cancelWork()
         super.onDestroy()
     }
 

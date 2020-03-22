@@ -102,12 +102,8 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
             }
             "clean", "photo" -> {
                 when (response.code) {
-                    // NOTICE omit 400, 401
-                    400, 401 -> null
-                    403 -> {
-                        exitApp = true
-                        "Доступ запрещен, обратитесь к администратору"
-                    }
+                    // NOTICE omit 400, 401, 403
+                    400, 401, 403 -> null
                     404, 500 -> firstError?.print()
                     else -> firstError?.print(true)
                 }

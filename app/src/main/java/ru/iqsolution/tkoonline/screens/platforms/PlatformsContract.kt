@@ -34,7 +34,7 @@ interface PlatformsContract {
 
         fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>)
 
-        fun launchSendWorker()
+        fun launchSendWork()
 
         fun highlightItem(kpId: Int)
 

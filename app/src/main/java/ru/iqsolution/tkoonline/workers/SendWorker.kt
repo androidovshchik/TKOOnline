@@ -58,7 +58,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     when {
                         response.isSuccessful -> db.cleanDao()
                             .markAsSent(event.clean.id ?: return@forEach)
-                        code == 400 || code == 401 -> {
+                        code == 400 || code == 401 || code == 403 -> {
                             val errors = response.parseErrors()
                             val codes = errors.map { it.code }
                             if (codes.contains("closed token")) {
@@ -101,7 +101,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                     when {
                         response.isSuccessful -> db.photoDao()
                             .markAsSent(event.photo.id ?: return@forEach)
-                        code == 400 || code == 401 -> {
+                        code == 400 || code == 401 || code == 403 -> {
                             val errors = response.parseErrors()
                             val codes = errors.map { it.code }
                             if (codes.contains("closed token")) {
