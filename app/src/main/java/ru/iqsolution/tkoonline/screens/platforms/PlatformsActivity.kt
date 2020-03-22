@@ -207,6 +207,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
 
     private fun logout(send: Boolean) {
         waitDialog.show()
+        TelemetryService.start(applicationContext, EXTRA_TELEMETRY_TASK to false)
         presenter.logout(send, applicationContext)
     }
 

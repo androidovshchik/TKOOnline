@@ -86,9 +86,7 @@
         android:adjustViewBounds="true"
         android:background="@android:color/black"
         android:scaleType="fitCenter"
-        app:zoomage_animateOnReset="false"
-        app:zoomage_autoCenter="false"
-        app:zoomage_autoResetMode="NEVER"
+        app:zoomage_autoResetMode="UNDER"
         app:zoomage_maxScale="3"
         app:zoomage_minScale="0.3"
         tools:src="@drawable/login_background" />

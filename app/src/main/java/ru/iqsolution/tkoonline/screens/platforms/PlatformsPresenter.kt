@@ -6,7 +6,6 @@ import androidx.work.WorkInfo
 import kotlinx.coroutines.*
 import org.kodein.di.generic.instance
 import retrofit2.await
-import ru.iqsolution.tkoonline.EXTRA_TELEMETRY_TASK
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
@@ -15,7 +14,6 @@ import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
-import ru.iqsolution.tkoonline.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.workers.SendWorker
 import timber.log.Timber
 
@@ -119,7 +117,6 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
     }
 
     override fun logout(send: Boolean, context: Context) {
-        TelemetryService.start(context, EXTRA_TELEMETRY_TASK to false)
         observer = SendWorker.launch(context, send, true).also {
             it?.observeForever(this)
         }
