@@ -56,6 +56,8 @@ import java.util.concurrent.atomic.AtomicLong
 // https://www.rabbitmq.com/api-guide.html
 class TelemetryService : BaseService(), TelemetryListener {
 
+    private val locationManager: LocationManager by instance()
+
     private val db: Database by instance()
 
     private val fileManager: FileManager by instance()
@@ -65,8 +67,6 @@ class TelemetryService : BaseService(), TelemetryListener {
     private val gsonPretty: Gson by instance(arg = true)
 
     private val gsonMin: Gson by instance(arg = false)
-
-    private lateinit var locationManager: LocationManager
 
     private lateinit var broadcastManager: LocalBroadcastManager
 
@@ -137,7 +137,6 @@ class TelemetryService : BaseService(), TelemetryListener {
             Timber.e(e)
             TelemetryConfig()
         }
-        locationManager = LocationManager(applicationContext, this)
         preferenceHolder.init(preferences)
         startTelemetry()
         factory.apply {

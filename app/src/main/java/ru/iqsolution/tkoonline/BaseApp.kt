@@ -28,7 +28,6 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
 import org.kodein.di.generic.provider
-import org.kodein.di.generic.singleton
 import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.local.FileManager
@@ -50,9 +49,7 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
             applicationContext
         }
 
-        bind<AdminManager>() with singleton {
-            AdminManager(instance())
-        }
+        import(managerModule)
 
         import(localModule)
 

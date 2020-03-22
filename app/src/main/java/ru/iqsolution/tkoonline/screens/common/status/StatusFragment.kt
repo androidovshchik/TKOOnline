@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.include_status.*
 import org.jetbrains.anko.locationManager
 import org.joda.time.DateTime
 import org.joda.time.LocalTime
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
@@ -30,9 +31,9 @@ import timber.log.Timber
 @Suppress("DEPRECATION")
 class StatusFragment : BaseFragment(), StatusListener {
 
-    private lateinit var statusManager: StatusManager
+    private val statusManager: StatusManager by instance()
 
-    private lateinit var preferences: Preferences
+    private val preferences: Preferences by instance()
 
     private var serverTime: DateTime? = null
 
@@ -47,8 +48,6 @@ class StatusFragment : BaseFragment(), StatusListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        statusManager = StatusManager(context, this)
-        preferences = Preferences(context)
         try {
             serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME_ZONE)
         } catch (e: Throwable) {
