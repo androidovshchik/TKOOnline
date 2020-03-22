@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:layout_width="match_parent"
+    tools:ignore="MissingPrefix"
     tools:layout_height="wrap_content"
-    tools:parentTag="RelativeLayout"
-    tools:ignore="MissingPrefix">
+    tools:layout_width="match_parent"
+    tools:parentTag="RelativeLayout">
 
     <TextView
         android:id="@+id/subtitle"
+        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="7dp"
         android:layout_marginBottom="12dp"
-        android:layout_centerHorizontal="true"
-        android:textSize="18sp"
-        android:textColor="@color/colorTextGrayLight"
         android:lineSpacingExtra="3sp"
+        android:textColor="@color/colorTextGrayLight"
+        android:textSize="18sp"
         tools:text="@string/platform_gallery"
-        tools:textStyle="bold"
-        fontPath="fonts/Roboto-Bold.ttf"/>
+        tools:textStyle="bold" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -30,8 +30,8 @@
             android:id="@+id/gallery"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:animateLayoutChanges="true"
+            android:orientation="horizontal"
             tools:paddingStart="8dp">
 
             <ImageView
@@ -43,7 +43,7 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_camera_add"
                 android:visibility="gone"
-                tools:visibility="visible"/>
+                tools:visibility="visible" />
 
         </LinearLayout>
 
@@ -56,12 +56,12 @@
         android:layout_below="@+id/subtitle"
         android:layout_marginBottom="26dp"
         android:adjustViewBounds="true"
-        tools:src="@drawable/ic_rect_green"/>
+        tools:src="@drawable/ic_rect_green" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@+id/mark"
-        android:background="@color/colorDivider"/>
+        android:background="@color/colorDivider" />
 
 </merge>

@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:layout_width="match_parent"
     tools:layout_height="@dimen/map_height"
+    tools:layout_width="match_parent"
     tools:parentTag="FrameLayout">
 
     <ru.iqsolution.tkoonline.screens.common.map.MapWebView
         android:id="@+id/map_web"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:id="@+id/map_tools"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="end"
+        android:elevation="6dp"
         android:gravity="center_vertical|end"
         android:orientation="vertical"
-        android:elevation="6dp"
         android:visibility="gone"
         tools:elevation="0dp"
         tools:visibility="visible">
@@ -28,32 +28,32 @@
             android:layout_marginStart="32dp"
             android:layout_marginEnd="9dp"
             android:layout_marginBottom="15dp"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
             android:background="@drawable/control_rect"
-            android:elevation="16dp">
+            android:elevation="16dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/map_plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:paddingTop="8dp"
                 android:paddingStart="6dp"
+                android:paddingTop="8dp"
                 android:paddingEnd="6dp"
                 android:paddingBottom="8dp"
-                android:src="@drawable/ic_plus"/>
+                android:src="@drawable/ic_plus" />
 
             <ImageView
                 android:id="@+id/map_minus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:paddingTop="8dp"
                 android:paddingStart="6dp"
+                android:paddingTop="8dp"
                 android:paddingEnd="6dp"
                 android:paddingBottom="10dp"
-                android:src="@drawable/ic_minus"/>
+                android:src="@drawable/ic_minus" />
 
         </LinearLayout>
 
@@ -64,10 +64,10 @@
             android:layout_marginStart="32dp"
             android:layout_marginEnd="9dp"
             android:adjustViewBounds="true"
-            android:padding="5dp"
             android:elevation="16dp"
-            tools:src="@drawable/ic_direction_white"
-            tools:background="@drawable/control_oval_dark"/>
+            android:padding="5dp"
+            tools:background="@drawable/control_oval_dark"
+            tools:src="@drawable/ic_direction_white" />
 
     </LinearLayout>
 

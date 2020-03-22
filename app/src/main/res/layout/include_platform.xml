@@ -3,30 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:paddingTop="20dp"
-    android:paddingBottom="20dp"
-    android:orientation="horizontal">
+    android:paddingBottom="20dp">
 
     <TextView
         android:id="@+id/platform_id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="4"
+        android:lineSpacingExtra="3sp"
         android:paddingStart="40dp"
         android:paddingEnd="0dp"
-        android:textSize="16sp"
         android:textColor="@color/colorTextGrayLight"
-        android:lineSpacingExtra="3sp"
-        tools:text="ID: 1 234 567 890"/>
+        android:textSize="16sp"
+        tools:text="ID: 1 234 567 890" />
 
     <TextView
         android:id="@+id/platform_range"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-        android:textSize="16sp"
-        android:textColor="@color/colorTextGrayLight"
         android:lineSpacingExtra="3sp"
-        tools:text="с 07:00 до 23:00"/>
+        android:textColor="@color/colorTextGrayLight"
+        android:textSize="16sp"
+        tools:text="с 07:00 до 23:00" />
 
 </LinearLayout>

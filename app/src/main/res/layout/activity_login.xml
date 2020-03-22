@@ -11,62 +11,62 @@
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        tools:src="@drawable/login_background"/>
+        tools:src="@drawable/login_background" />
 
     <View
         android:id="@+id/login_layer"
         android:layout_width="match_parent"
         android:layout_height="180dp"
         android:background="#735644ae"
-        tools:layout_marginTop="24dp"/>
+        tools:layout_marginTop="24dp" />
 
     <LinearLayout
         android:id="@+id/login_shadow"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#99000000"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:background="#99000000"
         tools:paddingTop="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="15dp"
-            android:paddingBottom="20dp"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:paddingTop="15dp"
+            android:paddingBottom="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="28dp"
-                android:orientation="horizontal"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
                     android:layout_gravity="bottom"
+                    android:layout_marginTop="6dp"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/ic_iq"/>
+                    android:src="@drawable/ic_iq" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
                     android:layout_marginStart="3dp"
-                    android:layout_marginEnd="3dp"
                     android:layout_marginTop="6dp"
-                    android:layout_gravity="bottom"
+                    android:layout_marginEnd="3dp"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/ic_solution"/>
+                    android:src="@drawable/ic_solution" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/ic_hamburger"/>
+                    android:src="@drawable/ic_hamburger" />
 
             </LinearLayout>
 
@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_tko_online"/>
+                android:src="@drawable/ic_tko_online" />
 
         </LinearLayout>
 
@@ -82,17 +82,17 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
 
         <TextView
+            fontPath="fonts/Roboto-Regular.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:lineSpacingMultiplier="1.1"
             android:gravity="center"
+            android:lineSpacingMultiplier="1.1"
             android:text="Отсканируйте QR код\nавтомобиля"
-            fontPath="fonts/Roboto-Regular.ttf"/>
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -100,15 +100,15 @@
             android:layout_marginTop="6dp"
             android:layout_marginBottom="8dp"
             android:adjustViewBounds="true"
-            android:src="@drawable/ic_selector"/>
+            android:src="@drawable/ic_selector" />
 
         <RelativeLayout
             android:layout_width="@dimen/barcode_container_size"
             android:layout_height="@dimen/barcode_container_size"
             android:layout_marginBottom="52dp"
+            android:background="#a61f1d28"
             android:paddingTop="@dimen/barcode_container_padding"
-            android:paddingBottom="@dimen/barcode_container_padding"
-            android:background="#a61f1d28">
+            android:paddingBottom="@dimen/barcode_container_padding">
 
             <fragment
                 android:id="@+id/barcode_fragment"
@@ -116,7 +116,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/barcode_container_padding"
-                android:layout_marginEnd="@dimen/barcode_container_padding"/>
+                android:layout_marginEnd="@dimen/barcode_container_padding" />
 
         </RelativeLayout>
 
@@ -128,26 +128,26 @@
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="17dp"
-        android:paddingStart="17dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="24dp"
         android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingStart="17dp"
+        android:paddingTop="24dp"
+        android:paddingEnd="8dp"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_menu_dots"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:src="@drawable/ic_menu_dots" />
 
     <TextView
         android:id="@+id/app_version"
+        fontPath="fonts/Roboto-Medium.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:padding="16dp"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:lineSpacingMultiplier="1.1"
+        android:layout_alignParentBottom="true"
         android:gravity="center"
-        tools:text="v.1"
-        fontPath="fonts/Roboto-Medium.ttf"/>
+        android:lineSpacingMultiplier="1.1"
+        android:padding="16dp"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        tools:text="v.1" />
 
 </RelativeLayout>

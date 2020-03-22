@@ -11,10 +11,9 @@
         android:name="ru.iqsolution.tkoonline.screens.common.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"
-        tools:layout="@layout/include_status"/>
+        tools:layout="@layout/include_status" />
 
-    <include
-        layout="@layout/include_toolbar"/>
+    <include layout="@layout/include_toolbar" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -27,26 +26,25 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include
-                layout="@layout/include_platform"/>
+            <include layout="@layout/include_platform" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/colorDivider"/>
+                android:background="@color/colorDivider" />
 
             <TextView
+                fontPath="fonts/Roboto-Bold.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="58dp"
                 android:layout_marginTop="13dp"
                 android:layout_marginBottom="13dp"
                 android:gravity="center"
-                android:text="Тип проблемы"
-                android:textSize="18sp"
-                android:textColor="@color/colorTextGrayLight"
                 android:lineSpacingExtra="3sp"
-                tools:textStyle="bold"
-                fontPath="fonts/Roboto-Bold.ttf"/>
+                android:text="Тип проблемы"
+                android:textColor="@color/colorTextGrayLight"
+                android:textSize="18sp"
+                tools:textStyle="bold" />
 
         </LinearLayout>
 

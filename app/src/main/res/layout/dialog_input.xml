@@ -9,46 +9,46 @@
 
     <TextView
         android:id="@+id/dialog_title"
+        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="12dp"
-        android:layout_marginStart="2dp"
-        android:textSize="20sp"
-        android:textColor="@color/colorTextBlack87"
         android:lineSpacingExtra="3sp"
-        tools:textStyle="bold"
+        android:textColor="@color/colorTextBlack87"
+        android:textSize="20sp"
         tools:text="Пароль"
-        fontPath="fonts/Roboto-Bold.ttf"/>
+        tools:textStyle="bold" />
 
     <EditText
         android:id="@+id/dialog_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
         android:layout_below="@+id/dialog_title"
+        android:layout_marginEnd="15dp"
+        android:imeOptions="actionDone"
+        android:lineSpacingExtra="8sp"
         android:maxLines="1"
         android:singleLine="true"
-        android:imeOptions="actionDone"
-        android:textSize="16sp"
         android:textColor="@color/colorTextBlack87"
-        android:lineSpacingExtra="8sp"
-        tools:text="4567"/>
+        android:textSize="16sp"
+        tools:text="4567" />
 
     <TextView
         android:id="@+id/dialog_error"
+        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/dialog_input"
-        android:layout_toStartOf="@+id/dialog_action"
+        android:layout_alignParentStart="true"
         android:layout_marginStart="2dp"
         android:layout_marginEnd="4dp"
+        android:layout_toStartOf="@+id/dialog_action"
         android:singleLine="true"
-        android:textSize="14sp"
         android:textColor="#FF473A"
-        tools:text="ErrorErrorErrorErrorErrorErrorErrorErrorErrorErrorErrorErrorError"
-        fontPath="fonts/Roboto-Regular.ttf"/>
+        android:textSize="14sp"
+        tools:text="ErrorErrorErrorErrorErrorErrorErrorErrorErrorErrorErrorErrorError" />
 
     <Button
         android:id="@+id/dialog_action"
@@ -56,26 +56,26 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_input"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="15dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="15dp"
         android:layout_marginBottom="10dp"
-        android:textSize="14sp"
-        android:textColor="@color/colorAccent"
-        android:lineSpacingExtra="2sp"
         android:background="?android:attr/selectableItemBackground"
-        tools:text="Подтвердить"/>
+        android:lineSpacingExtra="2sp"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        tools:text="Подтвердить" />
 
     <ImageButton
         android:id="@+id/dialog_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_close"
         android:background="?android:attr/selectableItemBackground"
+        android:padding="10dp"
+        android:src="@drawable/ic_close"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
 </RelativeLayout>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- dialog_settings.xml -->
-    <item type="id" name="dev_file_logs"/>
-    <item type="id" name="dev_build_route"/>
-    <item type="id" name="dev_export_db"/>
+    <item name="dev_file_logs" type="id" />
+    <item name="dev_build_route" type="id" />
+    <item name="dev_export_db" type="id" />
 </resources>

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="17.757" height="17.757" fill="none">
-    <circle transform="rotate(255.29)" cx="-10.841" cy="6.334" r="7.379" fill="#c4c4c4"
-        stroke="#fff" stroke-width="3" />
+<svg fill="none" height="17.757" width="17.757" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="-10.841" cy="6.334" fill="#c4c4c4" r="7.379" stroke="#fff" stroke-width="3"
+        transform="rotate(255.29)" />
 </svg>

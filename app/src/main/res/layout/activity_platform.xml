@@ -11,13 +11,13 @@
         android:name="ru.iqsolution.tkoonline.screens.common.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"
-        tools:layout="@layout/include_status"/>
+        tools:layout="@layout/include_status" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/platform_toolbar">
+        android:layout_below="@+id/platform_toolbar"
+        android:layout_alignParentBottom="true">
 
         <LinearLayout
             android:id="@+id/platform_content"
@@ -29,85 +29,84 @@
                 android:id="@+id/platform_map"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/map_height"
-                tools:background="@android:color/darker_gray"/>
+                tools:background="@android:color/darker_gray" />
 
-            <include
-                layout="@layout/include_platform"/>
+            <include layout="@layout/include_platform" />
 
             <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
                 android:id="@+id/gallery_before"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:photoType="0"/>
+                app:photoType="0" />
 
             <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
                 android:id="@+id/gallery_after"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="9dp"
-                app:photoType="1"/>
+                app:photoType="1" />
 
             <Button
                 android:id="@+id/platform_report"
+                fontPath="fonts/Roboto-Medium.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="53dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="39dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="32dp"
-                android:layout_marginTop="39dp"
-                android:textAllCaps="false"
-                android:text="Сообщить о проблеме"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:lineSpacingExtra="3sp"
                 android:background="@drawable/button_gray"
                 android:foreground="?android:attr/selectableItemBackground"
-                fontPath="fonts/Roboto-Medium.ttf"/>
+                android:lineSpacingExtra="3sp"
+                android:text="Сообщить о проблеме"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="10dp">
 
                 <Button
                     android:id="@+id/platform_not_cleaned"
+                    fontPath="fonts/Roboto-Medium.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:textAllCaps="false"
-                    android:text="КП не убрана"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:lineSpacingExtra="3sp"
                     android:background="@drawable/button_red"
                     android:foreground="?android:attr/selectableItemBackground"
-                    fontPath="fonts/Roboto-Medium.ttf"/>
+                    android:lineSpacingExtra="3sp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:text="КП не убрана"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:visibility="invisible"/>
+                    android:visibility="invisible" />
 
                 <Button
                     android:id="@+id/platform_cleaned"
+                    fontPath="fonts/Roboto-Medium.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:textAllCaps="false"
-                    android:text="КП убрана"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:lineSpacingExtra="3sp"
                     android:background="@drawable/button_green"
                     android:foreground="?android:attr/selectableItemBackground"
-                    fontPath="fonts/Roboto-Medium.ttf"/>
+                    android:lineSpacingExtra="3sp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:text="КП убрана"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -120,12 +119,12 @@
         layout="@layout/include_toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:layout_below="@+id/status_fragment"/>
+        android:layout_below="@+id/status_fragment" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="8dp"
         android:layout_below="@+id/platform_toolbar"
-        android:background="@drawable/bottom_shadow"/>
+        android:background="@drawable/bottom_shadow" />
 
 </RelativeLayout>

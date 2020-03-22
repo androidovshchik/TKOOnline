@@ -11,14 +11,14 @@
         android:name="ru.iqsolution.tkoonline.screens.common.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"
-        tools:layout="@layout/include_status"/>
+        tools:layout="@layout/include_status" />
 
     <androidx.camera.view.PreviewView
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/status_bar_height"
-        android:background="@android:color/black"/>
+        android:background="@android:color/black" />
 
     <ImageView
         android:id="@+id/turn_light"
@@ -28,10 +28,10 @@
         android:layout_marginStart="32dp"
         android:layout_marginBottom="20dp"
         android:adjustViewBounds="true"
-        android:scaleType="centerInside"
         android:background="@drawable/camera_oval"
         android:foreground="?android:attr/selectableItemBackgroundBorderless"
-        tools:src="@drawable/ic_highlight_on"/>
+        android:scaleType="centerInside"
+        tools:src="@drawable/ic_highlight_on" />
 
     <ImageView
         android:id="@+id/shot"
@@ -41,8 +41,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/ic_shot"
-        android:background="?android:attr/selectableItemBackgroundBorderless"/>
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_shot" />
 
     <View
         android:layout_width="match_parent"

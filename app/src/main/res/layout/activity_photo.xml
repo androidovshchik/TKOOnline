@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,14 +11,14 @@
         android:name="ru.iqsolution.tkoonline.screens.common.status.StatusFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/status_bar_height"
-        tools:layout="@layout/include_status"/>
+        tools:layout="@layout/include_status" />
 
     <include
         android:id="@+id/photo_toolbar"
         layout="@layout/include_toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:layout_below="@+id/status_fragment"/>
+        android:layout_below="@+id/status_fragment" />
 
     <LinearLayout
         android:id="@+id/photo_buttons"
@@ -25,72 +26,77 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/photo_save"
         android:layout_marginTop="10dp"
+        android:orientation="horizontal"
         android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:orientation="horizontal">
+        android:paddingEnd="10dp">
 
         <Button
             android:id="@+id/photo_delete"
+            fontPath="fonts/Roboto-Medium.ttf"
             android:layout_width="0dp"
             android:layout_height="45dp"
-            android:layout_weight="1"
             android:layout_marginEnd="5dp"
-            android:textAllCaps="false"
-            android:text="Удалить"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:lineSpacingExtra="3sp"
+            android:layout_weight="1"
             android:background="@drawable/button_red"
             android:foreground="?android:attr/selectableItemBackground"
-            fontPath="fonts/Roboto-Medium.ttf"/>
+            android:lineSpacingExtra="3sp"
+            android:text="Удалить"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/photo_retake"
+            fontPath="fonts/Roboto-Medium.ttf"
             android:layout_width="0dp"
             android:layout_height="45dp"
-            android:layout_weight="1"
             android:layout_marginStart="5dp"
-            android:textAllCaps="false"
-            android:text="Переснять"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:lineSpacingExtra="3sp"
+            android:layout_weight="1"
             android:background="@drawable/button_gray"
             android:foreground="?android:attr/selectableItemBackground"
-            fontPath="fonts/Roboto-Medium.ttf"/>
+            android:lineSpacingExtra="3sp"
+            android:text="Переснять"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
     <Button
         android:id="@+id/photo_save"
+        fontPath="fonts/Roboto-Medium.ttf"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_margin="10dp"
         android:layout_alignParentBottom="true"
-        android:textAllCaps="false"
-        android:text="Сохранить"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:lineSpacingExtra="3sp"
+        android:layout_margin="10dp"
         android:background="@drawable/button_green"
         android:foreground="?android:attr/selectableItemBackground"
-        fontPath="fonts/Roboto-Medium.ttf"/>
+        android:lineSpacingExtra="3sp"
+        android:text="Сохранить"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
 
-    <ImageView
+    <com.jsibbold.zoomage.ZoomageView
         android:id="@+id/photo_preview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/photo_toolbar"
         android:layout_above="@+id/photo_buttons"
+        android:layout_below="@+id/photo_toolbar"
         android:adjustViewBounds="true"
+        android:background="@android:color/black"
         android:scaleType="fitCenter"
-        android:src="@drawable/login_background"
-        android:background="@android:color/black" />
+        app:zoomage_animateOnReset="false"
+        app:zoomage_autoCenter="false"
+        app:zoomage_autoResetMode="NEVER"
+        app:zoomage_maxScale="3"
+        app:zoomage_minScale="0.3"
+        tools:src="@drawable/login_background" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="8dp"
         android:layout_below="@+id/photo_toolbar"
-        android:background="@drawable/bottom_shadow"/>
+        android:background="@drawable/bottom_shadow" />
 
 </RelativeLayout>

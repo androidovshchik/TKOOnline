@@ -8,31 +8,31 @@
 
     <TextView
         android:id="@+id/status_number"
+        fontPath="fonts/Roboto-Medium.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/status_time"
+        android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:singleLine="true"
-        android:maxLines="1"
-        android:textSize="14sp"
-        android:textColor="@android:color/white"
+        android:layout_toStartOf="@+id/status_time"
         android:lineSpacingExtra="2sp"
-        fontPath="fonts/Roboto-Medium.ttf"
-        tools:text="А 111 АА 197"/>
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        tools:text="А 111 АА 197" />
 
     <TextView
         android:id="@+id/status_time"
+        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textSize="17sp"
-        android:textColor="@android:color/white"
         android:lineSpacingExtra="3sp"
-        fontPath="fonts/Roboto-Regular.ttf"
-        tools:text="12:42"/>
+        android:textColor="@android:color/white"
+        android:textSize="17sp"
+        tools:text="12:42" />
 
     <ImageView
         android:id="@+id/status_location"
@@ -41,18 +41,18 @@
         android:layout_centerVertical="true"
         android:layout_toStartOf="@+id/status_connection"
         android:adjustViewBounds="true"
-        tools:src="@drawable/ic_gps_fixed_green"/>
+        tools:src="@drawable/ic_gps_fixed_green" />
 
     <ImageView
         android:id="@+id/status_connection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/status_uploads"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="9dp"
+        android:layout_toStartOf="@+id/status_uploads"
         android:adjustViewBounds="true"
-        tools:src="@drawable/ic_swap_vert_green"/>
+        tools:src="@drawable/ic_swap_vert_green" />
 
     <ImageView
         android:id="@+id/status_uploads"
@@ -61,48 +61,48 @@
         android:layout_centerVertical="true"
         android:layout_toStartOf="@+id/status_battery"
         android:adjustViewBounds="true"
-        tools:src="@drawable/ic_cloud_upload_green"/>
+        tools:src="@drawable/ic_cloud_upload_green" />
 
     <TextView
         android:id="@+id/status_count"
+        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:layout_alignEnd="@+id/status_uploads"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="-2dp"
         android:layout_marginBottom="4dp"
-        android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:textSize="9sp"
-        android:textColor="@android:color/white"
-        android:lineSpacingExtra="2sp"
         android:background="@drawable/text_count"
+        android:gravity="center"
+        android:lineSpacingExtra="2sp"
+        android:textColor="@android:color/white"
+        android:textSize="9sp"
         android:visibility="gone"
-        fontPath="fonts/Roboto-Regular.ttf"
-        tools:visibility="visible"
-        tools:text="5"/>
+        tools:text="5"
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/status_battery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
         android:layout_marginStart="6dp"
         android:layout_marginEnd="5dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
         android:adjustViewBounds="true"
-        tools:src="@drawable/ic_battery_full"/>
+        tools:src="@drawable/ic_battery_full" />
 
     <TextView
         android:id="@+id/status_percent"
+        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
         android:layout_alignStart="@+id/status_battery"
         android:layout_centerVertical="true"
-        android:textSize="9sp"
-        android:textColor="@color/colorTextGrayDark"
+        android:layout_marginStart="1dp"
         android:lineSpacingExtra="2sp"
-        fontPath="fonts/Roboto-Regular.ttf"
-        tools:text="23%"/>
+        android:textColor="@color/colorTextGrayDark"
+        android:textSize="9sp"
+        tools:text="23%" />
 
 </RelativeLayout>

@@ -3,40 +3,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:padding="9dp"
     android:foreground="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="9dp"
     tools:background="#804D4A5B"
     tools:ignore="MissingPrefix">
 
     <ru.iqsolution.tkoonline.screens.common.EllipsizingTextView
         android:id="@+id/container_address"
+        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_marginEnd="11dp"
-        android:maxLines="2"
+        android:layout_weight="1"
         android:ellipsize="start"
-        android:singleLine="false"
-        android:textSize="15sp"
-        android:textColor="@color/colorTextGrayDark"
         android:lineSpacingExtra="3sp"
-        fontPath="fonts/Roboto-Regular.ttf"
-        tools:text="г. Тула Марфинский район Школа №7"/>
+        android:maxLines="2"
+        android:singleLine="false"
+        android:textColor="@color/colorTextGrayDark"
+        android:textSize="15sp"
+        tools:text="г. Тула Марфинский район Школа №7" />
 
     <TextView
         android:id="@+id/container_range"
+        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:lineSpacingExtra="3sp"
         android:maxLines="2"
         android:singleLine="false"
-        android:textSize="15sp"
         android:textColor="@color/colorTextGrayDark"
-        android:lineSpacingExtra="3sp"
-        fontPath="fonts/Roboto-Regular.ttf"
-        tools:text="с   07:00\nдо 23:00"/>
+        android:textSize="15sp"
+        tools:text="с   07:00\nдо 23:00" />
 
     <FrameLayout
         android:layout_width="30dp"
@@ -47,9 +47,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            tools:layout_width="17dp"
+            tools:background="@drawable/oval_red"
             tools:layout_height="17dp"
-            tools:background="@drawable/oval_red"/>
+            tools:layout_width="17dp" />
 
     </FrameLayout>
 
