@@ -157,6 +157,10 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         platforms_refresh.isRefreshing = false
     }
 
+    override fun launchSendWorker() {
+        SendWorker.launch(applicationContext)
+    }
+
     override fun highlightItem(kpId: Int) {
         platformsAdapter.apply {
             (primaryItems + items).forEachIndexed { index, item ->
@@ -254,7 +258,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             }
             REQUEST_OUTSIDE -> {
                 if (resultCode == RESULT_OK) {
-                    SendWorker.launch(applicationContext)
+                    launchSendWorker()
                 }
             }
         }

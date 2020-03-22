@@ -34,6 +34,8 @@ interface PlatformsContract {
 
         fun onPhotoCleanEvents(photoEvents: List<PhotoEvent>, cleanEvents: List<CleanEvent>)
 
+        fun launchSendWorker()
+
         fun highlightItem(kpId: Int)
 
         fun onLoggedOut(send: Boolean, success: Boolean)

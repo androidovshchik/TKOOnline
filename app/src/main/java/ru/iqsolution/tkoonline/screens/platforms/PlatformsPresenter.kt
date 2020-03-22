@@ -99,6 +99,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 }
                 init = false
                 delay(REFRESH_TIME)
+                reference.get()?.launchSendWorker()
             }
         }
     }
