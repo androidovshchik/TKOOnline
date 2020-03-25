@@ -12,6 +12,7 @@ import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.models.ServerError
 import java.lang.ref.WeakReference
 
 @MustBeDocumented
@@ -55,69 +56,69 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
         val errors = response.parseErrors()
         val firstError = errors.firstOrNull()
         val codes = errors.map { it.code }
-        var exitApp = false
-        val message = when (tag) {
-            "login" -> {
-                when (response.code) {
-                    400, 500 -> firstError?.print()
-                    401 -> {
-                        when {
-                            codes.contains("fail to auth") -> "Неверный логин или пароль"
-                            codes.contains("car already taken") -> "Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору"
-                            else -> firstError?.print()
-                        }
-                    }
-                    403 -> "Доступ запрещен, обратитесь к администратору"
-                    404 -> "Сервер не отвечает, проверьте настройки соединения"
-                    else -> firstError?.print(true)
-                }
-            }
-            "platforms", "photos" -> {
-                when (response.code) {
-                    400 -> {
-                        when {
-                            codes.contains("closed token") -> {
-                                exitApp = true
-                                "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
-                            }
-                            else -> firstError?.print()
-                        }
-                    }
-                    401 -> {
-                        when {
-                            codes.contains("closed token") -> {
-                                exitApp = true
-                                "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
-                            }
-                            else -> firstError?.print()
-                        }
-                    }
-                    403 -> {
-                        exitApp = true
-                        "Доступ запрещен, обратитесь к администратору"
-                    }
-                    404, 500 -> firstError?.print()
-                    else -> firstError?.print(true)
-                }
-            }
-            "clean", "photo" -> {
-                when (response.code) {
-                    // NOTICE omit 400, 401, 403
-                    400, 401, 403 -> null
-                    404, 500 -> firstError?.print()
-                    else -> firstError?.print(true)
-                }
-            }
-            "logout" -> {
-                when (response.code) {
-                    400, 401, 403 -> null
-                    404, 500 -> firstError?.print()
-                    else -> firstError?.print(true)
-                }
-            }
-            else -> null
-        }
         reference.get()?.run {
+            var exitApp = false
+            val message = when (tag) {
+                "login" -> {
+                    when (response.code) {
+                        400, 500 -> firstError?.print()
+                        401 -> {
+                            when {
+                                codes.contains("fail to auth") -> "Неверный логин или пароль"
+                                codes.contains("car already taken") -> "Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору"
+                                else -> firstError?.print()
+                            }
+                        }
+                        403 -> "Доступ запрещен, обратитесь к администратору"
+                        404 -> "Сервер не отвечает, проверьте настройки соединения"
+                        else -> firstError?.print(true)
+                    }
+                }
+                "platforms", "photos" -> {
+                    when (response.code) {
+                        400 -> {
+                            when {
+                                codes.contains("closed token") -> {
+                                    exitApp = true
+                                    "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
+                                }
+                                else -> firstError?.print()
+                            }
+                        }
+                        401 -> {
+                            when {
+                                codes.contains("closed token") -> {
+                                    exitApp = true
+                                    "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
+                                }
+                                else -> firstError?.print()
+                            }
+                        }
+                        403 -> {
+                            exitApp = true
+                            "Доступ запрещен, обратитесь к администратору"
+                        }
+                        404, 500 -> firstError?.print()
+                        else -> firstError?.print(true)
+                    }
+                }
+                "clean", "photo" -> {
+                    when (response.code) {
+                        // NOTICE omit 400, 401, 403
+                        400, 401, 403 -> null
+                        404, 500 -> firstError?.print()
+                        else -> firstError?.print(true)
+                    }
+                }
+                "logout" -> {
+                    when (response.code) {
+                        400, 401, 403 -> null
+                        404, 500 -> firstError?.print()
+                        else -> firstError?.print(true)
+                    }
+                }
+                else -> null
+            }
             if (message != null) {
                 bgToast(message)
             }
@@ -126,5 +127,20 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
             }
         }
         return response
+    }
+}
+
+fun Context.echoError(httpCode: Int, error: ServerError?) {
+    if (error != null) {
+        bgToast(
+            error.print(
+                when (httpCode) {
+                    400, 401, 403, 404, 500 -> false
+                    else -> true
+                }
+            )
+        )
+    } else {
+        bgToast("Ошибка $httpCode Обратитесь к администратору")
     }
 }
