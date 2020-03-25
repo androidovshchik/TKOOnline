@@ -50,6 +50,7 @@ class LockActivity : Activity(), KodeinAware {
                 }
                 launchActivity()
             }
+            else -> finishAffinity()
         }
     }
 

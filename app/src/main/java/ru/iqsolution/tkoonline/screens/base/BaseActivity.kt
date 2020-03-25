@@ -1,10 +1,12 @@
 package ru.iqsolution.tkoonline.screens.base
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.WindowManager
 import com.google.android.gms.common.api.ResolvableApiException
@@ -22,9 +24,11 @@ import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.isRunning
+import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.common.status.StatusFragment
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.presenterModule
@@ -201,6 +205,16 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_NONE) {
+                startActivityNoop<LockActivity>()
+            }
+            return true
+        }
+        return super.onKeyLongPress(keyCode, event)
     }
 
     override fun onDestroy() {
