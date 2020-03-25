@@ -57,90 +57,58 @@ class AppInterceptor(context: Context) : Interceptor, KodeinAware {
         val firstError = errors.firstOrNull()
         val codes = errors.map { it.code }
         reference.get()?.run {
-            var exitApp = false
-            val message = when (tag) {
+            when (tag) {
                 "login" -> {
                     when (response.code) {
-                        400, 500 -> firstError?.print()
                         401 -> {
                             when {
-                                codes.contains("fail to auth") -> "Неверный логин или пароль"
-                                codes.contains("car already taken") -> "Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору"
-                                else -> firstError?.print()
+                                codes.contains("fail to auth") -> bgToast("Неверный логин или пароль")
+                                codes.contains("car already taken") -> bgToast("Данная ТС уже авторизована в системе - Обратитесь к Вашему администратору")
+                                else -> echoError(response, firstError)
                             }
                         }
-                        403 -> "Доступ запрещен, обратитесь к администратору"
-                        404 -> "Сервер не отвечает, проверьте настройки соединения"
-                        else -> firstError?.print(true)
+                        403 -> bgToast("Доступ запрещен, обратитесь к администратору")
+                        404 -> bgToast("Сервер не отвечает, проверьте настройки соединения")
+                        else -> echoError(response, firstError)
                     }
                 }
                 "platforms", "photos" -> {
                     when (response.code) {
-                        400 -> {
+                        400, 401 -> {
                             when {
                                 codes.contains("closed token") -> {
-                                    exitApp = true
-                                    "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
+                                    bgToast("Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново")
+                                    exitUnexpected()
                                 }
-                                else -> firstError?.print()
-                            }
-                        }
-                        401 -> {
-                            when {
-                                codes.contains("closed token") -> {
-                                    exitApp = true
-                                    "Ваша авторизация сброшена, пожалуйста, авторизуйтесь заново"
-                                }
-                                else -> firstError?.print()
+                                else -> echoError(response, firstError)
                             }
                         }
                         403 -> {
-                            exitApp = true
-                            "Доступ запрещен, обратитесь к администратору"
+                            bgToast("Доступ запрещен, обратитесь к администратору")
+                            exitUnexpected()
                         }
-                        404, 500 -> firstError?.print()
-                        else -> firstError?.print(true)
+                        else -> echoError(response, firstError)
                     }
                 }
-                "clean", "photo" -> {
+                "clean", "photo", "logout" -> {
                     when (response.code) {
-                        // NOTICE omit 400, 401, 403
-                        400, 401, 403 -> null
-                        404, 500 -> firstError?.print()
-                        else -> firstError?.print(true)
+                        400, 401, 403 -> {
+                        }
+                        else -> echoError(response, firstError)
                     }
                 }
-                "logout" -> {
-                    when (response.code) {
-                        400, 401, 403 -> null
-                        404, 500 -> firstError?.print()
-                        else -> firstError?.print(true)
-                    }
+                else -> {
                 }
-                else -> null
-            }
-            if (message != null) {
-                bgToast(message)
-            }
-            if (exitApp) {
-                exitUnexpected()
             }
         }
         return response
     }
 }
 
-fun Context.echoError(httpCode: Int, error: ServerError?) {
-    if (error != null) {
-        bgToast(
-            error.print(
-                when (httpCode) {
-                    400, 401, 403, 404, 500 -> false
-                    else -> true
-                }
-            )
-        )
-    } else {
-        bgToast("Ошибка $httpCode Обратитесь к администратору")
+fun Context.echoError(response: Response, error: ServerError?) {
+    val unknown = when (response.code) {
+        400, 401, 403, 404, 500 -> false
+        else -> true
     }
+    bgToast(error?.print(unknown) ?: "Ошибка ${response.code} ${response.request}")
 }
