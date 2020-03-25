@@ -6,10 +6,12 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
@@ -30,9 +32,16 @@ class QrCodeFragment : BaseFragment() {
 
     private val adminManager: AdminManager by instance()
 
-    lateinit var codeScanner: CodeScanner
+    private lateinit var codeScanner: CodeScanner
 
     private var alertDialog: AlertDialog? = null
+
+    private val scanHandler = Handler()
+
+    private val stopRunnable = Runnable {
+        play.isVisible = true
+        codeScanner.stopPreview()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_qr, container, false)
@@ -55,13 +64,23 @@ class QrCodeFragment : BaseFragment() {
                 }
             }
         }
+        play.setOnClickListener {
+            startScan()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         if (checkPermissions()) {
-            codeScanner.startPreview()
+            startScan()
         }
+    }
+
+    fun startScan() {
+        play.isVisible = false
+        scanHandler.removeCallbacks(stopRunnable)
+        codeScanner.startPreview()
+        scanHandler.postDelayed(stopRunnable, 30_000L)
     }
 
     @SuppressLint("BatteryLife")
@@ -107,6 +126,7 @@ class QrCodeFragment : BaseFragment() {
     }
 
     override fun onPause() {
+        scanHandler.removeCallbacks(stopRunnable)
         codeScanner.releaseResources()
         super.onPause()
     }

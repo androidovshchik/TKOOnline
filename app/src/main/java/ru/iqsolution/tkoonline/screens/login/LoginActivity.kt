@@ -211,7 +211,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     }
 
     override fun onUnhandledError(e: Throwable?) {
-        qrCode.codeScanner.startPreview()
+        qrCode.startScan()
     }
 
     private val statusBarHeight: Int
