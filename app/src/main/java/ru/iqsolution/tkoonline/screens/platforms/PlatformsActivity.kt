@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.platforms
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.collection.SimpleArrayMap
@@ -11,8 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platforms.*
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.cancelButton
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
@@ -24,7 +21,9 @@ import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.base.alert
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
@@ -44,7 +43,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
 
     private val waitDialog: WaitDialog by instance()
 
-    private var alertDialog: AlertDialog? = null
+    private var alertDialog: AppAlertDialog? = null
 
     private val photoTypes = mutableListOf<PhotoType>()
 
@@ -224,20 +223,20 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                 return
             }
             send -> alert("Не все данные отправлены на сервер", "Ошибка отправки") {
-                neutralPressed("Выйти") {
+                neutralPressed("Выйти") { _, _ ->
                     logout(false)
                 }
-                cancelButton {}
-                positiveButton("Повторить") {
+                cancelButton()
+                positiveButton("Повторить") { _, _ ->
                     logout(true)
                 }
-            }.show()
+            }.display()
             else -> alert("Не удалось разлогиниться на сервере", "Ошибка выхода") {
-                cancelButton {}
-                positiveButton("Повторить") {
+                cancelButton()
+                positiveButton("Повторить") { _, _ ->
                     logout(false)
                 }
-            }.show()
+            }.display()
         }
     }
 
@@ -269,14 +268,14 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
 
     override fun onBackPressed() {
         alertDialog = alert("Требуется отправка данных на сервер", "Выход") {
-            neutralPressed("Выйти") {
+            neutralPressed("Выйти") { _, _ ->
                 logout(false)
             }
-            cancelButton {}
-            positiveButton("Отправить") {
+            cancelButton()
+            positiveButton("Отправить") { _, _ ->
                 logout(true)
             }
-        }.show()
+        }.display()
     }
 
     override fun onDestroy() {

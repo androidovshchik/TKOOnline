@@ -1,11 +1,11 @@
 package ru.iqsolution.tkoonline.screens.base
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Window
+import androidx.appcompat.app.AlertDialog
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import ru.iqsolution.tkoonline.R
@@ -22,25 +22,25 @@ class AppAlertDialog(context: Context) : AlertDialog(context, R.style.AlertDialo
         requestWindowFeature(Window.FEATURE_NO_TITLE)
     }
 
-    override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean {
-        return super.onKeyLongPress(keyCode, event)
-    }
-
-    fun leftButton(text: CharSequence, listener: OnClickListener? = null) {
+    fun neutralPressed(text: CharSequence, listener: OnClickListener? = null) {
         setButton(DialogInterface.BUTTON_NEUTRAL, text, listener)
     }
 
-    fun middleButton(text: CharSequence = "Отмена", listener: OnClickListener? = null) {
+    fun cancelButton(text: CharSequence = "Отмена", listener: OnClickListener? = null) {
         setButton(DialogInterface.BUTTON_NEGATIVE, text, listener)
     }
 
-    fun rightButton(text: CharSequence = "Ок", listener: OnClickListener? = null) {
+    fun positiveButton(text: CharSequence = "ОК", listener: OnClickListener? = null) {
         setButton(DialogInterface.BUTTON_POSITIVE, text, listener)
     }
 
-    fun show(): AppAlertDialog {
-        super.show()
+    fun display(): AppAlertDialog {
+        show()
         return this
+    }
+
+    override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean {
+        return super.onKeyLongPress(keyCode, event)
     }
 
     inline fun <reified T> activityCallback(action: T.() -> Unit) {
