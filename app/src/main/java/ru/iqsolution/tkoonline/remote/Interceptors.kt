@@ -110,5 +110,8 @@ fun Context.echoError(response: Response, error: ServerError?) {
         400, 401, 403, 404, 500 -> false
         else -> true
     }
-    bgToast(error?.print(unknown) ?: "Ошибка ${response.code} ${response.request}")
+    bgToast(
+        error?.print(unknown)
+            ?: "Ошибка ${response.code} ${response.request.url} Обратитесь к администратору"
+    )
 }
