@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.dialog_input.*
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.setMaxLength
@@ -18,6 +19,8 @@ import ru.iqsolution.tkoonline.screens.base.BaseDialogFragment
 @Suppress("DEPRECATION")
 class PasswordDialog : BaseDialogFragment() {
 
+    private val preferences: Preferences by instance()
+
     private var attemptsCount = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -26,7 +29,6 @@ class PasswordDialog : BaseDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val preferences = Preferences(context)
         val password = preferences.lockPassword
         var time = preferences.blockTime
         dialog_close.isVisible = true

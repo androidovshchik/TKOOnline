@@ -8,6 +8,7 @@ import android.widget.Switch
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_settings.*
 import org.jetbrains.anko.find
+import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.LogTree
 import ru.iqsolution.tkoonline.R
@@ -18,6 +19,8 @@ import ru.iqsolution.tkoonline.screens.base.BaseDialogFragment
 @Suppress("DEPRECATION")
 class SettingsDialog : BaseDialogFragment() {
 
+    private val preferences: Preferences by instance()
+
     private var mEnableLock = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -27,7 +30,7 @@ class SettingsDialog : BaseDialogFragment() {
 
     @Suppress("ConstantConditionIf")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val preferences = Preferences(context).apply {
+        preferences.run {
             dialog_main_server.setTextSelection(mainServerAddress)
             dialog_telemetry_server.setTextSelection(mainTelemetryAddress)
             if (!BuildConfig.PROD) {
@@ -51,7 +54,7 @@ class SettingsDialog : BaseDialogFragment() {
             }
         }
         dialog_unlock.setOnClickListener {
-            setLocked(!mEnableLock, preferences)
+            setLocked(!mEnableLock)
         }
         dialog_save.setOnClickListener {
             val slashRegex = "/+$".toRegex()
@@ -77,7 +80,7 @@ class SettingsDialog : BaseDialogFragment() {
         dialog_unlock.text = if (enable) "Разблокировать" else "Заблокировать"
     }
 
-    private fun setLocked(enable: Boolean, preferences: Preferences) {
+    private fun setLocked(enable: Boolean) {
         preferences.lockPassword = null
         activityCallback<SettingsListener> {
             if (enable) {

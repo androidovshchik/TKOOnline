@@ -19,7 +19,7 @@ abstract class BaseDialogFragment : DialogFragment(), KodeinAware {
     override val kodein by closestKodein()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return BaseDialog(activity)
+        return AppDialog(activity)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

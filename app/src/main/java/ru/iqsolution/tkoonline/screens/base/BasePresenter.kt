@@ -11,7 +11,7 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("MemberVisibilityCanBePrivate")
-open class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
+abstract class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
 
     override val kodein by closestKodein(context)
 

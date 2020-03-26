@@ -13,7 +13,7 @@ import ru.iqsolution.tkoonline.extensions.activityCallback
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.screens.LockActivity
 
-open class BaseDialog(activity: Activity) : Dialog(activity, R.style.AppDialog), KodeinAware {
+open class AppDialog(activity: Activity) : Dialog(activity, R.style.AppDialog), KodeinAware {
 
     override val kodein by closestKodein()
 

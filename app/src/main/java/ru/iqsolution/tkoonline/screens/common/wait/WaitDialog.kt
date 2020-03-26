@@ -4,9 +4,9 @@ import android.app.Activity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.dialog_wait.*
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.screens.base.BaseDialog
+import ru.iqsolution.tkoonline.screens.base.AppDialog
 
-class WaitDialog(activity: Activity) : BaseDialog(activity) {
+class WaitDialog(activity: Activity) : AppDialog(activity) {
 
     init {
         setCancelable(false)
