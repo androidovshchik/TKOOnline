@@ -1,26 +1,24 @@
 package ru.iqsolution.tkoonline.screens.base
 
+import android.app.ActivityManager
+import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
-import android.os.Bundle
 import android.view.KeyEvent
-import android.view.Window
-import androidx.appcompat.app.AlertDialog
+import org.jetbrains.anko.activityManager
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.activity
 import ru.iqsolution.tkoonline.extensions.activityCallback
+import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.screens.LockActivity
 
 private typealias OnClickListener = (dialog: DialogInterface, which: Int) -> Unit
 
 class AppAlertDialog(context: Context) : AlertDialog(context, R.style.AlertDialog), KodeinAware {
 
     override val kodein by closestKodein()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-    }
 
     fun neutralPressed(text: CharSequence, listener: OnClickListener? = null) {
         setButton(DialogInterface.BUTTON_NEUTRAL, text, listener)
@@ -39,7 +37,13 @@ class AppAlertDialog(context: Context) : AlertDialog(context, R.style.AlertDialo
         return this
     }
 
-    override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean {
+    override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean = context.run {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_NONE) {
+                activity()?.startActivityNoop<LockActivity>()
+            }
+            return true
+        }
         return super.onKeyLongPress(keyCode, event)
     }
 
