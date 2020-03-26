@@ -1,6 +1,5 @@
 package ru.iqsolution.tkoonline.screens.platform
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
@@ -11,7 +10,9 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.dip
+import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.wrapContent
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
@@ -24,7 +25,9 @@ import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.base.alert
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
@@ -47,7 +50,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
 
     private val photoErrors = SimpleArrayMap<Int, String>()
 
-    private var alertDialog: AlertDialog? = null
+    private var alertDialog: AppAlertDialog? = null
 
     private var clickedClean: Boolean? = null
 
@@ -100,8 +103,8 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             }
             if (errorMessage != null) {
                 alertDialog = alert(errorMessage, "Ошибка заполнения") {
-                    okButton {}
-                }.show()
+                    positiveButton()
+                }.display()
             } else {
                 setTouchable(false)
                 clickedClean = false
@@ -123,8 +126,8 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             }
             if (errorMessage != null) {
                 alertDialog = alert(errorMessage, "Ошибка заполнения") {
-                    okButton {}
-                }.show()
+                    positiveButton()
+                }.display()
             } else {
                 setTouchable(false)
                 clickedClean = true
@@ -253,14 +256,13 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     override fun onBackPressed() {
         if (hasPhotoChanges) {
             alertDialog = alert(
-                "Все данные и фотографии сделанные ранее не будут отправлены",
-                "Вы уверены?"
+                "Все данные и фотографии сделанные ранее не будут отправлены", "Вы уверены?"
             ) {
-                cancelButton {}
-                positiveButton("Выйти") {
+                cancelButton()
+                positiveButton("Выйти") { _, _ ->
                     closeDetails(false)
                 }
-            }.show()
+            }.display()
         } else {
             closeDetails(false)
         }

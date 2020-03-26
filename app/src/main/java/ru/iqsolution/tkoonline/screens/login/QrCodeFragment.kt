@@ -2,7 +2,6 @@ package ru.iqsolution.tkoonline.screens.login
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -17,15 +16,16 @@ import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.google.zxing.BarcodeFormat
 import kotlinx.android.synthetic.main.fragment_qr.*
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.powerManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
+import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.screens.base.alert
 
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {
@@ -34,7 +34,7 @@ class QrCodeFragment : BaseFragment() {
 
     private lateinit var codeScanner: CodeScanner
 
-    private var alertDialog: AlertDialog? = null
+    private var alertDialog: AppAlertDialog? = null
 
     private val scanHandler = Handler()
 
@@ -118,11 +118,11 @@ class QrCodeFragment : BaseFragment() {
     }
 
     private fun promptUser(message: String, action: String) {
-        alertDialog = alert(message, "Разрешения") {
-            positiveButton("Открыть") {
-                startActivity(Intent(action, Uri.fromParts("package", context?.packageName, null)))
+        alertDialog = context?.alert(message, "Разрешения") {
+            positiveButton("Открыть") { _, _ ->
+                startActivity(Intent(action, Uri.fromParts("package", context.packageName, null)))
             }
-        }.show()
+        }?.display()
     }
 
     override fun onPause() {

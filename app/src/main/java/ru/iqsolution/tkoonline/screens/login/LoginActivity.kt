@@ -4,7 +4,6 @@ package ru.iqsolution.tkoonline.screens.login
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
-import android.app.AlertDialog
 import android.app.FragmentTransaction
 import android.content.Intent
 import android.os.Bundle
@@ -13,7 +12,9 @@ import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import coil.api.load
 import kotlinx.android.synthetic.main.activity_login.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.activityManager
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.topPadding
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.BuildConfig
@@ -21,7 +22,9 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.screens.LockActivity
+import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.base.alert
 import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 import ru.iqsolution.tkoonline.workers.DeleteWorker
@@ -44,7 +47,7 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     private lateinit var qrCode: QrCodeFragment
 
-    private var alertDialog: AlertDialog? = null
+    private var alertDialog: AppAlertDialog? = null
 
     private var hasPrompted = false
 
@@ -146,22 +149,23 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     override fun onUpdateAvailable() {
         skipCheckUpdates = true
-        alertDialog = if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
-            alert("Доступна новая версия приложения", "Обновление") {
-                cancelButton {}
-                positiveButton(if (adminManager.isDeviceOwner) "Установить" else "Скачать") {
-                    waitDialog.show()
-                    presenter.installUpdate(applicationContext)
-                }
-            }.show()
-        } else {
-            alert("Для установки требуется разблокировка", "Обновление") {
-                cancelButton {}
-                positiveButton("Продолжить") {
-                    openPasswordDialog()
-                }
-            }.show()
-        }
+        alertDialog =
+            if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
+                alert("Доступна новая версия приложения", "Обновление") {
+                    cancelButton()
+                    positiveButton(if (adminManager.isDeviceOwner) "Установить" else "Скачать") { _, _ ->
+                        waitDialog.show()
+                        presenter.installUpdate(applicationContext)
+                    }
+                }.display()
+            } else {
+                alert("Для установки требуется разблокировка", "Обновление") {
+                    cancelButton()
+                    positiveButton("Продолжить") { _, _ ->
+                        openPasswordDialog()
+                    }
+                }.display()
+            }
     }
 
     override fun cancelWork() {
@@ -173,12 +177,12 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         alertDialog = if (success) {
             if (adminManager.isDeviceOwner) {
                 alert("Сейчас приложение будет закрыто", "Обновление") {
-                    isCancelable = false
-                }.show()
+                    setCancelable(false)
+                }.display()
             } else {
                 alert("Все готово для установки", "Обновление") {
-                    cancelButton {}
-                    positiveButton("Установить") {
+                    cancelButton()
+                    positiveButton("Установить") { _, _ ->
                         startActivity(Intent(Intent.ACTION_VIEW).apply {
                             type = "application/vnd.android.package-archive"
                             data = FileProvider.getUriForFile(
@@ -189,16 +193,16 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         })
                     }
-                }.show()
+                }.display()
             }
         } else {
             alert("Не удалось скачать обновление", "Ошибка обновления") {
-                cancelButton {}
-                positiveButton("Повторить") {
+                cancelButton()
+                positiveButton("Повторить") { _, _ ->
                     waitDialog.show()
                     presenter.installUpdate(applicationContext)
                 }
-            }.show()
+            }.display()
         }
     }
 
