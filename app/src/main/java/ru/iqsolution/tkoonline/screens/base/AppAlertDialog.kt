@@ -16,7 +16,7 @@ import ru.iqsolution.tkoonline.screens.LockActivity
 
 private typealias OnClickListener = (dialog: DialogInterface, which: Int) -> Unit
 
-class AppAlertDialog(context: Context) : AlertDialog(context, R.style.AlertDialog), KodeinAware {
+class AppAlertDialog(context: Context) : AlertDialog(context, R.style.AppAlertDialog), KodeinAware {
 
     override val kodein by closestKodein()
 

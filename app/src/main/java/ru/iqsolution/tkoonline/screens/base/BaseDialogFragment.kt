@@ -2,6 +2,7 @@
 
 package ru.iqsolution.tkoonline.screens.base
 
+import android.app.Dialog
 import android.app.DialogFragment
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +17,10 @@ import ru.iqsolution.tkoonline.extensions.activityCallback
 abstract class BaseDialogFragment : DialogFragment(), KodeinAware {
 
     override val kodein by closestKodein()
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return BaseDialog(activity)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
