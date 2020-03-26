@@ -42,7 +42,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         val exit = inputData.getBoolean(PARAM_EXIT, false)
         val output = mapOf(PARAM_SEND to send)
         if (!applicationContext.connectivityManager.isConnected) {
-            return failure(output)
+            return if (!send && exit) {
+                success(output)
+            } else {
+                failure(output)
+            }
         }
         val header = preferences.authHeader
         if (send) {
@@ -134,7 +138,11 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                         server.logout(header).execute()
                     } catch (e: Throwable) {
                         Timber.e(e)
-                        hasErrors = true
+                        if (!send) {
+                            return success(output)
+                        } else {
+                            hasErrors = true
+                        }
                     }
                 }
             }

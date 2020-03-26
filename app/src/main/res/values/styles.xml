@@ -29,6 +29,7 @@
     </style>
 
     <style name="AppDialog" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
     </style>
 
