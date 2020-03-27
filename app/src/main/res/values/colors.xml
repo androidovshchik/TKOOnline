@@ -15,6 +15,5 @@
     <color name="colorStatusGreen">#56B60B</color>
     <color name="colorStatusOrange">#FF8A00</color>
     <color name="colorStatusRed">#FF1313</color>
-    <color name="colorStatusViolet">#AD53CD</color>
     <color name="colorStatusYellow">#FFD600</color>
 </resources>
