@@ -20,7 +20,7 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
     override fun doWork(): Result {
         fileManager.deleteOldFiles()
         val now = DateTime.now()
-        val allTokens = db.tokenDao().getTokens()
+        val allTokens = db.tokenDao().getAll()
         val expiredTokens = mutableListOf<AccessToken>()
         for (token in allTokens) {
             if (token.expires.withZone(now.zone).isBefore(now)) {

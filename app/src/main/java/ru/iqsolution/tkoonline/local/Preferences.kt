@@ -5,6 +5,7 @@ import com.chibatching.kotpref.KotprefModel
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATE
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -101,12 +102,13 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
         get() = try {
             check(!invalidAuth)
             check(accessToken != null)
+            val now = DateTime.now()
             expiresWhen.let {
                 check(it != null)
-                val now = DateTime.now()
                 check(DateTime.parse(it, PATTERN_DATETIME_ZONE).withZone(now.zone).millis >= now.millis)
             }
             check(serverTime != null)
+            check(serverDay == now.toString(PATTERN_DATE))
             //check(elapsedTime > 0L)
             check(vehicleNumber != null)
             check(queName != null)
