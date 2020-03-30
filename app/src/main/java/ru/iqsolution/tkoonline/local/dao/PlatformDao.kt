@@ -9,6 +9,14 @@ abstract class PlatformDao {
     @Query(
         """
         SELECT * FROM platforms 
+        ORDER BY p_kp_id ASC
+    """
+    )
+    abstract fun getAll(): List<Platform>
+
+    @Query(
+        """
+        SELECT * FROM platforms 
         WHERE p_kp_id in (:kpIds)
         ORDER BY p_kp_id ASC
     """

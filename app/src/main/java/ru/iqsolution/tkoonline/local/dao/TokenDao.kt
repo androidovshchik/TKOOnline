@@ -12,7 +12,7 @@ interface TokenDao {
         ORDER BY t_id ASC
     """
     )
-    fun getTokens(): List<AccessToken>
+    fun getAll(): List<AccessToken>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(item: AccessToken): Long
