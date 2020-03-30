@@ -23,12 +23,12 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
 
     override fun doWork(): Result {
         val header = preferences.authHeader ?: return Result.success()
-        preferences.blockingBulk {
-            logout()
-        }
         if (!applicationContext.exitUnexpected()) {
             try {
                 server.logout(header).execute()
+                preferences.blockingBulk {
+                    logout()
+                }
             } catch (e: Throwable) {
                 Timber.e(e)
             }
@@ -43,7 +43,7 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
         fun launch(context: Context) {
             val now = DateTime.now()
             val delay = Duration(now, now.plusDays(1).withTime(2, 0, 0, 0)).millis
-            val request = OneTimeWorkRequestBuilder<UpdateWorker>()
+            val request = OneTimeWorkRequestBuilder<MidnightWorker>()
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .build()
             WorkManager.getInstance(context).apply {
