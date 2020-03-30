@@ -5,7 +5,7 @@ import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.PhotoType
+import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.AdapterListener
 import ru.iqsolution.tkoonline.screens.base.IBasePresenter

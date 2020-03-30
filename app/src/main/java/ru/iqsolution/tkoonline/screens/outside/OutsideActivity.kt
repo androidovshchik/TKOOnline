@@ -16,7 +16,7 @@ import ru.iqsolution.tkoonline.EXTRA_PHOTO_TYPES
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.PhotoType
+import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 
@@ -39,7 +39,7 @@ class OutsideActivity : BaseActivity<OutsideContract.Presenter>(), OutsideContra
         addButton(PhotoType.Default.BEFORE.toType())
         addButton(PhotoType.Default.AFTER.toType())
         photoTypes.forEach {
-            if (it.isError == 1) {
+            if (it.error == 1) {
                 addButton(it)
             }
         }
@@ -52,7 +52,7 @@ class OutsideActivity : BaseActivity<OutsideContract.Presenter>(), OutsideContra
                 it.setMargins(dip(20), 0, dip(20), dip(20))
             }
             text = photoType.description
-            setBackgroundResource(if (photoType.isError == 1) R.drawable.button_gray else R.drawable.button_green)
+            setBackgroundResource(if (photoType.error == 1) R.drawable.button_gray else R.drawable.button_green)
             setOnClickListener {
                 startActivityNoop<PhotoActivity>(
                     REQUEST_PHOTO,

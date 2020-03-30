@@ -14,9 +14,10 @@ import ru.iqsolution.tkoonline.local.entities.*
         PhotoEvent::class,
         CleanEvent::class,
         LocationEvent::class,
-        Platform::class
+        Platform::class,
+        PhotoType::class
     ],
-    version = 10
+    version = 11
 )
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase() {
@@ -32,6 +33,8 @@ abstract class Database : RoomDatabase() {
     abstract fun locationDao(): LocationDao
 
     abstract fun platformDao(): PlatformDao
+
+    abstract fun typeDao(): TypeDao
 }
 
 class DummyMigration(startVersion: Int, endVersion: Int) : Migration(startVersion, endVersion) {
@@ -46,6 +49,17 @@ class Migration910 : Migration(9, 10) {
         database.execSQL(
             """
             CREATE TABLE IF NOT EXISTS `platforms` (`p_kp_id` INTEGER NOT NULL, `p_linked_id` INTEGER, `p_address` TEXT NOT NULL, `p_lat` REAL NOT NULL, `p_lon` REAL NOT NULL, `p_bal_keeper` TEXT, `p_keeper_phone` TEXT, `p_reg_operator` TEXT, `p_operator_phone` TEXT, `p_container_type` TEXT NOT NULL, `p_container_volume` REAL NOT NULL, `p_container_count` INTEGER NOT NULL, `p_time_from` TEXT NOT NULL, `p_time_to` TEXT NOT NULL, `p_status` INTEGER NOT NULL, PRIMARY KEY(`p_kp_id`));
+        """.trimIndent()
+        )
+    }
+}
+
+class Migration1011 : Migration(10, 11) {
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `photo_types` (`pt_id` INTEGER NOT NULL, `pt_description` TEXT NOT NULL, `pt_short_name` TEXT NOT NULL, `pt_is_error` INTEGER NOT NULL, PRIMARY KEY(`pt_id`));
         """.trimIndent()
         )
     }

@@ -20,8 +20,8 @@ import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
+import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.local.entities.Platform
-import ru.iqsolution.tkoonline.models.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -64,7 +64,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         photoTypes.apply {
             addAll(intent.getSerializableExtra(EXTRA_PHOTO_TYPES) as ArrayList<PhotoType>)
             forEach {
-                if (it.isError == 1) {
+                if (it.error == 1) {
                     photoErrors.put(it.id, it.shortName)
                 }
             }

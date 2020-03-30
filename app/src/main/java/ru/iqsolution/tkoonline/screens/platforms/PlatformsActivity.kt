@@ -18,7 +18,7 @@ import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.PhotoType
+import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
@@ -112,7 +112,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         }
         photoErrors.clear()
         types.forEach {
-            if (it.isError == 1) {
+            if (it.error == 1) {
                 photoErrors.put(it.id, it.shortName)
             }
         }

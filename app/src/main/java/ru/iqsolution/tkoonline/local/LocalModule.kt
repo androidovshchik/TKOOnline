@@ -24,6 +24,7 @@ val localModule = Kodein.Module("local") {
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
             .addMigrations(DummyMigration(8, 9))
             .addMigrations(Migration910())
+            .addMigrations(Migration1011())
             .build()
     }
 }

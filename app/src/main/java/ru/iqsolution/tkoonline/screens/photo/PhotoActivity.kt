@@ -11,7 +11,7 @@ import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.PhotoType
+import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.camera.CameraActivity
 import java.io.File

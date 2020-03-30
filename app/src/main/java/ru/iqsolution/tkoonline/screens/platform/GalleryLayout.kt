@@ -19,7 +19,7 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.activityCallback
 import ru.iqsolution.tkoonline.extensions.use
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.PhotoType
+import ru.iqsolution.tkoonline.local.entities.PhotoType
 
 class GalleryLayout : RelativeLayout {
 

@@ -16,7 +16,7 @@ import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.models.PhotoType
+import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
@@ -49,7 +49,7 @@ class ProblemActivity : BaseActivity<ProblemContract.Presenter>(), ProblemContra
         )
         val photoTypes = intent.getSerializableExtra(EXTRA_PHOTO_TYPES) as ArrayList<PhotoType>
         photoTypes.forEach {
-            if (it.isError == 1) {
+            if (it.error == 1) {
                 addButton(it)
             }
         }

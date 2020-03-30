@@ -1,21 +1,32 @@
-package ru.iqsolution.tkoonline.models
+package ru.iqsolution.tkoonline.local.entities
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
+@Entity(
+    tableName = "photo_types"
+)
 class PhotoType : Serializable {
 
+    @PrimaryKey
     @SerializedName("id")
+    @ColumnInfo(name = "pt_id")
     var id = Default.OTHER.id
 
     @SerializedName("description")
+    @ColumnInfo(name = "pt_description")
     lateinit var description: String
 
     @SerializedName("short_name")
+    @ColumnInfo(name = "pt_short_name")
     lateinit var shortName: String
 
     @SerializedName("is_error")
-    var isError = 0
+    @ColumnInfo(name = "pt_is_error")
+    var error = 0
 
     @Suppress("unused")
     enum class Default(
@@ -33,7 +44,7 @@ class PhotoType : Serializable {
             it.id = id
             it.description = description
             it.shortName = shortName
-            it.isError = if (isError) 1 else 0
+            it.error = if (isError) 1 else 0
         }
 
         companion object {

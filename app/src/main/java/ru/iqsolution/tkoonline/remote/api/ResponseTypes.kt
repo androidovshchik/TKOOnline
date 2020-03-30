@@ -1,7 +1,7 @@
 package ru.iqsolution.tkoonline.remote.api
 
 import com.google.gson.annotations.SerializedName
-import ru.iqsolution.tkoonline.models.PhotoType
+import ru.iqsolution.tkoonline.local.entities.PhotoType
 
 class ResponseTypes {
 
