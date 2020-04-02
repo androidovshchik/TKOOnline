@@ -77,6 +77,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 queName = responseAuth.queName
                 carId = qrCode.carId
                 tokenId = withContext(Dispatchers.IO) {
+                    db.typeDao().deleteAll()
+                    db.platformDao().deleteAll()
                     db.tokenDao().insert(AccessToken().apply {
                         token = responseAuth.accessKey
                         queName = responseAuth.queName
