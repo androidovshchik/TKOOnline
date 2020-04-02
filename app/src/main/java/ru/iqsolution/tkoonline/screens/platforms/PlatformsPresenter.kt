@@ -35,7 +35,11 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
             init = !refresh
             while (true) {
                 val responseTypes = try {
-                    server.getPhotoTypes(header).data
+                    server.getPhotoTypes(header).data.also {
+                        withContext(Dispatchers.IO) {
+                            db.typeDao().safeInsert(it)
+                        }
+                    }
                 } catch (e: Throwable) {
                     if (e is UnknownHostException) {
                         val photoTypes = withContext(Dispatchers.IO) {
@@ -80,7 +84,6 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 val secondary = mutableListOf<PlatformContainers>()
                 val allPlatforms = mutableListOf<Platform>()
                 withContext(Dispatchers.IO) {
-                    db.typeDao().safeInsert(responseTypes)
                     allPlatforms.addAll(responsePlatforms.filter { it.isValid }
                         .distinctBy { it.kpId })
                     db.platformDao().safeInsert(allPlatforms)

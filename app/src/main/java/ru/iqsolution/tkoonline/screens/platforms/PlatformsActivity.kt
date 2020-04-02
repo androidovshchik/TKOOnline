@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platforms.*
+import kotlinx.coroutines.CancellationException
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.kodein.di.generic.instance
@@ -241,7 +242,9 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
     }
 
     override fun onUnhandledError(e: Throwable?) {
-        platforms_refresh.isRefreshing = false
+        if (e !is CancellationException) {
+            platforms_refresh.isRefreshing = false
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
