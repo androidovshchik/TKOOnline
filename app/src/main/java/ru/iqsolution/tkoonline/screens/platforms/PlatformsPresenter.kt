@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import kotlinx.coroutines.*
 import org.kodein.di.generic.instance
-import retrofit2.await
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
@@ -16,6 +15,7 @@ import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.workers.SendWorker
 import timber.log.Timber
+import java.net.UnknownHostException
 
 class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.View>(context),
     PlatformsContract.Presenter {
@@ -31,25 +31,46 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
         launch {
             var init = !refresh
             while (true) {
-                val responsePlatforms = try {
-                    val responseTypes = server.getPhotoTypes(header)
-                    reference.get()?.onReceivedTypes(responseTypes.data)
-                    server.getPlatforms(header, day).await()
-                } catch (e: CancellationException) {
-                    throw e
+                val responseTypes = try {
+                    server.getPhotoTypes(header).data
                 } catch (e: Throwable) {
-                    Timber.e(e)
-                    reference.get()?.onUnhandledError(e)
-                    init = false
-                    delay(REFRESH_TIME)
-                    continue
+                    val photoTypes = db.typeDao().getAll()
+                    if (e is UnknownHostException && photoTypes.isNotEmpty()) {
+                        photoTypes
+                    } else if (e is CancellationException) {
+                        throw e
+                    } else {
+                        Timber.e(e)
+                        reference.get()?.onUnhandledError(e)
+                        init = false
+                        delay(REFRESH_TIME)
+                        continue
+                    }
+                }
+                reference.get()?.onReceivedTypes(responseTypes)
+                val responsePlatforms = try {
+                    server.getPlatforms(header, day).data
+                } catch (e: Throwable) {
+                    val platforms = db.platformDao().getAll()
+                    if (e is UnknownHostException && platforms.isNotEmpty()) {
+                        platforms
+                    } else if (e is CancellationException) {
+                        throw e
+                    } else {
+                        Timber.e(e)
+                        reference.get()?.onUnhandledError(e)
+                        init = false
+                        delay(REFRESH_TIME)
+                        continue
+                    }
                 }
                 val mapRect = MapRect()
                 val primary = mutableListOf<PlatformContainers>()
                 val secondary = mutableListOf<PlatformContainers>()
                 val allPlatforms = mutableListOf<Platform>()
                 withContext(Dispatchers.IO) {
-                    allPlatforms.addAll(responsePlatforms.data.filter { it.isValid }
+                    db.typeDao().safeInsert(responseTypes)
+                    allPlatforms.addAll(responsePlatforms.filter { it.isValid }
                         .distinctBy { it.kpId })
                     db.platformDao().safeInsert(allPlatforms)
                     allPlatforms.forEach { item ->
