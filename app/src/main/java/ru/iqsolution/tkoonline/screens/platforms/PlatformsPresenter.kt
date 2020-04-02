@@ -16,7 +16,6 @@ import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.workers.SendWorker
 import timber.log.Timber
 import java.net.UnknownHostException
-import java.util.concurrent.atomic.AtomicBoolean
 
 class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.View>(context),
     PlatformsContract.Presenter {
@@ -25,14 +24,15 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
 
     private var observer: LiveData<WorkInfo>? = null
 
-    private var init = AtomicBoolean(false)
+    @Volatile
+    private var init = false
 
     override fun loadPlatformsTypes(refresh: Boolean) {
         baseJob.cancelChildren()
         val day = preferences.serverDay
         val header = preferences.authHeader.orEmpty()
         launch {
-            var init = !refresh
+            init = !refresh
             while (true) {
                 val responseTypes = try {
                     server.getPhotoTypes(header).data
@@ -44,19 +44,13 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                         if (photoTypes.isNotEmpty()) {
                             photoTypes
                         } else {
-                            Timber.e(e)
-                            reference.get()?.onUnhandledError(e)
-                            init = false
-                            delay(REFRESH_TIME)
+                            delay(e)
                             continue
                         }
                     } else if (e is CancellationException) {
                         throw e
                     } else {
-                        Timber.e(e)
-                        reference.get()?.onUnhandledError(e)
-                        init = false
-                        delay(REFRESH_TIME)
+                        delay(e)
                         continue
                     }
                 }
@@ -71,19 +65,13 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                         if (platforms.isNotEmpty()) {
                             platforms
                         } else {
-                            Timber.e(e)
-                            reference.get()?.onUnhandledError(e)
-                            init = false
-                            delay(REFRESH_TIME)
+                            delay(e)
                             continue
                         }
                     } else if (e is CancellationException) {
                         throw e
                     } else {
-                        Timber.e(e)
-                        reference.get()?.onUnhandledError(e)
-                        init = false
-                        delay(REFRESH_TIME)
+                        delay(e)
                         continue
                     }
                 }
@@ -141,24 +129,9 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                     }
                     onReceivedPlatforms(primary, secondary)
                 }
-                delay(false) {
-                    launchSendWork()
-                }
+                delay()
+                reference.get()?.launchSendWork()
             }
-        }
-    }
-
-    private suspend inline fun delay(
-        before: Boolean = true,
-        block: PlatformsContract.View.() -> Unit
-    ) {
-        if (before) {
-            reference.get()?.block()
-        }
-        init.set(false)
-        delay(REFRESH_TIME)
-        if (!before) {
-            reference.get()?.block()
         }
     }
 
@@ -198,13 +171,17 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
         }
     }
 
+    private suspend fun delay(e: Throwable? = null) {
+        if (e != null) {
+            Timber.e(e)
+            reference.get()?.onUnhandledError(e)
+        }
+        init = false
+        delay(5 * 60_000L)
+    }
+
     override fun detachView() {
         observer?.removeObserver(this)
         super.detachView()
-    }
-
-    companion object {
-
-        private const val REFRESH_TIME = 5 * 60_000L
     }
 }
