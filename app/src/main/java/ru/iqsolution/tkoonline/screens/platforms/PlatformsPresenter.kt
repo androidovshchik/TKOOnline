@@ -16,6 +16,7 @@ import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.workers.SendWorker
 import timber.log.Timber
 import java.net.UnknownHostException
+import java.util.concurrent.atomic.AtomicBoolean
 
 class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.View>(context),
     PlatformsContract.Presenter {
@@ -23,6 +24,8 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
     private val server: Server by instance()
 
     private var observer: LiveData<WorkInfo>? = null
+
+    private var init = AtomicBoolean(false)
 
     override fun loadPlatformsTypes(refresh: Boolean) {
         baseJob.cancelChildren()
@@ -34,9 +37,19 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 val responseTypes = try {
                     server.getPhotoTypes(header).data
                 } catch (e: Throwable) {
-                    val photoTypes = db.typeDao().getAll()
-                    if (e is UnknownHostException && photoTypes.isNotEmpty()) {
-                        photoTypes
+                    if (e is UnknownHostException) {
+                        val photoTypes = withContext(Dispatchers.IO) {
+                            db.typeDao().getAll()
+                        }
+                        if (photoTypes.isNotEmpty()) {
+                            photoTypes
+                        } else {
+                            Timber.e(e)
+                            reference.get()?.onUnhandledError(e)
+                            init = false
+                            delay(REFRESH_TIME)
+                            continue
+                        }
                     } else if (e is CancellationException) {
                         throw e
                     } else {
@@ -51,9 +64,19 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 val responsePlatforms = try {
                     server.getPlatforms(header, day).data
                 } catch (e: Throwable) {
-                    val platforms = db.platformDao().getAll()
-                    if (e is UnknownHostException && platforms.isNotEmpty()) {
-                        platforms
+                    if (e is UnknownHostException) {
+                        val platforms = withContext(Dispatchers.IO) {
+                            db.platformDao().getAll()
+                        }
+                        if (platforms.isNotEmpty()) {
+                            platforms
+                        } else {
+                            Timber.e(e)
+                            reference.get()?.onUnhandledError(e)
+                            init = false
+                            delay(REFRESH_TIME)
+                            continue
+                        }
                     } else if (e is CancellationException) {
                         throw e
                     } else {
@@ -118,10 +141,24 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                     }
                     onReceivedPlatforms(primary, secondary)
                 }
-                init = false
-                delay(REFRESH_TIME)
-                reference.get()?.launchSendWork()
+                delay(false) {
+                    launchSendWork()
+                }
             }
+        }
+    }
+
+    private suspend inline fun delay(
+        before: Boolean = true,
+        block: PlatformsContract.View.() -> Unit
+    ) {
+        if (before) {
+            reference.get()?.block()
+        }
+        init.set(false)
+        delay(REFRESH_TIME)
+        if (!before) {
+            reference.get()?.block()
         }
     }
 
