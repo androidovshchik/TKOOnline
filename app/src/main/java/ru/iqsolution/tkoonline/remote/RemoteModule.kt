@@ -43,9 +43,12 @@ val remoteModule = Kodein.Module("remote") {
             readTimeout(30, TimeUnit.SECONDS)
             writeTimeout(30, TimeUnit.SECONDS)
             addInterceptor(AppInterceptor(instance()))
-            addInterceptor(HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { message ->
-                Timber.tag("NETWORK")
-                    .d(message)
+            addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
+
+                override fun log(message: String) {
+                    Timber.tag("NETWORK")
+                        .d(message)
+                }
             }).apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })

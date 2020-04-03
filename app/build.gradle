@@ -107,6 +107,7 @@ dependencies {
     implementation "org.kodein.di:kodein-di-framework-android-core:${Versions.kodein}"
     implementation "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
+    implementation "com.squareup.okhttp3:okhttp:4.4.1"
     implementation 'com.budiyev.android:code-scanner:2.1.0'
     implementation 'com.rabbitmq:amqp-client:5.8.0'
     implementation 'net.danlew:android.joda:2.10.3'
