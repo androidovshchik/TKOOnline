@@ -12,12 +12,12 @@
   },
   "devDependencies": {
     "node-sass": "^4.13.1",
-    "terser-webpack-plugin": "^2.3.4",
-    "ts-loader": "^6.2.1",
-    "typescript": "^3.7.5",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10",
+    "terser-webpack-plugin": "^2.3.5",
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3",
-    "webpack-obfuscator": "^0.24.6"
+    "webpack-obfuscator": "^0.27.2"
   }
 }
