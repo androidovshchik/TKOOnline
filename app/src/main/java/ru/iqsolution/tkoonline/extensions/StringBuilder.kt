@@ -1,3 +1,10 @@
 package ru.iqsolution.tkoonline.extensions
 
-inline fun StringBuilder.appendN(value: CharSequence?) = append(value).append('\n')
+import org.apache.commons.text.StringEscapeUtils
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun StringBuilder.appendN(value: String?) {
+    if (value != null) {
+        append(StringEscapeUtils.unescapeJava(value)).append('\n')
+    }
+}

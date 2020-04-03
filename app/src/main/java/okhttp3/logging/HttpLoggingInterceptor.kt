@@ -210,6 +210,9 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
             }
         }
 
+        logger.log(builder.toString())
+        builder.clear()
+
         val startNs = System.nanoTime()
         val response: Response
         try {
