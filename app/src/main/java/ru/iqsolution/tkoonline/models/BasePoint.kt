@@ -64,7 +64,6 @@ class BasePoint(
      * @return distance traveled in meters
      */
     fun updateLocation(location: SimpleLocation): Float {
-        Timber.i("----- $state")
         val output = FloatArray(2)
         // getting only distance
         Location.distanceBetween(
@@ -111,12 +110,17 @@ class BasePoint(
                 } else 0
             )
         }
-        Timber.i("Base dir $baseDirection current dir $currentDirection")
-        Timber.i("Distance $distance")
-        Timber.i("Space $space")
-        Timber.i("Millis $millis")
-        Timber.i(speedMap.toString())
         lastLocation = location
+        Timber.i(
+            """
+            $state
+            Base dir $baseDirection current dir $currentDirection
+            Distance $distance
+            Space $space
+            Millis $millis
+            $speedMap
+        """.trimIndent()
+        )
         return space
     }
 

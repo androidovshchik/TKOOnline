@@ -96,7 +96,7 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
                 .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                 .setTargetRotation(Surface.ROTATION_0)
                 .build()
-            preview.setSurfaceProvider(camera_preview.previewSurfaceProvider)
+            preview.setSurfaceProvider(camera_preview.createSurfaceProvider(null))
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .setTargetAspectRatio(AspectRatio.RATIO_16_9)
@@ -164,10 +164,10 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
         finish()
     }
 
-    override fun onError(exception: ImageCaptureException) {
+    override fun onError(e: ImageCaptureException) {
         setTouchable(true)
-        Timber.e(exception)
-        showError(exception)
+        Timber.e(e)
+        showError(e)
     }
 
     override fun onBackPressed() {

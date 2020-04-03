@@ -62,12 +62,10 @@ class StatusManager(context: Context, listener: StatusListener) {
     private val callback = object : ConnectivityManager.NetworkCallback() {
 
         override fun onAvailable(network: Network) {
-            // Timber.d("Network on available")
             reference.get()?.onNetworkChanged(connectivity.isConnected)
         }
 
         override fun onLost(network: Network) {
-            Timber.d("Network on lost")
             reference.get()?.onNetworkChanged(connectivity.isConnected)
         }
     }
@@ -111,7 +109,6 @@ class StatusManager(context: Context, listener: StatusListener) {
                 Intent.ACTION_BATTERY_CHANGED, Intent.ACTION_BATTERY_LOW, Intent.ACTION_BATTERY_OKAY -> {
                     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
                     val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-                    // Timber.d("On battery changes: status $status, level $level")
                     reference.get()?.onBatteryChanged(status, level)
                 }
             }
