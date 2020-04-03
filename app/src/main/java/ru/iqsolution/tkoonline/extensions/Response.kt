@@ -17,7 +17,6 @@ private fun parseErrors(body: String?): List<ServerError> {
     if (body.isNullOrBlank()) {
         return listOf()
     }
-    Timber.d(body)
     try {
         val response = JSONObject(body)
         if (response.getString("status") == "error") {
