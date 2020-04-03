@@ -187,7 +187,6 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
             } else if (requestBody.isOneShot()) {
                 builder.appendN("--> END ${request.method} (one-shot body omitted)")
             } else {
-                builder.appendN("")
                 if (request.url.toString().endsWith("container-sites/photos")) {
                     builder.appendN(
                         "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
@@ -216,7 +215,7 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
         try {
             response = chain.proceed(request)
         } catch (e: Exception) {
-            builder.appendN("<-- HTTP FAILED: $e")
+            builder.append("<-- HTTP FAILED: $e")
             logger.log(builder.toString())
             throw e
         }
@@ -258,14 +257,12 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                 val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
 
                 if (!buffer.isProbablyUtf8()) {
-                    builder.appendN("")
-                    builder.appendN("<-- END HTTP (binary ${buffer.size}-byte body omitted)")
+                    builder.append("<-- END HTTP (binary ${buffer.size}-byte body omitted)")
                     logger.log(builder.toString())
                     return response
                 }
 
                 if (contentLength != 0L) {
-                    builder.appendN("")
                     builder.appendN(buffer.clone().readString(charset))
                 }
 
