@@ -199,21 +199,8 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
             } else if (requestBody.isOneShot()) {
                 logger.log("--> END ${request.method} (one-shot body omitted)")
             } else {
-                val buffer = Buffer()
-                requestBody.writeTo(buffer)
-
-                val contentType = requestBody.contentType()
-                val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
-
                 logger.log("")
-                if (buffer.isProbablyUtf8()) {
-                    logger.log(buffer.readString(charset))
-                    logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
-                } else {
-                    logger.log(
-                        "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
-                    )
-                }
+                logger.log("--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)")
             }
         }
 
@@ -285,13 +272,33 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
     }
 
     private fun logHeader(headers: Headers, i: Int) {
-        val value = if (headers.name(i) in headersToRedact) "██" else headers.value(i)
-        logger.log(headers.name(i) + ": " + value)
+        if (headers.name(i) !in SKIP_HEADERS) {
+            val value = if (headers.name(i) in headersToRedact) "██" else headers.value(i)
+            logger.log(headers.name(i) + ": " + value)
+        }
     }
 
     private fun bodyHasUnknownEncoding(headers: Headers): Boolean {
         val contentEncoding = headers["Content-Encoding"] ?: return false
         return !contentEncoding.equals("identity", ignoreCase = true) &&
-                !contentEncoding.equals("gzip", ignoreCase = true)
+            !contentEncoding.equals("gzip", ignoreCase = true)
+    }
+
+    companion object {
+
+        private val SKIP_HEADERS = arrayOf(
+            // request
+            "Accept",
+            // response
+            "server",
+            "content-type",
+            "set-cookie",
+            "expires",
+            "cache-control",
+            "pragma",
+            // response photo
+            "Content-Type",
+            "Content-Length"
+        )
     }
 }
