@@ -7,6 +7,7 @@ import kotlinx.coroutines.*
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
+import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
@@ -34,20 +35,18 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
         launch {
             init = !refresh
             while (true) {
-                val responseTypes = try {
-                    server.getPhotoTypes(header).data.also {
-                        withContext(Dispatchers.IO) {
-                            db.typeDao().safeInsert(it)
-                        }
+                val photoTypes = mutableListOf<PhotoType>()
+                try {
+                    photoTypes.addAll(server.getPhotoTypes(header).data)
+                    withContext(Dispatchers.IO) {
+                        db.typeDao().safeInsert(photoTypes)
                     }
                 } catch (e: Throwable) {
                     if (e is UnknownHostException) {
-                        val photoTypes = withContext(Dispatchers.IO) {
+                        photoTypes.addAll(withContext(Dispatchers.IO) {
                             db.typeDao().getAll()
-                        }
-                        if (photoTypes.isNotEmpty()) {
-                            photoTypes
-                        } else {
+                        })
+                        if (photoTypes.isEmpty()) {
                             delay(e)
                             continue
                         }
@@ -58,17 +57,21 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                         continue
                     }
                 }
-                reference.get()?.onReceivedTypes(responseTypes)
-                val responsePlatforms = try {
-                    server.getPlatforms(header, day).data
+                reference.get()?.onReceivedTypes(photoTypes)
+                val platforms = mutableListOf<Platform>()
+                try {
+                    platforms.addAll(server.getPlatforms(header, day).data
+                        .filter { it.isValid }
+                        .distinctBy { it.kpId })
+                    withContext(Dispatchers.IO) {
+                        db.platformDao().safeInsert(platforms)
+                    }
                 } catch (e: Throwable) {
                     if (e is UnknownHostException) {
-                        val platforms = withContext(Dispatchers.IO) {
+                        platforms.addAll(withContext(Dispatchers.IO) {
                             db.platformDao().getAll()
-                        }
-                        if (platforms.isNotEmpty()) {
-                            platforms
-                        } else {
+                        })
+                        if (platforms.isEmpty()) {
                             delay(e)
                             continue
                         }
@@ -82,12 +85,8 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 val mapRect = MapRect()
                 val primary = mutableListOf<PlatformContainers>()
                 val secondary = mutableListOf<PlatformContainers>()
-                val allPlatforms = mutableListOf<Platform>()
                 withContext(Dispatchers.IO) {
-                    allPlatforms.addAll(responsePlatforms.filter { it.isValid }
-                        .distinctBy { it.kpId })
-                    db.platformDao().safeInsert(allPlatforms)
-                    allPlatforms.forEach { item ->
+                    platforms.forEach { item ->
                         if (item.linkedKpId != null) {
                             return@forEach
                         }
@@ -100,7 +99,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                             else -> secondary.add(PlatformContainers(item))
                         }
                     }
-                    allPlatforms.forEach { item ->
+                    platforms.forEach { item ->
                         if (item.linkedKpId == null) {
                             return@forEach
                         }
@@ -126,7 +125,7 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 }
                 reference.get()?.apply {
                     if (init) {
-                        if (allPlatforms.isNotEmpty()) {
+                        if (platforms.isNotEmpty()) {
                             changeMapBounds(mapRect)
                         }
                     }
