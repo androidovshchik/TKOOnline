@@ -196,8 +196,14 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                     val contentType = requestBody.contentType()
                     val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
 
-                    logger.log(buffer.readString(charset))
-                    logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
+                    if (buffer.isProbablyUtf8()) {
+                        logger.log(buffer.readString(charset))
+                        logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
+                    } else {
+                        logger.log(
+                            "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
+                        )
+                    }
                 }
             }
         }
