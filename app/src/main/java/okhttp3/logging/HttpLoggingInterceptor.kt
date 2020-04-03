@@ -23,6 +23,7 @@ import okhttp3.internal.http.promisesBody
 import okhttp3.internal.platform.Platform
 import okio.Buffer
 import okio.GzipSource
+import ru.iqsolution.tkoonline.extensions.appendN
 import java.io.IOException
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets.UTF_8
@@ -155,6 +156,8 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
             return chain.proceed(request)
         }
 
+        val builder = StringBuilder()
+
         val logBody = level == Level.BODY
         val logHeaders = logBody || level == Level.HEADERS
 
@@ -166,27 +169,27 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
         if (!logHeaders && requestBody != null) {
             requestStartMessage += " (${requestBody.contentLength()}-byte body)"
         }
-        logger.log(requestStartMessage)
+        builder.appendN(requestStartMessage)
 
         if (logHeaders) {
             val headers = request.headers
 
             for (i in 0 until headers.size) {
-                logHeader(headers, i)
+                builder.appendN(logHeader(headers, i) ?: continue)
             }
 
             if (!logBody || requestBody == null) {
-                logger.log("--> END ${request.method}")
+                builder.appendN("--> END ${request.method}")
             } else if (bodyHasUnknownEncoding(request.headers)) {
-                logger.log("--> END ${request.method} (encoded body omitted)")
+                builder.appendN("--> END ${request.method} (encoded body omitted)")
             } else if (requestBody.isDuplex()) {
-                logger.log("--> END ${request.method} (duplex request body omitted)")
+                builder.appendN("--> END ${request.method} (duplex request body omitted)")
             } else if (requestBody.isOneShot()) {
-                logger.log("--> END ${request.method} (one-shot body omitted)")
+                builder.appendN("--> END ${request.method} (one-shot body omitted)")
             } else {
-                logger.log("")
+                builder.appendN("")
                 if (request.url.toString().endsWith("container-sites/photos")) {
-                    logger.log(
+                    builder.appendN(
                         "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
                     )
                 } else {
@@ -197,10 +200,10 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                     val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
 
                     if (buffer.isProbablyUtf8()) {
-                        logger.log(buffer.readString(charset))
-                        logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
+                        builder.appendN(buffer.readString(charset))
+                        builder.appendN("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
                     } else {
-                        logger.log(
+                        builder.appendN(
                             "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
                         )
                     }
@@ -213,7 +216,8 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
         try {
             response = chain.proceed(request)
         } catch (e: Exception) {
-            logger.log("<-- HTTP FAILED: $e")
+            builder.appendN("<-- HTTP FAILED: $e")
+            logger.log(builder.toString())
             throw e
         }
 
@@ -222,20 +226,20 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
         val responseBody = response.body!!
         val contentLength = responseBody.contentLength()
         val bodySize = if (contentLength != -1L) "$contentLength-byte" else "unknown-length"
-        logger.log(
+        builder.appendN(
             "<-- ${response.code}${if (response.message.isEmpty()) "" else ' ' + response.message} ${response.request.url} (${tookMs}ms${if (!logHeaders) ", $bodySize body" else ""})"
         )
 
         if (logHeaders) {
             val headers = response.headers
             for (i in 0 until headers.size) {
-                logHeader(headers, i)
+                builder.appendN(logHeader(headers, i) ?: continue)
             }
 
             if (!logBody || !response.promisesBody()) {
-                logger.log("<-- END HTTP")
+                builder.appendN("<-- END HTTP")
             } else if (bodyHasUnknownEncoding(response.headers)) {
-                logger.log("<-- END HTTP (encoded body omitted)")
+                builder.appendN("<-- END HTTP (encoded body omitted)")
             } else {
                 val source = responseBody.source()
                 source.request(Long.MAX_VALUE) // Buffer the entire body.
@@ -254,32 +258,35 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                 val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
 
                 if (!buffer.isProbablyUtf8()) {
-                    logger.log("")
-                    logger.log("<-- END HTTP (binary ${buffer.size}-byte body omitted)")
+                    builder.appendN("")
+                    builder.appendN("<-- END HTTP (binary ${buffer.size}-byte body omitted)")
+                    logger.log(builder.toString())
                     return response
                 }
 
                 if (contentLength != 0L) {
-                    logger.log("")
-                    logger.log(buffer.clone().readString(charset))
+                    builder.appendN("")
+                    builder.appendN(buffer.clone().readString(charset))
                 }
 
                 if (gzippedLength != null) {
-                    logger.log("<-- END HTTP (${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
+                    builder.appendN("<-- END HTTP (${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
                 } else {
-                    logger.log("<-- END HTTP (${buffer.size}-byte body)")
+                    builder.appendN("<-- END HTTP (${buffer.size}-byte body)")
                 }
             }
         }
 
+        logger.log(builder.toString())
         return response
     }
 
-    private fun logHeader(headers: Headers, i: Int) {
+    private fun logHeader(headers: Headers, i: Int): String? {
         if (headers.name(i) !in SKIP_HEADERS) {
             val value = if (headers.name(i) in headersToRedact) "██" else headers.value(i)
-            logger.log(headers.name(i) + ": " + value)
+            return "${headers.name(i)}: $value"
         }
+        return null
     }
 
     private fun bodyHasUnknownEncoding(headers: Headers): Boolean {
