@@ -107,8 +107,8 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
                 check(it != null) { "expiresWhen == null" }
                 check(
                     DateTime.parse(it, PATTERN_DATETIME_ZONE)
-                        .withZone(now.zone).millis >= now.millis
-                ) { "expiresWhen < now" }
+                        .withZone(now.zone).millis > now.millis
+                ) { "expiresWhen <= now" }
             }
             check(serverTime != null) { "serverTime == null" }
             check(serverDay == now.toString(PATTERN_DATE)) { "serverDay != today" }

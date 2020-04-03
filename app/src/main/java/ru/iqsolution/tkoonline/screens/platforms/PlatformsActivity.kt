@@ -32,6 +32,7 @@ import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 import ru.iqsolution.tkoonline.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.workers.SendWorker
+import timber.log.Timber
 import java.util.*
 
 class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), PlatformsContract.View {
@@ -90,6 +91,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             }
         }
         presenter.loadPlatformsTypes(false)
+        Timber.i("App version: ${BuildConfig.VERSION_CODE}")
     }
 
     override fun onStart() {
