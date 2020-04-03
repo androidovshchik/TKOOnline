@@ -85,44 +85,42 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 val mapRect = MapRect()
                 val primary = mutableListOf<PlatformContainers>()
                 val secondary = mutableListOf<PlatformContainers>()
-                withContext(Dispatchers.IO) {
-                    platforms.forEach { item ->
-                        if (item.linkedKpId != null) {
-                            return@forEach
-                        }
-                        if (init) {
-                            mapRect.update(item)
-                        }
-                        when (item.status) {
-                            PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id ->
-                                primary.add(PlatformContainers(item))
-                            else -> secondary.add(PlatformContainers(item))
-                        }
+                platforms.forEach { item ->
+                    if (item.linkedKpId != null) {
+                        return@forEach
                     }
-                    platforms.forEach { item ->
-                        if (item.linkedKpId == null) {
-                            return@forEach
-                        }
-                        val platform =
-                            primary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
-                                ?: secondary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
-                        if (platform != null) {
-                            platform.linkedIds.add(item.kpId)
-                            if (platform.changeStatus(item.status)) {
-                                // check if this container is primary before adding to secondary
-                                if (primary.remove(platform)) {
-                                    secondary.add(platform)
-                                }
-                            }
-                        } else when (item.status) {
-                            PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id ->
-                                primary.add(PlatformContainers(item))
-                            else -> secondary.add(PlatformContainers(item))
-                        }
+                    if (init) {
+                        mapRect.update(item)
                     }
-                    // top 31 -> 10 bottom
-                    secondary.sortByDescending { it.status }
+                    when (item.status) {
+                        PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id ->
+                            primary.add(PlatformContainers(item))
+                        else -> secondary.add(PlatformContainers(item))
+                    }
                 }
+                platforms.forEach { item ->
+                    if (item.linkedKpId == null) {
+                        return@forEach
+                    }
+                    val platform =
+                        primary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
+                            ?: secondary.firstOrNull { it.kpId == item.linkedKpId || it.linkedKpId == item.linkedKpId }
+                    if (platform != null) {
+                        platform.linkedIds.add(item.kpId)
+                        if (platform.changeStatus(item.status)) {
+                            // check if this container is primary before adding to secondary
+                            if (primary.remove(platform)) {
+                                secondary.add(platform)
+                            }
+                        }
+                    } else when (item.status) {
+                        PlatformStatus.PENDING.id, PlatformStatus.NOT_VISITED.id ->
+                            primary.add(PlatformContainers(item))
+                        else -> secondary.add(PlatformContainers(item))
+                    }
+                }
+                // top 31 -> 10 bottom
+                secondary.sortByDescending { it.status }
                 reference.get()?.apply {
                     if (init) {
                         if (platforms.isNotEmpty()) {
