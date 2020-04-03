@@ -100,23 +100,26 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
 
     val isLoggedIn: Boolean
         get() = try {
-            check(!invalidAuth)
-            check(accessToken != null)
+            check(!invalidAuth) { "invalidAuth" }
+            check(accessToken != null) { "accessToken == null" }
             val now = DateTime.now()
             expiresWhen.let {
-                check(it != null)
-                check(DateTime.parse(it, PATTERN_DATETIME_ZONE).withZone(now.zone).millis >= now.millis)
+                check(it != null) { "expiresWhen == null" }
+                check(
+                    DateTime.parse(it, PATTERN_DATETIME_ZONE)
+                        .withZone(now.zone).millis >= now.millis
+                ) { "expiresWhen < now" }
             }
-            check(serverTime != null)
-            check(serverDay == now.toString(PATTERN_DATE))
-            //check(elapsedTime > 0L)
-            check(vehicleNumber != null)
-            check(queName != null)
-            check(carId > 0)
-            check(tokenId > 0L)
+            check(serverTime != null) { "serverTime == null" }
+            check(serverDay == now.toString(PATTERN_DATE)) { "serverDay != today" }
+            // check(elapsedTime > 0L) { "elapsedTime <= 0L" }
+            check(vehicleNumber != null) { "vehicleNumber == null" }
+            check(queName != null) { "queName == null" }
+            check(carId > 0) { "carId <= 0" }
+            check(tokenId > 0L) { "tokenId <= 0L" }
             true
         } catch (e: Throwable) {
-            Timber.e(e)
+            Timber.e("isLoggedIn: ${e.message}")
             false
         }
 
