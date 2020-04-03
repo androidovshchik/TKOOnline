@@ -199,7 +199,7 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                     val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
 
                     if (buffer.isProbablyUtf8()) {
-                        builder.appendN(buffer.readString(charset))
+                        builder.appendN(buffer.readString(charset), true)
                         builder.appendN("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
                     } else {
                         builder.appendN(
@@ -266,7 +266,7 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                 }
 
                 if (contentLength != 0L) {
-                    builder.appendN(buffer.clone().readString(charset))
+                    builder.appendN(buffer.clone().readString(charset), true)
                 }
 
                 if (gzippedLength != null) {
