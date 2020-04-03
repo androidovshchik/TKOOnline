@@ -171,21 +171,6 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
         if (logHeaders) {
             val headers = request.headers
 
-            if (requestBody != null) {
-                // Request body headers are only present when installed as a network interceptor. When not
-                // already present, force them to be included (if available) so their values are known.
-                requestBody.contentType()?.let {
-                    if (headers["Content-Type"] == null) {
-                        logger.log("Content-Type: $it")
-                    }
-                }
-                if (requestBody.contentLength() != -1L) {
-                    if (headers["Content-Length"] == null) {
-                        logger.log("Content-Length: ${requestBody.contentLength()}")
-                    }
-                }
-            }
-
             for (i in 0 until headers.size) {
                 logHeader(headers, i)
             }
@@ -200,7 +185,20 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                 logger.log("--> END ${request.method} (one-shot body omitted)")
             } else {
                 logger.log("")
-                logger.log("--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)")
+                if (request.url.toString().endsWith("container-sites/photos")) {
+                    logger.log(
+                        "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
+                    )
+                } else {
+                    val buffer = Buffer()
+                    requestBody.writeTo(buffer)
+
+                    val contentType = requestBody.contentType()
+                    val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
+
+                    logger.log(buffer.readString(charset))
+                    logger.log("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
+                }
             }
         }
 
@@ -286,19 +284,20 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
 
     companion object {
 
+        @Suppress("SpellCheckingInspection")
         private val SKIP_HEADERS = arrayOf(
             // request
             "Accept",
             // response
+            "Content-Type",
+            "Content-Length",
             "server",
             "content-type",
             "set-cookie",
             "expires",
             "cache-control",
             "pragma",
-            // response photo
-            "Content-Type",
-            "Content-Length"
+            "etag"
         )
     }
 }
