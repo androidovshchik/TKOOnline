@@ -96,6 +96,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     var enableLight by booleanPref(false, "0x15")
 
     // on exit unexpectedly
+    // Logout on background thread
     var invalidAuth by booleanPref(false, "0x16")
 
     val isLoggedIn: Boolean
