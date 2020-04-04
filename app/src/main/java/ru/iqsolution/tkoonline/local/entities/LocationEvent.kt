@@ -3,8 +3,7 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
-import ru.iqsolution.tkoonline.extensions.isFuture
-import ru.iqsolution.tkoonline.extensions.toInt
+import ru.iqsolution.tkoonline.extensions.isEarlier
 import ru.iqsolution.tkoonline.models.BasePoint
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -58,7 +57,7 @@ class LocationEvent() : SendEvent {
     override var sent = false
 
     val isValid: Boolean
-        get() = data.whenTime.isFuture(2, TimeUnit.DAYS)
+        get() = !data.whenTime.isEarlier(2, TimeUnit.DAYS)
 
     constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Float, wait: Boolean = false) : this() {
         tokenId = token
@@ -122,7 +121,7 @@ class LocationEvent() : SendEvent {
                 if (field == 0) {
                     return 0
                 }
-                return locationTime.isFuture(5, TimeUnit.SECONDS).toInt()
+                return if (locationTime.isEarlier(5, TimeUnit.SECONDS)) 0 else 1
             }
 
         @ColumnInfo(name = "le_satellites")

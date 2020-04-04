@@ -17,12 +17,22 @@ val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
 val PATTERN_TIME_MILLIS: DateTimeFormatter = DateTimeFormat.forPattern("HH.mm.ss.SSS")
 
-fun DateTime.isFuture(duration: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {
+fun DateTime.isLater(plus: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {
     val now = DateTime.now()
-    return now.isBefore(withZone(now.zone).plus(unit.toMillis(duration)))
+    val duration = unit.toMillis(plus)
+    return if (duration > 0L) {
+        now.plus(duration).isBefore(withZone(now.zone))
+    } else {
+        now.isBefore(withZone(now.zone))
+    }
 }
 
-fun DateTime.isPast(duration: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {
+fun DateTime.isEarlier(minus: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {
     val now = DateTime.now()
-    return withZone(now.zone).isBefore(now.minus(unit.toMillis(duration)))
+    val duration = unit.toMillis(minus)
+    return if (duration > 0L) {
+        now.minus(duration).isAfter(withZone(now.zone))
+    } else {
+        now.isAfter(withZone(now.zone))
+    }
 }
