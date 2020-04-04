@@ -2,9 +2,10 @@ package ru.iqsolution.tkoonline.models
 
 import android.location.Location
 import android.util.SparseIntArray
-import org.joda.time.DateTime
 import org.joda.time.Duration
+import ru.iqsolution.tkoonline.extensions.isEarlier
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -158,8 +159,7 @@ class BasePoint(
                 }
             }
             TelemetryState.STOPPING -> {
-                val now = DateTime.now()
-                if (now.millis - locationTime.withZone(now.zone).millis >= config.parkingTime) {
+                if (locationTime.isEarlier(config.parkingTime, TimeUnit.MILLISECONDS)) {
                     return TelemetryState.PARKING
                 }
             }

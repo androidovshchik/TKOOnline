@@ -5,8 +5,8 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import org.joda.time.DateTime
 import org.kodein.di.generic.instance
+import ru.iqsolution.tkoonline.extensions.isEarlier
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
@@ -19,11 +19,10 @@ class DeleteWorker(context: Context, params: WorkerParameters) : BaseWorker(cont
 
     override fun doWork(): Result {
         fileManager.deleteOldFiles()
-        val now = DateTime.now()
         val allTokens = db.tokenDao().getAll()
         val expiredTokens = mutableListOf<AccessToken>()
         for (token in allTokens) {
-            if (token.expires.withZone(now.zone).isBefore(now)) {
+            if (token.expires.isEarlier()) {
                 expiredTokens.add(token)
             } else {
                 break

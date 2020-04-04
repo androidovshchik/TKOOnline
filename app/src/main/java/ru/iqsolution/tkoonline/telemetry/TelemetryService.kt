@@ -176,14 +176,12 @@ class TelemetryService : BaseService(), TelemetryListener {
                     var eventDelay = 0L
                     when (it.state) {
                         TelemetryState.MOVING, TelemetryState.STOPPING -> {
-                            val now = DateTime.now()
-                            if (now.millis - lastTime.withZone(now.zone).millis >= config.movingDelay) {
+                            if (lastTime.isEarlier(config.movingDelay, TimeUnit.MILLISECONDS)) {
                                 eventDelay = config.movingDelay
                             }
                         }
                         TelemetryState.PARKING -> {
-                            val now = DateTime.now()
-                            if (now.millis - lastTime.withZone(now.zone).millis >= config.parkingDelay) {
+                            if (lastTime.isEarlier(config.parkingDelay, TimeUnit.MILLISECONDS)) {
                                 eventDelay = config.parkingDelay
                             }
                         }
@@ -215,7 +213,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                 val pswd = it.token.token
                 try {
                     factory.apply {
-                        if (connection?.isOpen == false || channel?.isOpen == false || username != user || password != pswd) {
+                        if (connection?.isOpen != true || channel?.isOpen != true || username != user || password != pswd) {
                             abortConnection()
                             username = user
                             password = pswd
@@ -226,14 +224,9 @@ class TelemetryService : BaseService(), TelemetryListener {
                     }
                     val json = gsonMin.toJson(it)
                     Timber.d("LocationEvent: $json")
-                    channel?.apply {
+                    channel!!.apply {
                         txSelect()
-                        channel?.basicPublish(
-                            "cars",
-                            it.token.carId.toString(),
-                            null,
-                            json.toByteArray(Charsets.UTF_8)
-                        )
+                        basicPublish("cars", user, null, json.toByteArray(Charsets.UTF_8))
                         txCommit()
                     }
                     db.locationDao().markAsSent(it.location.id ?: 0L)
