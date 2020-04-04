@@ -71,7 +71,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                                     }
                                     return success(output)
                                 }
-                                db.cleanDao().delete(event.clean)
+                                db.cleanDao().markAsSent(event.clean.id ?: return@forEach)
                             } else {
                                 hasErrors = true
                             }
@@ -114,7 +114,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                                     }
                                     return success(output)
                                 }
-                                db.photoDao().delete(event.photo)
+                                db.photoDao().markAsSent(event.photo.id ?: return@forEach)
                             } else {
                                 hasErrors = true
                             }

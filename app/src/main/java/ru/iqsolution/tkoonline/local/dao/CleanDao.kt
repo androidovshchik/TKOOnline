@@ -1,6 +1,9 @@
 package ru.iqsolution.tkoonline.local.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Transaction
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.CleanEventToken
@@ -92,7 +95,4 @@ abstract class CleanDao {
     """
     )
     abstract fun markAsSent(id: Long)
-
-    @Delete
-    abstract fun delete(item: CleanEvent)
 }
