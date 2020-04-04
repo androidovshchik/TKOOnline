@@ -68,7 +68,7 @@ interface Server {
         @Part("cs_id") _kpId: RequestBody? = kpId?.toString()?.toRequestBody(TEXT_TYPE),
         @Part("type") _type: RequestBody = type.toString().toRequestBody(TEXT_TYPE),
         @Part("time") _time: RequestBody = time.toRequestBody(TEXT_TYPE),
-        @Part("latitude") _lat: RequestBody = lon.toString().toRequestBody(TEXT_TYPE),
+        @Part("latitude") _lat: RequestBody = lat.toString().toRequestBody(TEXT_TYPE),
         @Part("longitude") _lon: RequestBody = lon.toString().toRequestBody(TEXT_TYPE)
     ): Call<ResponsePhoto>
 
