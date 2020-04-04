@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.toInt
 import ru.iqsolution.tkoonline.models.BasePoint
 import kotlin.math.roundToInt
 
@@ -57,10 +58,8 @@ class LocationEvent() : SendEvent {
     val isValid: Boolean
         get() {
             val now = DateTime.now()
-            if (now.millis - data.whenTime.withZone(now.zone).millis <= LIFE_TIME) {
-                return true
-            }
-            return false
+            val uptime = data.whenTime.withZone(now.zone).plusDays(2)
+            return now.isBefore(uptime)
         }
 
     constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Float, wait: Boolean = false) : this() {
@@ -126,10 +125,8 @@ class LocationEvent() : SendEvent {
                     return 0
                 }
                 val now = DateTime.now()
-                if (now.millis - locationTime.withZone(now.zone).millis <= VALID_TIME) {
-                    return 1
-                }
-                return 0
+                val uptime = locationTime.withZone(now.zone).plusSeconds(5)
+                return now.isBefore(uptime).toInt()
             }
 
         @ColumnInfo(name = "le_satellites")
@@ -150,12 +147,5 @@ class LocationEvent() : SendEvent {
         @ColumnInfo(name = "le_mileage")
         @SerializedName("race")
         var mileage = 0
-    }
-
-    companion object {
-
-        private const val VALID_TIME = 5000L
-
-        private const val LIFE_TIME = 48 * 60 * 60 * 1000L
     }
 }

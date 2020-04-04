@@ -124,8 +124,8 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
     private suspend fun makeLogout() {
         preferences.expiresWhen?.let {
             val now = DateTime.now()
-            val maxTime = DateTime.parse(it, PATTERN_DATETIME_ZONE).withZone(now.zone).plusDays(3)
-            if (maxTime.millis > now.millis) {
+            val uptime = DateTime.parse(it, PATTERN_DATETIME_ZONE).withZone(now.zone).plusDays(3)
+            if (now.isBefore(uptime)) {
                 val header = preferences.authHeader
                 if (header != null) {
                     server.logout(header).awaitResponse()
