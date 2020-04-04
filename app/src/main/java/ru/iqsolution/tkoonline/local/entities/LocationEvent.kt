@@ -3,8 +3,10 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.isFuture
 import ru.iqsolution.tkoonline.extensions.toInt
 import ru.iqsolution.tkoonline.models.BasePoint
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 @Entity(
@@ -56,11 +58,7 @@ class LocationEvent() : SendEvent {
     override var sent = false
 
     val isValid: Boolean
-        get() {
-            val now = DateTime.now()
-            val uptime = data.whenTime.withZone(now.zone).plusDays(2)
-            return now.isBefore(uptime)
-        }
+        get() = data.whenTime.isFuture(2, TimeUnit.DAYS)
 
     constructor(basePoint: BasePoint, token: Long, pckg: Int, distance: Float, wait: Boolean = false) : this() {
         tokenId = token
@@ -124,9 +122,7 @@ class LocationEvent() : SendEvent {
                 if (field == 0) {
                     return 0
                 }
-                val now = DateTime.now()
-                val uptime = locationTime.withZone(now.zone).plusSeconds(5)
-                return now.isBefore(uptime).toInt()
+                return locationTime.isFuture(5, TimeUnit.SECONDS).toInt()
             }
 
         @ColumnInfo(name = "le_satellites")
