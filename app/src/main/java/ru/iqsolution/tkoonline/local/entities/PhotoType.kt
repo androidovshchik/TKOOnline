@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import ru.iqsolution.tkoonline.extensions.toInt
 import java.io.Serializable
 
 @Entity(
@@ -44,7 +45,7 @@ class PhotoType : Serializable {
             it.id = id
             it.description = description
             it.shortName = shortName
-            it.error = if (isError) 1 else 0
+            it.error = isError.toInt()
         }
 
         companion object {

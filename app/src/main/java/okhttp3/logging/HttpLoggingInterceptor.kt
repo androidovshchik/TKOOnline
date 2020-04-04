@@ -24,6 +24,7 @@ import okhttp3.internal.platform.Platform
 import okio.Buffer
 import okio.GzipSource
 import ru.iqsolution.tkoonline.extensions.appendN
+import ru.iqsolution.tkoonline.extensions.appendUN
 import java.io.IOException
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets.UTF_8
@@ -199,7 +200,7 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                     val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
 
                     if (buffer.isProbablyUtf8()) {
-                        builder.appendN(buffer.readString(charset), true)
+                        builder.appendUN(buffer.readString(charset))
                         builder.appendN("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
                     } else {
                         builder.appendN(
@@ -266,7 +267,7 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                 }
 
                 if (contentLength != 0L) {
-                    builder.appendN(buffer.clone().readString(charset), true)
+                    builder.appendUN(buffer.clone().readString(charset))
                 }
 
                 if (gzippedLength != null) {
