@@ -1,7 +1,6 @@
 package ru.iqsolution.tkoonline.models
 
 import org.joda.time.DateTime
-import ru.iqsolution.tkoonline.extensions.toInt
 import java.io.Serializable
 import kotlin.math.roundToInt
 
@@ -32,7 +31,7 @@ open class SimpleLocation : Serializable, Location<Double> {
      * Не валидные считаются координаты полученные более 5 секунд назад или с погрешностью более 30 метров
      */
     val validity: Int
-        get() = (accuracy <= 30).toInt()
+        get() = if (accuracy <= 30) 1 else 0
 
     constructor(lat: Double, lon: Double, datetime: DateTime) {
         latitude = lat

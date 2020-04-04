@@ -7,7 +7,7 @@ import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATE
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
-import ru.iqsolution.tkoonline.extensions.isFuture
+import ru.iqsolution.tkoonline.extensions.isLater
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
@@ -106,7 +106,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
             check(accessToken != null) { "accessToken == null" }
             expiresWhen.let {
                 check(it != null) { "expiresWhen == null" }
-                check(DateTime.parse(it, PATTERN_DATETIME_ZONE).isFuture()) { "expiresWhen <= now" }
+                check(DateTime.parse(it, PATTERN_DATETIME_ZONE).isLater()) { "expiresWhen <= now" }
             }
             check(serverTime != null) { "serverTime == null" }
             check(serverDay == DateTime.now().toString(PATTERN_DATE)) { "serverDay != today" }
