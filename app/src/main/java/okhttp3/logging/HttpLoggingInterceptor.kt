@@ -188,7 +188,7 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
             } else if (requestBody.isOneShot()) {
                 builder.append("--> END ${request.method} (one-shot body omitted)")
             } else {
-                if (request.url.toString().endsWith("container-sites/photos")) {
+                if (request.url.toString().contains("container-sites/photos")) {
                     builder.append(
                         "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
                     )

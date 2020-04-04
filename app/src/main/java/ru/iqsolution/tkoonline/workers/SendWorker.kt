@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
@@ -93,13 +92,12 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 try {
                     val response = server.sendPhoto(
                         event.token.authHeader,
-                        event.photo.kpId?.toString()?.toRequestBody(TEXT_TYPE),
-                        event.photo.typeId.toString().toRequestBody(TEXT_TYPE),
-                        event.photo.whenTime.toString(PATTERN_DATETIME_ZONE)
-                            .toRequestBody(TEXT_TYPE),
-                        event.photo.latitude.toString().toRequestBody(TEXT_TYPE),
-                        event.photo.longitude.toString().toRequestBody(TEXT_TYPE),
-                        photo
+                        photo,
+                        event.photo.kpId,
+                        event.photo.typeId,
+                        event.photo.whenTime.toString(PATTERN_DATETIME_ZONE),
+                        event.photo.latitude,
+                        event.photo.longitude
                     ).execute()
                     val code = response.code()
                     when {

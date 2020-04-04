@@ -2,8 +2,10 @@
 
 package ru.iqsolution.tkoonline.remote
 
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.http.*
 import ru.iqsolution.tkoonline.local.entities.CleanEventToken
@@ -57,12 +59,17 @@ interface Server {
     @POST("v1/container-sites/photos")
     fun sendPhoto(
         @Header("Authorization") token: String,
-        @Part("cs_id") kpId: RequestBody?,
-        @Part("type") type: RequestBody,
-        @Part("time") time: RequestBody,
-        @Part("latitude") latitude: RequestBody,
-        @Part("longitude") longitude: RequestBody,
-        @Part photo: MultipartBody.Part
+        @Part photo: MultipartBody.Part,
+        @Query("cs_id") kpId: Int?,
+        @Query("type") type: Int,
+        @Query("time") time: String,
+        @Query("latitude") lat: Double,
+        @Query("longitude") lon: Double,
+        @Part("cs_id") _kpId: RequestBody? = kpId?.toString()?.toRequestBody(TEXT_TYPE),
+        @Part("type") _type: RequestBody = type.toString().toRequestBody(TEXT_TYPE),
+        @Part("time") _time: RequestBody = time.toRequestBody(TEXT_TYPE),
+        @Part("latitude") _lat: RequestBody = lon.toString().toRequestBody(TEXT_TYPE),
+        @Part("longitude") _lon: RequestBody = lon.toString().toRequestBody(TEXT_TYPE)
     ): Call<ResponsePhoto>
 
     @Tag("logout")
@@ -74,4 +81,9 @@ interface Server {
     @Tag("version")
     @GET("version.json")
     suspend fun checkVersion(): ResponseVersion
+
+    companion object {
+
+        private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
+    }
 }
