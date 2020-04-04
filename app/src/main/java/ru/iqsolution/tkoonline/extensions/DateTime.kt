@@ -21,3 +21,8 @@ fun DateTime.isFuture(duration: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECOND
     val now = DateTime.now()
     return now.isBefore(withZone(now.zone).plus(unit.toMillis(duration)))
 }
+
+fun DateTime.isPast(duration: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {
+    val now = DateTime.now()
+    return withZone(now.zone).isBefore(now.minus(unit.toMillis(duration)))
+}

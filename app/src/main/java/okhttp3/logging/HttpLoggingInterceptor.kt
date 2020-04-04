@@ -23,8 +23,8 @@ import okhttp3.internal.http.promisesBody
 import okhttp3.internal.platform.Platform
 import okio.Buffer
 import okio.GzipSource
+import org.apache.commons.text.StringEscapeUtils
 import ru.iqsolution.tkoonline.extensions.appendN
-import ru.iqsolution.tkoonline.extensions.appendUN
 import java.io.IOException
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets.UTF_8
@@ -172,7 +172,7 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
         }
         builder.appendN(requestStartMessage)
 
-        if (logHeaders) {
+        if (logHeaders/*is true*/) {
             val headers = request.headers
 
             for (i in 0 until headers.size) {
@@ -180,16 +180,16 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
             }
 
             if (!logBody || requestBody == null) {
-                builder.appendN("--> END ${request.method}")
+                builder.append("--> END ${request.method}")
             } else if (bodyHasUnknownEncoding(request.headers)) {
-                builder.appendN("--> END ${request.method} (encoded body omitted)")
+                builder.append("--> END ${request.method} (encoded body omitted)")
             } else if (requestBody.isDuplex()) {
-                builder.appendN("--> END ${request.method} (duplex request body omitted)")
+                builder.append("--> END ${request.method} (duplex request body omitted)")
             } else if (requestBody.isOneShot()) {
-                builder.appendN("--> END ${request.method} (one-shot body omitted)")
+                builder.append("--> END ${request.method} (one-shot body omitted)")
             } else {
                 if (request.url.toString().endsWith("container-sites/photos")) {
-                    builder.appendN(
+                    builder.append(
                         "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
                     )
                 } else {
@@ -200,10 +200,10 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                     val charset: Charset = contentType?.charset(UTF_8) ?: UTF_8
 
                     if (buffer.isProbablyUtf8()) {
-                        builder.appendUN(buffer.readString(charset))
-                        builder.appendN("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
+                        builder.appendN(StringEscapeUtils.unescapeJava(buffer.readString(charset)))
+                        builder.append("--> END ${request.method} (${requestBody.contentLength()}-byte body)")
                     } else {
-                        builder.appendN(
+                        builder.append(
                             "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
                         )
                     }
@@ -233,16 +233,16 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
             "<-- ${response.code}${if (response.message.isEmpty()) "" else ' ' + response.message} ${response.request.url} (${tookMs}ms${if (!logHeaders) ", $bodySize body" else ""})"
         )
 
-        if (logHeaders) {
+        if (logHeaders/*is true*/) {
             val headers = response.headers
             for (i in 0 until headers.size) {
                 builder.appendN(logHeader(headers, i) ?: continue)
             }
 
             if (!logBody || !response.promisesBody()) {
-                builder.appendN("<-- END HTTP")
+                builder.append("<-- END HTTP")
             } else if (bodyHasUnknownEncoding(response.headers)) {
-                builder.appendN("<-- END HTTP (encoded body omitted)")
+                builder.append("<-- END HTTP (encoded body omitted)")
             } else {
                 val source = responseBody.source()
                 source.request(Long.MAX_VALUE) // Buffer the entire body.
@@ -267,13 +267,17 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                 }
 
                 if (contentLength != 0L) {
-                    builder.appendUN(buffer.clone().readString(charset))
+                    builder.appendN(
+                        StringEscapeUtils.unescapeJava(
+                            buffer.clone().readString(charset)
+                        )
+                    )
                 }
 
                 if (gzippedLength != null) {
-                    builder.appendN("<-- END HTTP (${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
+                    builder.append("<-- END HTTP (${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
                 } else {
-                    builder.appendN("<-- END HTTP (${buffer.size}-byte body)")
+                    builder.append("<-- END HTTP (${buffer.size}-byte body)")
                 }
             }
         }
