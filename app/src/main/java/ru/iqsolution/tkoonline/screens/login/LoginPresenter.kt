@@ -13,6 +13,7 @@ import org.kodein.di.generic.instance
 import retrofit2.awaitResponse
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.isFuture
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
@@ -23,6 +24,7 @@ import ru.iqsolution.tkoonline.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
 import java.net.UnknownHostException
+import java.util.concurrent.TimeUnit
 
 class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(context), LoginContract.Presenter {
 
@@ -91,11 +93,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 packageId = 0
             }
             try {
-                val now = DateTime.now()
-                require(
-                    DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE)
-                        .withZone(now.zone).millis >= now.millis
-                )
+                require(DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE).isFuture())
             } catch (e: Throwable) {
                 try {
                     makeLogout()
@@ -123,9 +121,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
     @Throws(Throwable::class)
     private suspend fun makeLogout() {
         preferences.expiresWhen?.let {
-            val now = DateTime.now()
-            val uptime = DateTime.parse(it, PATTERN_DATETIME_ZONE).withZone(now.zone).plusDays(3)
-            if (now.isBefore(uptime)) {
+            if (DateTime.parse(it, PATTERN_DATETIME_ZONE).isFuture(3, TimeUnit.DAYS)) {
                 val header = preferences.authHeader
                 if (header != null) {
                     server.logout(header).awaitResponse()

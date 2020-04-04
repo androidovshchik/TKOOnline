@@ -17,7 +17,7 @@ val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
 val PATTERN_TIME_MILLIS: DateTimeFormatter = DateTimeFormat.forPattern("HH.mm.ss.SSS")
 
-fun DateTime.isFuture(duration: Long, unit: TimeUnit): Boolean {
+fun DateTime.isFuture(duration: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {
     val now = DateTime.now()
     return now.isBefore(withZone(now.zone).plus(unit.toMillis(duration)))
 }
