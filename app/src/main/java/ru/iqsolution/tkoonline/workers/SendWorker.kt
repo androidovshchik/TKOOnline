@@ -7,7 +7,6 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.jetbrains.anko.connectivityManager
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
@@ -72,6 +71,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                                     }
                                     return success(output)
                                 }
+                                db.cleanDao().delete(event.clean)
                             } else {
                                 hasErrors = true
                             }
@@ -114,6 +114,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                                     }
                                     return success(output)
                                 }
+                                db.photoDao().delete(event.photo)
                             } else {
                                 hasErrors = true
                             }
@@ -158,8 +159,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
         const val PARAM_SEND = "send"
 
         private const val PARAM_EXIT = "exit"
-
-        private val TEXT_TYPE = "text/plain".toMediaTypeOrNull()
 
         fun launch(ctx: Context, send: Boolean = true, exit: Boolean = false): LiveData<WorkInfo>? {
             val request = OneTimeWorkRequestBuilder<SendWorker>()
