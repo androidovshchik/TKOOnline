@@ -1,7 +1,15 @@
 package ru.iqsolution.tkoonline
 
 import com.elvishew.xlog.XLog
+import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
+
+class LogInterceptor : HttpLoggingInterceptor.Logger {
+
+    override fun log(message: String) {
+        Timber.tag("REST").d(message)
+    }
+}
 
 class LogTree(enableLogs: Boolean) : Timber.DebugTree() {
 

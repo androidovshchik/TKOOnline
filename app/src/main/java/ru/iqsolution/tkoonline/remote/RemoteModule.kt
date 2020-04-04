@@ -14,9 +14,9 @@ import org.kodein.di.generic.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.BuildConfig
+import ru.iqsolution.tkoonline.LogInterceptor
 import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 val remoteModule = Kodein.Module("remote") {
@@ -43,15 +43,10 @@ val remoteModule = Kodein.Module("remote") {
             readTimeout(30, TimeUnit.SECONDS)
             writeTimeout(30, TimeUnit.SECONDS)
             addInterceptor(AppInterceptor(instance()))
-            addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
-
-                override fun log(message: String) {
-                    Timber.tag("NETWORK")
-                        .d(message)
-                }
-            }).apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
+            addInterceptor(
+                HttpLoggingInterceptor(LogInterceptor())
+                    .setLevel(HttpLoggingInterceptor.Level.BODY)
+            )
             if (!BuildConfig.PROD) {
                 addNetworkInterceptor(
                     Class.forName("com.facebook.stetho.okhttp3.StethoInterceptor")
