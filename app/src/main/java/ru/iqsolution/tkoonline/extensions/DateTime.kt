@@ -17,6 +17,7 @@ val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
 
 val PATTERN_TIME_MILLIS: DateTimeFormatter = DateTimeFormat.forPattern("HH.mm.ss.SSS")
 
+// do not compare with the past
 fun DateTime.isLater(plus: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {
     val now = DateTime.now()
     val duration = unit.toMillis(plus)
@@ -27,6 +28,7 @@ fun DateTime.isLater(plus: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): B
     }
 }
 
+// do not compare with the future
 fun DateTime.isEarlier(minus: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {
     val now = DateTime.now()
     val duration = unit.toMillis(minus)

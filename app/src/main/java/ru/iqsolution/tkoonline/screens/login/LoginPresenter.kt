@@ -13,7 +13,8 @@ import org.kodein.di.generic.instance
 import retrofit2.awaitResponse
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
-import ru.iqsolution.tkoonline.extensions.isFuture
+import ru.iqsolution.tkoonline.extensions.isEarlier
+import ru.iqsolution.tkoonline.extensions.isLater
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
@@ -93,7 +94,9 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 packageId = 0
             }
             try {
-                require(DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE).isFuture())
+                require(
+                    DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE).isLater()
+                ) { "responseAuth.expireTime <= now" }
             } catch (e: Throwable) {
                 try {
                     makeLogout()
@@ -121,7 +124,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
     @Throws(Throwable::class)
     private suspend fun makeLogout() {
         preferences.expiresWhen?.let {
-            if (DateTime.parse(it, PATTERN_DATETIME_ZONE).isFuture(3, TimeUnit.DAYS)) {
+            if (!DateTime.parse(it, PATTERN_DATETIME_ZONE).isEarlier(3, TimeUnit.DAYS)) {
                 val header = preferences.authHeader
                 if (header != null) {
                     server.logout(header).awaitResponse()
