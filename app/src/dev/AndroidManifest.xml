@@ -6,7 +6,6 @@
     <application
         android:name=".MainApp"
         android:debuggable="true"
-        tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode"
-        tools:replace="android:name" />
+        tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode" />
 
 </manifest>

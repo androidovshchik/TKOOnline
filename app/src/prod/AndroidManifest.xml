@@ -5,7 +5,6 @@
 
     <application
         android:name=".MainApp"
-        tools:ignore="GoogleAppIndexingWarning"
-        tools:replace="android:name" />
+        tools:ignore="GoogleAppIndexingWarning" />
 
 </manifest>
