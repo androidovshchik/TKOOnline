@@ -188,9 +188,9 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
             } else if (requestBody.isOneShot()) {
                 builder.append("--> END ${request.method} (one-shot body omitted)")
             } else {
-                if (request.url.toString().contains("container-sites/photos")) {
+                if (request.url.toString().contains("skip-request")) {
                     builder.append(
-                        "--> END ${request.method} (binary ${requestBody.contentLength()}-byte body omitted)"
+                        "--> END ${request.method} (${requestBody.contentLength()}-byte body skipped)"
                     )
                 } else {
                     val buffer = Buffer()
@@ -255,6 +255,12 @@ class HttpLoggingInterceptor @JvmOverloads constructor(
                         buffer = Buffer()
                         buffer.writeAll(gzippedResponseBody)
                     }
+                }
+
+                if (response.request.url.toString().contains("skip-response")) {
+                    builder.append("<-- END HTTP (${buffer.size}-byte body skipped)")
+                    logger.log(builder.toString())
+                    return response
                 }
 
                 val contentType = responseBody.contentType()

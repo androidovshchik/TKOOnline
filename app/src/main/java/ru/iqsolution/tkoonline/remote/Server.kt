@@ -28,7 +28,7 @@ interface Server {
      */
     @Tag("platforms")
     @Headers("Accept: application/json")
-    @GET("v1/container-sites/{date}")
+    @GET("v1/container-sites/{date}?skip-response")
     suspend fun getPlatforms(
         @Header("Authorization") token: String,
         @Path("date") date: String
@@ -36,7 +36,7 @@ interface Server {
 
     @Tag("photos")
     @Headers("Accept: application/json")
-    @GET("v1/photo-types")
+    @GET("v1/photo-types?skip-response")
     suspend fun getPhotoTypes(
         @Header("Authorization") token: String
     ): ResponseTypes
@@ -56,15 +56,15 @@ interface Server {
     @Tag("photo")
     @Multipart
     @Headers("Accept: application/json")
-    @POST("v1/container-sites/photos")
+    @POST("v1/container-sites/photos?skip-request")
     fun sendPhoto(
         @Header("Authorization") token: String,
         @Part photo: MultipartBody.Part,
         @Query("cs_id") kpId: Int?,
         @Query("type") type: Int,
         @Query("time") time: String,
-        @Query("latitude") lat: Double,
-        @Query("longitude") lon: Double,
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
         @Part("cs_id") _kpId: RequestBody? = kpId?.toString()?.toRequestBody(TEXT_TYPE),
         @Part("type") _type: RequestBody = type.toString().toRequestBody(TEXT_TYPE),
         @Part("time") _time: RequestBody = time.toRequestBody(TEXT_TYPE),

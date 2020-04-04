@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.screens.platforms
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
+import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
@@ -23,6 +24,8 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
 
     private val server: Server by instance()
 
+    private val gson: Gson by instance(arg = false)
+
     private var observer: LiveData<WorkInfo>? = null
 
     @Volatile
@@ -38,6 +41,9 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                 val photoTypes = mutableListOf<PhotoType>()
                 try {
                     photoTypes.addAll(server.getPhotoTypes(header).data)
+                    if (init) {
+                        Timber.i(gson.toJson(photoTypes))
+                    }
                     withContext(Dispatchers.IO) {
                         db.typeDao().safeInsert(photoTypes)
                     }
@@ -63,6 +69,9 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
                     platforms.addAll(server.getPlatforms(header, day).data
                         .filter { it.isValid }
                         .distinctBy { it.kpId })
+                    if (init) {
+                        Timber.i(gson.toJson(platforms))
+                    }
                     withContext(Dispatchers.IO) {
                         db.platformDao().safeInsert(platforms)
                     }
