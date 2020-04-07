@@ -7,7 +7,7 @@ import timber.log.Timber
 class LogInterceptor : HttpLoggingInterceptor.Logger {
 
     override fun log(message: String) {
-        Timber.tag("REST").d(message)
+        Timber.tag("APP${BuildConfig.VERSION_CODE}").d(message)
     }
 }
 

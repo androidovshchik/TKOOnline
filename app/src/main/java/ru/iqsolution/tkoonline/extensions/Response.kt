@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.extensions
 
 import org.json.JSONArray
 import org.json.JSONObject
+import org.json.JSONTokener
 import ru.iqsolution.tkoonline.models.ServerError
 import timber.log.Timber
 
@@ -10,7 +11,7 @@ fun retrofit2.Response<*>.parseErrors(): List<ServerError> {
 }
 
 fun okhttp3.Response.parseErrors(): List<ServerError> {
-    return parseErrors(body?.string() ?: return listOf())
+    return parseErrors(peekBody(Long.MAX_VALUE).string())
 }
 
 private fun parseErrors(body: String?): List<ServerError> {
@@ -18,26 +19,29 @@ private fun parseErrors(body: String?): List<ServerError> {
         return listOf()
     }
     try {
-        val response = JSONObject(body)
-        if (response.getString("status") == "error") {
-            return when (val errors = response.get("errors")) {
-                is JSONArray -> {
-                    return mutableListOf<ServerError>().apply {
-                        (0 until errors.length()).forEach { i ->
-                            val error = errors.getJSONObject(i)
-                            add(ServerError().apply {
-                                code = error.getString("code")
-                                description = error.getString("description")
-                            })
-                        }
-                    }
-                }
-                is JSONObject -> listOf(ServerError().apply {
-                    code = errors.getString("code")
-                    description = errors.getString("description")
-                })
-                else -> listOf()
+        var response = JSONTokener(body).nextValue()
+        if (response is JSONObject) {
+            if (response.getString("status") == "error") {
+                response = response.get("errors")
+            } else {
+                return listOf()
             }
+        }
+        return when (response) {
+            is JSONArray -> mutableListOf<ServerError>().apply {
+                (0 until response.length()).forEach { i ->
+                    val error = response.getJSONObject(i)
+                    add(ServerError().apply {
+                        code = error.getString("code")
+                        description = error.getString("description")
+                    })
+                }
+            }
+            is JSONObject -> listOf(ServerError().apply {
+                code = response.getString("code")
+                description = response.getString("description")
+            })
+            else -> listOf()
         }
     } catch (e: Throwable) {
         Timber.e(e)

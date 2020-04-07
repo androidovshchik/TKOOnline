@@ -7,6 +7,8 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.*
 import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
+import android.net.Uri
 import android.widget.Toast
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startService
@@ -50,6 +52,14 @@ inline fun <reified T : Service> Context.startForegroundService(vararg params: P
     } else {
         startService<T>(*params)
     }
+}
+
+@Suppress("DEPRECATION")
+fun Context.scanFile(path: String) {
+    sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).apply {
+        data = Uri.parse("file://$path")
+    })
+    MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
 }
 
 inline fun <reified T : Activity> Context.pendingActivityFor(
