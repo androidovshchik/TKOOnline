@@ -21,11 +21,7 @@ private fun parseErrors(body: String?): List<ServerError> {
     try {
         var response = JSONTokener(body).nextValue()
         if (response is JSONObject) {
-            if (response.getString("status") == "error") {
-                response = response.get("errors")
-            } else {
-                return listOf()
-            }
+            response = response.get("errors")
         }
         return when (response) {
             is JSONArray -> mutableListOf<ServerError>().apply {

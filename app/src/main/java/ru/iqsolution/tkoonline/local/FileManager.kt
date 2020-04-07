@@ -12,7 +12,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.DB_NAME
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_MILLIS
-import ru.iqsolution.tkoonline.extensions.scanFile
+import ru.iqsolution.tkoonline.extensions.scanFiles
 import ru.iqsolution.tkoonline.extensions.use
 import timber.log.Timber
 import java.io.File
@@ -152,10 +152,8 @@ class FileManager(context: Context) {
         }
     }
 
-    fun scanLogs(context: Context) = context.run {
-        logsDir.listFiles()?.forEach {
-            scanFile(it.path)
-        }
+    fun scanLogs(context: Context) {
+        context.scanFiles(logsDir.listFiles()?.map { it.path } ?: return)
     }
 
     fun deleteFile(path: String) {
