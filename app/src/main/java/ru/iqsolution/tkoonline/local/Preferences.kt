@@ -119,8 +119,18 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
             false
         }
 
+    /**
+     * Currently there is no special time check
+     */
     val serverDay: String
-        get() = DateTime.now().toString(PATTERN_DATE)
+        get() {
+            val now = DateTime.now()
+            serverTime?.let {
+                return now.withZone(DateTime.parse(it, PATTERN_DATETIME_ZONE).zone)
+                    .toString(PATTERN_DATE)
+            }
+            return now.toString(PATTERN_DATE)
+        }
 
     val location: SimpleLocation?
         get() = locationTime?.let {
