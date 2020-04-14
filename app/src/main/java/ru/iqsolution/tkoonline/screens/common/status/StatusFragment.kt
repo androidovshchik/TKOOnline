@@ -12,18 +12,15 @@ import androidx.core.view.isVisible
 import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.include_status.*
 import org.jetbrains.anko.locationManager
-import org.joda.time.DateTime
 import org.joda.time.LocalTime
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.IBaseView
 import ru.iqsolution.tkoonline.telemetry.LocationListener
-import timber.log.Timber
 
 /**
  * NOTICE should have an id [R.id.status_fragment]
@@ -35,23 +32,12 @@ class StatusFragment : BaseFragment(), StatusListener {
 
     private val preferences: Preferences by instance()
 
-    private var serverTime: DateTime? = null
-
     @Volatile
     private var connectionIcon = R.drawable.ic_swap_vert
 
     private val connectionRunnable = Runnable {
         if (view != null) {
             status_connection.setImageResource(connectionIcon)
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        try {
-            serverTime = DateTime.parse(preferences.serverTime, PATTERN_DATETIME_ZONE)
-        } catch (e: Throwable) {
-            Timber.e(e)
         }
     }
 
@@ -79,9 +65,7 @@ class StatusFragment : BaseFragment(), StatusListener {
         if (view == null) {
             return
         }
-        serverTime?.let {
-            status_time.text = LocalTime.now().toString(PATTERN_TIME)
-        }
+        status_time.text = LocalTime.now().toString(PATTERN_TIME)
     }
 
     private fun onLocationChanged(available: Boolean) {

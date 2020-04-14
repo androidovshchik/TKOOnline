@@ -109,8 +109,6 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
                 check(DateTime.parse(it, PATTERN_DATETIME_ZONE).isLater()) { "expiresWhen <= now" }
             }
             check(serverTime != null) { "serverTime == null" }
-            check(serverDay == DateTime.now().toString(PATTERN_DATE)) { "serverDay != today" }
-            // check(elapsedTime > 0L) { "elapsedTime <= 0L" }
             check(vehicleNumber != null) { "vehicleNumber == null" }
             check(queName != null) { "queName == null" }
             check(carId > 0) { "carId <= 0" }
@@ -122,7 +120,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
         }
 
     val serverDay: String
-        get() = serverTime?.substringBefore("T").toString()
+        get() = DateTime.now().toString(PATTERN_DATE)
 
     val location: SimpleLocation?
         get() = locationTime?.let {
