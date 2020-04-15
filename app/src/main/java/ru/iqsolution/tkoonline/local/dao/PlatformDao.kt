@@ -34,6 +34,15 @@ abstract class PlatformDao {
 
     @Query(
         """
+        UPDATE platforms 
+        SET p_status = :status
+        WHERE p_kp_id = :kpId
+    """
+    )
+    abstract fun updateStatus(kpId: Int, status: Int)
+
+    @Query(
+        """
         DELETE FROM platforms
     """
     )

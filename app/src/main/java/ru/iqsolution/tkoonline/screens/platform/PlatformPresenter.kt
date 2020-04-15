@@ -7,9 +7,11 @@ import kotlinx.coroutines.withContext
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
-class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>(context), PlatformContract.Presenter {
+class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>(context),
+    PlatformContract.Presenter {
 
     override fun loadLinkedPlatforms(linkedIds: List<Int>) {
         launch {
@@ -42,7 +44,11 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
         }
     }
 
-    override fun savePlatformEvents(platform: PlatformContainers, platforms: List<Platform>) {
+    override fun savePlatformEvents(
+        platform: PlatformContainers,
+        platforms: List<Platform>,
+        clear: Boolean
+    ) {
         val day = preferences.serverDay
         val tokenId = preferences.tokenId
         val cleanEvent = CleanEvent(platform.kpId, tokenId).apply {
@@ -58,6 +64,10 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
             withContext(Dispatchers.IO) {
                 val validKpIds = db.cleanDao().insertMultiple(cleanEvent, cleanEvents)
                 db.photoDao().markReadyMultiple(day, platform.allKpIds, validKpIds)
+                db.platformDao().updateStatus(
+                    platform.kpId,
+                    if (clear) PlatformStatus.CLEANED.id else PlatformStatus.NOT_CLEANED.id
+                )
             }
             reference.get()?.closeDetails(true)
         }
