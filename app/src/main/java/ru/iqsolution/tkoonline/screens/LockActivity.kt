@@ -14,7 +14,7 @@ import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.EXTRA_TROUBLE_EXIT
-import ru.iqsolution.tkoonline.extensions.scanFile
+import ru.iqsolution.tkoonline.extensions.scanFiles
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
@@ -34,9 +34,12 @@ class LockActivity : Activity(), KodeinAware {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         GlobalScope.launch(Dispatchers.Main) {
-            fileManager.logsDir.listFiles()?.forEach {
-                scanFile(it.path)
-                delay(250)
+            fileManager.logsDir.listFiles()?.apply {
+                forEach {
+                    scanFiles(it.path)
+                    delay(200)
+                }
+                scanFiles(*map { it.path }.toTypedArray())
             }
         }
     }
