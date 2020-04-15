@@ -65,7 +65,7 @@ class PlatformPresenter(context: Context) : BasePresenter<PlatformContract.View>
                 val validKpIds = db.cleanDao().insertMultiple(cleanEvent, cleanEvents)
                 db.photoDao().markReadyMultiple(day, platform.allKpIds, validKpIds)
                 db.platformDao().updateStatus(
-                    platform.kpId,
+                    validKpIds,
                     if (clear) PlatformStatus.CLEANED.id else PlatformStatus.NOT_CLEANED.id
                 )
             }

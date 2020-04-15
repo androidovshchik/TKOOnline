@@ -113,7 +113,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                     forEach {
                         it.reset()
                     }
-                })
+                }, false)
             }
         }
         platform_cleaned.setOnClickListener {
@@ -131,7 +131,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
             } else {
                 setTouchable(false)
                 clickedClean = true
-                presenter.savePlatformEvents(platform, linkedPlatforms)
+                presenter.savePlatformEvents(platform, linkedPlatforms, true)
             }
         }
         attach(ContainerLayout(applicationContext).apply {

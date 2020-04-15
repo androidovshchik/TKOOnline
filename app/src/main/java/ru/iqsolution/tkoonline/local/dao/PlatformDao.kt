@@ -36,10 +36,10 @@ abstract class PlatformDao {
         """
         UPDATE platforms 
         SET p_status = :status
-        WHERE p_kp_id = :kpId
+        WHERE p_kp_id IN (:kpIds)
     """
     )
-    abstract fun updateStatus(kpId: Int, status: Int)
+    abstract fun updateStatus(kpIds: List<Int>, status: Int)
 
     @Query(
         """
