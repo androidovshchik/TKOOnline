@@ -55,13 +55,11 @@ inline fun <reified T : Service> Context.startForegroundService(vararg params: P
 }
 
 @Suppress("DEPRECATION")
-fun Context.scanFiles(paths: List<String>) {
-    paths.forEach {
-        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).apply {
-            data = Uri.parse("file://$it")
-        })
-    }
-    MediaScannerConnection.scanFile(applicationContext, paths.toTypedArray(), null, null)
+fun Context.scanFile(path: String) {
+    sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).apply {
+        data = Uri.parse("file://$path")
+    })
+    MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
 }
 
 inline fun <reified T : Activity> Context.pendingActivityFor(

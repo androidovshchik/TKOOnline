@@ -2,6 +2,11 @@ package ru.iqsolution.tkoonline.screens
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.os.Bundle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.toast
 import org.kodein.di.KodeinAware
@@ -9,7 +14,9 @@ import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.EXTRA_TROUBLE_EXIT
+import ru.iqsolution.tkoonline.extensions.scanFile
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
@@ -20,7 +27,19 @@ class LockActivity : Activity(), KodeinAware {
 
     private val preferences: Preferences by instance()
 
+    private val fileManager: FileManager by instance()
+
     private val adminManager: AdminManager by instance()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        GlobalScope.launch(Dispatchers.Main) {
+            fileManager.logsDir.listFiles()?.forEach {
+                scanFile(it.path)
+                delay(250)
+            }
+        }
+    }
 
     override fun onStart() {
         super.onStart()
