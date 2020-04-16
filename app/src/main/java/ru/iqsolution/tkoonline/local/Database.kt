@@ -37,12 +37,6 @@ abstract class Database : RoomDatabase() {
     abstract fun typeDao(): TypeDao
 }
 
-class DummyMigration(startVersion: Int, endVersion: Int) : Migration(startVersion, endVersion) {
-
-    override fun migrate(database: SupportSQLiteDatabase) {
-    }
-}
-
 class Migration910 : Migration(9, 10) {
 
     override fun migrate(database: SupportSQLiteDatabase) {
