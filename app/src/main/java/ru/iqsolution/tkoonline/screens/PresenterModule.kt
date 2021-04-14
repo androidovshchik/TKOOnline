@@ -1,10 +1,6 @@
 package ru.iqsolution.tkoonline.screens
 
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.contexted
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
+import org.kodein.di.*
 import ru.iqsolution.tkoonline.screens.camera.CameraActivity
 import ru.iqsolution.tkoonline.screens.camera.CameraPresenter
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
@@ -20,7 +16,7 @@ import ru.iqsolution.tkoonline.screens.platforms.PlatformsPresenter
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemPresenter
 
-val presenterModule = Kodein.Module("presenter") {
+val presenterModule = DI.Module("presenter") {
 
     bind<LoginPresenter>() with contexted<LoginActivity>().provider {
         LoginPresenter(instance()).apply {

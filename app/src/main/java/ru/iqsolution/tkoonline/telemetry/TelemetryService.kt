@@ -25,7 +25,7 @@ import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.startService
 import org.jetbrains.anko.stopService
 import org.joda.time.DateTime
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.*
 import ru.iqsolution.tkoonline.local.Database

@@ -2,14 +2,10 @@ package ru.iqsolution.tkoonline.local
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
-import org.kodein.di.generic.singleton
+import org.kodein.di.*
 import ru.iqsolution.tkoonline.DB_NAME
 
-val localModule = Kodein.Module("local") {
+val localModule = DI.Module("local") {
 
     bind<Preferences>() with provider {
         Preferences(instance())

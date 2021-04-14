@@ -10,7 +10,7 @@ import androidx.work.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jetbrains.anko.connectivityManager
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.extensions.pendingReceiverFor

@@ -8,14 +8,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.jetbrains.anko.powerManager
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.kodein
+import org.kodein.di.DIAware
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class BaseService : Service(), KodeinAware, CoroutineScope {
+abstract class BaseService : Service(), DIAware, CoroutineScope {
 
-    override val kodein by kodein()
+    override val di by di()
 
     protected val serviceJob = SupervisorJob()
 

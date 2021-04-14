@@ -7,11 +7,11 @@ import timber.log.Timber
 
 class AdminReceiver : DeviceAdminReceiver() {
 
-    override fun onLockTaskModeEntering(context: Context, intent: Intent?, pkg: String?) {
+    override fun onLockTaskModeEntering(context: Context, intent: Intent, pkg: String) {
         Timber.d("onLockTaskModeEntering")
     }
 
-    override fun onLockTaskModeExiting(context: Context, intent: Intent?) {
+    override fun onLockTaskModeExiting(context: Context, intent: Intent) {
         Timber.d("onLockTaskModeExiting")
     }
 }

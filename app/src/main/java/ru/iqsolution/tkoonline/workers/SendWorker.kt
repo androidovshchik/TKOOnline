@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
 import org.jetbrains.anko.connectivityManager
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
 import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE

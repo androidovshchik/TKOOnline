@@ -8,7 +8,7 @@ import androidx.work.WorkerParameters
 import com.chibatching.kotpref.blockingBulk
 import org.joda.time.DateTime
 import org.joda.time.Duration
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.remote.Server

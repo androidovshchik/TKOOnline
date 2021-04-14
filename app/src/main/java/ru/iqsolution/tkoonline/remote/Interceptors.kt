@@ -4,9 +4,9 @@ import android.content.Context
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.Response
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.closestKodein
-import org.kodein.di.generic.instance
+import org.kodein.di.DIAware
+import org.kodein.di.android.closestDI
+import org.kodein.di.instance
 import retrofit2.Invocation
 import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.bgToast
@@ -24,9 +24,9 @@ import java.lang.ref.WeakReference
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Tag(val value: String)
 
-class AppInterceptor(context: Context) : Interceptor, KodeinAware {
+class AppInterceptor(context: Context) : Interceptor, DIAware {
 
-    override val kodein by closestKodein(context)
+    override val di by closestDI(context)
 
     private val reference = WeakReference(context)
 

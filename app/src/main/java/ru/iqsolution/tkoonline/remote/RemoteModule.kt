@@ -6,11 +6,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.joda.time.DateTime
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.factory
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.singleton
+import org.kodein.di.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.BuildConfig
@@ -19,7 +15,7 @@ import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
 import java.util.concurrent.TimeUnit
 
-val remoteModule = Kodein.Module("remote") {
+val remoteModule = DI.Module("remote") {
 
     bind<Gson>() with factory { pretty: Boolean ->
         GsonBuilder()

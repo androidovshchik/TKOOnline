@@ -9,9 +9,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.toast
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.kodein
-import org.kodein.di.generic.instance
+import org.kodein.di.DIAware
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.EXTRA_TROUBLE_EXIT
 import ru.iqsolution.tkoonline.extensions.scanFiles
@@ -21,9 +20,9 @@ import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 
-class LockActivity : Activity(), KodeinAware {
+class LockActivity : Activity(), DIAware {
 
-    override val kodein by kodein()
+    override val di by di()
 
     private val preferences: Preferences by instance()
 
