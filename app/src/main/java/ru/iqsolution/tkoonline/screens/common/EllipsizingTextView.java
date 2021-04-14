@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.common;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.text.Layout;
@@ -7,13 +8,13 @@ import android.text.Layout.Alignment;
 import android.text.StaticLayout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-
-import androidx.appcompat.widget.AppCompatTextView;
+import android.widget.TextView;
 
 /**
  * https://github.com/IPL/MultiplelineEllipsizeTextView
  */
-public class EllipsizingTextView extends AppCompatTextView {
+@SuppressLint("AppCompatCustomView")
+public class EllipsizingTextView extends TextView {
 
     private static final String ELLIPSIS = "...";
 
@@ -33,6 +34,11 @@ public class EllipsizingTextView extends AppCompatTextView {
 
     public EllipsizingTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    @SuppressWarnings("unused")
+    public EllipsizingTextView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override

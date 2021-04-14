@@ -23,8 +23,12 @@ class SettingsDialog : BaseDialogFragment() {
 
     private var mEnableLock = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        root: Bundle?
+    ): View? {
+        super.onCreateView(inflater, container, root)
         return inflater.inflate(R.layout.dialog_settings, container, false)
     }
 

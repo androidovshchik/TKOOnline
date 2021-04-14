@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.toast
 import org.kodein.di.DIAware
+import org.kodein.di.android.closestDI
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.EXTRA_TROUBLE_EXIT
@@ -22,7 +23,7 @@ import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 
 class LockActivity : Activity(), DIAware {
 
-    override val di by di()
+    override val di by closestDI()
 
     private val preferences: Preferences by instance()
 

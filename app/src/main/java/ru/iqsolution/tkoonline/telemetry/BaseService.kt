@@ -9,12 +9,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.jetbrains.anko.powerManager
 import org.kodein.di.DIAware
+import org.kodein.di.android.closestDI
 import timber.log.Timber
 
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseService : Service(), DIAware, CoroutineScope {
 
-    override val di by di()
+    override val di by closestDI()
 
     protected val serviceJob = SupervisorJob()
 
