@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import com.google.gson.Gson
 import kotlinx.coroutines.*
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoType

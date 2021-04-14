@@ -7,12 +7,13 @@ import android.text.Layout.Alignment;
 import android.text.StaticLayout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.TextView;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * https://github.com/IPL/MultiplelineEllipsizeTextView
  */
-public class EllipsizingTextView extends TextView {
+public class EllipsizingTextView extends AppCompatTextView {
 
     private static final String ELLIPSIS = "...";
 

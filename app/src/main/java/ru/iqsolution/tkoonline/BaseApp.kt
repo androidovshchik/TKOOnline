@@ -23,11 +23,7 @@ import net.danlew.android.joda.ResourceZoneInfoProvider
 import okhttp3.OkHttpClient
 import org.jetbrains.anko.*
 import org.joda.time.DateTimeZone
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
+import org.kodein.di.*
 import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.local.FileManager
@@ -41,9 +37,9 @@ import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
 
 @Suppress("unused")
-abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
+abstract class BaseApp : Application(), DIAware, CameraXConfig.Provider {
 
-    override val kodein by Kodein.lazy {
+    override val di by DI.lazy {
 
         bind<Context>() with provider {
             applicationContext
@@ -83,21 +79,27 @@ abstract class BaseApp : Application(), KodeinAware, CameraXConfig.Provider {
         init()
         if (isOreoPlus()) {
             notificationManager.createNotificationChannel(
-                NotificationChannel(CHANNEL_DEFAULT, CHANNEL_DEFAULT, NotificationManager.IMPORTANCE_LOW).also {
+                NotificationChannel(
+                    CHANNEL_DEFAULT,
+                    CHANNEL_DEFAULT,
+                    NotificationManager.IMPORTANCE_LOW
+                ).also {
                     it.lockscreenVisibility = Notification.VISIBILITY_SECRET
                 }
             )
         }
         DateTimeZone.setProvider(ResourceZoneInfoProvider(applicationContext))
-        Coil.setDefaultImageLoader(ImageLoader(applicationContext) {
-            availableMemoryPercentage(0.5)
-            bitmapPoolPercentage(0.5)
-            okHttpClient {
-                OkHttpClient.Builder()
-                    .cache(null)
-                    .build()
-            }
-        })
+        Coil.setImageLoader(
+            ImageLoader.Builder(applicationContext)
+                .availableMemoryPercentage(0.5)
+                .bitmapPoolPercentage(0.5)
+                .okHttpClient(
+                    OkHttpClient.Builder()
+                        .cache(null)
+                        .build()
+                )
+                .build()
+        )
         ViewPump.init(
             ViewPump.builder()
                 .addInterceptor(

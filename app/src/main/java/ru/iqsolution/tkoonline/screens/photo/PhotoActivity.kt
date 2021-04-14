@@ -3,10 +3,10 @@ package ru.iqsolution.tkoonline.screens.photo
 import android.content.Intent
 import android.os.Bundle
 import android.widget.RelativeLayout
-import coil.api.load
+import coil.load
 import kotlinx.android.synthetic.main.activity_photo.*
 import kotlinx.android.synthetic.main.include_toolbar.*
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.FileManager

@@ -10,19 +10,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import org.jetbrains.anko.inputMethodManager
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.closestKodein
+import org.kodein.di.DIAware
+import org.kodein.di.android.closestDI
 import ru.iqsolution.tkoonline.extensions.activityCallback
 
-abstract class BaseDialogFragment : DialogFragment(), KodeinAware {
+abstract class BaseDialogFragment : DialogFragment(), DIAware {
 
-    override val kodein by closestKodein()
+    override val di by closestDI()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AppDialog(activity)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
         return null
     }

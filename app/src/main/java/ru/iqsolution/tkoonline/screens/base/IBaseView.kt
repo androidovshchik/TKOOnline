@@ -1,10 +1,10 @@
 package ru.iqsolution.tkoonline.screens.base
 
-import org.kodein.di.KodeinAware
+import org.kodein.di.DIAware
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.telemetry.LocationListener
 
-interface IBaseView : KodeinAware, LocationListener {
+interface IBaseView : DIAware, LocationListener {
 
     val isTouchable: Boolean
 

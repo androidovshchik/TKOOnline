@@ -18,9 +18,9 @@ import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.locationManager
 import org.jetbrains.anko.toast
-import org.kodein.di.Kodein
-import org.kodein.di.android.closestKodein
-import org.kodein.di.generic.instance
+import org.kodein.di.DI
+import org.kodein.di.android.closestDI
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.isRunning
@@ -40,11 +40,11 @@ import timber.log.Timber
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
 
-    private val parentKodein by closestKodein()
+    private val parentDI by closestDI()
 
-    override val kodein: Kodein by Kodein.lazy {
+    override val di by DI.lazy {
 
-        extend(parentKodein)
+        extend(parentDI)
 
         import(presenterModule)
 

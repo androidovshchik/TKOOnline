@@ -8,7 +8,7 @@ import android.widget.Switch
 import com.chibatching.kotpref.bulk
 import kotlinx.android.synthetic.main.dialog_settings.*
 import org.jetbrains.anko.find
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.LogTree
 import ru.iqsolution.tkoonline.R

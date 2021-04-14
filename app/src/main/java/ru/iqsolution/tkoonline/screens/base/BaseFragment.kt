@@ -4,14 +4,14 @@ package ru.iqsolution.tkoonline.screens.base
 
 import android.app.Fragment
 import android.os.Bundle
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.closestKodein
+import org.kodein.di.DIAware
+import org.kodein.di.android.closestDI
 import ru.iqsolution.tkoonline.extensions.activityCallback
 
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class BaseFragment : Fragment(), KodeinAware {
+abstract class BaseFragment : Fragment(), DIAware {
 
-    override val kodein by closestKodein()
+    override val di by closestDI()
 
     @Suppress("unused")
     protected val args: Bundle

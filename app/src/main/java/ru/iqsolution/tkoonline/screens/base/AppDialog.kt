@@ -5,17 +5,17 @@ import android.app.ActivityManager
 import android.app.Dialog
 import android.view.KeyEvent
 import org.jetbrains.anko.activityManager
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.closestKodein
+import org.kodein.di.DIAware
+import org.kodein.di.android.closestDI
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.activity
 import ru.iqsolution.tkoonline.extensions.activityCallback
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.screens.LockActivity
 
-open class AppDialog(activity: Activity) : Dialog(activity, R.style.AppDialog), KodeinAware {
+open class AppDialog(activity: Activity) : Dialog(activity, R.style.AppDialog), DIAware {
 
-    override val kodein by closestKodein()
+    override val di by closestDI()
 
     override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean = context.run {
         if (keyCode == KeyEvent.KEYCODE_BACK) {

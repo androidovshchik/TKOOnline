@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.jetbrains.anko.activityManager
 import org.joda.time.DateTime
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import retrofit2.awaitResponse
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE

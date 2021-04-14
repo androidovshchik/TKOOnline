@@ -6,8 +6,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.view.KeyEvent
 import org.jetbrains.anko.activityManager
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.closestKodein
+import org.kodein.di.DIAware
+import org.kodein.di.android.closestDI
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.activity
 import ru.iqsolution.tkoonline.extensions.activityCallback
@@ -16,9 +16,9 @@ import ru.iqsolution.tkoonline.screens.LockActivity
 
 private typealias OnClickListener = (dialog: DialogInterface, which: Int) -> Unit
 
-class AppAlertDialog(context: Context) : AlertDialog(context, R.style.AppAlertDialog), KodeinAware {
+class AppAlertDialog(context: Context) : AlertDialog(context, R.style.AppAlertDialog), DIAware {
 
-    override val kodein by closestKodein()
+    override val di by closestDI()
 
     fun neutralPressed(text: CharSequence, listener: OnClickListener? = null) {
         setButton(DialogInterface.BUTTON_NEUTRAL, text, listener)

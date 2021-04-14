@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.activity_outside.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.EXTRA_PHOTO_EVENT
 import ru.iqsolution.tkoonline.EXTRA_PHOTO_TITLE
 import ru.iqsolution.tkoonline.EXTRA_PHOTO_TYPES

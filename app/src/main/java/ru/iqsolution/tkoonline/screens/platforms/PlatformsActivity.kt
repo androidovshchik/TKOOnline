@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_platforms.*
 import kotlinx.coroutines.CancellationException
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEvent

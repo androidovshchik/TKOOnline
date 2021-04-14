@@ -2,8 +2,8 @@ package ru.iqsolution.tkoonline.screens.base
 
 import android.content.Context
 import kotlinx.coroutines.*
-import org.kodein.di.android.closestKodein
-import org.kodein.di.generic.instance
+import org.kodein.di.android.closestDI
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class BasePresenter<V : IBaseView>(context: Context) : IBasePresenter<V> {
 
-    override val kodein by closestKodein(context)
+    override val di by closestDI(context)
 
     protected val preferences: Preferences by instance()
 

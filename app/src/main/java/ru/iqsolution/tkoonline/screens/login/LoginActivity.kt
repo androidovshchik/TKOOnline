@@ -10,12 +10,12 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
-import coil.api.load
+import coil.load
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.topPadding
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R

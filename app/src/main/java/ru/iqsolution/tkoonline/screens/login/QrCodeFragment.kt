@@ -17,7 +17,7 @@ import com.budiyev.android.codescanner.ErrorCallback
 import com.google.zxing.BarcodeFormat
 import kotlinx.android.synthetic.main.fragment_qr.*
 import org.jetbrains.anko.powerManager
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
