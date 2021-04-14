@@ -28,7 +28,7 @@ var config = {
 module.exports = (env, argv) => {
     if (argv.mode === 'production') {
         const TerserPlugin = require('terser-webpack-plugin');
-        const JavaScriptObfuscator = require('webpack-obfuscator');
+        const WebpackObfuscator = require('webpack-obfuscator');
 
         config.optimization = {
             minimize: true,
@@ -42,10 +42,10 @@ module.exports = (env, argv) => {
             ]
         };
         config.plugins.push(
-            new JavaScriptObfuscator({
+            new WebpackObfuscator({
                 identifierNamesGenerator: 'hexadecimal',
                 stringArray: true,
-                stringArrayEncoding: 'rc4',
+                stringArrayEncoding: ['rc4'],
                 stringArrayThreshold: 1,
                 transformObjectKeys: true
             }, [])
