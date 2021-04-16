@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.local.entities
 
+import androidx.annotation.NonNull
 import androidx.room.*
 import org.joda.time.DateTime
 import java.io.Serializable
@@ -60,6 +61,7 @@ class PhotoEvent() : Serializable, SendEvent {
     /**
      * Normally it will never change
      */
+    @NonNull
     @ColumnInfo(name = "pe_path")
     lateinit var path: String
 
@@ -72,6 +74,7 @@ class PhotoEvent() : Serializable, SendEvent {
     /**
      * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      */
+    @NonNull
     @ColumnInfo(name = "pe_when_time")
     lateinit var whenTime: DateTime
 

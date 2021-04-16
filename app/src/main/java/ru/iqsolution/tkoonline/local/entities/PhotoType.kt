@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.local.entities
 
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -16,10 +17,12 @@ class PhotoType : Serializable {
     @ColumnInfo(name = "pt_id")
     var id = Default.OTHER.id
 
+    @NonNull
     @SerializedName("description")
     @ColumnInfo(name = "pt_description")
     lateinit var description: String
 
+    @NonNull
     @SerializedName("short_name")
     @ColumnInfo(name = "pt_short_name")
     lateinit var shortName: String

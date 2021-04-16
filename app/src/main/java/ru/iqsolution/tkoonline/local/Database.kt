@@ -15,9 +15,10 @@ import ru.iqsolution.tkoonline.local.entities.*
         CleanEvent::class,
         LocationEvent::class,
         Platform::class,
-        PhotoType::class
+        PhotoType::class,
+        Contact::class
     ],
-    version = 11
+    version = 12
 )
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase() {
@@ -35,6 +36,8 @@ abstract class Database : RoomDatabase() {
     abstract fun platformDao(): PlatformDao
 
     abstract fun typeDao(): TypeDao
+
+    abstract fun contactDao(): ContactDao
 }
 
 class Migration910 : Migration(9, 10) {
@@ -54,6 +57,17 @@ class Migration1011 : Migration(10, 11) {
         database.execSQL(
             """
             CREATE TABLE IF NOT EXISTS `photo_types` (`pt_id` INTEGER NOT NULL, `pt_description` TEXT NOT NULL, `pt_short_name` TEXT NOT NULL, `pt_is_error` INTEGER NOT NULL, PRIMARY KEY(`pt_id`));
+        """.trimIndent()
+        )
+    }
+}
+
+class Migration1112 : Migration(11, 12) {
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `contacts` (`c_id` INTEGER NOT NULL, `c_name` TEXT, `c_phone` TEXT, `c_when_logged` TEXT, PRIMARY KEY(`c_id`));
         """.trimIndent()
         )
     }

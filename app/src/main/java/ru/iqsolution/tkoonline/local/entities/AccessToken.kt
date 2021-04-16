@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.local.entities
 
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
@@ -18,9 +19,11 @@ class AccessToken {
     @ColumnInfo(name = "t_id")
     var id: Long? = null
 
+    @NonNull
     @ColumnInfo(name = "t_token")
     lateinit var token: String
 
+    @NonNull
     @ColumnInfo(name = "t_que_name")
     lateinit var queName: String
 
@@ -30,6 +33,7 @@ class AccessToken {
     /**
      * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      */
+    @NonNull
     @ColumnInfo(name = "t_expires")
     lateinit var expires: DateTime
 

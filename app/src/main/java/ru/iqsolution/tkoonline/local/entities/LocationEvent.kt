@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.local.entities
 
+import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
@@ -40,10 +41,12 @@ class LocationEvent() : SendEvent {
     @SerializedName("v")
     var version = 1
 
+    @NonNull
     @Embedded
     @SerializedName("data")
     lateinit var data: Data
 
+    @NonNull
     @ColumnInfo(name = "le_state")
     @SerializedName("_s")
     lateinit var state: String
@@ -87,6 +90,7 @@ class LocationEvent() : SendEvent {
         /**
          * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
          */
+        @NonNull
         @ColumnInfo(name = "le_when_time")
         @SerializedName("event_time")
         lateinit var whenTime: DateTime
@@ -94,6 +98,7 @@ class LocationEvent() : SendEvent {
         /**
          * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
          */
+        @NonNull
         @ColumnInfo(name = "le_location_time")
         @SerializedName("time")
         lateinit var locationTime: DateTime

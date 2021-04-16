@@ -20,6 +20,7 @@ val localModule = DI.Module("local") {
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
             .addMigrations(Migration910())
             .addMigrations(Migration1011())
+            .addMigrations(Migration1112())
             .build()
     }
 }

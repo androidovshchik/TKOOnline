@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.local.entities
 
+import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
@@ -56,6 +57,7 @@ class CleanEvent() : Container, SendEvent {
     /**
      * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      */
+    @NonNull
     @ColumnInfo(name = "ce_when_time")
     @SerializedName("time")
     lateinit var whenTime: DateTime
@@ -63,6 +65,7 @@ class CleanEvent() : Container, SendEvent {
     /**
      * May be changed
      */
+    @NonNull
     @ColumnInfo(name = "ce_container_type")
     @SerializedName("container_type_fact")
     override lateinit var containerType: String

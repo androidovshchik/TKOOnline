@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.local.entities
 
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -25,6 +26,7 @@ open class Platform : Serializable, Container, Location<Double> {
     @ColumnInfo(name = "p_linked_id")
     var linkedKpId: Int? = null
 
+    @NonNull
     @SerializedName("address")
     @ColumnInfo(name = "p_address")
     lateinit var address: String
@@ -56,6 +58,7 @@ open class Platform : Serializable, Container, Location<Double> {
     /**
      * This value may be unknown for [ContainerType] but it's important to present the original value
      */
+    @NonNull
     @SerializedName("container_type")
     @ColumnInfo(name = "p_container_type")
     override lateinit var containerType: String
@@ -71,6 +74,7 @@ open class Platform : Serializable, Container, Location<Double> {
     /**
      * [ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE]
      */
+    @NonNull
     @SerializedName("time_limit_from")
     @ColumnInfo(name = "p_time_from")
     lateinit var timeLimitFrom: DateTime
@@ -78,6 +82,7 @@ open class Platform : Serializable, Container, Location<Double> {
     /**
      * [ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE]
      */
+    @NonNull
     @SerializedName("time_limit_to")
     @ColumnInfo(name = "p_time_to")
     lateinit var timeLimitTo: DateTime
