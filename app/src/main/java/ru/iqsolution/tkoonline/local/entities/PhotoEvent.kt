@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.annotation.NonNull
 import androidx.room.*
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.Pattern
 import java.io.Serializable
 
 @Entity(
@@ -71,10 +72,8 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_longitude")
     var longitude = 0.0
 
-    /**
-     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
-     */
     @NonNull
+    @Pattern(Pattern.DATETIME_ZONE)
     @ColumnInfo(name = "pe_when_time")
     lateinit var whenTime: DateTime
 

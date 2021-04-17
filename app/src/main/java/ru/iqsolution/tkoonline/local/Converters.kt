@@ -4,14 +4,13 @@ import androidx.room.TypeConverter
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE
+import ru.iqsolution.tkoonline.extensions.Pattern
 
 @Suppress("unused")
 object Converters {
 
-    /**
-     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE] is only supported
-     */
     @TypeConverter
+    @Pattern(Pattern.DATETIME_ZONE)
     @JvmStatic
     fun fromDateTime(value: DateTime?): String? {
         return value?.toString(PATTERN_DATETIME_ZONE)

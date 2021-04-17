@@ -7,6 +7,7 @@ import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATE
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.extensions.isLater
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -20,18 +21,18 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     override var accessToken by nullableStringPref(null, "0x00")
 
     /**
-     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      * Logout on background thread
      */
+    @Pattern(Pattern.DATETIME_ZONE)
     var expiresWhen by nullableStringPref(null, "0x01")
 
     // Logout on background thread
     var allowPhotoRefKp by booleanPref(false, "0x02")
 
     /**
-     * Server time [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
      * Logout on background thread
      */
+    @Pattern(Pattern.DATETIME_ZONE)
     var serverTime by nullableStringPref(null, "0x03")
 
     var mainServerAddress by stringPref("${if (BuildConfig.PROD) "msknt" else "msknt2"}.iqsolution.ru", "0x04")
@@ -78,9 +79,10 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     override var longitude by floatPref(0f, "0x0e")
 
     /**
-     * Time of last known location [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
+     * Time of last known location
      * Logout on background thread
      */
+    @Pattern(Pattern.DATETIME_ZONE)
     var locationTime by nullableStringPref(null, "0x0f")
 
     override var tokenId by longPref(0L, "0x10")

@@ -5,17 +5,35 @@ import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
-val PATTERN_DATE: DateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd")
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.SOURCE)
+annotation class Pattern(val format: String) {
+
+    companion object {
+
+        const val DATE = "yyyyMMdd"
+
+        const val TIME_ZONE = "HH:mm:ssZZ"
+
+        const val DATETIME_ZONE = "yyyyMMdd'T'HHmmssZ"
+
+        const val TIME = "HH:mm"
+
+        const val TIME_MILLIS = "HH.mm.ss.SSS"
+    }
+}
+
+val PATTERN_DATE: DateTimeFormatter = DateTimeFormat.forPattern(Pattern.DATE)
 
 val PATTERN_TIME_ZONE: DateTimeFormatter =
-    DateTimeFormat.forPattern("HH:mm:ssZZ").withOffsetParsed()
+    DateTimeFormat.forPattern(Pattern.TIME_ZONE).withOffsetParsed()
 
 val PATTERN_DATETIME_ZONE: DateTimeFormatter =
-    DateTimeFormat.forPattern("yyyyMMdd'T'HHmmssZ").withOffsetParsed()
+    DateTimeFormat.forPattern(Pattern.DATETIME_ZONE).withOffsetParsed()
 
-val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
+val PATTERN_TIME: DateTimeFormatter = DateTimeFormat.forPattern(Pattern.TIME)
 
-val PATTERN_TIME_MILLIS: DateTimeFormatter = DateTimeFormat.forPattern("HH.mm.ss.SSS")
+val PATTERN_TIME_MILLIS: DateTimeFormatter = DateTimeFormat.forPattern(Pattern.TIME_MILLIS)
 
 // do not compare with the past
 fun DateTime.isLater(plus: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {

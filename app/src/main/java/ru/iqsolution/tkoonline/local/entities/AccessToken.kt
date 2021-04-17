@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.Pattern
 
 @Entity(
     tableName = "tokens",
@@ -30,10 +31,8 @@ class AccessToken {
     @ColumnInfo(name = "t_car_id")
     var carId = 0
 
-    /**
-     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
-     */
     @NonNull
+    @Pattern(Pattern.DATETIME_ZONE)
     @ColumnInfo(name = "t_expires")
     lateinit var expires: DateTime
 

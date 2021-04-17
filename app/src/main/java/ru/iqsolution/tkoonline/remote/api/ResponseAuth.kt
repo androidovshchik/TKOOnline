@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.remote.api
 
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.Pattern
 
 class ResponseAuth {
 
@@ -11,9 +12,7 @@ class ResponseAuth {
     @SerializedName("expire")
     lateinit var expireTime: String
 
-    /**
-     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
-     */
+    @Pattern(Pattern.DATETIME_ZONE)
     @SerializedName("current_time")
     lateinit var currentTime: DateTime
 

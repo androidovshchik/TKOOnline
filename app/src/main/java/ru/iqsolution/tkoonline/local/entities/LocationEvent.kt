@@ -4,6 +4,7 @@ import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.extensions.isEarlier
 import ru.iqsolution.tkoonline.models.BasePoint
 import java.util.concurrent.TimeUnit
@@ -87,18 +88,14 @@ class LocationEvent() : SendEvent {
 
     class Data {
 
-        /**
-         * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
-         */
         @NonNull
+        @Pattern(Pattern.DATETIME_ZONE)
         @ColumnInfo(name = "le_when_time")
         @SerializedName("event_time")
         lateinit var whenTime: DateTime
 
-        /**
-         * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
-         */
         @NonNull
+        @Pattern(Pattern.DATETIME_ZONE)
         @ColumnInfo(name = "le_location_time")
         @SerializedName("time")
         lateinit var locationTime: DateTime

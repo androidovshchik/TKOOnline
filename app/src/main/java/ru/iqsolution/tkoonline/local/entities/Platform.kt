@@ -7,7 +7,9 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
+import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.models.Container
+import ru.iqsolution.tkoonline.models.ContainerType
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import java.io.Serializable
@@ -71,18 +73,14 @@ open class Platform : Serializable, Container, Location<Double> {
     @ColumnInfo(name = "p_container_count")
     override var containerCount = 0
 
-    /**
-     * [ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE]
-     */
     @NonNull
+    @Pattern(Pattern.TIME_ZONE)
     @SerializedName("time_limit_from")
     @ColumnInfo(name = "p_time_from")
     lateinit var timeLimitFrom: DateTime
 
-    /**
-     * [ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE]
-     */
     @NonNull
+    @Pattern(Pattern.TIME_ZONE)
     @SerializedName("time_limit_to")
     @ColumnInfo(name = "p_time_to")
     lateinit var timeLimitTo: DateTime

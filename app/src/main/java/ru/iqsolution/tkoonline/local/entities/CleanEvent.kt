@@ -4,6 +4,7 @@ import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
 
@@ -54,10 +55,8 @@ class CleanEvent() : Container, SendEvent {
     @ColumnInfo(name = "ce_related_id")
     var relatedId: Long? = null
 
-    /**
-     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
-     */
     @NonNull
+    @Pattern(Pattern.DATETIME_ZONE)
     @ColumnInfo(name = "ce_when_time")
     @SerializedName("time")
     lateinit var whenTime: DateTime

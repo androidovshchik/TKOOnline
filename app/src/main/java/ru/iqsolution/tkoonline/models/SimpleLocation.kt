@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline.models
 
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.Pattern
 import java.io.Serializable
 import kotlin.math.roundToInt
 
@@ -21,9 +22,7 @@ open class SimpleLocation : Serializable, Location<Double> {
      */
     var accuracy = 0f
 
-    /**
-     * [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
-     */
+    @Pattern(Pattern.DATETIME_ZONE)
     val locationTime: DateTime
 
     /**
