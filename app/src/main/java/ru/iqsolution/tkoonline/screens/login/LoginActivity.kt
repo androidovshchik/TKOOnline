@@ -152,23 +152,13 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
 
     override fun onUpdateAvailable() {
         skipCheckUpdates = true
-        alertDialog =
-            if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {
-                alert("Доступна новая версия приложения", "Обновление") {
-                    cancelButton()
-                    positiveButton(if (adminManager.isDeviceOwner) "Установить" else "Скачать") { _, _ ->
-                        waitDialog.show()
-                        presenter.installUpdate(applicationContext)
-                    }
-                }.display()
-            } else {
-                alert("Для установки требуется разблокировка", "Обновление") {
-                    cancelButton()
-                    positiveButton("Продолжить") { _, _ ->
-                        openPasswordDialog()
-                    }
-                }.display()
+        alertDialog = alert("Доступна новая версия приложения", "Обновление") {
+            cancelButton()
+            positiveButton(if (adminManager.isDeviceOwner) "Установить" else "Скачать") { _, _ ->
+                waitDialog.show()
+                presenter.installUpdate(applicationContext)
             }
+        }.display()
     }
 
     override fun cancelWork() {

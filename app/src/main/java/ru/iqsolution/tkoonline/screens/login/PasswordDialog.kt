@@ -23,13 +23,9 @@ class PasswordDialog : BaseDialogFragment() {
 
     private var attemptsCount = 0
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        root: Bundle?
-    ): View? {
-        super.onCreateView(inflater, container, root)
-        return inflater.inflate(R.layout.dialog_input, container, false)
+    override fun onCreateView(inflater: LayoutInflater, root: ViewGroup?, bundle: Bundle?): View? {
+        super.onCreateView(inflater, root, bundle)
+        return inflater.inflate(R.layout.dialog_input, root, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
