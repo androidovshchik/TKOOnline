@@ -3,8 +3,10 @@ package ru.iqsolution.tkoonline.remote
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATE
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE
+import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
 import java.lang.reflect.Type
@@ -22,9 +24,7 @@ class SerializedNameStrategy : ExclusionStrategy {
 
 class DateTimeSerializer : JsonSerializer<DateTime> {
 
-    /**
-     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE] is only supported
-     */
+    @Pattern(Pattern.DATETIME_ZONE)
     override fun serialize(
         src: DateTime,
         typeOfSrc: Type,
@@ -37,7 +37,7 @@ class DateTimeSerializer : JsonSerializer<DateTime> {
 class DateTimeDeserializer : JsonDeserializer<DateTime> {
 
     /**
-     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATE] is not supported
+     * NOTICE [PATTERN_DATE] is not supported
      */
     override fun deserialize(
         json: JsonElement,

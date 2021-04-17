@@ -8,6 +8,8 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.http.*
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATE
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.remote.api.*
 
@@ -24,7 +26,7 @@ interface Server {
     ): ResponseAuth
 
     /**
-     * @param date [ru.iqsolution.tkoonline.extensions.PATTERN_DATE]
+     * @param date [PATTERN_DATE]
      */
     @Tag("platforms")
     @Headers("Accept: application/json")
@@ -51,7 +53,7 @@ interface Server {
     ): Call<ResponseClean>
 
     /**
-     * @param time [ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE]
+     * @param time [PATTERN_DATETIME_ZONE]
      */
     @Tag("photo")
     @Multipart

@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.local
 
 import androidx.room.TypeConverter
 import org.joda.time.DateTime
+import ru.iqsolution.tkoonline.extensions.PATTERN_DATE
 import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE
 import ru.iqsolution.tkoonline.extensions.Pattern
@@ -17,7 +18,7 @@ object Converters {
     }
 
     /**
-     * NOTICE [ru.iqsolution.tkoonline.extensions.PATTERN_DATE] is not supported
+     * NOTICE [PATTERN_DATE] is not supported
      */
     @TypeConverter
     @JvmStatic

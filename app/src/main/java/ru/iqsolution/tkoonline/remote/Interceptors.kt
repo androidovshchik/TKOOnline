@@ -15,12 +15,7 @@ import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.ServerError
 import java.lang.ref.WeakReference
 
-@MustBeDocumented
-@Target(
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
-)
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Tag(val value: String)
 
