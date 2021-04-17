@@ -81,7 +81,7 @@ abstract class BaseApp : Application(), DIAware, CameraXConfig.Provider {
             notificationManager.createNotificationChannel(
                 NotificationChannel(
                     CHANNEL_DEFAULT,
-                    CHANNEL_DEFAULT,
+                    "Default channel",
                     NotificationManager.IMPORTANCE_LOW
                 ).also {
                     it.lockscreenVisibility = Notification.VISIBILITY_SECRET
