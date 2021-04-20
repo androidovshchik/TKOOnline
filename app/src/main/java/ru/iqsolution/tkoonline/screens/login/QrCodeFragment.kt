@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
+import android.telecom.TelecomManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import com.budiyev.android.codescanner.ErrorCallback
 import com.google.zxing.BarcodeFormat
 import kotlinx.android.synthetic.main.fragment_qr.*
 import org.jetbrains.anko.powerManager
+import org.jetbrains.anko.telecomManager
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.R
@@ -43,8 +45,8 @@ class QrCodeFragment : BaseFragment() {
         codeScanner.stopPreview()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_qr, container, false)
+    override fun onCreateView(inflater: LayoutInflater, root: ViewGroup?, bundle: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_qr, root, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,30 +88,41 @@ class QrCodeFragment : BaseFragment() {
     @SuppressLint("BatteryLife")
     private fun checkPermissions(): Boolean {
         val context = context ?: return false
+        val packageName = context.packageName
         // NOTICE this violates Google Play policy
-        if (!context.powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
-            startActivityForResult(
-                Intent(
-                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                    Uri.fromParts("package", context.packageName, null)
-                ), REQUEST_BATTERY
-            )
+        if (!context.powerManager.isIgnoringBatteryOptimizations(packageName)) {
+            startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                data = Uri.fromParts("package", packageName, null)
+            })
+            return false
+        }
+        if (context.telecomManager.defaultDialerPackage != packageName) {
+            // RoleManager is not working for some reasons
+            startActivity(Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).apply {
+                putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+            })
             return false
         }
         if (!context.areGranted(*DANGER_PERMISSIONS)) {
             DANGER_PERMISSIONS.forEach {
                 if (shouldShowRequestPermissionRationale(it)) {
-                    promptUser("Пожалуйста, предоставьте все разрешения", Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    promptUser(
+                        "Пожалуйста, предоставьте все разрешения",
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    )
                     return false
                 }
             }
-            requestPermissions(DANGER_PERMISSIONS, REQUEST_PERMISSIONS)
+            requestPermissions(DANGER_PERMISSIONS, 0)
             return false
         }
         if (isOreoPlus()) {
             if (!adminManager.isDeviceOwner) {
                 if (!context.packageManager.canRequestPackageInstalls()) {
-                    promptUser("Пожалуйста, разрешите установку обновлений", Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                    promptUser(
+                        "Пожалуйста, разрешите установку обновлений",
+                        Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES
+                    )
                     return false
                 }
             }
@@ -137,10 +150,6 @@ class QrCodeFragment : BaseFragment() {
     }
 
     companion object {
-
-        private const val REQUEST_PERMISSIONS = 100
-
-        private const val REQUEST_BATTERY = 110
 
         private val DANGER_PERMISSIONS = arrayOf(
             Manifest.permission.CAMERA,
