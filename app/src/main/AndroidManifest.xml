@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission
         android:name="android.permission.READ_PHONE_STATE"
         android:maxSdkVersion="29" />
@@ -34,6 +35,10 @@
         android:name="android.hardware.camera.flash"
         android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" />
+
+    <queries>
+        <package android:name="ru.yandex.yandexnavi" />
+    </queries>
 
     <application
         android:allowBackup="false"

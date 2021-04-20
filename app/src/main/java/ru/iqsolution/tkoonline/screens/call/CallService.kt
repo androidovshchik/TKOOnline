@@ -6,6 +6,7 @@ import android.telecom.VideoProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
+import ru.iqsolution.tkoonline.EXTRA_DIRECTION
 
 class CallService : InCallService() {
 
@@ -21,7 +22,12 @@ class CallService : InCallService() {
         state.tryEmit(call.state)
         call.registerCallback(callback)
         lastCall = call
-        startActivity(intentFor<DialActivity>().setData(call.details.handle).newTask())
+        with(call.details) {
+            startActivity(
+                intentFor<DialActivity>(EXTRA_DIRECTION to callDirection)
+                    .setData(handle).newTask()
+            )
+        }
     }
 
     override fun onCallRemoved(call: Call) {

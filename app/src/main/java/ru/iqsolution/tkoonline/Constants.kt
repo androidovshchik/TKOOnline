@@ -35,3 +35,5 @@ const val EXTRA_PHOTO_TITLE = "photo_title"
 
 // not required
 const val EXTRA_PHOTO_IDS = "photo_ids"
+
+const val EXTRA_DIRECTION = "direction"

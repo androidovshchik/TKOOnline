@@ -13,5 +13,7 @@ interface DialContract {
     interface View : IBaseView {
 
         fun onCallState(state: Int)
+
+        fun finish()
     }
 }

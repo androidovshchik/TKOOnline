@@ -1,12 +1,16 @@
 package ru.iqsolution.tkoonline.screens
 
 import org.kodein.di.*
+import ru.iqsolution.tkoonline.screens.call.DialActivity
+import ru.iqsolution.tkoonline.screens.call.DialPresenter
 import ru.iqsolution.tkoonline.screens.camera.CameraActivity
 import ru.iqsolution.tkoonline.screens.camera.CameraPresenter
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.login.LoginPresenter
 import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
 import ru.iqsolution.tkoonline.screens.outside.OutsidePresenter
+import ru.iqsolution.tkoonline.screens.phones.PhonesActivity
+import ru.iqsolution.tkoonline.screens.phones.PhonesPresenter
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoPresenter
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
@@ -20,6 +24,18 @@ val presenterModule = DI.Module("presenter") {
 
     bind<LoginPresenter>() with contexted<LoginActivity>().provider {
         LoginPresenter(instance()).apply {
+            attachView(context)
+        }
+    }
+
+    bind<PhonesPresenter>() with contexted<PhonesActivity>().provider {
+        PhonesPresenter(instance()).apply {
+            attachView(context)
+        }
+    }
+
+    bind<DialPresenter>() with contexted<DialActivity>().provider {
+        DialPresenter(instance()).apply {
             attachView(context)
         }
     }

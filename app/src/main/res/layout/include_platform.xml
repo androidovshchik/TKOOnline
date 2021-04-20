@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:adjustViewBounds="true"
-        android:background="?attr/selectableItemBackground"
+        android:background="?android:attr/selectableItemBackground"
         android:padding="14dp"
         android:src="@drawable/ic_yandex_navigator"
         android:visibility="gone"
