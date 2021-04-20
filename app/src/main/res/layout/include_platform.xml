@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingTop="20dp"
-    android:paddingBottom="20dp">
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/platform_id"
@@ -14,7 +13,9 @@
         android:layout_weight="4"
         android:lineSpacingExtra="3sp"
         android:paddingStart="40dp"
+        android:paddingTop="20dp"
         android:paddingEnd="0dp"
+        android:paddingBottom="20dp"
         android:textColor="@color/colorTextGrayLight"
         android:textSize="16sp"
         tools:text="ID: 1 234 567 890" />
@@ -25,8 +26,21 @@
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:lineSpacingExtra="3sp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
         android:textColor="@color/colorTextGrayLight"
         android:textSize="16sp"
         tools:text="с 07:00 до 23:00" />
+
+    <ImageView
+        android:id="@+id/iv_yandex"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:adjustViewBounds="true"
+        android:background="?attr/selectableItemBackground"
+        android:padding="14dp"
+        android:src="@drawable/ic_yandex_navigator"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </LinearLayout>

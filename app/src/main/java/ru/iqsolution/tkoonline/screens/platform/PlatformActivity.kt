@@ -1,18 +1,19 @@
 package ru.iqsolution.tkoonline.screens.platform
 
+import android.app.ActivityManager
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.collection.SimpleArrayMap
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.wrapContent
+import org.jetbrains.anko.*
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
@@ -109,10 +110,8 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 setTouchable(false)
                 clickedClean = false
                 platform.reset()
-                presenter.savePlatformEvents(platform, linkedPlatforms.apply {
-                    forEach {
-                        it.reset()
-                    }
+                presenter.savePlatformEvents(platform, linkedPlatforms.onEach {
+                    it.reset()
                 }, false)
             }
         }
@@ -134,6 +133,31 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 presenter.savePlatformEvents(platform, linkedPlatforms, true)
             }
         }
+        iv_yandex.isVisible =
+            activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE
+        iv_yandex.setOnClickListener {
+            val packageName = "ru.yandex.yandexnavi"
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.Builder()
+                    .scheme("yandexnavi")
+                    .appendPath("build_route_on_map")
+                    .appendQueryParameter("lat_to", platform.latitude.toString())
+                    .appendQueryParameter("lon_to", platform.longitude.toString())
+                    .build()
+                setPackage(packageName)
+            }
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent)
+            } else {
+                try {
+                    startActivity(Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse("market://details?id=$packageName")
+                    })
+                } catch (e: Throwable) {
+                    browse("https://play.google.com/store/apps/details?id=$packageName")
+                }
+            }
+        }
         attach(ContainerLayout(applicationContext).apply {
             initContainer(platform)
         }, 2)
@@ -145,9 +169,10 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     }
 
     private fun attach(layout: ContainerLayout, index: Int) {
-        platform_content.addView(layout, index, LinearLayout.LayoutParams(matchParent, wrapContent).apply {
+        val params = LinearLayout.LayoutParams(matchParent, wrapContent).apply {
             bottomMargin = dip(9)
-        })
+        }
+        platform_content.addView(layout, index, params)
     }
 
     /**

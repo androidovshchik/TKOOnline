@@ -91,6 +91,10 @@
             android:screenOrientation="sensorPortrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
+            android:name=".screens.call.DialActivity"
+            android:screenOrientation="sensorPortrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
             android:name=".screens.outside.OutsideActivity"
             android:screenOrientation="sensorPortrait"
             android:windowSoftInputMode="stateHidden" />
