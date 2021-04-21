@@ -13,13 +13,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
 import kotlinx.android.synthetic.main.activity_camera.*
 import org.jetbrains.anko.toast
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 import ru.iqsolution.tkoonline.EXTRA_PHOTO_PATH
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import timber.log.Timber
 import java.io.File
-import java.util.concurrent.Executor
 
 /**
  * Returns [android.app.Activity.RESULT_OK] if photo was captured
@@ -30,7 +29,11 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
 
     private var camera: Camera? = null
 
-    private lateinit var cameraExecutor: Executor
+    private var cameraProvider: ProcessCameraProvider? = null
+
+    private val cameraExecutor by lazy {
+        ContextCompat.getMainExecutor(applicationContext)
+    }
 
     private var imageCapture: ImageCapture? = null
 
@@ -38,11 +41,11 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
 
     override fun getLifecycle() = lifecycleRegistry
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         setContentView(R.layout.activity_camera)
-        cameraExecutor = ContextCompat.getMainExecutor(applicationContext)
         val scaleGestureDetector =
             ScaleGestureDetector(applicationContext, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
 
@@ -81,22 +84,20 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
             }
         }
         shot.setOnClickListener {
-            imageCapture?.let {
-                setTouchable(false)
-                val file = File(intent.getStringExtra(EXTRA_PHOTO_PATH) ?: return@let)
-                val output = ImageCapture.OutputFileOptions.Builder(file)
-                    .setMetadata(ImageCapture.Metadata())
-                    .build()
-                it.takePicture(output, cameraExecutor, this)
-            }
+            camera?.cameraControl?.enableTorch(false)?.addListener({
+                imageCapture?.let {
+                    setTouchable(false)
+                    val file = File(intent.getStringExtra(EXTRA_PHOTO_PATH) ?: return@let)
+                    val output = ImageCapture.OutputFileOptions.Builder(file)
+                        .setMetadata(ImageCapture.Metadata())
+                        .build()
+                    it.takePicture(output, cameraExecutor, this)
+                }
+            }, cameraExecutor)
         }
-        val cameraProvider = ProcessCameraProvider.getInstance(applicationContext)
-        cameraProvider.addListener(Runnable {
-            val preview = Preview.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
-                .setTargetRotation(Surface.ROTATION_0)
-                .build()
-            preview.setSurfaceProvider(camera_preview.createSurfaceProvider(null))
+        val cameraFuture = ProcessCameraProvider.getInstance(applicationContext)
+        cameraFuture.addListener({
+            cameraProvider = cameraFuture.get()
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .setTargetAspectRatio(AspectRatio.RATIO_16_9)
@@ -118,9 +119,15 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
             val cameraSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
+            val preview = Preview.Builder()
+                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+                .setTargetRotation(Surface.ROTATION_0)
+                .build()
+            preview.setSurfaceProvider(camera_preview.surfaceProvider)
+            cameraProvider?.unbindAll()
             try {
-                camera = cameraProvider.get()
-                    .bindToLifecycle(this, cameraSelector, preview, imageCapture)
+                camera = cameraProvider
+                    ?.bindToLifecycle(this, cameraSelector, preview, imageCapture)
                 toggleLight(preferences.enableLight)
             } catch (e: Throwable) {
                 Timber.e(e)
@@ -158,13 +165,13 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
     }
 
-    @Suppress("DEPRECATION")
-    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+    override fun onImageSaved(results: ImageCapture.OutputFileResults) {
         setResult(RESULT_OK)
         finish()
     }
 
     override fun onError(e: ImageCaptureException) {
+        toggleLight(preferences.enableLight)
         setTouchable(true)
         Timber.e(e)
         showError(e)
@@ -185,7 +192,7 @@ class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.
     @SuppressLint("RestrictedApi")
     override fun onDestroy() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-        CameraX.unbindAll()
+        cameraProvider?.unbindAll()
         super.onDestroy()
     }
 }
