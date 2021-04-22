@@ -9,9 +9,5 @@ interface IBasePresenter<V : IBaseView> : DIAware, CoroutineScope {
 
     fun attachView(view: V)
 
-    fun calculateSend()
-
-    fun loadRoute()
-
     fun detachView()
 }
