@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:padding="9dp"
+    tools:ignore="MissingPrefix">
+
+    <TextView
+        android:id="@+id/tv_name"
+        fontPath="fonts/Roboto-Regular.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="3sp"
+        android:textColor="@color/colorTextGrayDark"
+        android:textSize="15sp"
+        tools:text="Иванов Иван Иванович" />
+
+    <TextView
+        android:id="@+id/tv_phone"
+        fontPath="fonts/Roboto-Regular.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_name"
+        android:layout_marginTop="2dp"
+        android:lineSpacingExtra="3sp"
+        android:textColor="@color/colorTextGrayDark"
+        android:textSize="15sp"
+        tools:text="+7 999 999 99 99" />
+
+    <ImageView
+        android:id="@+id/iv_phone"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:padding="4dp"
+        android:src="@drawable/ic_baseline_phone_enabled_24"
+        tools:background="@drawable/oval_yellow" />
+
+</RelativeLayout>

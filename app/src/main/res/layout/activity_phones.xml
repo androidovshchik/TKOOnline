@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="MissingPrefix">
+
+    <fragment
+        android:id="@+id/status_fragment"
+        android:name="ru.iqsolution.tkoonline.screens.common.status.StatusFragment"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_height"
+        tools:layout="@layout/include_status" />
+
+    <include
+        android:id="@+id/phones_toolbar"
+        layout="@layout/include_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height" />
+
+    <TextView
+        fontPath="fonts/Roboto-Regular.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="12dp"
+        android:gravity="center"
+        android:text="Доступные контакты:"
+        android:textColor="@color/colorTextBlack87"
+        android:textSize="22sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/phones_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_phone" />
+
+</LinearLayout>
