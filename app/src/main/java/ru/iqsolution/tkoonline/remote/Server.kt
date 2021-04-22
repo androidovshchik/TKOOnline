@@ -43,6 +43,13 @@ interface Server {
         @Header("Authorization") token: String
     ): ResponseTypes
 
+    @Tag("phones")
+    @Headers("Accept: application/json")
+    @GET("v1/dispatchers")
+    suspend fun getPhones(
+        @Header("Authorization") token: String
+    ): ResponsePhones
+
     @Tag("clean")
     @Headers("Accept: application/json")
     @POST("v1/container-sites/{kp_id}/events")
