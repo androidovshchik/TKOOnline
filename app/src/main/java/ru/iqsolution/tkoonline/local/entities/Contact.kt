@@ -2,13 +2,17 @@ package ru.iqsolution.tkoonline.local.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import org.joda.time.DateTime
 import java.io.Serializable
 
 @Entity(
-    tableName = "contacts"
+    tableName = "contacts",
+    indices = [
+        Index(value = ["c_phone"], unique = true)
+    ]
 )
 class Contact : Serializable {
 

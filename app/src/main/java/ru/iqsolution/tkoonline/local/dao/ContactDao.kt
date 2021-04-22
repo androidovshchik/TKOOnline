@@ -14,6 +14,15 @@ interface ContactDao {
     )
     fun getAll(): List<Contact>
 
+    @Query(
+        """
+        SELECT * FROM contacts 
+        WHERE c_phone = :numbers
+        LIMIT 1
+    """
+    )
+    fun getByPhone(numbers: String?): Contact?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(items: List<Contact>)
 
