@@ -1,19 +1,25 @@
 package ru.iqsolution.tkoonline.screens.phones
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.item_phone.view.*
+import org.joda.time.DateTime
+import org.joda.time.Duration
+import ru.iqsolution.tkoonline.PHONE_MASK
 import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.extensions.ifNullOrBlank
 import ru.iqsolution.tkoonline.extensions.inflate
 import ru.iqsolution.tkoonline.local.entities.Contact
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
+import ru.tinkoff.decoro.MaskImpl
+import ru.tinkoff.decoro.parser.UnderscoreDigitSlotsParser
+import java.util.concurrent.TimeUnit
 
-class ContactsAdapter(context: Context) : BaseAdapter<Contact>() {
+class ContactsAdapter : BaseAdapter<Contact>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(parent.inflate(R.layout.item_phone))
@@ -27,11 +33,15 @@ class ContactsAdapter(context: Context) : BaseAdapter<Contact>() {
 
         private val image: ImageView = itemView.iv_phone
 
+        private val mask = MaskImpl.createTerminated(
+            UnderscoreDigitSlotsParser().parseSlots(PHONE_MASK)
+        )
+
         init {
             itemView.setOnClickListener {
                 try {
                     val position = bindingAdapterPosition
-                    //reference?.get()?.onAdapterEvent(position, item)
+                    reference?.get()?.onAdapterEvent(position, items[position])
                 } catch (e: Throwable) {
                 }
             }
@@ -39,8 +49,19 @@ class ContactsAdapter(context: Context) : BaseAdapter<Contact>() {
 
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: Contact) {
-            name.text = item.name
-            phone.text = item.phone
+            name.text = item.name.ifNullOrBlank { "Неизвестно" }
+            mask.insertFront(item.phone)
+            phone.text = mask.toString()
+            val now = DateTime.now()
+            val online = item.whenLogged
+            val delay = if (online != null) Duration(online, now).millis else Long.MAX_VALUE
+            when {
+                delay > TimeUnit.DAYS.toMillis(1) ->
+                    image.setBackgroundResource(R.drawable.oval_dark_gray)
+                delay > TimeUnit.MINUTES.toMillis(30) ->
+                    image.setBackgroundResource(R.drawable.oval_yellow)
+                else -> image.setBackgroundResource(R.drawable.oval_green)
+            }
         }
     }
 }

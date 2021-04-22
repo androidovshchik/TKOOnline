@@ -6,6 +6,8 @@ const val CHANNEL_DEFAULT = "default_channel"
 
 const val PASSWORD_RETRY = 5 * 60 * 1000L
 
+const val PHONE_MASK = "+_ ___ ___ __ __"
+
 const val ACTION_LOCATION = "action_location"
 
 const val ACTION_CLOUD = "action_cloud"
