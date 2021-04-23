@@ -63,7 +63,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="44dp"
         android:textColor="@android:color/white"
-        android:textSize="36sp"
+        android:textSize="34sp"
         tools:text="+7 999 999 99 99" />
 
     <TextView

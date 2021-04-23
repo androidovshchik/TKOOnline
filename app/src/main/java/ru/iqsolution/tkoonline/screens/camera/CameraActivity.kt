@@ -16,14 +16,14 @@ import org.jetbrains.anko.toast
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.EXTRA_PHOTO_PATH
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 import timber.log.Timber
 import java.io.File
 
 /**
  * Returns [android.app.Activity.RESULT_OK] if photo was captured
  */
-class CameraActivity : BaseActivity<CameraContract.Presenter>(), CameraContract.View {
+class CameraActivity : UserActivity<CameraContract.Presenter>(), CameraContract.View {
 
     override val presenter: CameraPresenter by instance()
 

@@ -43,6 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="20"
             tools:listitem="@layout/item_platform" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -53,21 +54,23 @@
         android:layout_above="@+id/platforms_buttons"
         android:background="@drawable/top_shadow" />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/platforms_buttons"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="4dp">
 
         <Button
             android:id="@+id/platforms_complete"
             fontPath="fonts/Roboto-Medium.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="6dp"
             android:background="@drawable/button_green"
             android:foreground="?android:attr/selectableItemBackground"
             android:lineSpacingExtra="3sp"
@@ -78,20 +81,26 @@
             android:textColor="@android:color/white"
             android:textSize="16sp" />
 
-        <View
-            android:id="@+id/platforms_placeholder"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+        <ImageView
+            android:id="@+id/iv_phone"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/oval_green"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_phone_enabled_24"
             android:visibility="gone"
-            tools:visibility="invisible" />
+            tools:visibility="visible" />
 
         <Button
             android:id="@+id/platforms_photo"
             fontPath="fonts/Roboto-Medium.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="6dp"
             android:background="@drawable/button_gray"
             android:foreground="?android:attr/selectableItemBackground"
             android:lineSpacingExtra="3sp"
@@ -104,6 +113,6 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>
