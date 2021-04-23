@@ -10,7 +10,6 @@ import android.location.Location
 import android.os.IBinder
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.chibatching.kotpref.bulk
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
@@ -20,10 +19,7 @@ import com.rabbitmq.client.ConnectionFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.activityManager
-import org.jetbrains.anko.connectivityManager
-import org.jetbrains.anko.startService
-import org.jetbrains.anko.stopService
+import org.jetbrains.anko.*
 import org.joda.time.DateTime
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
@@ -36,8 +32,7 @@ import ru.iqsolution.tkoonline.models.BasePoint
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.models.TelemetryConfig
 import ru.iqsolution.tkoonline.models.TelemetryState
-import ru.iqsolution.tkoonline.screens.LockActivity
-import ru.iqsolution.tkoonline.screens.login.LoginActivity
+import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -67,8 +62,6 @@ class TelemetryService : BaseService(), TelemetryListener {
     private val gsonPretty: Gson by instance(arg = true)
 
     private val gsonMin: Gson by instance(arg = false)
-
-    private lateinit var broadcastManager: LocalBroadcastManager
 
     private lateinit var config: TelemetryConfig
 
@@ -109,7 +102,6 @@ class TelemetryService : BaseService(), TelemetryListener {
                 .build()
         )
         acquireWakeLock()
-        broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
         config = try {
             if (BuildConfig.PROD) {
                 TelemetryConfig()
@@ -284,7 +276,7 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     override fun onLocationAvailability(available: Boolean) {
         preferenceHolder.save(preferences)
-        broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
+        sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_AVAILABILITY, available)
         })
     }
@@ -340,33 +332,32 @@ class TelemetryService : BaseService(), TelemetryListener {
             longitude = location.longitude.toFloat()
             locationTime = location.locationTime.toString(PATTERN_DATETIME_ZONE)
         }
-        broadcastManager.sendBroadcast(Intent(ACTION_LOCATION).apply {
+        sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_LOCATION, location)
         })
     }
 
     @WorkerThread
     private fun checkCount() {
-        broadcastManager.sendBroadcast(Intent(ACTION_ROUTE))
+        sendBroadcast(Intent(ACTION_ROUTE))
         val locationCount = db.locationDao().getSendCount()
         if (locationCount <= 0) {
-            broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+            sendBroadcast(Intent(ACTION_CLOUD))
         }
     }
 
     @WorkerThread
     private fun checkActivity(): Boolean {
-        return when (activityManager.getTopActivity(packageName)) {
-            null, LockActivity::class.java.name, LoginActivity::class.java.name -> {
-                // NOTICE without saving in persistent storage
-                preferenceHolder.logout()
-                abortConnection()
-                stopForeground(true)
-                stopSelf()
-                return false
-            }
-            else -> true
+        val name = activityManager.getTopActivity(packageName)
+        if (name.isNullOrBlank() || !UserActivity::class.java.isAssignableFrom(Class.forName(name))) {
+            // NOTICE without saving in persistent storage
+            preferenceHolder.logout()
+            abortConnection()
+            stopForeground(true)
+            stopSelf()
+            return false
         }
+        return true
     }
 
     /**
@@ -403,7 +394,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
         event?.let {
             db.locationDao().insert(it)
-            broadcastManager.sendBroadcast(Intent(ACTION_ROUTE))
+            sendBroadcast(Intent(ACTION_ROUTE))
         }
     }
 

@@ -31,7 +31,7 @@ import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.localModule
 import ru.iqsolution.tkoonline.remote.remoteModule
 import ru.iqsolution.tkoonline.screens.LockActivity
-import ru.iqsolution.tkoonline.screens.login.LoginActivity
+import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 import ru.iqsolution.tkoonline.workers.SendWorker
 import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
@@ -119,13 +119,11 @@ abstract class BaseApp : Application(), DIAware, CameraXConfig.Provider {
 fun Context.exitUnexpected(): Boolean {
     SendWorker.cancel(applicationContext)
     UpdateWorker.cancel(applicationContext)
-    when (activityManager.getTopActivity(packageName)) {
-        null -> return false
-        LockActivity::class.java.name, LoginActivity::class.java.name -> {
-        }
-        else -> {
+    activityManager.getTopActivity(packageName)?.let {
+        if (UserActivity::class.java.isAssignableFrom(Class.forName(it))) {
             startActivity(intentFor<LockActivity>(EXTRA_TROUBLE_EXIT to true).clearTask().newTask())
         }
+        return true
     }
-    return true
+    return false
 }
