@@ -84,7 +84,7 @@
             android:name=".screens.login.LoginActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.Translucent"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".screens.platforms.PlatformsActivity"

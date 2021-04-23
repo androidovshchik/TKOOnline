@@ -70,5 +70,10 @@ class Migration1112 : Migration(11, 12) {
             CREATE TABLE IF NOT EXISTS `contacts` (`c_id` INTEGER NOT NULL, `c_name` TEXT, `c_phone` TEXT, `c_when_logged` TEXT, PRIMARY KEY(`c_id`));
         """.trimIndent()
         )
+        database.execSQL(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS `index_contacts_c_phone` ON `contacts` (`c_phone`);
+        """.trimIndent()
+        )
     }
 }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 12,
-    "identityHash": "408ad9b61cba7815e16e48b26946f876",
+    "identityHash": "694b2faf66b2cecbfed05f7221edcca7",
     "entities": [
       {
         "tableName": "tokens",
@@ -611,14 +611,23 @@
           ],
           "autoGenerate": false
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_contacts_c_phone",
+            "unique": true,
+            "columnNames": [
+              "c_phone"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_contacts_c_phone` ON `${TABLE_NAME}` (`c_phone`)"
+          }
+        ],
         "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '408ad9b61cba7815e16e48b26946f876')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '694b2faf66b2cecbfed05f7221edcca7')"
     ]
   }
 }
