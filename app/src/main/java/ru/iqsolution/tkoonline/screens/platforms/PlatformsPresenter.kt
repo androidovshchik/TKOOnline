@@ -6,20 +6,17 @@ import androidx.work.WorkInfo
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.kodein.di.instance
-import ru.iqsolution.tkoonline.local.entities.CleanEvent
-import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.local.entities.PhotoType
-import ru.iqsolution.tkoonline.local.entities.Platform
+import ru.iqsolution.tkoonline.local.entities.*
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.remote.Server
-import ru.iqsolution.tkoonline.screens.base.BasePresenter
+import ru.iqsolution.tkoonline.screens.base.user.UserPresenter
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.workers.SendWorker
 import timber.log.Timber
 import java.net.UnknownHostException
 
-class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.View>(context),
+class PlatformsPresenter(context: Context) : UserPresenter<PlatformsContract.View>(context),
     PlatformsContract.Presenter {
 
     private val server: Server by instance()
@@ -31,13 +28,32 @@ class PlatformsPresenter(context: Context) : BasePresenter<PlatformsContract.Vie
     @Volatile
     private var init = false
 
-    override fun loadPlatformsTypes(refresh: Boolean) {
+    override fun loadRemoteData(refresh: Boolean) {
         baseJob.cancelChildren()
         val day = preferences.serverDay
         val header = preferences.authHeader.orEmpty()
         launch {
             init = !refresh
             while (true) {
+                val contacts = mutableListOf<Contact>()
+                try {
+                    contacts.addAll(server.getPhones(header).data)
+                    if (init) {
+                        Timber.i(gson.toJson(contacts))
+                    }
+                    withContext(Dispatchers.IO) {
+                        db.contactDao().safeInsert(contacts)
+                    }
+                } catch (e: Throwable) {
+                    if (e is UnknownHostException) {
+                        contacts.addAll(withContext(Dispatchers.IO) {
+                            db.contactDao().getAll()
+                        })
+                    } else if (e is CancellationException) {
+                        throw e
+                    }
+                }
+                reference.get()?.onPhonesCount(contacts.size)
                 val photoTypes = mutableListOf<PhotoType>()
                 try {
                     photoTypes.addAll(server.getPhotoTypes(header).data)
