@@ -45,8 +45,8 @@ class QrCodeFragment : BaseFragment() {
         codeScanner.stopPreview()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, root: ViewGroup?, bundle: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_qr, root, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_qr, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -89,8 +89,8 @@ class QrCodeFragment : BaseFragment() {
     private fun checkPermissions(): Boolean {
         val context = context ?: return false
         val packageName = context.packageName
-        // NOTICE this violates Google Play policy
         if (!context.powerManager.isIgnoringBatteryOptimizations(packageName)) {
+            // NOTICE this violates Google Play policy
             startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
                 data = Uri.fromParts("package", packageName, null)
             })
@@ -106,10 +106,7 @@ class QrCodeFragment : BaseFragment() {
         if (!context.areGranted(*DANGER_PERMISSIONS)) {
             DANGER_PERMISSIONS.forEach {
                 if (shouldShowRequestPermissionRationale(it)) {
-                    promptUser(
-                        "Пожалуйста, предоставьте все разрешения",
-                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    )
+                    promptUser("Пожалуйста, предоставьте все разрешения", Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     return false
                 }
             }
@@ -119,10 +116,7 @@ class QrCodeFragment : BaseFragment() {
         if (isOreoPlus()) {
             if (!adminManager.isDeviceOwner) {
                 if (!context.packageManager.canRequestPackageInstalls()) {
-                    promptUser(
-                        "Пожалуйста, разрешите установку обновлений",
-                        Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES
-                    )
+                    promptUser("Пожалуйста, разрешите установку обновлений", Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                     return false
                 }
             }

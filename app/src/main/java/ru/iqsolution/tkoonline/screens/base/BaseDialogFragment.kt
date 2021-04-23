@@ -22,7 +22,7 @@ abstract class BaseDialogFragment : DialogFragment(), DIAware {
         return AppDialog(activity)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, root: ViewGroup?, bundle: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
         return null
     }

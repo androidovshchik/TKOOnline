@@ -7,8 +7,7 @@ import androidx.work.WorkerParameters
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
 
-abstract class BaseWorker(context: Context, params: WorkerParameters) : Worker(context, params),
-    DIAware {
+abstract class BaseWorker(context: Context, params: WorkerParameters) : Worker(context, params), DIAware {
 
     override val di by closestDI(context)
 

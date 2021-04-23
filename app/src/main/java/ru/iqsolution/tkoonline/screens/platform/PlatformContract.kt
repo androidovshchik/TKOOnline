@@ -20,11 +20,7 @@ interface PlatformContract {
 
         fun loadPhotoEvents(kpId: Int)
 
-        fun savePlatformEvents(
-            platform: PlatformContainers,
-            platforms: List<Platform>,
-            clear: Boolean
-        )
+        fun savePlatformEvents(platform: PlatformContainers, platforms: List<Platform>, clear: Boolean)
     }
 
     interface View : IUserView, GalleryListener {

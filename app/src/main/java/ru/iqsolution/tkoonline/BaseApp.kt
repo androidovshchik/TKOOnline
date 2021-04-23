@@ -80,11 +80,7 @@ abstract class BaseApp : Application(), DIAware, CameraXConfig.Provider {
         init()
         if (isOreoPlus()) {
             notificationManager.createNotificationChannel(
-                NotificationChannel(
-                    CHANNEL_DEFAULT,
-                    "Default channel",
-                    NotificationManager.IMPORTANCE_LOW
-                ).also {
+                NotificationChannel(CHANNEL_DEFAULT, "Default channel", NotificationManager.IMPORTANCE_LOW).also {
                     it.lockscreenVisibility = Notification.VISIBILITY_SECRET
                 }
             )

@@ -37,11 +37,9 @@ class PlatformPresenter(context: Context) : UserPresenter<PlatformContract.View>
                             .generatePrivate(PKCS8EncodedKeySpec(key))
                     )
                     signature.update(uri.toString().toByteArray(Charsets.UTF_8))
+                    val sign = Base64.encodeToString(signature.sign(), Base64.NO_WRAP)
                     uri.buildUpon()
-                        .appendQueryParameter(
-                            "signature",
-                            Base64.encodeToString(signature.sign(), Base64.NO_WRAP)
-                        )
+                        .appendQueryParameter("signature", sign)
                         .build()
                 } catch (e: Throwable) {
                     Timber.e(e)

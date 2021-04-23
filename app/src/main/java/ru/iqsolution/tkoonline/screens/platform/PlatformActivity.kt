@@ -163,7 +163,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
             initContainer(platform)
         }, 2)
         setTouchable(false)
-        presenter.apply {
+        with(presenter) {
             generateSignature(platform.latitude, platform.longitude)
             loadLinkedPlatforms(platform.linkedIds.toList())
             loadPhotoEvents(platform.kpId)
@@ -171,10 +171,9 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
     }
 
     private fun attach(layout: ContainerLayout, index: Int) {
-        val params = LinearLayout.LayoutParams(matchParent, wrapContent).apply {
+        platform_content.addView(layout, index, LinearLayout.LayoutParams(matchParent, wrapContent).apply {
             bottomMargin = dip(9)
-        }
-        platform_content.addView(layout, index, params)
+        })
     }
 
     /**

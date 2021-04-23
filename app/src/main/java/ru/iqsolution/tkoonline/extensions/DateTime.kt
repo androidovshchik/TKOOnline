@@ -5,6 +5,7 @@ import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
+@Suppress("unused")
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.SOURCE)
 annotation class Pattern(val format: String) {
