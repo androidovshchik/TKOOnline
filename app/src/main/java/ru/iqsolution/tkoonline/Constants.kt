@@ -14,6 +14,8 @@ const val ACTION_CLOUD = "action_cloud"
 
 const val ACTION_ROUTE = "action_route"
 
+const val ACTION_AUDIO = "action_audio"
+
 const val EXTRA_TROUBLE_EXIT = "trouble_exit"
 
 const val EXTRA_TELEMETRY_TASK = "telemetry_task"
@@ -38,4 +40,8 @@ const val EXTRA_PHOTO_TITLE = "photo_title"
 // not required
 const val EXTRA_PHOTO_IDS = "photo_ids"
 
+const val EXTRA_CONTACT = "contact"
+
 const val EXTRA_DIRECTION = "direction"
+
+const val EXTRA_ROUTE = "route"

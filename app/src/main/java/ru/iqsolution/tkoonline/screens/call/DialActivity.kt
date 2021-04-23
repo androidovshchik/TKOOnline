@@ -1,15 +1,16 @@
 package ru.iqsolution.tkoonline.screens.call
 
+import android.content.Intent
 import android.os.Bundle
 import android.telecom.Call
+import android.telecom.CallAudioState
 import android.view.WindowManager
 import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.activity_dial.*
+import kotlinx.android.synthetic.main.include_toolbar.*
+import org.jetbrains.anko.audioManager
 import org.kodein.di.instance
-import ru.iqsolution.tkoonline.EXTRA_CONTACT
-import ru.iqsolution.tkoonline.EXTRA_DIRECTION
-import ru.iqsolution.tkoonline.PHONE_MASK
-import ru.iqsolution.tkoonline.R
+import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.ifNullOrBlank
 import ru.iqsolution.tkoonline.local.entities.Contact
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
@@ -21,6 +22,8 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
 
     override val presenter: DialPresenter by instance()
 
+    private var lastState = Call.STATE_NEW
+
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +31,14 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
         window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
         window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
         setContentView(R.layout.activity_dial)
+        toolbar_back.setOnClickListener {
+            onBackPressed()
+        }
+        toolbar_title.text = "Завершить вызов"
+        iv_speaker.setOnClickListener {
+            updateSpeaker(!audioManager.isSpeakerphoneOn)
+        }
+        updateSpeaker(preferences.useSpeaker)
         when (intent.getIntExtra(EXTRA_DIRECTION, Call.Details.DIRECTION_UNKNOWN)) {
             Call.Details.DIRECTION_INCOMING -> {
                 tv_number.text = "Звонит:"
@@ -60,9 +71,23 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
     }
 
     override fun onCallState(state: Int) {
+        lastState = state
         tv_state.text = getStateDesc(state)
         btn_answer.isVisible = state == Call.STATE_RINGING
         btn_hangup.isEnabled = state in Call.STATE_DIALING..Call.STATE_ACTIVE
+    }
+
+    private fun updateSpeaker(enable: Boolean) {
+        val intent = Intent(ACTION_AUDIO)
+        if (enable) {
+            sendBroadcast(intent.putExtra(EXTRA_ROUTE, CallAudioState.ROUTE_SPEAKER))
+            preferences.useSpeaker = true
+            iv_speaker.setImageResource(R.drawable.ic_baseline_volume_up_24)
+        } else {
+            sendBroadcast(intent.putExtra(EXTRA_ROUTE, CallAudioState.ROUTE_EARPIECE))
+            preferences.useSpeaker = false
+            iv_speaker.setImageResource(R.drawable.ic_baseline_volume_off_24)
+        }
     }
 
     private fun getStateDesc(state: Int): String {
@@ -83,5 +108,12 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
                 "Неизвестно..."
             }
         }
+    }
+
+    override fun onBackPressed() {
+        if (lastState != Call.STATE_DISCONNECTING && lastState != Call.STATE_DISCONNECTED) {
+            CallService.hangup()
+        }
+        super.onBackPressed()
     }
 }

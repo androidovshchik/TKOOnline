@@ -102,6 +102,8 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     // Logout on background thread
     var invalidAuth by booleanPref(false, "0x16")
 
+    var useSpeaker by booleanPref(false, "0x17")
+
     val isLoggedIn: Boolean
         get() = try {
             check(!invalidAuth) { "invalidAuth" }
