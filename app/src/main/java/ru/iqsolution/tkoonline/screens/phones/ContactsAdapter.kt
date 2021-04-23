@@ -49,7 +49,7 @@ class ContactsAdapter : BaseAdapter<Contact>() {
 
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: Contact) {
-            name.text = item.name.ifNullOrBlank { "Неизвестно" }
+            name.text = item.name.ifNullOrBlank { "Неизвестный" }
             mask.insertFront(item.phone)
             phone.text = mask.toString()
             val now = DateTime.now()

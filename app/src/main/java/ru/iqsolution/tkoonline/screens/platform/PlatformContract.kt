@@ -1,15 +1,18 @@
 package ru.iqsolution.tkoonline.screens.platform
 
+import android.net.Uri
 import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.models.PlatformContainers
-import ru.iqsolution.tkoonline.screens.base.IBasePresenter
-import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.screens.base.user.IUserPresenter
+import ru.iqsolution.tkoonline.screens.base.user.IUserView
 
 interface PlatformContract {
 
-    interface Presenter : IBasePresenter<View> {
+    interface Presenter : IUserPresenter<View> {
+
+        fun calculateSignature(lat: Double, lon: Double)
 
         fun loadLinkedPlatforms(linkedIds: List<Int>)
 
@@ -24,7 +27,9 @@ interface PlatformContract {
         )
     }
 
-    interface View : IBaseView, GalleryListener {
+    interface View : IUserView, GalleryListener {
+
+        var signature: Uri?
 
         fun onLinkedPlatforms(platforms: List<Platform>)
 

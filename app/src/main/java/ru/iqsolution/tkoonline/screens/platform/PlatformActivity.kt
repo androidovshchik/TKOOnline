@@ -27,8 +27,8 @@ import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
-import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.alert
+import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 import ru.iqsolution.tkoonline.screens.problem.ProblemActivity
@@ -37,7 +37,7 @@ import ru.iqsolution.tkoonline.workers.SendWorker
 /**
  * Returns [android.app.Activity.RESULT_OK] if there were changes
  */
-class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformContract.View {
+class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformContract.View {
 
     override val presenter: PlatformPresenter by instance()
 
@@ -56,6 +56,12 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
     private var clickedClean: Boolean? = null
 
     private var hasPhotoChanges = false
+
+    override var signature: Uri? = null
+        set(value) {
+            field = value
+            ib_yandex.isEnabled = value != null
+        }
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,17 +139,12 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
                 presenter.savePlatformEvents(platform, linkedPlatforms, true)
             }
         }
-        iv_yandex.isVisible =
+        ib_yandex.isVisible =
             activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE
-        iv_yandex.setOnClickListener {
+        ib_yandex.setOnClickListener {
             val packageName = "ru.yandex.yandexnavi"
             val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.Builder()
-                    .scheme("yandexnavi")
-                    .appendPath("build_route_on_map")
-                    .appendQueryParameter("lat_to", platform.latitude.toString())
-                    .appendQueryParameter("lon_to", platform.longitude.toString())
-                    .build()
+                data = signature
                 setPackage(packageName)
             }
             if (intent.resolveActivity(packageManager) != null) {
@@ -163,6 +164,7 @@ class PlatformActivity : BaseActivity<PlatformContract.Presenter>(), PlatformCon
         }, 2)
         setTouchable(false)
         presenter.apply {
+            calculateSignature(platform.latitude, platform.longitude)
             loadLinkedPlatforms(platform.linkedIds.toList())
             loadPhotoEvents(platform.kpId)
         }
