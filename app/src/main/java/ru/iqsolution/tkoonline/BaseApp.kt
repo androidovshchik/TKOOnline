@@ -32,6 +32,7 @@ import ru.iqsolution.tkoonline.local.localModule
 import ru.iqsolution.tkoonline.remote.remoteModule
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.user.UserActivity
+import ru.iqsolution.tkoonline.screens.call.DialActivity
 import ru.iqsolution.tkoonline.workers.SendWorker
 import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
@@ -120,7 +121,7 @@ fun Context.exitUnexpected(): Boolean {
     SendWorker.cancel(applicationContext)
     UpdateWorker.cancel(applicationContext)
     activityManager.getTopActivity(packageName)?.let {
-        if (UserActivity::class.java.isAssignableFrom(Class.forName(it))) {
+        if (UserActivity.isAssignableFrom(it) || it == DialActivity::class.java.name) {
             startActivity(intentFor<LockActivity>(EXTRA_TROUBLE_EXIT to true).clearTask().newTask())
         }
         return true

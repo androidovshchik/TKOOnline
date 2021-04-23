@@ -32,7 +32,8 @@ import ru.iqsolution.tkoonline.models.BasePoint
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.models.TelemetryConfig
 import ru.iqsolution.tkoonline.models.TelemetryState
-import ru.iqsolution.tkoonline.screens.base.user.UserActivity
+import ru.iqsolution.tkoonline.screens.LockActivity
+import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -348,16 +349,17 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     @WorkerThread
     private fun checkActivity(): Boolean {
-        val name = activityManager.getTopActivity(packageName)
-        if (name.isNullOrBlank() || !UserActivity::class.java.isAssignableFrom(Class.forName(name))) {
-            // NOTICE without saving in persistent storage
-            preferenceHolder.logout()
-            abortConnection()
-            stopForeground(true)
-            stopSelf()
-            return false
+        return when (activityManager.getTopActivity(packageName)) {
+            null, LockActivity::class.java.name, LoginActivity::class.java.name -> {
+                // NOTICE without saving in persistent storage
+                preferenceHolder.logout()
+                abortConnection()
+                stopForeground(true)
+                stopSelf()
+                return false
+            }
+            else -> true
         }
-        return true
     }
 
     /**
