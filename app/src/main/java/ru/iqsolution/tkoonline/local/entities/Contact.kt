@@ -28,6 +28,9 @@ class Contact : Serializable {
     @SerializedName("phone")
     @ColumnInfo(name = "c_phone")
     var phone: String? = null
+        set(value) {
+            field = value?.replace("[^+0-9*#]".toRegex(), "")
+        }
 
     @SerializedName("last_login_date")
     @ColumnInfo(name = "c_when_logged")

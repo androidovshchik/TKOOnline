@@ -3,15 +3,13 @@ package ru.iqsolution.tkoonline.screens.phones
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.telecom.Call
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.activity_phones.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.kodein.di.instance
-import ru.iqsolution.tkoonline.EXTRA_CONTACT
-import ru.iqsolution.tkoonline.EXTRA_DIRECTION
+import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.entities.Contact
 import ru.iqsolution.tkoonline.screens.base.user.UserActivity
@@ -43,6 +41,18 @@ class PhonesActivity : UserActivity<PhonesContract.Presenter>(), PhonesContract.
 
     override fun onContacts(list: List<Contact>) {
         contactsAdapter.items.clear()
+        if (BuildConfig.DEBUG) {
+            contactsAdapter.items.add(Contact().apply {
+                id = Long.MAX_VALUE
+                name = "Баланс"
+                phone = "*100#"
+            })
+            contactsAdapter.items.add(Contact().apply {
+                id = Long.MAX_VALUE - 1
+                name = "Автоинформирование"
+                phone = "+78002509890"
+            })
+        }
         contactsAdapter.items.addAll(list)
         contactsAdapter.notifyDataSetChanged()
     }
@@ -50,8 +60,6 @@ class PhonesActivity : UserActivity<PhonesContract.Presenter>(), PhonesContract.
     override fun onAdapterEvent(position: Int, item: Contact) {
         startActivity(Intent(Intent.ACTION_CALL).apply {
             data = Uri.parse("tel:${item.phone}")
-            putExtra(EXTRA_CONTACT, item.name)
-            putExtra(EXTRA_DIRECTION, Call.Details.DIRECTION_OUTGOING)
         })
     }
 }

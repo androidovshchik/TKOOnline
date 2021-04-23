@@ -3,6 +3,8 @@ package ru.iqsolution.tkoonline.screens.call
 import android.content.Intent
 import android.os.Bundle
 import android.telecom.Call
+import android.telecom.Call.Details.DIRECTION_INCOMING
+import android.telecom.Call.Details.DIRECTION_OUTGOING
 import android.telecom.CallAudioState
 import android.view.WindowManager
 import androidx.core.view.isVisible
@@ -10,12 +12,13 @@ import kotlinx.android.synthetic.main.activity_dial.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.audioManager
 import org.kodein.di.instance
-import ru.iqsolution.tkoonline.*
+import ru.iqsolution.tkoonline.ACTION_AUDIO
+import ru.iqsolution.tkoonline.EXTRA_DIRECTION
+import ru.iqsolution.tkoonline.EXTRA_ROUTE
+import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.ifNullOrBlank
 import ru.iqsolution.tkoonline.local.entities.Contact
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
-import ru.tinkoff.decoro.MaskImpl
-import ru.tinkoff.decoro.parser.UnderscoreDigitSlotsParser
 import timber.log.Timber
 
 class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
@@ -39,13 +42,10 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
             toggleSpeaker(!audioManager.isSpeakerphoneOn)
         }
         toggleSpeaker(preferences.useSpeaker)
-        when (intent.getIntExtra(EXTRA_DIRECTION, Call.Details.DIRECTION_UNKNOWN)) {
-            Call.Details.DIRECTION_INCOMING -> {
-                tv_status.text = "Звонит:"
-            }
-            Call.Details.DIRECTION_OUTGOING -> {
-                tv_status.text = "Звоним:"
-            }
+        if (intent.getIntExtra(EXTRA_DIRECTION, DIRECTION_OUTGOING) == DIRECTION_INCOMING) {
+            tv_status.text = "Звонит:"
+        } else {
+            tv_status.text = "Звоним:"
         }
         btn_answer.setOnClickListener {
             CallService.answer()
@@ -55,15 +55,8 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
         }
         presenter.observeCalls()
         val phone = intent.data?.schemeSpecificPart
-        val contact = intent.getStringExtra(EXTRA_CONTACT)
-        if (!contact.isNullOrBlank()) {
-            tv_name.text = contact
-        } else {
-            presenter.readContact(phone)
-        }
-        val mask = MaskImpl.createTerminated(UnderscoreDigitSlotsParser().parseSlots(PHONE_MASK))
-        mask.insertFront(phone)
-        tv_number.text = mask.toString()
+        tv_number.text = phone
+        presenter.readContact(phone)
     }
 
     override fun onContactInfo(contact: Contact?) {

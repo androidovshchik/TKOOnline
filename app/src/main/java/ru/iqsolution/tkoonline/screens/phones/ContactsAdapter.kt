@@ -8,15 +8,12 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.item_phone.view.*
 import org.joda.time.DateTime
 import org.joda.time.Duration
-import ru.iqsolution.tkoonline.PHONE_MASK
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.ifNullOrBlank
 import ru.iqsolution.tkoonline.extensions.inflate
 import ru.iqsolution.tkoonline.local.entities.Contact
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
-import ru.tinkoff.decoro.MaskImpl
-import ru.tinkoff.decoro.parser.UnderscoreDigitSlotsParser
 import java.util.concurrent.TimeUnit
 
 class ContactsAdapter : BaseAdapter<Contact>() {
@@ -33,10 +30,6 @@ class ContactsAdapter : BaseAdapter<Contact>() {
 
         private val image: ImageView = itemView.iv_phone
 
-        private val mask = MaskImpl.createTerminated(
-            UnderscoreDigitSlotsParser().parseSlots(PHONE_MASK)
-        )
-
         init {
             itemView.setOnClickListener {
                 try {
@@ -50,8 +43,7 @@ class ContactsAdapter : BaseAdapter<Contact>() {
         @SuppressLint("SetTextI18n")
         override fun onBindItem(position: Int, item: Contact) {
             name.text = item.name.ifNullOrBlank { "Неизвестный" }
-            mask.insertFront(item.phone)
-            phone.text = mask.toString()
+            phone.text = item.phone
             val now = DateTime.now()
             val online = item.whenLogged
             val delay = if (online != null) Duration(online, now).millis else Long.MAX_VALUE

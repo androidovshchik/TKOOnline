@@ -112,7 +112,7 @@ class PlatformsActivity : UserActivity<PlatformsContract.Presenter>(), Platforms
     }
 
     override fun onPhonesCount(size: Int) {
-        iv_phone.isVisible = size > 0
+        iv_phone.isVisible = BuildConfig.DEBUG || size > 0
     }
 
     override fun onReceivedTypes(types: List<PhotoType>) {
