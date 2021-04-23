@@ -9,10 +9,10 @@ import org.joda.time.DateTime
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.screens.base.BasePresenter
+import ru.iqsolution.tkoonline.screens.base.user.UserPresenter
 import java.io.File
 
-class PhotoPresenter(context: Context) : BasePresenter<PhotoContract.View>(context), PhotoContract.Presenter {
+class PhotoPresenter(context: Context) : UserPresenter<PhotoContract.View>(context), PhotoContract.Presenter {
 
     private val fileManager: FileManager by instance()
 

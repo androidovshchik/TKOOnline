@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.photo
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.widget.RelativeLayout
@@ -12,14 +13,14 @@ import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoType
-import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 import ru.iqsolution.tkoonline.screens.camera.CameraActivity
 import java.io.File
 
 /**
- * Returns [android.app.Activity.RESULT_OK] if photo event was saved
+ * Returns [RESULT_OK] if photo event was saved
  */
-class PhotoActivity : BaseActivity<PhotoContract.Presenter>(), PhotoContract.View {
+class PhotoActivity : UserActivity<PhotoContract.Presenter>(), PhotoContract.View {
 
     override val presenter: PhotoPresenter by instance()
 

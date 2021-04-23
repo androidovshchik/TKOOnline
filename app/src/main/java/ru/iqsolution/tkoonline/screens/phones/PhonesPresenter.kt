@@ -4,9 +4,9 @@ import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.iqsolution.tkoonline.screens.base.BasePresenter
+import ru.iqsolution.tkoonline.screens.base.user.UserPresenter
 
-class PhonesPresenter(context: Context) : BasePresenter<PhonesContract.View>(context),
+class PhonesPresenter(context: Context) : UserPresenter<PhonesContract.View>(context),
     PhonesContract.Presenter {
 
     override fun loadContacts() {

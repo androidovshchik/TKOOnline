@@ -5,7 +5,6 @@ package ru.iqsolution.tkoonline.workers
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.LiveData
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
 import org.jetbrains.anko.connectivityManager
 import org.kodein.di.instance
@@ -31,8 +30,6 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
     private val preferences: Preferences by instance()
 
     private val server: Server by instance()
-
-    private val broadcastManager = LocalBroadcastManager.getInstance(context)
 
     override fun doWork(): Result {
         var hasErrors = false
@@ -84,7 +81,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 }
             }
             if (cleanEvents.isNotEmpty()) {
-                broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+                applicationContext.sendBroadcast(Intent(ACTION_CLOUD))
             }
             val photoEvents = db.photoDao().getSendEvents()
             photoEvents.forEach { event ->
@@ -127,7 +124,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                 }
             }
             if (photoEvents.isNotEmpty()) {
-                broadcastManager.sendBroadcast(Intent(ACTION_CLOUD))
+                applicationContext.sendBroadcast(Intent(ACTION_CLOUD))
             }
         }
         if (!send || !hasErrors) {

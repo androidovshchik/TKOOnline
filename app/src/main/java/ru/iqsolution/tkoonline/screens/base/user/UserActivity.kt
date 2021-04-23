@@ -126,5 +126,10 @@ abstract class UserActivity<P : IUserPresenter<*>> : BaseActivity<P>(), IUserVie
              */
             .setAlwaysShow(true)
             .build()
+
+        fun isAssignableFrom(className: String?): Boolean {
+            return !className.isNullOrBlank() &&
+                UserActivity::class.java.isAssignableFrom(Class.forName(className))
+        }
     }
 }

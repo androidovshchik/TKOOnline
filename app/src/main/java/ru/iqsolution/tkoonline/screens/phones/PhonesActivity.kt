@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.activity_phones.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.kodein.di.instance
+import ru.iqsolution.tkoonline.EXTRA_CONTACT
 import ru.iqsolution.tkoonline.EXTRA_DIRECTION
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.entities.Contact
-import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 
-class PhonesActivity : BaseActivity<PhonesContract.Presenter>(), PhonesContract.View {
+class PhonesActivity : UserActivity<PhonesContract.Presenter>(), PhonesContract.View {
 
     override val presenter: PhonesPresenter by instance()
 
@@ -49,6 +50,7 @@ class PhonesActivity : BaseActivity<PhonesContract.Presenter>(), PhonesContract.
     override fun onAdapterEvent(position: Int, item: Contact) {
         startActivity(Intent(Intent.ACTION_CALL).apply {
             data = Uri.parse("tel:${item.phone}")
+            putExtra(EXTRA_CONTACT, item.name)
             putExtra(EXTRA_DIRECTION, Call.Details.DIRECTION_OUTGOING)
         })
     }

@@ -11,7 +11,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.BatteryManager
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.*
@@ -40,20 +39,16 @@ class StatusManager(context: Context, listener: StatusListener) {
             addAction(Intent.ACTION_BATTERY_CHANGED)
             addAction(Intent.ACTION_BATTERY_LOW)
             addAction(Intent.ACTION_BATTERY_OKAY)
+            // custom
+            addAction(ACTION_LOCATION)
+            addAction(ACTION_CLOUD)
+            addAction(ACTION_ROUTE)
         })
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(receiver, IntentFilter().apply {
-                addAction(ACTION_LOCATION)
-                addAction(ACTION_ROUTE)
-                addAction(ACTION_CLOUD)
-            })
     }
 
     fun unregister(context: Context) = context.run {
         connectivityManager.unregisterNetworkCallback(callback)
         unregisterReceiver(receiver)
-        LocalBroadcastManager.getInstance(this)
-            .unregisterReceiver(receiver)
     }
 
     /**

@@ -18,13 +18,13 @@ import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
-import ru.iqsolution.tkoonline.screens.base.BaseActivity
+import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 
 /**
  * Returns [android.app.Activity.RESULT_OK] if photo event was saved
  */
-class ProblemActivity : BaseActivity<ProblemContract.Presenter>(), ProblemContract.View {
+class ProblemActivity : UserActivity<ProblemContract.Presenter>(), ProblemContract.View {
 
     override val presenter: ProblemPresenter by instance()
 

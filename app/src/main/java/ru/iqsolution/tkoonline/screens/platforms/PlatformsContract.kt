@@ -8,23 +8,25 @@ import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.AdapterListener
-import ru.iqsolution.tkoonline.screens.base.IBasePresenter
-import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.screens.base.user.IUserPresenter
+import ru.iqsolution.tkoonline.screens.base.user.IUserView
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.common.wait.WaitListener
 
 interface PlatformsContract {
 
-    interface Presenter : IBasePresenter<View>, Observer<WorkInfo> {
+    interface Presenter : IUserPresenter<View>, Observer<WorkInfo> {
 
-        fun loadPlatformsTypes(refresh: Boolean)
+        fun loadRemoteData(refresh: Boolean)
 
         fun loadPhotoCleanEvents()
 
         fun logout(send: Boolean, context: Context)
     }
 
-    interface View : IBaseView, WaitListener, AdapterListener<PlatformContainers> {
+    interface View : IUserView, WaitListener, AdapterListener<PlatformContainers> {
+
+        fun onPhonesCount(size: Int)
 
         fun onReceivedTypes(types: List<PhotoType>)
 

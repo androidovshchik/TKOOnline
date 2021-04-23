@@ -19,7 +19,7 @@ import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
-import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.screens.base.user.IUserView
 import ru.iqsolution.tkoonline.telemetry.LocationListener
 
 /**
@@ -87,7 +87,7 @@ class StatusFragment : BaseFragment(), StatusListener {
     }
 
     override fun onCloudChanged() {
-        activityCallback<IBaseView> {
+        activityCallback<IUserView> {
             updateCloud()
         }
     }
@@ -155,7 +155,7 @@ class StatusFragment : BaseFragment(), StatusListener {
     }
 
     override fun onLocationEvent() {
-        activityCallback<IBaseView> {
+        activityCallback<IUserView> {
             updateRoute()
         }
     }

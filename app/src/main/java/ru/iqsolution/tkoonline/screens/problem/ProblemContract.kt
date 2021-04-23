@@ -1,11 +1,11 @@
 package ru.iqsolution.tkoonline.screens.problem
 
-import ru.iqsolution.tkoonline.screens.base.IBasePresenter
-import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.screens.base.user.IUserPresenter
+import ru.iqsolution.tkoonline.screens.base.user.IUserView
 
 interface ProblemContract {
 
-    interface Presenter : IBasePresenter<View>
+    interface Presenter : IUserPresenter<View>
 
-    interface View : IBaseView
+    interface View : IUserView
 }

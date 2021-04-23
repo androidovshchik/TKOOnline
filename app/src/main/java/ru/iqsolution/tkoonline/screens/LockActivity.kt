@@ -34,12 +34,9 @@ class LockActivity : Activity(), DIAware {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         GlobalScope.launch(Dispatchers.Main) {
-            fileManager.logsDir.listFiles()?.apply {
-                forEach {
-                    scanFiles(it.path)
-                    delay(200)
-                }
-                scanFiles(*map { it.path }.toTypedArray())
+            fileManager.logsDir.listFiles()?.onEach {
+                scanFiles(it.path)
+                delay(200)
             }
         }
     }

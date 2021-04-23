@@ -23,19 +23,20 @@ import ru.iqsolution.tkoonline.local.entities.PhotoType
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
-import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.base.alert
+import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 import ru.iqsolution.tkoonline.screens.common.map.MapRect
 import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import ru.iqsolution.tkoonline.screens.outside.OutsideActivity
+import ru.iqsolution.tkoonline.screens.phones.PhonesActivity
 import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 import ru.iqsolution.tkoonline.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.workers.SendWorker
 import timber.log.Timber
 import java.util.*
 
-class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), PlatformsContract.View {
+class PlatformsActivity : UserActivity<PlatformsContract.Presenter>(), PlatformsContract.View {
 
     override val presenter: PlatformsPresenter by instance()
 
@@ -65,7 +66,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             setLocation(preferences.location)
         }
         platforms_refresh.setOnRefreshListener {
-            presenter.loadPlatformsTypes(true)
+            presenter.loadRemoteData(true)
         }
         platforms_list.apply {
             addItemDecoration(DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL).apply {
@@ -78,9 +79,11 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
         platforms_complete.setOnClickListener {
             onBackPressed()
         }
+        iv_phone.setOnClickListener {
+            startActivityNoop<PhonesActivity>()
+        }
         if (preferences.allowPhotoRefKp) {
-            platforms_placeholder.isVisible = true
-            platforms_photo.apply {
+            with(platforms_photo) {
                 isVisible = true
                 setOnClickListener {
                     startActivityNoop<OutsideActivity>(
@@ -90,7 +93,7 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
                 }
             }
         }
-        presenter.loadPlatformsTypes(false)
+        presenter.loadRemoteData(false)
         Timber.i("App version: ${BuildConfig.VERSION_CODE}")
     }
 
@@ -106,6 +109,10 @@ class PlatformsActivity : BaseActivity<PlatformsContract.Presenter>(), Platforms
             EXTRA_PLATFORM to item,
             EXTRA_PHOTO_TYPES to photoTypes
         )
+    }
+
+    override fun onPhonesCount(size: Int) {
+        iv_phone.isVisible = size > 0
     }
 
     override fun onReceivedTypes(types: List<PhotoType>) {

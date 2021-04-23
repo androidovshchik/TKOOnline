@@ -110,10 +110,10 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
         }
     }
 
-    override fun onBackPressed() {
+    override fun onDestroy() {
         if (lastState != Call.STATE_DISCONNECTING && lastState != Call.STATE_DISCONNECTED) {
             CallService.hangup()
         }
-        super.onBackPressed()
+        super.onDestroy()
     }
 }

@@ -2,17 +2,17 @@ package ru.iqsolution.tkoonline.screens.phones
 
 import ru.iqsolution.tkoonline.local.entities.Contact
 import ru.iqsolution.tkoonline.screens.base.AdapterListener
-import ru.iqsolution.tkoonline.screens.base.IBasePresenter
-import ru.iqsolution.tkoonline.screens.base.IBaseView
+import ru.iqsolution.tkoonline.screens.base.user.IUserPresenter
+import ru.iqsolution.tkoonline.screens.base.user.IUserView
 
 interface PhonesContract {
 
-    interface Presenter : IBasePresenter<View> {
+    interface Presenter : IUserPresenter<View> {
 
         fun loadContacts()
     }
 
-    interface View : IBaseView, AdapterListener<Contact> {
+    interface View : IUserView, AdapterListener<Contact> {
 
         fun onContacts(list: List<Contact>)
     }
