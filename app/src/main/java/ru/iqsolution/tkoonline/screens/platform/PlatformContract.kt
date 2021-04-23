@@ -12,7 +12,7 @@ interface PlatformContract {
 
     interface Presenter : IUserPresenter<View> {
 
-        fun calculateSignature(lat: Double, lon: Double)
+        fun generateSignature(lat: Double, lon: Double)
 
         fun loadLinkedPlatforms(linkedIds: List<Int>)
 

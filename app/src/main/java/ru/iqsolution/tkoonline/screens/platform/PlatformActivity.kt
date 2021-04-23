@@ -164,7 +164,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
         }, 2)
         setTouchable(false)
         presenter.apply {
-            calculateSignature(platform.latitude, platform.longitude)
+            generateSignature(platform.latitude, platform.longitude)
             loadLinkedPlatforms(platform.linkedIds.toList())
             loadPhotoEvents(platform.kpId)
         }

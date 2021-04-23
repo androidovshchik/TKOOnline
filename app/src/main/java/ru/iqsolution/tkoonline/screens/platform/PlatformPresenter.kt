@@ -11,6 +11,7 @@ import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.screens.base.user.UserPresenter
+import timber.log.Timber
 import java.security.KeyFactory
 import java.security.Signature
 import java.security.spec.PKCS8EncodedKeySpec
@@ -18,7 +19,7 @@ import java.security.spec.PKCS8EncodedKeySpec
 class PlatformPresenter(context: Context) : UserPresenter<PlatformContract.View>(context),
     PlatformContract.Presenter {
 
-    override fun calculateSignature(lat: Double, lon: Double) {
+    override fun generateSignature(lat: Double, lon: Double) {
         launch {
             reference.get()?.signature = withContext(Dispatchers.Default) {
                 val uri = Uri.Builder()
@@ -28,19 +29,24 @@ class PlatformPresenter(context: Context) : UserPresenter<PlatformContract.View>
                     .appendQueryParameter("lon_to", lon.toString())
                     .appendQueryParameter("client", "270")
                     .build()
-                val key = Base64.encode(yandexKey.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
-                val signature = Signature.getInstance("SHA256withRSA")
-                signature.initSign(
-                    KeyFactory.getInstance("RSA")
-                        .generatePrivate(PKCS8EncodedKeySpec(key))
-                )
-                signature.update(uri.toString().toByteArray(Charsets.UTF_8))
-                uri.buildUpon()
-                    .appendQueryParameter(
-                        "signature",
-                        Base64.decode(signature.sign(), Base64.NO_WRAP).toString(Charsets.UTF_8)
+                try {
+                    val key = Base64.decode(yandexKey, Base64.DEFAULT)
+                    val signature = Signature.getInstance("SHA256withRSA")
+                    signature.initSign(
+                        KeyFactory.getInstance("RSA")
+                            .generatePrivate(PKCS8EncodedKeySpec(key))
                     )
-                    .build()
+                    signature.update(uri.toString().toByteArray(Charsets.UTF_8))
+                    uri.buildUpon()
+                        .appendQueryParameter(
+                            "signature",
+                            Base64.encodeToString(signature.sign(), Base64.NO_WRAP)
+                        )
+                        .build()
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                    uri
+                }
             }
         }
     }
@@ -120,6 +126,6 @@ class PlatformPresenter(context: Context) : UserPresenter<PlatformContract.View>
             YxwEdTFYhiY+ao1Yd7mNBSWpr3/6OZVHAiAWoAKPJFxoTfTbhqVSuXI8TUpduHVc
             2OjrSyr4tPB+XQIhAKZMMUg2K2PNdm3LXciy/uat7sgUOOi6tfmyb9owZiLLAiAC
             OVa+FvQrZTTNXRG2wVW/pXBIubdmCaIDI4tSOcubng==
-        """.trimIndent()
+        """.replace("\\s".toRegex(), "")
     }
 }
