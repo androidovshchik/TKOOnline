@@ -113,6 +113,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     implementation platform("com.squareup.okhttp3:okhttp-bom:4.9.1")
     implementation "com.squareup.okhttp3:okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor"
     implementation 'com.budiyev.android:code-scanner:2.1.0'
     implementation 'com.rabbitmq:amqp-client:5.12.0'
     implementation 'net.danlew:android.joda:2.10.9.1'

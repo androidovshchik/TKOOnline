@@ -41,7 +41,7 @@ val remoteModule = DI.Module("remote") {
             addInterceptor(AppInterceptor(instance()))
             addInterceptor(
                 HttpLoggingInterceptor(LogInterceptor())
-                    .setLevel(HttpLoggingInterceptor.Level.BODY)
+                    .setLevel(HttpLoggingInterceptor.Level.HEADERS)
             )
             if (!BuildConfig.PROD) {
                 addNetworkInterceptor(
