@@ -36,15 +36,15 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
         }
         toolbar_title.text = "Завершить вызов"
         iv_speaker.setOnClickListener {
-            updateSpeaker(!audioManager.isSpeakerphoneOn)
+            toggleSpeaker(!audioManager.isSpeakerphoneOn)
         }
-        updateSpeaker(preferences.useSpeaker)
+        toggleSpeaker(preferences.useSpeaker)
         when (intent.getIntExtra(EXTRA_DIRECTION, Call.Details.DIRECTION_UNKNOWN)) {
             Call.Details.DIRECTION_INCOMING -> {
-                tv_number.text = "Звонит:"
+                tv_status.text = "Звонит:"
             }
             Call.Details.DIRECTION_OUTGOING -> {
-                tv_number.text = "Звоним:"
+                tv_status.text = "Звоним:"
             }
         }
         btn_answer.setOnClickListener {
@@ -77,16 +77,16 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
         btn_hangup.isEnabled = state in Call.STATE_DIALING..Call.STATE_ACTIVE
     }
 
-    private fun updateSpeaker(enable: Boolean) {
+    private fun toggleSpeaker(enable: Boolean) {
         val intent = Intent(ACTION_AUDIO)
         if (enable) {
             sendBroadcast(intent.putExtra(EXTRA_ROUTE, CallAudioState.ROUTE_SPEAKER))
-            preferences.useSpeaker = true
             iv_speaker.setImageResource(R.drawable.ic_baseline_volume_up_24)
+            preferences.useSpeaker = true
         } else {
-            sendBroadcast(intent.putExtra(EXTRA_ROUTE, CallAudioState.ROUTE_EARPIECE))
-            preferences.useSpeaker = false
+            sendBroadcast(intent.putExtra(EXTRA_ROUTE, CallAudioState.ROUTE_WIRED_OR_EARPIECE))
             iv_speaker.setImageResource(R.drawable.ic_baseline_volume_off_24)
+            preferences.useSpeaker = false
         }
     }
 
