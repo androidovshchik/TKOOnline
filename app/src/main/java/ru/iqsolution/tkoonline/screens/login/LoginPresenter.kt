@@ -12,13 +12,11 @@ import org.joda.time.DateTime
 import org.kodein.di.instance
 import retrofit2.awaitResponse
 import ru.iqsolution.tkoonline.BuildConfig
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
-import ru.iqsolution.tkoonline.extensions.isEarlier
-import ru.iqsolution.tkoonline.extensions.isLater
-import ru.iqsolution.tkoonline.extensions.isRunning
+import ru.iqsolution.tkoonline.extensions.*
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.AccessToken
 import ru.iqsolution.tkoonline.models.QrCode
+import ru.iqsolution.tkoonline.models.TelemetryConfig
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 import ru.iqsolution.tkoonline.telemetry.TelemetryService
@@ -33,7 +31,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
 
     private val fileManager: FileManager by instance()
 
-    private val gson: Gson by instance(arg = false)
+    private val gson: Gson by instance(arg = true)
 
     private val activityManager = context.activityManager
 
@@ -62,6 +60,21 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
             } catch (e: Throwable) {
                 e.delay("Не удалось сбросить предыдущую авторизацию")
                 throw e
+            }
+            if (!BuildConfig.PROD) {
+                with(fileManager) {
+                    if (configFile.exists()) {
+                        val map = gson.fromJson<Map<String, Any>>(configFile.readText())
+                        TelemetryConfig.map.putAll(map)
+                    } else {
+                        withContext(Dispatchers.IO) {
+                            val desc = Class.forName(TelemetryConfig.DESC_CLASS).newInstance()
+                            writeFile(configFile) {
+                                it.write(gson.toJson(desc).toByteArray())
+                            }
+                        }
+                    }
+                }
             }
             val responseAuth = try {
                 server.login(qrCode.carId.toString(), qrCode.pass, lockPassword)

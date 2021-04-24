@@ -84,8 +84,11 @@ open class TelemetryConfig {
         @SerializedName("timer_interval.millis")
         get() = map.getOrDefault("timer_interval.millis", 1500L) as Long
 
+    @Suppress("SpellCheckingInspection")
     companion object {
 
-        val map: Map<String, Any> = Collections.synchronizedMap(ArrayMap<String, Any>())
+        const val DESC_CLASS = "ru.iqsolution.tkoonline.models.TelemetryDesc"
+
+        val map: MutableMap<String, Any> = Collections.synchronizedMap(ArrayMap<String, Any>())
     }
 }
