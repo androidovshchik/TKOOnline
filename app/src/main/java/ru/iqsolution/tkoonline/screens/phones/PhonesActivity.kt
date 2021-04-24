@@ -13,6 +13,7 @@ import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.entities.Contact
 import ru.iqsolution.tkoonline.screens.base.user.UserActivity
+import timber.log.Timber
 
 class PhonesActivity : UserActivity<PhonesContract.Presenter>(), PhonesContract.View {
 
@@ -59,7 +60,7 @@ class PhonesActivity : UserActivity<PhonesContract.Presenter>(), PhonesContract.
 
     override fun onAdapterEvent(position: Int, item: Contact) {
         startActivity(Intent(Intent.ACTION_CALL).apply {
-            data = Uri.parse("tel:${item.phone}")
+            data = Uri.parse("tel:${Uri.encode(item.phone)}")
         })
     }
 }

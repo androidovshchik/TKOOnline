@@ -43,7 +43,11 @@ class PlatformPresenter(context: Context) : UserPresenter<PlatformContract.View>
                         .build()
                 } catch (e: Throwable) {
                     Timber.e(e)
-                    uri
+                    uri.buildUpon()
+                        .clearQuery()
+                        .appendQueryParameter("lat_to", lat.toString())
+                        .appendQueryParameter("lon_to", lon.toString())
+                        .build()
                 }
             }
         }
