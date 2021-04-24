@@ -20,6 +20,7 @@ import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
+import ru.iqsolution.tkoonline.extensions.statusBarHeight
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
@@ -61,10 +62,8 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
         setContentView(R.layout.activity_login)
         qrCode = fragmentManager.findFragmentById(R.id.barcode_fragment) as QrCodeFragment
         login_background.load(R.drawable.login_background)
-        statusBarHeight.let {
-            (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = it
-            login_shadow.topPadding = it
-        }
+        (login_layer.layoutParams as ViewGroup.MarginLayoutParams).topMargin = statusBarHeight
+        login_shadow.topPadding = statusBarHeight
         login_menu.setOnClickListener {
             openDialog()
         }
@@ -210,15 +209,6 @@ class LoginActivity : BaseActivity<LoginContract.Presenter>(), LoginContract.Vie
     override fun onUnhandledError(e: Throwable?) {
         qrCode.startScan()
     }
-
-    private val statusBarHeight: Int
-        get() {
-            val id = resources.getIdentifier("status_bar_height", "dimen", "android")
-            if (id > 0) {
-                return resources.getDimensionPixelSize(id)
-            }
-            return 0
-        }
 
     override fun onBackPressed() {
         if (activityManager.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE) {

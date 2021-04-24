@@ -13,7 +13,6 @@ import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.entities.Contact
 import ru.iqsolution.tkoonline.screens.base.user.UserActivity
-import timber.log.Timber
 
 class PhonesActivity : UserActivity<PhonesContract.Presenter>(), PhonesContract.View {
 

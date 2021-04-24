@@ -14,6 +14,7 @@ import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.isRunning
 import ru.iqsolution.tkoonline.models.SimpleLocation
+import ru.iqsolution.tkoonline.models.TelemetryConfig
 import ru.iqsolution.tkoonline.screens.base.BaseActivity
 import ru.iqsolution.tkoonline.screens.common.status.StatusFragment
 import ru.iqsolution.tkoonline.telemetry.TelemetryRunnable
@@ -78,8 +79,22 @@ abstract class UserActivity<P : IUserPresenter<*>> : BaseActivity<P>(), IUserVie
         val isGpsAvailable = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         onLocationState(LocationSettingsStates(isGpsAvailable, false, false, false, false, false))
         if (!isGpsAvailable) {
+            val config = TelemetryConfig()
+            val request = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setFastestInterval(config.locationInterval)
+                .setInterval(config.locationInterval)
+            val settings = LocationSettingsRequest.Builder()
+                .addLocationRequest(request)
+                /**
+                 * Whether or not location is required by the calling app in order to continue.
+                 * Set this to true if location is required to continue and false if having location provides better results,
+                 * but is not required. This changes the wording/appearance of the dialog accordingly.
+                 */
+                .setAlwaysShow(true)
+                .build()
             LocationServices.getSettingsClient(this)
-                .checkLocationSettings(locationSettingsRequest)
+                .checkLocationSettings(settings)
                 .addOnSuccessListener {
                     onLocationState(it.locationSettingsStates)
                 }
@@ -114,18 +129,6 @@ abstract class UserActivity<P : IUserPresenter<*>> : BaseActivity<P>(), IUserVie
     companion object {
 
         private const val REQUEST_LOCATION = 100
-
-        private val locationSettingsRequest = LocationSettingsRequest.Builder()
-            .addLocationRequest(LocationRequest.create().apply {
-                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            })
-            /**
-             * Whether or not location is required by the calling app in order to continue.
-             * Set this to true if location is required to continue and false if having location provides better results,
-             * but is not required. This changes the wording/appearance of the dialog accordingly.
-             */
-            .setAlwaysShow(true)
-            .build()
 
         fun isAssignableFrom(className: String?): Boolean {
             return !className.isNullOrBlank() &&

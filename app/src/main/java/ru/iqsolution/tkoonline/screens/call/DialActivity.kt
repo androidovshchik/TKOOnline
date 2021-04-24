@@ -54,7 +54,7 @@ class DialActivity : BaseActivity<DialContract.Presenter>(), DialContract.View {
             CallService.hangup()
         }
         presenter.observeCalls()
-        val phone = intent.data?.schemeSpecificPart
+        val phone = intent.data?.schemeSpecificPart?.replace("[^+0-9*#]".toRegex(), "")
         tv_number.text = phone
         presenter.readContact(phone)
     }

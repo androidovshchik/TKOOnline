@@ -13,6 +13,15 @@ import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startService
 import ru.iqsolution.tkoonline.receivers.ToastReceiver
 
+val Context.statusBarHeight: Int
+    get() {
+        val id = resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (id > 0) {
+            return resources.getDimensionPixelSize(id)
+        }
+        return 0
+    }
+
 fun Context.bgToast(message: String) = sendBroadcast(intentFor<ToastReceiver>().apply {
     putExtra(ToastReceiver.EXTRA_MESSAGE, message)
     putExtra(ToastReceiver.EXTRA_DURATION, Toast.LENGTH_SHORT)
