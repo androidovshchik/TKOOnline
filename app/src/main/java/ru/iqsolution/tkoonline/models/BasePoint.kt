@@ -5,7 +5,6 @@ import android.util.SparseIntArray
 import org.joda.time.Duration
 import ru.iqsolution.tkoonline.extensions.isEarlier
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -159,7 +158,7 @@ class BasePoint(
                 }
             }
             TelemetryState.STOPPING -> {
-                if (locationTime.isEarlier(config.parkingTime, TimeUnit.MILLISECONDS)) {
+                if (locationTime.isEarlier(config.parkingTime)) {
                     return TelemetryState.PARKING
                 }
             }

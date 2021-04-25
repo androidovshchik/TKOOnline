@@ -2,8 +2,7 @@ package ru.iqsolution.tkoonline.telemetry
 
 import android.location.Location
 
-interface TelemetryListener :
-    LocationListener {
+interface TelemetryListener :  LocationListener {
 
     fun startTelemetry()
 
