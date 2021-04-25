@@ -99,15 +99,17 @@ class TelemetryService : BaseService(), TelemetryListener {
         startTelemetry()
         launch {
             withContext(Dispatchers.IO) {
-                while (checkActivity()) {
-                    val counter = locationCounter.incrementAndGet()
-                    val locationDelay = counter * config.timerInterval
-                    if (locationDelay > config.locationMinDelay) {
-                        onLocationAvailability(false)
-                    }
-                    addLoopEvent(locationDelay)
-                    if (connectivityManager.isConnected) {
-                        sendLastEvent()
+                while (true) {
+                    if (checkActivity()) {
+                        val counter = locationCounter.incrementAndGet()
+                        val locationDelay = counter * config.timerInterval
+                        if (locationDelay > config.locationMinDelay) {
+                            onLocationAvailability(false)
+                        }
+                        addLoopEvent(locationDelay)
+                        if (connectivityManager.isConnected) {
+                            sendLastEvent()
+                        }
                     }
                     delay(config.timerInterval)
                 }
