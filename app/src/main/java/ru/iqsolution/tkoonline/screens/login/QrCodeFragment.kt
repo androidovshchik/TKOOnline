@@ -23,11 +23,11 @@ import org.kodein.di.instance
 import ru.iqsolution.tkoonline.AdminManager
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
+import ru.iqsolution.tkoonline.extensions.isGranted
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
 import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.IBaseView
-import ru.iqsolution.tkoonline.screens.base.alert
 
 @Suppress("DEPRECATION")
 class QrCodeFragment : BaseFragment() {
@@ -71,9 +71,14 @@ class QrCodeFragment : BaseFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        checkPermissions(REQUEST_PERMS)
+    }
+
     override fun onResume() {
         super.onResume()
-        if (checkPermissions()) {
+        if (context.isGranted(Manifest.permission.CAMERA)) {
             startScan()
         }
     }
@@ -86,50 +91,57 @@ class QrCodeFragment : BaseFragment() {
     }
 
     @SuppressLint("BatteryLife")
-    private fun checkPermissions(): Boolean {
-        val context = context ?: return false
+    private fun checkPermissions(requestCode: Int) {
+        val context = context ?: return
         val packageName = context.packageName
-        if (!context.powerManager.isIgnoringBatteryOptimizations(packageName)) {
-            // NOTICE this violates Google Play policy
-            startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                data = Uri.fromParts("package", packageName, null)
-            })
-            return false
-        }
-        if (context.telecomManager.defaultDialerPackage != packageName) {
-            // RoleManager is not working for some reasons
-            startActivity(Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).apply {
-                putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
-            })
-            return false
-        }
-        if (!context.areGranted(*DANGER_PERMISSIONS)) {
-            DANGER_PERMISSIONS.forEach {
-                if (shouldShowRequestPermissionRationale(it)) {
-                    promptUser("Пожалуйста, предоставьте все разрешения", Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    return false
+        when (requestCode) {
+            REQUEST_PERMS -> {
+                if (!context.areGranted(*DANGER_PERMISSIONS)) {
+                    DANGER_PERMISSIONS.forEach {
+                        if (shouldShowRequestPermissionRationale(it)) {
+                            startActivityForResult(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                data = Uri.fromParts("package", context.packageName, null)
+                            }, REQUEST_PERMS)
+                            return
+                        }
+                    }
+                    requestPermissions(DANGER_PERMISSIONS, REQUEST_PERMS)
+                } else {
+                    checkPermissions(REQUEST_DOZE)
                 }
             }
-            requestPermissions(DANGER_PERMISSIONS, 0)
-            return false
-        }
-        if (isOreoPlus()) {
-            if (!adminManager.isDeviceOwner) {
-                if (!context.packageManager.canRequestPackageInstalls()) {
-                    promptUser("Пожалуйста, разрешите установку обновлений", Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                    return false
+            REQUEST_DOZE -> {
+                if (!context.powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                    // NOTICE this violates Google Play policy
+                    startActivityForResult(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                        data = Uri.fromParts("package", packageName, null)
+                    }, REQUEST_DOZE)
+                } else {
+                    checkPermissions(REQUEST_CALL)
+                }
+            }
+            REQUEST_CALL -> {
+                if (context.telecomManager.defaultDialerPackage != packageName) {
+                    // RoleManager is not working for some reasons
+                    startActivityForResult(Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).apply {
+                        putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+                    }, REQUEST_CALL)
+                } else {
+                    checkPermissions(REQUEST_INSTALL)
+                }
+            }
+            REQUEST_INSTALL -> {
+                if (isOreoPlus()) {
+                    if (!adminManager.isDeviceOwner) {
+                        if (!context.packageManager.canRequestPackageInstalls()) {
+                            startActivityForResult(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                                data = Uri.fromParts("package", context.packageName, null)
+                            }, REQUEST_INSTALL)
+                        }
+                    }
                 }
             }
         }
-        return true
-    }
-
-    private fun promptUser(message: String, action: String) {
-        alertDialog = context?.alert(message, "Разрешения") {
-            positiveButton("Открыть") { _, _ ->
-                startActivity(Intent(action, Uri.fromParts("package", context.packageName, null)))
-            }
-        }?.display()
     }
 
     override fun onPause() {
@@ -138,12 +150,31 @@ class QrCodeFragment : BaseFragment() {
         super.onPause()
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, perms: Array<out String>, results: IntArray) {
+        if (context.isGranted(Manifest.permission.CAMERA)) {
+            if (activity?.window?.decorView?.isShown == true) {
+                startScan()
+            }
+        }
+        checkPermissions(requestCode)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        checkPermissions(requestCode)
+    }
+
     override fun onDestroyView() {
         alertDialog?.dismiss()
         super.onDestroyView()
     }
 
     companion object {
+
+        private const val REQUEST_DOZE = 1
+        private const val REQUEST_CALL = 2
+        private const val REQUEST_INSTALL = 3
+
+        private const val REQUEST_PERMS = 1000
 
         private val DANGER_PERMISSIONS = arrayOf(
             Manifest.permission.CAMERA,

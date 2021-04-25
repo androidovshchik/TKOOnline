@@ -46,12 +46,11 @@ inline fun <reified T> Context.activityCallback(action: T.() -> Unit) {
 }
 
 fun Context.areGranted(vararg permissions: String): Boolean {
-    for (permission in permissions) {
-        if (checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            return false
-        }
-    }
-    return true
+    return permissions.all { isGranted(it) }
+}
+
+fun Context.isGranted(permission: String): Boolean {
+    return checkCallingOrSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
 }
 
 inline fun <reified T : Service> Context.startForegroundService(vararg params: Pair<String, Any?>): ComponentName? {
