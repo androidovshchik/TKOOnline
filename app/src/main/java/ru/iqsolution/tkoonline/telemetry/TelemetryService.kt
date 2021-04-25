@@ -17,6 +17,8 @@ import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.startService
@@ -74,6 +76,11 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private var locationCounter = AtomicLong(-1L)
 
+    private val mutex = Mutex()
+
+    @Volatile
+    private var isRunning = false
+
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -106,7 +113,9 @@ class TelemetryService : BaseService(), TelemetryListener {
                         if (locationDelay > config.locationMinDelay) {
                             onLocationAvailability(false)
                         }
-                        addLoopEvent(locationDelay)
+                        mutex.withLock {
+                            addLoopEvent(locationDelay)
+                        }
                         if (connectivityManager.isConnected) {
                             sendLastEvent()
                         }
@@ -117,8 +126,10 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
-    @Synchronized
     private fun addLoopEvent(delay: Long) {
+        if (!isRunning) {
+            return
+        }
         if (delay > config.locationMaxDelay) {
             lastEventTime = null
             basePoint = null
@@ -208,14 +219,18 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun startTelemetry() {
+        isRunning = true
         locationManager.requestUpdates(config.locationInterval)
     }
 
     override fun stopTelemetry() {
+        isRunning = false
         locationManager.removeUpdates()
-        synchronized(this) {
-            lastEventTime = null
-            basePoint = null
+        launch {
+            mutex.withLock {
+                lastEventTime = null
+                basePoint = null
+            }
         }
     }
 
@@ -252,14 +267,18 @@ class TelemetryService : BaseService(), TelemetryListener {
         launch {
             withContext(Dispatchers.IO) {
                 if (checkActivity()) {
-                    addUpdateEvent(newLocation)
+                    mutex.withLock {
+                        addUpdateEvent(newLocation)
+                    }
                 }
             }
         }
     }
 
-    @Synchronized
     private fun addUpdateEvent(location: SimpleLocation) {
+        if (!isRunning) {
+            return
+        }
         basePoint?.let {
             with(preferenceHolder) {
                 val space = it.updateLocation(location)
