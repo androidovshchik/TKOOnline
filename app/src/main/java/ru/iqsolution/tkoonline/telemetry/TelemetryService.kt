@@ -260,31 +260,30 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     @Synchronized
     private fun addUpdateEvent(location: SimpleLocation) {
-        val point = basePoint
-        if (point != null) {
+        basePoint?.let {
             with(preferenceHolder) {
-                val space = point.updateLocation(location)
+                val space = it.updateLocation(location)
                 val distance: Float
-                if (point.state != TelemetryState.PARKING) {
+                if (it.state != TelemetryState.PARKING) {
                     distance = mileage + space
                     mileage = distance
                 } else {
                     distance = mileage
                 }
-                point.replaceWith(config)?.let { state ->
+                it.replaceWith(config)?.let { state ->
                     Timber.i("Replace state with $state")
                     basePoint = BasePoint(location, state)
-                    db.locationDao().insert(LocationEvent(point, tokenId, packageId, distance).also {
+                    db.locationDao().insert(LocationEvent(it, tokenId, packageId, distance).also { event ->
                         packageId++
-                        lastEventTime = it.data.whenTime
+                        lastEventTime = event.data.whenTime
                     })
                     sendBroadcast(Intent(ACTION_ROUTE))
                 }
             }
-        } else {
-            Timber.i("Init base point")
-            basePoint = BasePoint(location)
+            return
         }
+        Timber.i("Init base point")
+        basePoint = BasePoint(location)
     }
 
     /**
