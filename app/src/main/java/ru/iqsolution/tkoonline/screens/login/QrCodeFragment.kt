@@ -25,6 +25,7 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.areGranted
 import ru.iqsolution.tkoonline.extensions.isGranted
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
+import ru.iqsolution.tkoonline.extensions.isQPlus
 import ru.iqsolution.tkoonline.screens.base.AppAlertDialog
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.IBaseView
@@ -69,10 +70,6 @@ class QrCodeFragment : BaseFragment() {
         play.setOnClickListener {
             startScan()
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
         checkPermissions(REQUEST_PERMS)
     }
 
@@ -176,10 +173,13 @@ class QrCodeFragment : BaseFragment() {
 
         private const val REQUEST_PERMS = 1000
 
-        private val DANGER_PERMISSIONS = arrayOf(
+        private val DANGER_PERMISSIONS = if (isQPlus()) arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        ) else arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
     }
 }
