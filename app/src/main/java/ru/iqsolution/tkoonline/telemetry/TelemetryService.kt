@@ -39,6 +39,7 @@ import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.math.min
 
 /**
  * МП должно исключать генерацию более одного события в одну секунду.
@@ -70,6 +71,8 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private val preferenceHolder = PreferenceHolder()
 
+    private var startJob: Job? = null
+
     private var basePoint: BasePoint? = null
 
     private var lastEventTime: DateTime? = null
@@ -77,9 +80,6 @@ class TelemetryService : BaseService(), TelemetryListener {
     private var locationCounter = AtomicLong(-1L)
 
     private val mutex = Mutex()
-
-    @Volatile
-    private var isRunning = false
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -108,14 +108,6 @@ class TelemetryService : BaseService(), TelemetryListener {
             withContext(Dispatchers.IO) {
                 while (true) {
                     if (checkActivity()) {
-                        val counter = locationCounter.incrementAndGet()
-                        val locationDelay = counter * config.timerInterval
-                        if (locationDelay > config.locationMinDelay) {
-                            onLocationAvailability(false)
-                        }
-                        mutex.withLock {
-                            addLoopEvent(locationDelay)
-                        }
                         if (connectivityManager.isConnected) {
                             sendLastEvent()
                         }
@@ -126,10 +118,42 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
-    private fun addLoopEvent(delay: Long) {
-        if (!isRunning) {
-            return
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            if (it.hasExtra(EXTRA_TELEMETRY_TASK)) {
+                if (it.getBooleanExtra(EXTRA_TELEMETRY_TASK, false)) {
+                    startTelemetry()
+                } else {
+                    stopTelemetry()
+                }
+            }
         }
+        return START_STICKY
+    }
+
+    override fun startTelemetry() {
+        locationManager.requestUpdates(config.locationInterval)
+        startJob?.cancel()
+        startJob = launch {
+            withContext(Dispatchers.IO) {
+                while (true) {
+                    if (checkActivity()) {
+                        val counter = locationCounter.incrementAndGet()
+                        val locationDelay = counter * config.timerInterval
+                        if (locationDelay > config.locationMinDelay) {
+                            onLocationAvailability(false)
+                        }
+                        mutex.withLock {
+                            addLoopEvent(locationDelay)
+                        }
+                    }
+                    delay(min(config.movingDelay, config.parkingDelay))
+                }
+            }
+        }
+    }
+
+    private fun addLoopEvent(delay: Long) {
         if (delay > config.locationMaxDelay) {
             lastEventTime = null
             basePoint = null
@@ -205,27 +229,9 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let {
-            if (it.hasExtra(EXTRA_TELEMETRY_TASK)) {
-                if (it.getBooleanExtra(EXTRA_TELEMETRY_TASK, false)) {
-                    startTelemetry()
-                } else {
-                    stopTelemetry()
-                }
-            }
-        }
-        return START_STICKY
-    }
-
-    override fun startTelemetry() {
-        isRunning = true
-        locationManager.requestUpdates(config.locationInterval)
-    }
-
     override fun stopTelemetry() {
-        isRunning = false
         locationManager.removeUpdates()
+        startJob?.cancel()
         launch {
             mutex.withLock {
                 lastEventTime = null
@@ -276,9 +282,6 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     private fun addUpdateEvent(location: SimpleLocation) {
-        if (!isRunning) {
-            return
-        }
         basePoint?.let {
             with(preferenceHolder) {
                 val space = it.updateLocation(location)
