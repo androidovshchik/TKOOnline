@@ -16,16 +16,16 @@ import com.google.gson.Gson
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.jetbrains.anko.*
+import kotlinx.coroutines.*
+import org.jetbrains.anko.activityManager
+import org.jetbrains.anko.connectivityManager
+import org.jetbrains.anko.startService
+import org.jetbrains.anko.stopService
 import org.joda.time.DateTime
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.*
 import ru.iqsolution.tkoonline.local.Database
-import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.models.BasePoint
@@ -35,8 +35,6 @@ import ru.iqsolution.tkoonline.models.TelemetryState
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import timber.log.Timber
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
@@ -56,17 +54,11 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private val db: Database by instance()
 
-    private val fileManager: FileManager by instance()
-
     private val preferences: Preferences by instance()
 
-    private val gsonPretty: Gson by instance(arg = true)
-
-    private val gsonMin: Gson by instance(arg = false)
+    private val gson: Gson by instance(arg = false)
 
     private lateinit var config: TelemetryConfig
-
-    private var timer: ScheduledFuture<*>? = null
 
     private val factory = ConnectionFactory()
 
@@ -76,16 +68,11 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private val preferenceHolder = PreferenceHolder()
 
-    @Volatile
-    private var isRunning = false
-
     private var basePoint: BasePoint? = null
 
     private var lastEventTime: DateTime? = null
 
     private var locationCounter = AtomicLong(-1L)
-
-    private val lock = Any()
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -97,139 +84,112 @@ class TelemetryService : BaseService(), TelemetryListener {
         super.onCreate()
         startForeground(
             Int.MAX_VALUE, NotificationCompat.Builder(applicationContext, CHANNEL_DEFAULT)
-                .setSmallIcon(R.drawable.ic_gps_fixed_white_24dp)
+                .setSmallIcon(R.drawable.ic_bus)
                 .setContentTitle("Фоновой сервис")
                 .setOngoing(true)
                 .build()
         )
         acquireWakeLock()
-        config = try {
-            if (BuildConfig.PROD) {
-                TelemetryConfig()
-            } else {
-                fileManager.run {
-                    if (configFile.exists()) {
-                        gsonMin.fromJson(configFile.readText(), TelemetryConfig::class.java)
-                    } else {
-                        launch {
-                            withContext(Dispatchers.IO) {
-                                writeFile(configFile) {
-                                    it.write(
-                                        gsonPretty.toJson(
-                                            Class.forName("$packageName.models.TelemetryDesc").newInstance()
-                                        ).toByteArray()
-                                    )
-                                }
-                            }
-                        }
-                        TelemetryConfig()
+        config = TelemetryConfig()
+        preferenceHolder.init(preferences)
+        with(preferences.mainTelemetryAddress.split(":")) {
+            factory.host = get(0)
+            factory.port = getOrNull(1)?.toIntOrNull() ?: DEFAULT_PORT
+        }
+        startTelemetry()
+        launch {
+            withContext(Dispatchers.IO) {
+                while (checkActivity()) {
+                    val counter = locationCounter.incrementAndGet()
+                    val locationDelay = counter * config.timerInterval
+                    if (locationDelay > config.locationMinDelay) {
+                        onLocationAvailability(false)
                     }
+                    addLoopEvent(locationDelay)
+                    if (connectivityManager.isConnected) {
+                        sendLastEvent()
+                    }
+                    delay(config.timerInterval)
                 }
             }
-        } catch (e: Throwable) {
-            Timber.e(e)
-            TelemetryConfig()
         }
-        preferenceHolder.init(preferences)
-        startTelemetry()
-        factory.apply {
-            val address = preferences.mainTelemetryAddress.split(":")
-            host = address[0]
-            port = try {
-                address.getOrNull(1)?.toInt() ?: DEFAULT_PORT
+    }
+
+    @Synchronized
+    private fun addLoopEvent(delay: Long) {
+        if (delay > config.locationMaxDelay) {
+            lastEventTime = null
+            basePoint = null
+            if (!BuildConfig.PROD) {
+                if (locationCounter.get() % 2 == 0L) {
+                    bgToast("Не удается определить местоположение")
+                }
+            }
+            return
+        }
+        val lastTime = lastEventTime ?: return
+        val point = basePoint ?: return
+        var eventDelay = 0L
+        when (point.state) {
+            TelemetryState.MOVING, TelemetryState.STOPPING -> {
+                if (lastTime.isEarlier(config.movingDelay, TimeUnit.MILLISECONDS)) {
+                    eventDelay = config.movingDelay
+                }
+            }
+            TelemetryState.PARKING -> {
+                if (lastTime.isEarlier(config.parkingDelay, TimeUnit.MILLISECONDS)) {
+                    eventDelay = config.parkingDelay
+                }
+            }
+            else -> {
+            }
+        }
+        if (eventDelay > 0L) {
+            Timber.i("Event after delay $eventDelay")
+            with(preferenceHolder) {
+                db.locationDao().insert(LocationEvent(point, tokenId, packageId, mileage, true).also {
+                    packageId++
+                    lastEventTime = it.data.whenTime
+                })
+                sendBroadcast(Intent(ACTION_ROUTE))
+            }
+        }
+    }
+
+    private fun sendLastEvent() {
+        db.locationDao().getLastSendEvent()?.let {
+            if (!it.location.isValid) {
+                db.locationDao().delete(it.location)
+                checkCount()
+                return
+            }
+            val user = it.token.carId.toString()
+            val pwd = it.token.token
+            try {
+                factory.apply {
+                    if (connection?.isOpen != true || channel?.isOpen != true || username != user || password != pwd) {
+                        abortConnection()
+                        username = user
+                        password = pwd
+                        connection = newConnection().apply {
+                            channel = createChannel()
+                        }
+                    }
+                }
+                val json = gson.toJson(it)
+                Timber.d("LocationEvent: $json")
+                channel?.run {
+                    txSelect()
+                    basicPublish("cars", user, null, json.toByteArray(Charsets.UTF_8))
+                    txCommit()
+                }
+                db.locationDao().markAsSent(it.location.id ?: 0L)
+                checkCount()
             } catch (e: Throwable) {
                 Timber.e(e)
-                DEFAULT_PORT
+                abortConnection()
             }
         }
-        val executor = Executors.newSingleThreadScheduledExecutor()
-        timer = executor.scheduleAtFixedRate({
-            // background thread here
-            if (!checkActivity()) {
-                return@scheduleAtFixedRate
-            }
-            val counter = locationCounter.incrementAndGet()
-            val locationDelay = counter * config.timerInterval
-            if (locationDelay > config.locationMinDelay) {
-                onLocationAvailability(false)
-            }
-            addEventSync {
-                if (locationDelay > config.locationMaxDelay) {
-                    lastEventTime = null
-                    basePoint = null
-                    if (!BuildConfig.PROD) {
-                        if (counter % 2 == 0L) {
-                            bgToast("Не удается определить местоположение")
-                        }
-                    }
-                    return@addEventSync null
-                }
-                val lastTime = lastEventTime ?: return@addEventSync null
-                if (it != null) {
-                    var eventDelay = 0L
-                    when (it.state) {
-                        TelemetryState.MOVING, TelemetryState.STOPPING -> {
-                            if (lastTime.isEarlier(config.movingDelay, TimeUnit.MILLISECONDS)) {
-                                eventDelay = config.movingDelay
-                            }
-                        }
-                        TelemetryState.PARKING -> {
-                            if (lastTime.isEarlier(config.parkingDelay, TimeUnit.MILLISECONDS)) {
-                                eventDelay = config.parkingDelay
-                            }
-                        }
-                        else -> {
-                        }
-                    }
-                    if (eventDelay > 0L) {
-                        Timber.i("Event after delay $eventDelay")
-                        preferenceHolder.run {
-                            return@addEventSync LocationEvent(it, tokenId, packageId, mileage, true).also { event ->
-                                packageId++
-                                lastEventTime = event.data.whenTime
-                            }
-                        }
-                    }
-                }
-                null
-            }
-            if (!connectivityManager.isConnected) {
-                return@scheduleAtFixedRate
-            }
-            db.locationDao().getLastSendEvent()?.let {
-                if (!it.location.isValid) {
-                    db.locationDao().delete(it.location)
-                    checkCount()
-                    return@scheduleAtFixedRate
-                }
-                val user = it.token.carId.toString()
-                val pswd = it.token.token
-                try {
-                    factory.apply {
-                        if (connection?.isOpen != true || channel?.isOpen != true || username != user || password != pswd) {
-                            abortConnection()
-                            username = user
-                            password = pswd
-                            connection = newConnection().apply {
-                                channel = createChannel()
-                            }
-                        }
-                    }
-                    val json = gsonMin.toJson(it)
-                    Timber.d("LocationEvent: $json")
-                    channel!!.apply {
-                        txSelect()
-                        basicPublish("cars", user, null, json.toByteArray(Charsets.UTF_8))
-                        txCommit()
-                    }
-                    db.locationDao().markAsSent(it.location.id ?: 0L)
-                    checkCount()
-                } catch (e: Throwable) {
-                    Timber.e(e)
-                    abortConnection()
-                }
-            }
-        }, 0L, config.timerInterval, TimeUnit.MILLISECONDS)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -246,14 +206,12 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun startTelemetry() {
-        isRunning = true
         locationManager.requestUpdates(config.locationInterval)
     }
 
     override fun stopTelemetry() {
-        isRunning = false
         locationManager.removeUpdates()
-        synchronized(lock) {
+        synchronized(this) {
             lastEventTime = null
             basePoint = null
         }
@@ -291,36 +249,39 @@ class TelemetryService : BaseService(), TelemetryListener {
         locationCounter.set(0L)
         launch {
             withContext(Dispatchers.IO) {
-                if (!checkActivity()) {
-                    return@withContext
-                }
-                addEventSync {
-                    if (it != null) {
-                        preferenceHolder.apply {
-                            val space = it.updateLocation(newLocation)
-                            val distance: Float
-                            if (it.state != TelemetryState.PARKING) {
-                                distance = mileage + space
-                                mileage = distance
-                            } else {
-                                distance = mileage
-                            }
-                            it.replaceWith(config)?.let { state ->
-                                Timber.i("Replace state with $state")
-                                basePoint = BasePoint(newLocation, state)
-                                return@addEventSync LocationEvent(it, tokenId, packageId, distance).also { event ->
-                                    packageId++
-                                    lastEventTime = event.data.whenTime
-                                }
-                            }
-                        }
-                    } else {
-                        Timber.i("Init base point")
-                        basePoint = BasePoint(newLocation)
-                    }
-                    null
+                if (checkActivity()) {
+                    addUpdateEvent(newLocation)
                 }
             }
+        }
+    }
+
+    @Synchronized
+    private fun addUpdateEvent(location: SimpleLocation) {
+        val point = basePoint
+        if (point != null) {
+            with(preferenceHolder) {
+                val space = point.updateLocation(location)
+                val distance: Float
+                if (point.state != TelemetryState.PARKING) {
+                    distance = mileage + space
+                    mileage = distance
+                } else {
+                    distance = mileage
+                }
+                point.replaceWith(config)?.let { state ->
+                    Timber.i("Replace state with $state")
+                    basePoint = BasePoint(location, state)
+                    db.locationDao().insert(LocationEvent(point, tokenId, packageId, distance).also {
+                        packageId++
+                        lastEventTime = it.data.whenTime
+                    })
+                    sendBroadcast(Intent(ACTION_ROUTE))
+                }
+            }
+        } else {
+            Timber.i("Init base point")
+            basePoint = BasePoint(location)
         }
     }
 
@@ -338,7 +299,6 @@ class TelemetryService : BaseService(), TelemetryListener {
         })
     }
 
-    @WorkerThread
     private fun checkCount() {
         sendBroadcast(Intent(ACTION_ROUTE))
         val locationCount = db.locationDao().getSendCount()
@@ -347,7 +307,6 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
     }
 
-    @WorkerThread
     private fun checkActivity(): Boolean {
         return when (activityManager.getTopActivity(packageName)) {
             null, LockActivity::class.java.name, LoginActivity::class.java.name -> {
@@ -365,6 +324,7 @@ class TelemetryService : BaseService(), TelemetryListener {
     /**
      * Cannot be called on UI thread because of [android.os.NetworkOnMainThreadException]
      */
+    @WorkerThread
     private fun abortConnection() {
         try {
             channel?.abort()
@@ -379,25 +339,11 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun onDestroy() {
+        serviceJob.cancelChildren()
         preferenceHolder.save(preferences)
         stopTelemetry()
-        timer?.cancel(true)
         releaseWakeLock()
         super.onDestroy()
-    }
-
-    @WorkerThread
-    private inline fun addEventSync(block: (BasePoint?) -> LocationEvent?) {
-        var event: LocationEvent? = null
-        synchronized(lock) {
-            if (isRunning) {
-                event = block(basePoint)
-            }
-        }
-        event?.let {
-            db.locationDao().insert(it)
-            sendBroadcast(Intent(ACTION_ROUTE))
-        }
     }
 
     companion object {

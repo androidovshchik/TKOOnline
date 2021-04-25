@@ -28,11 +28,10 @@ class PreferenceHolder : Memory {
 
     @UiThread
     fun save(preferences: Preferences) {
-        let {
-            preferences.bulk {
-                mileage = it.mileage
-                packageId = it.packageId
-            }
+        val my = this
+        preferences.bulk {
+            mileage = my.mileage
+            packageId = my.packageId
         }
     }
 }
