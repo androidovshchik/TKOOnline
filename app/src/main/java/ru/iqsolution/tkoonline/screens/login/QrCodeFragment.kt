@@ -149,7 +149,7 @@ class QrCodeFragment : BaseFragment() {
 
     override fun onRequestPermissionsResult(requestCode: Int, perms: Array<out String>, results: IntArray) {
         if (context.isGranted(Manifest.permission.CAMERA)) {
-            if (activity?.window?.decorView?.isShown == true) {
+            if (!codeScanner.isPreviewActive) {
                 startScan()
             }
         }
