@@ -101,7 +101,6 @@ class TelemetryService : BaseService(), TelemetryListener {
             factory.host = get(0)
             factory.port = getOrNull(1)?.toIntOrNull() ?: DEFAULT_PORT
         }
-        startTelemetry()
         launch {
             withContext(Dispatchers.IO) {
                 while (true) {
@@ -117,6 +116,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                 }
             }
         }
+        startTelemetry()
     }
 
     private fun sendLastEvent() {
@@ -356,9 +356,9 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     override fun onDestroy() {
+        locationManager.removeUpdates()
         serviceJob.cancelChildren()
         preferenceHolder.save(preferences)
-        stopTelemetry()
         releaseWakeLock()
         super.onDestroy()
     }
