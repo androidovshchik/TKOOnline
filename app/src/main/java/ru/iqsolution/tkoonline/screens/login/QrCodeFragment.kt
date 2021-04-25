@@ -114,16 +114,6 @@ class QrCodeFragment : BaseFragment() {
                         data = Uri.fromParts("package", packageName, null)
                     }, REQUEST_DOZE)
                 } else {
-                    checkPermissions(REQUEST_CALL)
-                }
-            }
-            REQUEST_CALL -> {
-                if (context.telecomManager.defaultDialerPackage != packageName) {
-                    // RoleManager is not working for some reasons
-                    startActivityForResult(Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).apply {
-                        putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
-                    }, REQUEST_CALL)
-                } else {
                     checkPermissions(REQUEST_INSTALL)
                 }
             }
@@ -134,8 +124,18 @@ class QrCodeFragment : BaseFragment() {
                             startActivityForResult(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
                                 data = Uri.fromParts("package", context.packageName, null)
                             }, REQUEST_INSTALL)
+                            return
                         }
                     }
+                }
+                checkPermissions(REQUEST_CALL)
+            }
+            REQUEST_CALL -> {
+                if (context.telecomManager.defaultDialerPackage != packageName) {
+                    // RoleManager is not working for some reasons
+                    startActivity(Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).apply {
+                        putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+                    })
                 }
             }
         }
