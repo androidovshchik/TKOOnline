@@ -35,9 +35,9 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     @Pattern(Pattern.DATETIME_ZONE)
     var serverTime by nullableStringPref(null, "0x03")
 
-    var mainServerAddress by stringPref("${if (BuildConfig.PROD) "msknt" else "msknt2"}.iqsolution.ru", "0x04")
+    var mainServerAddress by stringPref("${if (BuildConfig.PROD) "mkm" else "msknt2"}.iqsolution.ru", "0x04")
 
-    var mainTelemetryAddress by stringPref("${if (BuildConfig.PROD) "msknt" else "msknt2"}.iqsolution.ru:5672", "0x05")
+    var mainTelemetryAddress by stringPref("${if (BuildConfig.PROD) "mkm" else "msknt2"}.iqsolution.ru:5672", "0x05")
 
     var enableLock by booleanPref(false, "0x06")
 
