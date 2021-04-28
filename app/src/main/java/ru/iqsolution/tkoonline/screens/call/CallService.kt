@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.telecom.Call
+import android.telecom.Call.Details.DIRECTION_INCOMING
+import android.telecom.Call.Details.DIRECTION_OUTGOING
 import android.telecom.CallAudioState
 import android.telecom.InCallService
 import android.telecom.VideoProfile
@@ -14,6 +16,7 @@ import org.jetbrains.anko.newTask
 import ru.iqsolution.tkoonline.ACTION_AUDIO
 import ru.iqsolution.tkoonline.EXTRA_DIRECTION
 import ru.iqsolution.tkoonline.EXTRA_ROUTE
+import ru.iqsolution.tkoonline.extensions.isQ
 import timber.log.Timber
 
 class CallService : InCallService() {
@@ -48,8 +51,13 @@ class CallService : InCallService() {
         call.registerCallback(callback)
         lastCall = call
         with(call.details) {
+            val direction = if (!isQ()) {
+                if (call.state == Call.STATE_RINGING) DIRECTION_INCOMING else DIRECTION_OUTGOING
+            } else {
+                callDirection
+            }
             startActivity(
-                intentFor<DialActivity>(EXTRA_DIRECTION to callDirection)
+                intentFor<DialActivity>(EXTRA_DIRECTION to direction)
                     .setData(handle).newTask()
             )
         }
