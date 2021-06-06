@@ -61,7 +61,7 @@ abstract class BaseApp : Application(), DIAware, CameraXConfig.Provider {
 
     protected open fun init() {
         val config = LogConfiguration.Builder()
-            .t()
+            .enableThreadInfo()
             .build()
         val filePrinter = FilePrinter.Builder(fileManager.logsDir.path)
             .fileNameGenerator(DateFileNameGenerator())
