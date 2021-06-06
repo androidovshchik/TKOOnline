@@ -3,7 +3,10 @@ package ru.iqsolution.tkoonline.screens.platform
 import android.app.ActivityManager
 import android.content.Intent
 import android.net.Uri
+import android.nfc.NdefMessage
+import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.view.View
 import android.widget.LinearLayout
 import androidx.collection.SimpleArrayMap
 import androidx.core.view.children
@@ -17,6 +20,7 @@ import org.jetbrains.anko.*
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
+import ru.iqsolution.tkoonline.extensions.pendingActivityFor
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
@@ -43,6 +47,8 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
 
     private val gson: Gson by instance(arg = false)
 
+    private var nfcAdapter: NfcAdapter? = null
+
     private lateinit var platform: PlatformContainers
 
     private val linkedPlatforms = mutableListOf<Platform>()
@@ -67,6 +73,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform)
+        nfcAdapter = NfcAdapter.getDefaultAdapter(applicationContext)
         platform = intent.getSerializableExtra(EXTRA_PLATFORM) as PlatformContainers
         photoTypes.apply {
             addAll(intent.getSerializableExtra(EXTRA_PHOTO_TYPES) as ArrayList<PhotoType>)
@@ -161,7 +168,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
         }
         attach(ContainerLayout(applicationContext).apply {
             initContainer(platform)
-        }, 2)
+        }, 4)
         setTouchable(false)
         with(presenter) {
             generateSignature(platform.latitude, platform.longitude)
@@ -170,10 +177,39 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
         }
     }
 
-    private fun attach(layout: ContainerLayout, index: Int) {
-        platform_content.addView(layout, index, LinearLayout.LayoutParams(matchParent, wrapContent).apply {
-            bottomMargin = dip(9)
-        })
+    private fun attach(view: View, index: Int) {
+        platform_content.addView(view, index, LinearLayout.LayoutParams(matchParent, wrapContent))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        nfcAdapter?.enableForegroundDispatch(
+            this,
+            pendingActivityFor<PlatformActivity>(),
+            null,
+            null
+        )
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        when (intent?.action) {
+            NfcAdapter.ACTION_NDEF_DISCOVERED, NfcAdapter.ACTION_TECH_DISCOVERED, NfcAdapter.ACTION_TAG_DISCOVERED -> {
+                val messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
+                val text = (messages?.getOrNull(0) as? NdefMessage)
+                    ?.records?.getOrNull(0)
+                    ?.payload?.toString(Charsets.UTF_8)
+                if (!text.isNullOrBlank()) {
+
+                } else {
+                    toast("Пустая NFC метка")
+                }
+            }
+        }
+    }
+
+    override fun onPause() {
+        nfcAdapter?.disableForegroundDispatch(this)
+        super.onPause()
     }
 
     /**
@@ -184,7 +220,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
         platforms.forEachIndexed { index, item ->
             attach(ContainerLayout(applicationContext).apply {
                 initContainer(item)
-            }, 3 + index)
+            }, 5 + index)
         }
         presenter.loadCleanEvents(platform.kpId)
     }
@@ -240,10 +276,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
             }, if (hasCleanChanges && cleaned != null) {
                 Intent().apply {
                     putExtra(EXTRA_PLATFORM, platform.kpId)
-                    putExtra(
-                        EXTRA_STATUS,
-                        if (cleaned) PlatformStatus.CLEANED.id else PlatformStatus.NOT_CLEANED.id
-                    )
+                    putExtra(EXTRA_STATUS, if (cleaned) PlatformStatus.CLEANED.id else PlatformStatus.NOT_CLEANED.id)
                 }
             } else {
                 null
