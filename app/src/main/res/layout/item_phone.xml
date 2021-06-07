@@ -13,7 +13,7 @@
         fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:lineSpacingExtra="3sp"
+        android:lineSpacingExtra="3dp"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="15sp"
         tools:text="Иванов Иван Иванович" />
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_name"
         android:layout_marginTop="2dp"
-        android:lineSpacingExtra="3sp"
+        android:lineSpacingExtra="3dp"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="15sp"
         tools:text="+7 999 999 99 99" />

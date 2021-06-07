@@ -15,7 +15,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="7dp"
         android:layout_marginBottom="12dp"
-        android:lineSpacingExtra="3sp"
+        android:lineSpacingExtra="3dp"
         android:textColor="@color/colorTextGrayLight"
         android:textSize="18sp"
         tools:text="@string/platform_gallery"

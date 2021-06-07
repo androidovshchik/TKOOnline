@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:gravity="center_vertical"
-            android:lineSpacingExtra="3sp"
+            android:lineSpacingExtra="3dp"
             android:text="Пожалуйста, подождите..."
             android:textColor="@color/colorTextBlack87"
             android:textSize="20sp" />
@@ -45,7 +45,7 @@
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="10dp"
         android:background="?android:attr/selectableItemBackground"
-        android:lineSpacingExtra="2sp"
+        android:lineSpacingExtra="2dp"
         android:text="Отмена"
         android:textColor="@color/colorAccent"
         android:textSize="14sp" />

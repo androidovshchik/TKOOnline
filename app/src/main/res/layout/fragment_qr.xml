@@ -35,7 +35,7 @@
         android:layout_centerInParent="true"
         android:background="@drawable/button_gray"
         android:foreground="?android:attr/selectableItemBackground"
-        android:lineSpacingExtra="3sp"
+        android:lineSpacingExtra="3dp"
         android:paddingStart="20dp"
         android:paddingTop="10dp"
         android:paddingEnd="20dp"

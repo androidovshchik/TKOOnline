@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="53dp"
     android:foreground="?android:attr/selectableItemBackground"
-    android:lineSpacingExtra="3sp"
+    android:lineSpacingExtra="3dp"
     android:textAllCaps="false"
     android:textColor="@android:color/white"
     android:textSize="18sp"
