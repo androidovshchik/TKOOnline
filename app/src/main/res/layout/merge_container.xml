@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingPrefix"
-    tools:layout_height="98dp"
+    tools:layout_height="wrap_content"
     tools:layout_width="match_parent"
-    tools:orientation="vertical"
-    tools:parentTag="RelativeLayout">
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorDivider" />
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <ImageView
         android:id="@+id/icon_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="16dp"
         android:adjustViewBounds="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/text_type"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_trash_can" />
 
     <TextView
@@ -27,92 +24,71 @@
         fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/icon_type"
-        android:lineSpacingExtra="5sp"
+        android:lineSpacingExtra="5dp"
+        android:paddingEnd="40dp"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/volume_value"
+        app:layout_constraintStart_toEndOf="@+id/icon_type"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="ТБО"
         tools:textStyle="bold" />
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/volume_value"
+        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
-        android:layout_height="96dp"
-        android:layout_marginEnd="-4dp"
-        android:layout_toStartOf="@+id/block2"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="5dp"
+        android:textColor="@color/colorTextGrayLight"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/count_value"
+        app:layout_constraintStart_toEndOf="@+id/text_type"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="0,8м3" />
 
-        <TextView
-            android:id="@+id/volume_value"
-            fontPath="fonts/Roboto-Regular.ttf"
-            android:layout_width="96dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:lineSpacingExtra="5sp"
-            android:paddingStart="10dp"
-            android:paddingEnd="0dp"
-            android:textColor="@color/colorTextGrayLight"
-            android:textSize="30sp"
-            tools:text="0,8м3" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/block2"
+    <TextView
+        android:id="@+id/count_value"
+        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
-        android:layout_height="96dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="12dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="5dp"
+        android:textColor="@color/colorTextGrayLight"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/volume_value"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="5шт" />
 
-        <TextView
-            android:id="@+id/count_value"
-            fontPath="fonts/Roboto-Regular.ttf"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:lineSpacingExtra="5sp"
-            android:paddingStart="10dp"
-            android:paddingEnd="0dp"
-            android:textColor="@color/colorTextGrayLight"
-            android:textSize="30sp"
-            tools:text="5шт" />
+    <ImageView
+        android:id="@+id/arrow_up_count"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="-4dp"
+        android:adjustViewBounds="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_arrow_up"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/count_value"
+        app:layout_constraintEnd_toEndOf="@+id/count_value"
+        app:layout_constraintStart_toStartOf="@+id/count_value"
+        tools:visibility="visible" />
 
-        <ImageView
-            android:id="@+id/arrow_up_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:paddingStart="18dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="18dp"
-            android:paddingBottom="10dp"
-            android:src="@drawable/ic_arrow_up"
-            android:visibility="invisible"
-            tools:visibility="visible" />
-
-        <ImageView
-            android:id="@+id/arrow_down_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:adjustViewBounds="true"
-            android:paddingStart="18dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="18dp"
-            android:paddingBottom="10dp"
-            android:src="@drawable/ic_arrow_down"
-            android:visibility="invisible"
-            tools:visibility="visible" />
-
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorDivider" />
+    <ImageView
+        android:id="@+id/arrow_down_count"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="-4dp"
+        android:adjustViewBounds="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_arrow_down"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/count_value"
+        app:layout_constraintStart_toStartOf="@+id/count_value"
+        app:layout_constraintTop_toBottomOf="@+id/count_value"
+        tools:visibility="visible" />
 
 </merge>

@@ -3,6 +3,7 @@ package ru.iqsolution.tkoonline.screens.base
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
+import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
@@ -14,6 +15,7 @@ import org.kodein.di.DI
 import org.kodein.di.android.closestDI
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.BuildConfig
+import ru.iqsolution.tkoonline.extensions.pendingActivityFor
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.LockActivity
@@ -36,6 +38,8 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
 
     protected abstract val presenter: P
 
+    protected var nfcAdapter: NfcAdapter? = null
+
     protected val preferences: Preferences by instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +56,11 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
         } else {
             window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        nfcAdapter?.enableForegroundDispatch(this, pendingActivityFor(javaClass), null, null)
     }
 
     @Suppress("ConstantConditionIf")
@@ -95,6 +104,7 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
     }
 
     override fun onPause() {
+        nfcAdapter?.disableForegroundDispatch(this)
         super.onPause()
         overridePendingTransition(0, 0)
     }

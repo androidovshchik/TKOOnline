@@ -33,10 +33,45 @@
 
             <include layout="@layout/include_platform" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider" />
+
+            <TextView
+                android:id="@+id/tv_plan"
+                fontPath="fonts/Roboto-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:text="Контейнеры план:"
+                android:textColor="@color/colorTextGrayLight"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="25dp"
+                android:background="@color/colorDivider" />
+
+            <TextView
+                android:id="@+id/tv_fact"
+                fontPath="fonts/Roboto-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="12dp"
+                android:text="Контейнеры факт:"
+                android:textColor="@color/colorTextGrayLight"
+                android:textSize="14sp" />
+
             <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
                 android:id="@+id/gallery_before"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
                 app:photoType="0" />
 
             <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
@@ -57,7 +92,7 @@
                 android:layout_marginBottom="32dp"
                 android:background="@drawable/button_gray"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:lineSpacingExtra="3sp"
+                android:lineSpacingExtra="3dp"
                 android:text="Сообщить о проблеме"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
@@ -78,7 +113,7 @@
                     android:layout_marginEnd="5dp"
                     android:background="@drawable/button_red"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:lineSpacingExtra="3sp"
+                    android:lineSpacingExtra="3dp"
                     android:paddingStart="24dp"
                     android:paddingEnd="24dp"
                     android:text="КП не убрана"
@@ -100,7 +135,7 @@
                     android:layout_marginStart="5dp"
                     android:background="@drawable/button_green"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:lineSpacingExtra="3sp"
+                    android:lineSpacingExtra="3dp"
                     android:paddingStart="24dp"
                     android:paddingEnd="24dp"
                     android:text="КП убрана"
