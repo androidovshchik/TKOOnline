@@ -97,15 +97,18 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".screens.phones.PhonesActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="sensorPortrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".screens.call.DialActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".screens.outside.OutsideActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="sensorPortrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
@@ -119,10 +122,12 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".screens.photo.PhotoActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="sensorPortrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".screens.camera.CameraActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="sensorPortrait"
             android:windowSoftInputMode="stateHidden" />
 

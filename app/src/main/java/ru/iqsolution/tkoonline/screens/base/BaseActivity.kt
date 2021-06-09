@@ -15,7 +15,7 @@ import org.kodein.di.DI
 import org.kodein.di.android.closestDI
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.BuildConfig
-import ru.iqsolution.tkoonline.extensions.pendingActivityFor
+import ru.iqsolution.tkoonline.extensions.pendingFor
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.LockActivity
@@ -60,7 +60,7 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
 
     override fun onResume() {
         super.onResume()
-        nfcAdapter?.enableForegroundDispatch(this, pendingActivityFor(javaClass), null, null)
+        nfcAdapter?.enableForegroundDispatch(this, pendingFor(javaClass), null, null)
     }
 
     @Suppress("ConstantConditionIf")

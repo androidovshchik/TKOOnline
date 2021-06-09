@@ -70,6 +70,13 @@ fun Context.scanFiles(vararg paths: String) {
     }
 }
 
+fun Context.pendingFor(
+    cls: Class<*>,
+    requestCode: Int = 0,
+    flags: Int = PendingIntent.FLAG_UPDATE_CURRENT
+): PendingIntent =
+    PendingIntent.getActivity(applicationContext, requestCode, Intent(applicationContext, cls), flags)
+
 inline fun <reified T : Activity> Context.pendingActivityFor(
     requestCode: Int = 0,
     flags: Int = PendingIntent.FLAG_UPDATE_CURRENT,

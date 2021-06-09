@@ -4,6 +4,7 @@ import android.net.Uri
 import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
+import ru.iqsolution.tkoonline.local.entities.TagEvent
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.user.IUserPresenter
 import ru.iqsolution.tkoonline.screens.base.user.IUserView
@@ -20,6 +21,8 @@ interface PlatformContract {
 
         fun loadPhotoEvents(kpId: Int)
 
+        fun loadTagEvents(kpId: Int)
+
         fun savePlatformEvents(platform: PlatformContainers, platforms: List<Platform>, clear: Boolean)
     }
 
@@ -32,6 +35,8 @@ interface PlatformContract {
         fun onCleanEvents(event: CleanEventRelated)
 
         fun onPhotoEvents(events: List<PhotoEvent>)
+
+        fun onTagEvents(events: List<TagEvent>)
 
         fun closeDetails(hasCleanChanges: Boolean)
     }

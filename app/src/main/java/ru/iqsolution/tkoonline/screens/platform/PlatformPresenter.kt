@@ -84,6 +84,16 @@ class PlatformPresenter(context: Context) : UserPresenter<PlatformContract.View>
         }
     }
 
+    override fun loadTagEvents(kpId: Int) {
+        val day = preferences.serverDay
+        launch {
+            val tagEvents = withContext(Dispatchers.IO) {
+                db.tagDao().getDayKpEvents(day, kpId)
+            }
+            reference.get()?.onTagEvents(tagEvents)
+        }
+    }
+
     override fun savePlatformEvents(
         platform: PlatformContainers,
         platforms: List<Platform>,
