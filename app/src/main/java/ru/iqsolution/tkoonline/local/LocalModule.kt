@@ -21,6 +21,7 @@ val localModule = DI.Module("local") {
             .addMigrations(Migration910())
             .addMigrations(Migration1011())
             .addMigrations(Migration1112())
+            .addMigrations(Migration1213())
             .build()
     }
 }

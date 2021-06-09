@@ -13,12 +13,13 @@ import ru.iqsolution.tkoonline.local.entities.*
         AccessToken::class,
         PhotoEvent::class,
         CleanEvent::class,
+        TagEvent::class,
         LocationEvent::class,
         Platform::class,
         PhotoType::class,
         Contact::class
     ],
-    version = 12
+    version = 13
 )
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase() {
@@ -30,6 +31,8 @@ abstract class Database : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
 
     abstract fun cleanDao(): CleanDao
+
+    abstract fun tagDao(): TagDao
 
     abstract fun locationDao(): LocationDao
 
@@ -73,6 +76,22 @@ class Migration1112 : Migration(11, 12) {
         database.execSQL(
             """
             CREATE UNIQUE INDEX IF NOT EXISTS `index_contacts_c_phone` ON `contacts` (`c_phone`);
+        """.trimIndent()
+        )
+    }
+}
+
+class Migration1213 : Migration(12, 13) {
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `tag_events` (`te_id` INTEGER NOT NULL, `te_token_id` INTEGER NOT NULL, `te_kp_id` INTEGER NOT NULL, `te_when_time` TEXT NOT NULL, `te_container_type` TEXT NOT NULL, `te_container_volume` REAL NOT NULL, PRIMARY KEY(`te_id`), FOREIGN KEY(`te_token_id`) REFERENCES `tokens`(`t_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+        """.trimIndent()
+        )
+        database.execSQL(
+            """
+            CREATE INDEX IF NOT EXISTS `index_tag_events_te_token_id` ON `tag_events` (`te_token_id`);
         """.trimIndent()
         )
     }
