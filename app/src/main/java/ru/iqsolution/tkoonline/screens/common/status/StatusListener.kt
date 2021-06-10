@@ -6,6 +6,8 @@ interface StatusListener : LocationListener {
 
     fun onTimeChanged()
 
+    fun onNfcChanged(available: Boolean)
+
     /**
      * NOTICE may be called on background thread
      */

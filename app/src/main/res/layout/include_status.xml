@@ -35,6 +35,17 @@
         tools:text="12:42" />
 
     <ImageView
+        android:id="@+id/status_nfc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="6dp"
+        android:layout_toStartOf="@+id/status_location"
+        android:adjustViewBounds="true"
+        android:padding="5dp"
+        tools:src="@drawable/ic_nfc" />
+
+    <ImageView
         android:id="@+id/status_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

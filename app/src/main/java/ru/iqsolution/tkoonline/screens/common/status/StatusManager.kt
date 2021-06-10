@@ -10,6 +10,7 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
+import android.nfc.NfcAdapter
 import android.os.BatteryManager
 import org.jetbrains.anko.connectivityManager
 import org.joda.time.DateTimeZone
@@ -31,6 +32,7 @@ class StatusManager(context: Context, listener: StatusListener) {
     fun register(context: Context) = context.run {
         connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
         registerReceiver(receiver, IntentFilter().apply {
+            addAction(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
             // time
             addAction(Intent.ACTION_TIME_TICK)
             addAction(Intent.ACTION_TIME_CHANGED)
@@ -69,6 +71,12 @@ class StatusManager(context: Context, listener: StatusListener) {
 
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
+                NfcAdapter.ACTION_ADAPTER_STATE_CHANGED -> {
+                    val state = intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE, NfcAdapter.STATE_OFF)
+                    Timber.e("intent.action ${intent.action} $state")
+                    reference.get()?.onNfcChanged(state == NfcAdapter.STATE_ON ||
+                        state == NfcAdapter.STATE_TURNING_ON)
+                }
                 Intent.ACTION_TIME_TICK, Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED -> {
                     if (intent.action == Intent.ACTION_TIMEZONE_CHANGED) {
                         try {

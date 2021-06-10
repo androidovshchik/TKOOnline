@@ -45,6 +45,7 @@ abstract class BaseActivity<P : IBasePresenter<*>> : Activity(), IBaseView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        nfcAdapter = NfcAdapter.getDefaultAdapter(applicationContext)
     }
 
     override val isTouchable: Boolean

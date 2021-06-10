@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.screens.common.status
 
 import android.annotation.SuppressLint
 import android.location.LocationManager
+import android.nfc.NfcAdapter
 import android.os.BatteryManager
 import android.os.Bundle
 import android.os.Looper
@@ -47,6 +48,7 @@ class StatusFragment : BaseFragment(), StatusListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         status_number.text = preferences.vehicleNumber ?: ""
+        onNfcChanged(NfcAdapter.getDefaultAdapter(context)?.isEnabled == true)
         onNetworkChanged(false)
         onCloudChanged(true, 0)
     }
@@ -66,6 +68,10 @@ class StatusFragment : BaseFragment(), StatusListener {
             return
         }
         status_time.text = LocalTime.now().toString(PATTERN_TIME)
+    }
+
+    override fun onNfcChanged(available: Boolean) {
+        status_nfc.setImageResource(if (available) R.drawable.ic_nfc else 0)
     }
 
     private fun onLocationChanged(available: Boolean) {
