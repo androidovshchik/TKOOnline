@@ -73,7 +73,6 @@ class StatusManager(context: Context, listener: StatusListener) {
             when (intent.action) {
                 NfcAdapter.ACTION_ADAPTER_STATE_CHANGED -> {
                     val state = intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE, NfcAdapter.STATE_OFF)
-                    Timber.e("intent.action ${intent.action} $state")
                     reference.get()?.onNfcChanged(state == NfcAdapter.STATE_ON ||
                         state == NfcAdapter.STATE_TURNING_ON)
                 }

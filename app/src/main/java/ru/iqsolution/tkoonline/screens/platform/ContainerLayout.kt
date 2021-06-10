@@ -10,17 +10,18 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.util.AttributeSet
 import android.view.View
-import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.merge_container.view.*
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
 import java.lang.ref.WeakReference
 
-class ContainerLayout : RelativeLayout {
+@Suppress("LeakingThis")
+open class ContainerLayout : ConstraintLayout {
 
-    private lateinit var reference: WeakReference<Container>
+    private var reference: WeakReference<Container>? = null
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -44,10 +45,10 @@ class ContainerLayout : RelativeLayout {
 
     @SuppressLint("Recycle")
     @Suppress("UNUSED_PARAMETER")
-    private fun init(attrs: AttributeSet?) {
+    protected open fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_container, this)
         arrow_up_count.setOnClickListener {
-            reference.get()?.apply {
+            reference?.get()?.apply {
                 if (containerCount < 99) {
                     containerCount++
                     updateCountText()
@@ -55,7 +56,7 @@ class ContainerLayout : RelativeLayout {
             }
         }
         arrow_down_count.setOnClickListener {
-            reference.get()?.apply {
+            reference?.get()?.apply {
                 if (containerCount > 0) {
                     containerCount--
                     updateCountText()
@@ -79,7 +80,7 @@ class ContainerLayout : RelativeLayout {
     }
 
     fun updateContainer(container: Container) {
-        reference.get()?.let {
+        reference?.get()?.let {
             if (it.kpId == container.kpId) {
                 it.containerCount = container.containerCount
                 updateCountText()
@@ -88,20 +89,20 @@ class ContainerLayout : RelativeLayout {
     }
 
     private fun updateVolumeText() {
-        volume_value.setValueText(context.getString(R.string.platform_volume, reference.get()?.containerVolume ?: 0f))
+        volume_value.setValueText(context.getString(R.string.platform_volume, reference?.get()?.containerVolume ?: 0f))
     }
 
     private fun updateCountText() {
-        count_value.setValueText(context.getString(R.string.platform_count, reference.get()?.containerCount ?: 0))
+        count_value.setValueText(context.getString(R.string.platform_count, reference?.get()?.containerCount ?: 0))
     }
 
     fun clear() {
-        reference.clear()
+        reference?.clear()
     }
 
     override fun hasOverlappingRendering() = false
 
-    private fun TextView.setValueText(text: CharSequence) {
+    protected fun TextView.setValueText(text: CharSequence) {
         val smallStyle = RelativeSizeSpan(0.6f)
         val colorStyle = ForegroundColorSpan(context.getColor(R.color.colorTextGrayDark))
         setText(SpannableStringBuilder(text).apply {
