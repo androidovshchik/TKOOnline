@@ -18,10 +18,9 @@ import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
 import java.lang.ref.WeakReference
 
-@Suppress("LeakingThis")
-open class ContainerLayout : ConstraintLayout {
+class ContainerLayout : ConstraintLayout {
 
-    private var reference: WeakReference<Container>? = null
+    private lateinit var reference: WeakReference<Container>
 
     @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(
@@ -45,10 +44,10 @@ open class ContainerLayout : ConstraintLayout {
 
     @SuppressLint("Recycle")
     @Suppress("UNUSED_PARAMETER")
-    protected open fun init(attrs: AttributeSet?) {
+    private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.merge_container, this)
         arrow_up_count.setOnClickListener {
-            reference?.get()?.apply {
+            reference.get()?.apply {
                 if (containerCount < 99) {
                     containerCount++
                     updateCountText()
@@ -56,7 +55,7 @@ open class ContainerLayout : ConstraintLayout {
             }
         }
         arrow_down_count.setOnClickListener {
-            reference?.get()?.apply {
+            reference.get()?.apply {
                 if (containerCount > 0) {
                     containerCount--
                     updateCountText()
@@ -80,7 +79,7 @@ open class ContainerLayout : ConstraintLayout {
     }
 
     fun updateContainer(container: Container) {
-        reference?.get()?.let {
+        reference.get()?.let {
             if (it.kpId == container.kpId) {
                 it.containerCount = container.containerCount
                 updateCountText()
@@ -89,25 +88,28 @@ open class ContainerLayout : ConstraintLayout {
     }
 
     private fun updateVolumeText() {
-        volume_value.setValueText(context.getString(R.string.platform_volume, reference?.get()?.containerVolume ?: 0f))
+        volume_value.setValueText(context.getString(R.string.platform_volume, reference.get()?.containerVolume ?: 0f))
     }
 
     private fun updateCountText() {
-        count_value.setValueText(context.getString(R.string.platform_count, reference?.get()?.containerCount ?: 0))
+        count_value.setValueText(context.getString(R.string.platform_count, reference.get()?.containerCount ?: 0))
     }
 
     fun clear() {
-        reference?.clear()
+        reference.clear()
     }
 
     override fun hasOverlappingRendering() = false
 
-    protected fun TextView.setValueText(text: CharSequence) {
-        val smallStyle = RelativeSizeSpan(0.6f)
-        val colorStyle = ForegroundColorSpan(context.getColor(R.color.colorTextGrayDark))
-        setText(SpannableStringBuilder(text).apply {
-            setSpan(colorStyle, 0, text.length - 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            setSpan(smallStyle, text.length - 2, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        })
+    companion object {
+
+        fun TextView.setValueText(text: CharSequence) {
+            val smallStyle = RelativeSizeSpan(0.6f)
+            val colorStyle = ForegroundColorSpan(context.getColor(R.color.colorTextGrayDark))
+            setText(SpannableStringBuilder(text).apply {
+                setSpan(colorStyle, 0, text.length - 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(smallStyle, text.length - 2, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            })
+        }
     }
 }

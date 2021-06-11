@@ -5,6 +5,10 @@ import androidx.room.*
 import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.models.Container
+import ru.iqsolution.tkoonline.models.ContainerType
+import timber.log.Timber
+import java.util.*
+import kotlin.experimental.and
 
 @Entity(
     tableName = "tag_events",
@@ -47,4 +51,34 @@ class TagEvent : Container {
 
     @Ignore
     override var containerCount = 0
+
+    companion object {
+
+        fun parseText(kp: Int, token: Long, data: ByteArray): TagEvent? {
+            try {
+                val encoding = if (data[0] and 128.toByte() == 0.toByte()) "UTF-8" else "UTF-16"
+                val langLength = data[0] and 63.toByte()
+                val text = String(data, 1 + langLength, data.size - 1 - langLength, charset(encoding))
+                val (ownId, type, incVolume) = text.toUpperCase(Locale.getDefault())
+                    .split("(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)".toRegex())
+                return TagEvent().apply {
+                    id = ownId.toLong()
+                    tokenId = token
+                    kpId = kp
+                    whenTime = DateTime.now()
+                    containerType = when {
+                        type.matches("^[ТT](Б[ОO]?)?\$".toRegex()) -> ContainerType.REGULAR.id
+                        type.matches("^[КK](Г[МM])?\$".toRegex()) -> ContainerType.BUNKER.id
+                        type.matches("^Б[ТT]?\$".toRegex()) -> ContainerType.BULK1.id
+                        type.matches("^[СC](П[ЕE]Ц.?)?\$".toRegex()) -> ContainerType.SPECIAL1.id
+                        else -> ContainerType.UNKNOWN.id
+                    }
+                    containerVolume = incVolume.toFloat() / 10
+                }
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
+            return null
+        }
+    }
 }
