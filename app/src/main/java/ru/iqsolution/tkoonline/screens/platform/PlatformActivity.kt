@@ -204,12 +204,11 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
      * Called once after create
      */
     override fun onCleanEvents(event: CleanEventRelated) {
-        containerAdapter.items.forEach {
-            if (it.kpId == event.clean.kpId) {
-                it.containerCount = event.clean.containerCount
-                event.events.forEach { item ->
-                    it.updateContainer(item)
-                }
+        containerAdapter.items.forEach { item ->
+            val clean = event.events.lastOrNull { item.kpId == it.kpId }
+                ?: event.clean.takeIf { item.kpId == it.kpId }
+            if (clean != null) {
+                item.containerCount = clean.containerCount
             }
         }
         containerAdapter.notifyDataSetChanged()
