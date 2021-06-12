@@ -21,7 +21,9 @@ interface PlatformContract {
 
         fun loadPhotoEvents(kpId: Int)
 
-        fun loadTagEvents(kpId: Int)
+        fun observeTagEvents(kpId: Int)
+
+        fun saveTagEvent(event: TagEvent)
 
         fun savePlatformEvents(platform: PlatformContainers, platforms: List<Platform>, clear: Boolean)
     }

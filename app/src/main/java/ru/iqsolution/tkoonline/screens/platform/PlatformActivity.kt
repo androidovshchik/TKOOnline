@@ -6,8 +6,6 @@ import android.net.Uri
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.os.Bundle
-import android.view.View
-import android.widget.LinearLayout
 import androidx.collection.SimpleArrayMap
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -16,17 +14,15 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platform.*
 import kotlinx.android.synthetic.main.include_platform.*
 import kotlinx.android.synthetic.main.include_toolbar.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.activityManager
+import org.jetbrains.anko.browse
+import org.jetbrains.anko.toast
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
-import ru.iqsolution.tkoonline.extensions.pendingActivityFor
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
-import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
-import ru.iqsolution.tkoonline.local.entities.PhotoEvent
-import ru.iqsolution.tkoonline.local.entities.PhotoType
-import ru.iqsolution.tkoonline.local.entities.Platform
+import ru.iqsolution.tkoonline.local.entities.*
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.models.SimpleLocation
@@ -45,9 +41,9 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
 
     override val presenter: PlatformPresenter by instance()
 
-    private val gson: Gson by instance(arg = false)
+    private val tagsAdapter: TagsAdapter by instance()
 
-    private var nfcAdapter: NfcAdapter? = null
+    private val gson: Gson by instance(arg = false)
 
     private lateinit var platform: PlatformContainers
 
@@ -73,7 +69,6 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_platform)
-        nfcAdapter = NfcAdapter.getDefaultAdapter(applicationContext)
         platform = intent.getSerializableExtra(EXTRA_PLATFORM) as PlatformContainers
         photoTypes.apply {
             addAll(intent.getSerializableExtra(EXTRA_PHOTO_TYPES) as ArrayList<PhotoType>)
@@ -166,50 +161,39 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
                 }
             }
         }
-        attach(ContainerLayout(applicationContext).apply {
+        platform_content.addView(ContainerLayout(applicationContext).apply {
             initContainer(platform)
         }, 4)
         setTouchable(false)
         with(presenter) {
             generateSignature(platform.latitude, platform.longitude)
             loadLinkedPlatforms(platform.linkedIds.toList())
+            observeTagEvents(platform.kpId)
             loadPhotoEvents(platform.kpId)
         }
-    }
-
-    private fun attach(view: View, index: Int) {
-        platform_content.addView(view, index, LinearLayout.LayoutParams(matchParent, wrapContent))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        nfcAdapter?.enableForegroundDispatch(
-            this,
-            pendingActivityFor<PlatformActivity>(),
-            null,
-            null
-        )
     }
 
     override fun onNewIntent(intent: Intent?) {
         when (intent?.action) {
             NfcAdapter.ACTION_NDEF_DISCOVERED, NfcAdapter.ACTION_TECH_DISCOVERED, NfcAdapter.ACTION_TAG_DISCOVERED -> {
                 val messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
-                val text = (messages?.getOrNull(0) as? NdefMessage)
-                    ?.records?.getOrNull(0)
-                    ?.payload?.toString(Charsets.UTF_8)
-                if (!text.isNullOrBlank()) {
-
-                } else {
+                val data = (messages?.getOrNull(0) as? NdefMessage)
+                    ?.records?.getOrNull(0)?.payload
+                if (data == null) {
                     toast("Пустая NFC метка")
+                    return
+                }
+                val event = TagEvent.parseText(data)?.also {
+                    it.tokenId = preferences.tokenId
+                    it.kpId = platform.kpId
+                }
+                if (event != null) {
+                    presenter.saveTagEvent(event)
+                } else {
+                    toast("Не удалось прочитать NFC метку")
                 }
             }
         }
-    }
-
-    override fun onPause() {
-        nfcAdapter?.disableForegroundDispatch(this)
-        super.onPause()
     }
 
     /**
@@ -218,7 +202,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
     override fun onLinkedPlatforms(platforms: List<Platform>) {
         linkedPlatforms.addAll(platforms)
         platforms.forEachIndexed { index, item ->
-            attach(ContainerLayout(applicationContext).apply {
+            platform_content.addView(ContainerLayout(applicationContext).apply {
                 initContainer(item)
             }, 5 + index)
         }
@@ -249,6 +233,12 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
         gallery_before.updatePhotos(events)
         gallery_after.updatePhotos(events)
         setTouchable(true)
+    }
+
+    override fun onTagEvents(events: List<TagEvent>) {
+        tagsAdapter.items.clear()
+        tagsAdapter.items.addAll(events)
+        tagsAdapter.notifyDataSetChanged()
     }
 
     override fun onPhotoClick(photoType: PhotoType.Default, photoEvent: PhotoEvent?) {

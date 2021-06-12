@@ -4,10 +4,12 @@ import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
+import ru.iqsolution.tkoonline.local.entities.TagEvent
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.screens.base.user.UserPresenter
@@ -84,13 +86,20 @@ class PlatformPresenter(context: Context) : UserPresenter<PlatformContract.View>
         }
     }
 
-    override fun loadTagEvents(kpId: Int) {
+    override fun observeTagEvents(kpId: Int) {
         val day = preferences.serverDay
         launch {
-            val tagEvents = withContext(Dispatchers.IO) {
-                db.tagDao().getDayKpEvents(day, kpId)
+            db.tagDao().observeDayKpEvents(day, kpId).collect {
+                reference.get()?.onTagEvents(it)
             }
-            reference.get()?.onTagEvents(tagEvents)
+        }
+    }
+
+    override fun saveTagEvent(event: TagEvent) {
+        launch {
+            withContext(Dispatchers.IO) {
+                db.tagDao().insert(event)
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 import ru.iqsolution.tkoonline.local.entities.TagEvent
 
 @Dao
@@ -16,7 +17,7 @@ interface TagDao {
         ORDER BY te_id ASC
     """
     )
-    fun getDayKpEvents(day: String, kpId: Int): List<TagEvent>
+    fun observeDayKpEvents(day: String, kpId: Int): Flow<List<TagEvent>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(item: TagEvent)

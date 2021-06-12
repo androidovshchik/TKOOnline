@@ -54,7 +54,10 @@ class TagEvent : Container {
 
     companion object {
 
-        fun parseText(kp: Int, token: Long, data: ByteArray): TagEvent? {
+        fun parseText(data: ByteArray?): TagEvent? {
+            if (data == null) {
+                return null
+            }
             try {
                 val encoding = if (data[0] and 128.toByte() == 0.toByte()) "UTF-8" else "UTF-16"
                 val langLength = data[0] and 63.toByte()
@@ -63,9 +66,6 @@ class TagEvent : Container {
                     .split("(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)".toRegex())
                 return TagEvent().apply {
                     id = ownId.toLong()
-                    tokenId = token
-                    kpId = kp
-                    whenTime = DateTime.now()
                     containerType = when {
                         type.matches("^[ТT](Б[ОO]?)?\$".toRegex()) -> ContainerType.REGULAR.id
                         type.matches("^[КK](Г[МM])?\$".toRegex()) -> ContainerType.BUNKER.id
@@ -74,6 +74,7 @@ class TagEvent : Container {
                         else -> ContainerType.UNKNOWN.id
                     }
                     containerVolume = incVolume.toFloat() / 10
+                    whenTime = DateTime.now()
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
