@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import ru.iqsolution.tkoonline.local.entities.CleanEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.local.entities.TagEvent
+import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import ru.iqsolution.tkoonline.screens.base.user.UserPresenter
@@ -103,17 +104,15 @@ class PlatformPresenter(context: Context) : UserPresenter<PlatformContract.View>
         }
     }
 
-    override fun savePlatformEvents(
-        platform: PlatformContainers,
-        platforms: List<Platform>,
-        clear: Boolean
-    ) {
+    override fun savePlatformEvents(platforms: List<Container>, clear: Boolean) {
         val day = preferences.serverDay
         val tokenId = preferences.tokenId
+        val platform = platforms[0] as PlatformContainers
         val cleanEvent = CleanEvent(platform.kpId, tokenId).apply {
             setFromAny(platform)
         }
         val cleanEvents = platforms.map {
+            check(it is Platform)
             CleanEvent(it.kpId, tokenId).apply {
                 linkedId = it.linkedKpId
                 setFromAny(it)

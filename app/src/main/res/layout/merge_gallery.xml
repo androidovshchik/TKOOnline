@@ -30,7 +30,6 @@
             android:id="@+id/gallery"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:animateLayoutChanges="true"
             android:orientation="horizontal"
             tools:paddingStart="8dp">
 

@@ -17,7 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/platform_toolbar"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/platform_content"
@@ -61,7 +62,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="20dp"
                 android:background="@color/colorDivider" />
 
             <TextView
@@ -89,7 +90,7 @@
                 android:id="@+id/gallery_before"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="43dp"
                 app:photoType="0" />
 
             <ru.iqsolution.tkoonline.screens.platform.GalleryLayout

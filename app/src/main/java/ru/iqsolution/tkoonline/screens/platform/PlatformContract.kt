@@ -5,7 +5,7 @@ import ru.iqsolution.tkoonline.local.entities.CleanEventRelated
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.Platform
 import ru.iqsolution.tkoonline.local.entities.TagEvent
-import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.screens.base.user.IUserPresenter
 import ru.iqsolution.tkoonline.screens.base.user.IUserView
 
@@ -25,7 +25,7 @@ interface PlatformContract {
 
         fun saveTagEvent(event: TagEvent)
 
-        fun savePlatformEvents(platform: PlatformContainers, platforms: List<Platform>, clear: Boolean)
+        fun savePlatformEvents(platforms: List<Container>, clear: Boolean)
     }
 
     interface View : IUserView, GalleryListener {
