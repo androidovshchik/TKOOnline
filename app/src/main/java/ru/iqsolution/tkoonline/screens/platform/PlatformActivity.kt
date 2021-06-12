@@ -7,7 +7,6 @@ import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import androidx.collection.SimpleArrayMap
-import androidx.core.view.children
 import androidx.core.view.isVisible
 import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
@@ -41,13 +40,13 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
 
     override val presenter: PlatformPresenter by instance()
 
-    private val tagsAdapter: TagsAdapter by instance()
-
     private val gson: Gson by instance(arg = false)
 
-    private lateinit var platform: PlatformContainers
+    private val containerAdapter = ContainerAdapter()
 
-    private val linkedPlatforms = mutableListOf<Platform>()
+    private val tagsAdapter = TagsAdapter()
+
+    private lateinit var platform: PlatformContainers
 
     private val photoTypes = mutableListOf<PhotoType>()
 
@@ -97,6 +96,9 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
                 platform.timeLimitTo.toString(PATTERN_TIME)
             ), 2, 7, 11, 16
         )
+        containerAdapter.items.add(platform)
+        rv_containers.adapter = containerAdapter
+        rv_tags.adapter = tagsAdapter
         platform_report.setOnClickListener {
             startActivityNoop<ProblemActivity>(
                 REQUEST_PROBLEM,
@@ -117,16 +119,12 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
             } else {
                 setTouchable(false)
                 clickedClean = false
-                platform.reset()
-                presenter.savePlatformEvents(platform, linkedPlatforms.onEach {
-                    it.reset()
-                }, false)
+                presenter.savePlatformEvents(containerAdapter.items.onEach { it.reset() }, false)
             }
         }
         platform_cleaned.setOnClickListener {
             val errorMessage = when {
-                platform.containerCount <= 0 && (linkedPlatforms.isEmpty() || linkedPlatforms.sumBy { it.containerCount } <= 0) ->
-                    "Укажите сколько контейнеров было убрано"
+                containerAdapter.items.sumBy { it.containerCount } <= 0 -> "Укажите сколько контейнеров было убрано"
                 gallery_before.photoEvents.size <= 0 -> "Добавьте хотя бы одно фото до уборки"
                 gallery_after.photoEvents.size <= 0 -> "Добавьте хотя бы одно фото после уборки"
                 else -> null
@@ -138,7 +136,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
             } else {
                 setTouchable(false)
                 clickedClean = true
-                presenter.savePlatformEvents(platform, linkedPlatforms, true)
+                presenter.savePlatformEvents(containerAdapter.items, true)
             }
         }
         ib_yandex.isVisible =
@@ -161,15 +159,12 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
                 }
             }
         }
-        platform_content.addView(ContainerLayout(applicationContext).apply {
-            initContainer(platform)
-        }, 4)
         setTouchable(false)
         with(presenter) {
             generateSignature(platform.latitude, platform.longitude)
             loadLinkedPlatforms(platform.linkedIds.toList())
-            observeTagEvents(platform.kpId)
             loadPhotoEvents(platform.kpId)
+            observeTagEvents(platform.kpId)
         }
     }
 
@@ -190,7 +185,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
                 if (event != null) {
                     presenter.saveTagEvent(event)
                 } else {
-                    toast("Не удалось прочитать NFC метку")
+                    toast("Не удалось прочитать метку")
                 }
             }
         }
@@ -200,12 +195,8 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
      * Called once after create
      */
     override fun onLinkedPlatforms(platforms: List<Platform>) {
-        linkedPlatforms.addAll(platforms)
-        platforms.forEachIndexed { index, item ->
-            platform_content.addView(ContainerLayout(applicationContext).apply {
-                initContainer(item)
-            }, 5 + index)
-        }
+        containerAdapter.items.addAll(platforms)
+        containerAdapter.notifyDataSetChanged()
         presenter.loadCleanEvents(platform.kpId)
     }
 
@@ -213,14 +204,15 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
      * Called once after create
      */
     override fun onCleanEvents(event: CleanEventRelated) {
-        platform_content.children.forEach {
-            if (it is ContainerLayout) {
-                it.updateContainer(event.clean)
+        containerAdapter.items.forEach {
+            if (it.kpId == event.clean.kpId) {
+                it.containerCount = event.clean.containerCount
                 event.events.forEach { item ->
                     it.updateContainer(item)
                 }
             }
         }
+        containerAdapter.notifyDataSetChanged()
     }
 
     override fun onPhotoEvents(events: List<PhotoEvent>) {
@@ -320,11 +312,6 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
     override fun onDestroy() {
         alertDialog?.dismiss()
         platform_map.release()
-        platform_content.children.forEach {
-            if (it is ContainerLayout) {
-                it.clear()
-            }
-        }
         super.onDestroy()
     }
 

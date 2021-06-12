@@ -49,19 +49,20 @@ class ContainerAdapter : BaseAdapter<Container>() {
 
         init {
             upCount.setOnClickListener {
-
-                reference.get()?.apply {
+                val position = bindingAdapterPosition
+                with(items[position]) {
                     if (containerCount < 99) {
                         containerCount++
-                        updateCountText()
+                        notifyItemChanged(position)
                     }
                 }
             }
             downCount.setOnClickListener {
-                reference.get()?.apply {
+                val position = bindingAdapterPosition
+                with(items[position]) {
                     if (containerCount > 0) {
                         containerCount--
-                        updateCountText()
+                        notifyItemChanged(position)
                     }
                 }
             }
