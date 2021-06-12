@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingStart="6dp"
     android:paddingTop="10dp"
-    android:paddingEnd="4dp"
     tools:ignore="MissingPrefix">
 
     <ImageView
         android:id="@+id/iv_type"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:adjustViewBounds="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="7dp"
         android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tv_type"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_trash_can" />
 
     <TextView
@@ -24,12 +27,14 @@
         fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="3"
-        android:gravity="center"
         android:lineSpacingExtra="5dp"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tv_volume"
+        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintStart_toEndOf="@+id/iv_type"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="ТБО"
         tools:textStyle="bold" />
 
@@ -38,12 +43,14 @@
         fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="3"
-        android:gravity="center"
         android:lineSpacingExtra="5dp"
         android:textColor="@color/colorTextGrayLight"
         android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tv_no"
+        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintStart_toEndOf="@+id/tv_type"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="0,8м3" />
 
     <TextView
@@ -52,11 +59,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:gravity="center"
         android:text="№"
         android:textColor="@color/colorTextGrayDark"
-        android:textSize="25sp" />
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tv_number"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/tv_volume"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_number"
@@ -64,10 +74,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="4"
-        android:gravity="center"
+        android:layout_marginStart="4dp"
         android:textColor="@color/colorTextGrayDark"
-        android:textSize="25sp"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/iv_daw"
+        app:layout_constraintHorizontal_weight="4"
+        app:layout_constraintStart_toEndOf="@+id/tv_no"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="12312312" />
 
     <ImageView
@@ -75,9 +89,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1"
         android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_baseline_done_24" />
+        android:src="@drawable/ic_baseline_done_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/tv_number"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
