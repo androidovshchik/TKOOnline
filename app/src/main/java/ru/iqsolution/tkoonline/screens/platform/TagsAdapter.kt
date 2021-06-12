@@ -11,7 +11,6 @@ import ru.iqsolution.tkoonline.extensions.inflate
 import ru.iqsolution.tkoonline.local.entities.TagEvent
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
-import ru.iqsolution.tkoonline.screens.platform.ContainerLayout.Companion.setValueText
 
 class TagsAdapter : BaseAdapter<TagEvent>() {
 

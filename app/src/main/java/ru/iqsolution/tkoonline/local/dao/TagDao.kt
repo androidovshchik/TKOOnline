@@ -14,7 +14,7 @@ interface TagDao {
         """
         SELECT * FROM tag_events 
         WHERE te_kp_id = :kpId AND te_when_time LIKE :day || '%'
-        ORDER BY te_id ASC
+        ORDER BY te_when_time ASC
     """
     )
     fun observeDayKpEvents(day: String, kpId: Int): Flow<List<TagEvent>>

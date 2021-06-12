@@ -5,8 +5,6 @@ import org.kodein.di.*
 import ru.iqsolution.tkoonline.screens.common.wait.WaitDialog
 import ru.iqsolution.tkoonline.screens.phones.ContactsAdapter
 import ru.iqsolution.tkoonline.screens.phones.PhonesActivity
-import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
-import ru.iqsolution.tkoonline.screens.platform.TagsAdapter
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
 import ru.iqsolution.tkoonline.screens.platforms.PlatformsAdapter
 
@@ -16,10 +14,6 @@ val screenModule = DI.Module("screen") {
         PlatformsAdapter(instance()).apply {
             setListener(context)
         }
-    }
-
-    bind<TagsAdapter>() with contexted<PlatformActivity>().provider {
-        TagsAdapter()
     }
 
     bind<ContactsAdapter>() with contexted<PhonesActivity>().provider {
