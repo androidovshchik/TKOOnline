@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.browse
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.vibrator
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
@@ -171,6 +172,7 @@ class PlatformActivity : UserActivity<PlatformContract.Presenter>(), PlatformCon
     override fun onNewIntent(intent: Intent?) {
         when (intent?.action) {
             NfcAdapter.ACTION_NDEF_DISCOVERED, NfcAdapter.ACTION_TECH_DISCOVERED, NfcAdapter.ACTION_TAG_DISCOVERED -> {
+                vibrator.vibrate(400)
                 val messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
                 val data = (messages?.getOrNull(0) as? NdefMessage)
                     ?.records?.getOrNull(0)?.payload
