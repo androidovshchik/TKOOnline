@@ -1,8 +1,13 @@
-/*
- * Copyright (c) 2019. Vlad Kalyuzhnyu <vladkalyuzhnyu@gmail.com>
- */
-
 buildscript {
+    ext {
+        kotlin_version = '1.5.31'
+        kodein_version = '7.5.0'
+        retrofit_version = '2.9.0'
+        room_version = '2.3.0'
+        anko_version = '0.10.8'
+        stetho_version = '1.5.1'
+        andresguard_version = '1.2.21'
+    }
     repositories {
         jcenter()
         google()
@@ -12,20 +17,20 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
-        classpath "com.tencent.mm:AndResGuard-gradle-plugin:${Versions.andresguard}"
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.28.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.tencent.mm:AndResGuard-gradle-plugin:$andresguard_version"
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.28.0'
     }
 }
 
-apply plugin: "com.github.ben-manes.versions"
+apply plugin: 'com.github.ben-manes.versions'
 
 allprojects {
     repositories {
         jcenter()
         google()
         maven {
-            url "https://jitpack.io"
+            url 'https://jitpack.io'
         }
     }
 }
