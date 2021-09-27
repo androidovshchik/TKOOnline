@@ -1,32 +1,32 @@
 package ru.iqsolution.tkoonline.local
 
 import androidx.room.TypeConverter
-import org.joda.time.DateTime
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATE
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
-import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE
 import ru.iqsolution.tkoonline.extensions.Pattern
+import ru.iqsolution.tkoonline.extensions.patternDate
+import ru.iqsolution.tkoonline.extensions.patternDateTimeZone
+import ru.iqsolution.tkoonline.extensions.patternTimeZone
+import java.time.ZonedDateTime
 
 @Suppress("unused")
 object Converters {
 
+    @JvmStatic
     @TypeConverter
     @Pattern(Pattern.DATETIME_ZONE)
-    @JvmStatic
-    fun fromDateTime(value: DateTime?): String? {
-        return value?.toString(PATTERN_DATETIME_ZONE)
+    fun fromZonedDateTime(value: ZonedDateTime?): String? {
+        return value?.format(patternDateTimeZone)
     }
 
     /**
-     * NOTICE [PATTERN_DATE] is not supported
+     * NOTICE [patternDate] is not supported
      */
-    @TypeConverter
     @JvmStatic
-    fun toDateTime(value: String?): DateTime? {
+    @TypeConverter
+    fun toZonedDateTime(value: String?): ZonedDateTime? {
         return value?.let {
             when {
-                it.contains("T") -> DateTime.parse(it, PATTERN_DATETIME_ZONE)
-                else -> DateTime.parse(it, PATTERN_TIME_ZONE)
+                it.contains("T") -> ZonedDateTime.parse(it, patternDateTimeZone)
+                else -> ZonedDateTime.parse(it, patternTimeZone)
             }
         }
     }

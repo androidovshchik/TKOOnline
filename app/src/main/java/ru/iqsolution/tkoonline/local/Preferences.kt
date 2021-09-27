@@ -2,16 +2,16 @@ package ru.iqsolution.tkoonline.local
 
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel
-import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.PASSWORD_RETRY
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATE
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.extensions.isLater
+import ru.iqsolution.tkoonline.extensions.patternDate
+import ru.iqsolution.tkoonline.extensions.patternDateTimeZone
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
+import java.time.ZonedDateTime
 
 class Preferences(context: Context) : KotprefModel(context), Memory, Location<Float> {
 
@@ -110,7 +110,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
             check(accessToken != null) { "accessToken == null" }
             expiresWhen.let {
                 check(it != null) { "expiresWhen == null" }
-                check(DateTime.parse(it, PATTERN_DATETIME_ZONE).isLater()) { "expiresWhen <= now" }
+                check(ZonedDateTime.parse(it, patternDateTimeZone).isLater()) { "expiresWhen <= now" }
             }
             check(serverTime != null) { "serverTime == null" }
             check(vehicleNumber != null) { "vehicleNumber == null" }
@@ -128,12 +128,12 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
      */
     val serverDay: String
         get() {
-            val now = DateTime.now()
+            val now = ZonedDateTime.now()
             serverTime?.let {
-                return now.withZone(DateTime.parse(it, PATTERN_DATETIME_ZONE).zone)
-                    .toString(PATTERN_DATE)
+                val serverZone = ZonedDateTime.parse(it, patternDateTimeZone).zone
+                return now.withZoneSameInstant(serverZone).format(patternDate)
             }
-            return now.toString(PATTERN_DATE)
+            return now.format(patternDate)
         }
 
     val location: SimpleLocation?

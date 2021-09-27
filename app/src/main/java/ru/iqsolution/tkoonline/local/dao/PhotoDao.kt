@@ -1,7 +1,7 @@
 package ru.iqsolution.tkoonline.local.dao
 
 import androidx.room.*
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
+import ru.iqsolution.tkoonline.extensions.patternDateTimeZone
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEventToken
 
@@ -87,7 +87,7 @@ abstract class PhotoDao {
             item.tokenId,
             item.latitude,
             item.longitude,
-            item.whenTime.toString(PATTERN_DATETIME_ZONE)
+            item.whenTime.format(patternDateTimeZone)
         )
     }
 
