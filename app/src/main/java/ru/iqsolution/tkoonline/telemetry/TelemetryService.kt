@@ -23,7 +23,6 @@ import org.jetbrains.anko.activityManager
 import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.startService
 import org.jetbrains.anko.stopService
-import org.joda.time.DateTime
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.*
@@ -37,6 +36,7 @@ import ru.iqsolution.tkoonline.models.TelemetryState
 import ru.iqsolution.tkoonline.screens.LockActivity
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
 import timber.log.Timber
+import java.time.ZonedDateTime
 import kotlin.math.min
 
 /**
@@ -73,9 +73,9 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private var basePoint: BasePoint? = null
 
-    private var lastEventTime: DateTime? = null
+    private var lastEventTime: ZonedDateTime? = null
 
-    private var lastLocationTime = DateTime.now()
+    private var lastLocationTime = ZonedDateTime.now()
 
     private val mutex = Mutex()
 
@@ -236,7 +236,7 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     override fun onLocationStart(enabled: Boolean, ttffMillis: Int) {
         if (!enabled || ttffMillis > 0) {
-            lastLocationTime = DateTime.now()
+            lastLocationTime = ZonedDateTime.now()
         }
         onLocationAvailability(true)
     }
@@ -263,7 +263,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         }
         onLocationAvailability(true)
         onLocationResult(newLocation)
-        lastLocationTime = DateTime.now()
+        lastLocationTime = ZonedDateTime.now()
         launch {
             withContext(Dispatchers.IO) {
                 if (checkActivity()) {
@@ -309,7 +309,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         preferences.bulk {
             latitude = location.latitude.toFloat()
             longitude = location.longitude.toFloat()
-            locationTime = location.locationTime.toString(PATTERN_DATETIME_ZONE)
+            locationTime = location.locationTime.format(patternDateTimeZone)
         }
         sendBroadcast(Intent(ACTION_LOCATION).apply {
             putExtra(EXTRA_SYNC_LOCATION, location)

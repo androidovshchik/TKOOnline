@@ -10,10 +10,10 @@ import org.jetbrains.anko.connectivityManager
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.ACTION_CLOUD
 import ru.iqsolution.tkoonline.exitUnexpected
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
 import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.extensions.parseErrors
+import ru.iqsolution.tkoonline.extensions.patternDateTimeZone
 import ru.iqsolution.tkoonline.local.Database
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
@@ -92,7 +92,7 @@ class SendWorker(context: Context, params: WorkerParameters) : BaseWorker(contex
                         photo,
                         event.photo.kpId,
                         event.photo.typeId,
-                        event.photo.whenTime.toString(PATTERN_DATETIME_ZONE),
+                        event.photo.whenTime.format(patternDateTimeZone),
                         event.photo.latitude,
                         event.photo.longitude
                     ).execute()
