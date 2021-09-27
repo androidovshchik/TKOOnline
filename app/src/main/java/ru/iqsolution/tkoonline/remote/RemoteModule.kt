@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.joda.time.DateTime
 import org.kodein.di.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -13,6 +12,7 @@ import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.LogInterceptor
 import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 val remoteModule = DI.Module("remote") {
@@ -21,8 +21,8 @@ val remoteModule = DI.Module("remote") {
         GsonBuilder()
             .setLenient()
             .setExclusionStrategies(SerializedNameStrategy())
-            .registerTypeAdapter(DateTime::class.java, DateTimeSerializer())
-            .registerTypeAdapter(DateTime::class.java, DateTimeDeserializer())
+            .registerTypeAdapter(ZonedDateTime::class.java, DateTimeSerializer())
+            .registerTypeAdapter(ZonedDateTime::class.java, DateTimeDeserializer())
             .registerTypeAdapter(LocationEventToken::class.java, LocationEventTokenSerializer())
             .registerTypeAdapter(CleanEventToken::class.java, CleanEventTokenSerializer())
             .apply {

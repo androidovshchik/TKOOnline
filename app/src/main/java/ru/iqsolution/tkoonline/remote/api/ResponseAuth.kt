@@ -1,8 +1,8 @@
 package ru.iqsolution.tkoonline.remote.api
 
 import com.google.gson.annotations.SerializedName
-import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.Pattern
+import java.time.ZonedDateTime
 
 class ResponseAuth {
 
@@ -14,7 +14,7 @@ class ResponseAuth {
 
     @Pattern(Pattern.DATETIME_ZONE)
     @SerializedName("current_time")
-    lateinit var currentTime: DateTime
+    lateinit var currentTime: ZonedDateTime
 
     @SerializedName("no_kp_photo")
     var noKpPhoto = 0

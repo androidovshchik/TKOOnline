@@ -2,14 +2,14 @@ package ru.iqsolution.tkoonline.remote
 
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
-import org.joda.time.DateTime
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATE
-import ru.iqsolution.tkoonline.extensions.PATTERN_DATETIME_ZONE
-import ru.iqsolution.tkoonline.extensions.PATTERN_TIME_ZONE
 import ru.iqsolution.tkoonline.extensions.Pattern
+import ru.iqsolution.tkoonline.extensions.patternDate
+import ru.iqsolution.tkoonline.extensions.patternDateTimeZone
+import ru.iqsolution.tkoonline.extensions.patternTimeZone
 import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
 import java.lang.reflect.Type
+import java.time.ZonedDateTime
 
 class SerializedNameStrategy : ExclusionStrategy {
 
@@ -22,32 +22,32 @@ class SerializedNameStrategy : ExclusionStrategy {
     }
 }
 
-class DateTimeSerializer : JsonSerializer<DateTime> {
+class DateTimeSerializer : JsonSerializer<ZonedDateTime> {
 
     @Pattern(Pattern.DATETIME_ZONE)
     override fun serialize(
-        src: DateTime,
+        src: ZonedDateTime,
         typeOfSrc: Type,
         context: JsonSerializationContext
     ): JsonElement {
-        return JsonPrimitive(src.toString(PATTERN_DATETIME_ZONE))
+        return JsonPrimitive(src.format(patternDateTimeZone))
     }
 }
 
-class DateTimeDeserializer : JsonDeserializer<DateTime> {
+class DateTimeDeserializer : JsonDeserializer<ZonedDateTime> {
 
     /**
-     * NOTICE [PATTERN_DATE] is not supported
+     * NOTICE [patternDate] is not supported
      */
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type,
         context: JsonDeserializationContext
-    ): DateTime {
+    ): ZonedDateTime {
         val value = json.asString
         return when {
-            value.contains("T") -> DateTime.parse(json.asString, PATTERN_DATETIME_ZONE)
-            else -> DateTime.parse(json.asString, PATTERN_TIME_ZONE)
+            value.contains("T") -> ZonedDateTime.parse(json.asString, patternDateTimeZone)
+            else -> ZonedDateTime.parse(json.asString, patternTimeZone)
         }
     }
 }
@@ -60,8 +60,8 @@ class LocationEventTokenSerializer : JsonSerializer<LocationEventToken> {
             addProperty("v", src.location.version)
             addProperty("auth_key", src.token.token)
             add("data", JsonObject().apply {
-                addProperty("event_time", src.location.data.whenTime.toString(PATTERN_DATETIME_ZONE))
-                addProperty("time", src.location.data.locationTime.toString(PATTERN_DATETIME_ZONE))
+                addProperty("event_time", src.location.data.whenTime.format(patternDateTimeZone))
+                addProperty("time", src.location.data.locationTime.format(patternDateTimeZone))
                 addProperty("lat", src.location.data.latitude)
                 addProperty("lon", src.location.data.longitude)
                 addProperty("height", src.location.data.altitude)
@@ -84,7 +84,7 @@ class CleanEventTokenSerializer : JsonSerializer<CleanEventToken> {
     ): JsonElement {
         return JsonObject().apply {
             add("data", JsonObject().apply {
-                addProperty("time", src.clean.whenTime.toString(PATTERN_DATETIME_ZONE))
+                addProperty("time", src.clean.whenTime.format(patternDateTimeZone))
                 addProperty("container_type_fact", src.clean.containerType)
                 addProperty("container_type_volume_fact", src.clean.containerVolume)
                 addProperty("container_count_fact", src.clean.containerCount)
