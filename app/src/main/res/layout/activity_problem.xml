@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:ignore="MissingPrefix">
+    android:orientation="vertical">
 
     <fragment
         android:id="@+id/status_fragment"
@@ -34,11 +33,11 @@
                 android:background="@color/colorDivider" />
 
             <TextView
-                fontPath="fonts/Roboto-Bold.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="58dp"
                 android:layout_marginTop="13dp"
                 android:layout_marginBottom="13dp"
+                android:fontFamily="@font/roboto_bold"
                 android:gravity="center"
                 android:lineSpacingExtra="3dp"
                 android:text="Тип проблемы"

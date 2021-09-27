@@ -4,17 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="10dp"
-    android:paddingEnd="0dp"
-    tools:ignore="MissingPrefix">
+    android:paddingEnd="0dp">
 
     <TextView
         android:id="@+id/dialog_title"
-        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="12dp"
+        android:fontFamily="@font/roboto_bold"
         android:lineSpacingExtra="3dp"
         android:textColor="@color/colorTextBlack87"
         android:textSize="20sp"
@@ -37,7 +36,6 @@
 
     <TextView
         android:id="@+id/dialog_error"
-        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_input"
@@ -45,6 +43,7 @@
         android:layout_marginStart="2dp"
         android:layout_marginEnd="4dp"
         android:layout_toStartOf="@+id/dialog_action"
+        android:fontFamily="@font/roboto_regular"
         android:singleLine="true"
         android:textColor="#FF473A"
         android:textSize="14sp"

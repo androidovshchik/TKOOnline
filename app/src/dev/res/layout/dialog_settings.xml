@@ -4,17 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="10dp"
-    android:paddingEnd="0dp"
-    tools:ignore="MissingPrefix">
+    android:paddingEnd="0dp">
 
     <TextView
         android:id="@+id/dialog_title"
-        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="12dp"
+        android:fontFamily="@font/roboto_bold"
         android:lineSpacingExtra="3dp"
         android:text="Настройки"
         android:textColor="@color/colorTextBlack87"
@@ -23,12 +22,12 @@
 
     <TextView
         android:id="@+id/dialog_caption1"
-        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_title"
         android:layout_marginStart="2dp"
         android:layout_marginBottom="8dp"
+        android:fontFamily="@font/roboto_bold"
         android:lineSpacingExtra="8dp"
         android:text="Основной сервер:"
         android:textColor="#89000000"
@@ -52,12 +51,12 @@
 
     <TextView
         android:id="@+id/dialog_caption2"
-        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_main_server"
         android:layout_marginStart="2dp"
         android:layout_marginBottom="8dp"
+        android:fontFamily="@font/roboto_bold"
         android:lineSpacingExtra="8dp"
         android:text="Сервер телеметрии:"
         android:textColor="#89000000"
@@ -81,13 +80,13 @@
 
     <Switch
         android:id="@id/dev_file_logs"
-        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_telemetry_server"
         android:layout_marginStart="5dp"
         android:layout_marginBottom="12dp"
         android:background="?android:attr/selectableItemBackground"
+        android:fontFamily="@font/roboto_bold"
         android:lineSpacingExtra="8dp"
         android:switchPadding="12dp"
         android:text="Сохранять логи"
@@ -96,13 +95,13 @@
 
     <Switch
         android:id="@id/dev_build_route"
-        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/dev_file_logs"
         android:layout_marginStart="5dp"
         android:layout_marginBottom="6dp"
         android:background="?android:attr/selectableItemBackground"
+        android:fontFamily="@font/roboto_bold"
         android:lineSpacingExtra="8dp"
         android:switchPadding="12dp"
         android:text="Строить маршрут"

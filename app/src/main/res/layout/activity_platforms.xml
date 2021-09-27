@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:ignore="MissingPrefix">
+    android:layout_height="match_parent">
 
     <fragment
         android:id="@+id/status_fragment"
@@ -65,13 +64,13 @@
 
         <Button
             android:id="@+id/platforms_complete"
-            fontPath="fonts/Roboto-Medium.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="6dp"
             android:background="@drawable/button_green"
+            android:fontFamily="@font/roboto_medium"
             android:foreground="?android:attr/selectableItemBackground"
             android:lineSpacingExtra="3dp"
             android:paddingStart="20.5dp"
@@ -95,13 +94,13 @@
 
         <Button
             android:id="@+id/platforms_photo"
-            fontPath="fonts/Roboto-Medium.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="6dp"
             android:background="@drawable/button_gray"
+            android:fontFamily="@font/roboto_medium"
             android:foreground="?android:attr/selectableItemBackground"
             android:lineSpacingExtra="3dp"
             android:paddingStart="16dp"

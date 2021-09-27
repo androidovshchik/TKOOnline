@@ -5,14 +5,13 @@
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:padding="9dp"
-    tools:ignore="MissingPrefix">
+    android:padding="9dp">
 
     <TextView
         android:id="@+id/tv_name"
-        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_regular"
         android:lineSpacingExtra="3dp"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="15sp"
@@ -20,11 +19,11 @@
 
     <TextView
         android:id="@+id/tv_phone"
-        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_name"
         android:layout_marginTop="2dp"
+        android:fontFamily="@font/roboto_regular"
         android:lineSpacingExtra="3dp"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="15sp"

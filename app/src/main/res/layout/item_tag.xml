@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="10dp"
-    tools:ignore="MissingPrefix">
+    android:paddingTop="10dp">
 
     <ImageView
         android:id="@+id/iv_type"
@@ -24,9 +23,9 @@
 
     <TextView
         android:id="@+id/tv_type"
-        fontPath="fonts/Roboto-Bold.ttf"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_bold"
         android:lineSpacingExtra="5dp"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="30sp"
@@ -40,9 +39,9 @@
 
     <TextView
         android:id="@+id/tv_volume"
-        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_regular"
         android:lineSpacingExtra="5dp"
         android:textColor="@color/colorTextGrayLight"
         android:textSize="30sp"
@@ -55,10 +54,10 @@
 
     <TextView
         android:id="@+id/tv_no"
-        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:fontFamily="@font/roboto_regular"
         android:text="№"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="24sp"
@@ -70,11 +69,11 @@
 
     <TextView
         android:id="@+id/tv_number"
-        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="4dp"
+        android:fontFamily="@font/roboto_regular"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"

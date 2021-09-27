@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:ignore="MissingPrefix">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/login_background"
@@ -85,9 +84,9 @@
             android:visibility="invisible" />
 
         <TextView
-            fontPath="fonts/Roboto-Regular.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_regular"
             android:gravity="center"
             android:lineSpacingMultiplier="1.1"
             android:text="Отсканируйте QR код\nавтомобиля"
@@ -127,11 +126,11 @@
 
     <TextView
         android:id="@+id/app_version"
-        fontPath="fonts/Roboto-Medium.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:fontFamily="@font/roboto_medium"
         android:gravity="center"
         android:lineSpacingMultiplier="1.1"
         android:padding="16dp"

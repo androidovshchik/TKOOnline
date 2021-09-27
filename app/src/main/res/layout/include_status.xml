@@ -3,12 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/status_bar_height"
-    android:background="@color/colorPrimaryDark"
-    tools:ignore="MissingPrefix">
+    android:background="@color/colorPrimaryDark">
 
     <TextView
         android:id="@+id/status_number"
-        fontPath="fonts/Roboto-Medium.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -16,6 +14,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_toStartOf="@+id/status_time"
+        android:fontFamily="@font/roboto_medium"
         android:lineSpacingExtra="2dp"
         android:maxLines="1"
         android:singleLine="true"
@@ -25,10 +24,10 @@
 
     <TextView
         android:id="@+id/status_time"
-        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:fontFamily="@font/roboto_regular"
         android:lineSpacingExtra="3dp"
         android:textColor="@android:color/white"
         android:textSize="17sp"
@@ -76,7 +75,6 @@
 
     <TextView
         android:id="@+id/status_count"
-        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:layout_alignEnd="@+id/status_uploads"
@@ -84,6 +82,7 @@
         android:layout_marginEnd="-2dp"
         android:layout_marginBottom="4dp"
         android:background="@drawable/text_count"
+        android:fontFamily="@font/roboto_regular"
         android:gravity="center"
         android:lineSpacingExtra="2dp"
         android:textColor="@android:color/white"
@@ -105,12 +104,12 @@
 
     <TextView
         android:id="@+id/status_percent"
-        fontPath="fonts/Roboto-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/status_battery"
         android:layout_centerVertical="true"
         android:layout_marginStart="1dp"
+        android:fontFamily="@font/roboto_regular"
         android:lineSpacingExtra="2dp"
         android:textColor="@color/colorTextGrayDark"
         android:textSize="9sp"
