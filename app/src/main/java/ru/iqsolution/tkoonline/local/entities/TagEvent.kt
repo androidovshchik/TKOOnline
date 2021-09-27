@@ -2,11 +2,11 @@ package ru.iqsolution.tkoonline.local.entities
 
 import androidx.annotation.NonNull
 import androidx.room.*
-import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
 import timber.log.Timber
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.experimental.and
 
@@ -40,7 +40,7 @@ class TagEvent : Container {
     @NonNull
     @Pattern(Pattern.DATETIME_ZONE)
     @ColumnInfo(name = "te_when_time")
-    lateinit var whenTime: DateTime
+    lateinit var whenTime: ZonedDateTime
 
     @NonNull
     @ColumnInfo(name = "te_container_type")
@@ -74,7 +74,7 @@ class TagEvent : Container {
                         else -> ContainerType.UNKNOWN.id
                     }
                     containerVolume = incVolume.toFloat() / 10
-                    whenTime = DateTime.now()
+                    whenTime = ZonedDateTime.now()
                 }
             } catch (e: Throwable) {
                 Timber.e(e)

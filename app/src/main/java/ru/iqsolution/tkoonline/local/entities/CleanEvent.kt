@@ -3,10 +3,10 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
-import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
+import java.time.ZonedDateTime
 
 @Entity(
     tableName = "clean_events",
@@ -59,7 +59,7 @@ class CleanEvent() : Container, SendEvent {
     @Pattern(Pattern.DATETIME_ZONE)
     @ColumnInfo(name = "ce_when_time")
     @SerializedName("time")
-    lateinit var whenTime: DateTime
+    lateinit var whenTime: ZonedDateTime
 
     /**
      * May be changed
@@ -84,7 +84,7 @@ class CleanEvent() : Container, SendEvent {
         kpId = kp
         tokenId = token
         // time is correct here
-        whenTime = DateTime.now()
+        whenTime = ZonedDateTime.now()
         // required for initialization only
         containerType = ContainerType.UNKNOWN.id
     }

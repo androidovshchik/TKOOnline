@@ -3,10 +3,10 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
-import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.extensions.isEarlier
 import ru.iqsolution.tkoonline.models.BasePoint
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
@@ -71,7 +71,7 @@ class LocationEvent() : SendEvent {
         waiting = wait
         data = Data().apply {
             // time is correct here
-            whenTime = DateTime.now()
+            whenTime = ZonedDateTime.now()
             basePoint.lastLocation.let {
                 locationTime = it.locationTime
                 latitude = it.latitude
@@ -92,13 +92,13 @@ class LocationEvent() : SendEvent {
         @Pattern(Pattern.DATETIME_ZONE)
         @ColumnInfo(name = "le_when_time")
         @SerializedName("event_time")
-        lateinit var whenTime: DateTime
+        lateinit var whenTime: ZonedDateTime
 
         @NonNull
         @Pattern(Pattern.DATETIME_ZONE)
         @ColumnInfo(name = "le_location_time")
         @SerializedName("time")
-        lateinit var locationTime: DateTime
+        lateinit var locationTime: ZonedDateTime
 
         @ColumnInfo(name = "le_latitude")
         @SerializedName("lat")

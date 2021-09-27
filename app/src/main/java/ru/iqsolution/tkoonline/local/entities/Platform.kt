@@ -5,7 +5,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.extensions.Pattern
 import ru.iqsolution.tkoonline.models.Container
@@ -13,6 +12,7 @@ import ru.iqsolution.tkoonline.models.ContainerType
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import java.io.Serializable
+import java.time.ZonedDateTime
 
 @Entity(
     tableName = "platforms"
@@ -77,13 +77,13 @@ open class Platform : Serializable, Container, Location<Double> {
     @Pattern(Pattern.TIME_ZONE)
     @SerializedName("time_limit_from")
     @ColumnInfo(name = "p_time_from")
-    lateinit var timeLimitFrom: DateTime
+    lateinit var timeLimitFrom: ZonedDateTime
 
     @NonNull
     @Pattern(Pattern.TIME_ZONE)
     @SerializedName("time_limit_to")
     @ColumnInfo(name = "p_time_to")
-    lateinit var timeLimitTo: DateTime
+    lateinit var timeLimitTo: ZonedDateTime
 
     @SerializedName("status")
     @ColumnInfo(name = "p_status")

@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import org.joda.time.DateTime
 import java.io.Serializable
+import java.time.ZonedDateTime
 
 @Entity(
     tableName = "contacts",
@@ -34,5 +34,5 @@ class Contact : Serializable {
 
     @SerializedName("last_login_date")
     @ColumnInfo(name = "c_when_logged")
-    var whenLogged: DateTime? = null
+    var whenLogged: ZonedDateTime? = null
 }

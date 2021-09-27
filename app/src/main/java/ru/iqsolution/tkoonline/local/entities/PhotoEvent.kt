@@ -2,9 +2,9 @@ package ru.iqsolution.tkoonline.local.entities
 
 import androidx.annotation.NonNull
 import androidx.room.*
-import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.Pattern
 import java.io.Serializable
+import java.time.ZonedDateTime
 
 @Entity(
     tableName = "photo_events",
@@ -75,7 +75,7 @@ class PhotoEvent() : Serializable, SendEvent {
     @NonNull
     @Pattern(Pattern.DATETIME_ZONE)
     @ColumnInfo(name = "pe_when_time")
-    lateinit var whenTime: DateTime
+    lateinit var whenTime: ZonedDateTime
 
     /**
      * This is ready only after platform's clean event was triggered
@@ -90,7 +90,7 @@ class PhotoEvent() : Serializable, SendEvent {
         typeId = type
         // required for initialization only
         path = ""
-        whenTime = DateTime.now()
+        whenTime = ZonedDateTime.now()
     }
 
     constructor(kp: Int, type: Int) : this(type) {

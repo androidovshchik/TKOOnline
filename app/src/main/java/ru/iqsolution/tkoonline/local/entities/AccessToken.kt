@@ -5,8 +5,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.Pattern
+import java.time.ZonedDateTime
 
 @Entity(
     tableName = "tokens",
@@ -34,7 +34,7 @@ class AccessToken {
     @NonNull
     @Pattern(Pattern.DATETIME_ZONE)
     @ColumnInfo(name = "t_expires")
-    lateinit var expires: DateTime
+    lateinit var expires: ZonedDateTime
 
     val authHeader: String
         get() = "Bearer $token"
