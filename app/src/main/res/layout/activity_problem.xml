@@ -42,8 +42,7 @@
                 android:lineSpacingExtra="3dp"
                 android:text="Тип проблемы"
                 android:textColor="@color/colorTextGrayLight"
-                android:textSize="18sp"
-                tools:textStyle="bold" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 

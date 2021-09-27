@@ -49,8 +49,7 @@
         android:text="Поиск контакта..."
         android:textColor="@android:color/white"
         android:textSize="36sp"
-        tools:text="Петров Петр Петрович"
-        tools:textStyle="bold" />
+        tools:text="Петров Петр Петрович" />
 
     <TextView
         android:id="@+id/tv_number"

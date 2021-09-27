@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv_route"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="15dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    app:cardCornerRadius="8dp"
+    tools:cardBackgroundColor="@android:color/holo_green_light">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/tv_id"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/colorTextBlack87"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/barrier1"
+            app:layout_constraintEnd_toStartOf="@+id/tv_date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="№ 131231412ПЛ" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/colorTextBlack87"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="21.04.2019" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="tv_id,tv_date" />
+
+        <TextView
+            android:id="@+id/tv_fio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/colorTextBlack87"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@+id/barrier2"
+            app:layout_constraintEnd_toStartOf="@+id/tv_progress"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barrier1"
+            tools:text="Иванов Иван Иванович" />
+
+        <TextView
+            android:id="@+id/tv_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/colorTextBlack87"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barrier1"
+            tools:text="15/20" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="tv_fio,tv_progress" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

@@ -93,7 +93,7 @@
             tools:visibility="visible" />
 
         <Button
-            android:id="@+id/platforms_photo"
+            android:id="@+id/platforms_no_task"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -105,7 +105,7 @@
             android:lineSpacingExtra="3dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:text="Фото вне\nсправочника"
+            android:text="Работа без\nзадания"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="16sp"

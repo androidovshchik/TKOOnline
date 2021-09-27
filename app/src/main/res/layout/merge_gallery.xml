@@ -17,8 +17,7 @@
         android:lineSpacingExtra="3dp"
         android:textColor="@color/colorTextGrayLight"
         android:textSize="18sp"
-        tools:text="@string/platform_gallery"
-        tools:textStyle="bold" />
+        tools:text="@string/platform_gallery" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"

@@ -32,8 +32,7 @@
         app:layout_constraintHorizontal_weight="1.5"
         app:layout_constraintStart_toEndOf="@+id/icon_type"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="ТБО"
-        tools:textStyle="bold" />
+        tools:text="ТБО" />
 
     <TextView
         android:id="@+id/volume_value"

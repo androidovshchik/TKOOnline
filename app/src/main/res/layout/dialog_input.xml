@@ -17,8 +17,7 @@
         android:lineSpacingExtra="3dp"
         android:textColor="@color/colorTextBlack87"
         android:textSize="20sp"
-        tools:text="Пароль"
-        tools:textStyle="bold" />
+        tools:text="Пароль" />
 
     <EditText
         android:id="@+id/dialog_input"

@@ -17,8 +17,7 @@
         android:lineSpacingExtra="3dp"
         android:text="Настройки"
         android:textColor="@color/colorTextBlack87"
-        android:textSize="20sp"
-        tools:textStyle="bold" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/dialog_caption1"
