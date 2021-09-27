@@ -1,8 +1,8 @@
 package ru.iqsolution.tkoonline.models
 
-import org.joda.time.DateTime
 import ru.iqsolution.tkoonline.extensions.Pattern
 import java.io.Serializable
+import java.time.ZonedDateTime
 import kotlin.math.roundToInt
 
 @Suppress("LeakingThis")
@@ -23,7 +23,7 @@ open class SimpleLocation : Serializable, Location<Double> {
     var accuracy = 0f
 
     @Pattern(Pattern.DATETIME_ZONE)
-    val locationTime: DateTime
+    val locationTime: ZonedDateTime
 
     /**
      * признак валидности координат 1-валидные 0 - не валидные
@@ -32,13 +32,13 @@ open class SimpleLocation : Serializable, Location<Double> {
     val validity: Int
         get() = if (accuracy <= 30) 1 else 0
 
-    constructor(lat: Double, lon: Double, datetime: DateTime) {
+    constructor(lat: Double, lon: Double, datetime: ZonedDateTime) {
         latitude = lat
         longitude = lon
         locationTime = datetime
     }
 
-    constructor(lat: Double, lon: Double) : this(lat, lon, DateTime.now())
+    constructor(lat: Double, lon: Double) : this(lat, lon, ZonedDateTime.now())
 
     constructor(lat: Float, lon: Float) : this(lat.toDouble(), lon.toDouble())
 
@@ -47,6 +47,6 @@ open class SimpleLocation : Serializable, Location<Double> {
         longitude = location.longitude
         altitude = location.altitude.roundToInt()
         accuracy = location.accuracy
-        locationTime = DateTime.now()
+        locationTime = ZonedDateTime.now()
     }
 }

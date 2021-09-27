@@ -2,9 +2,10 @@ package ru.iqsolution.tkoonline.models
 
 import android.location.Location
 import android.util.SparseIntArray
-import org.joda.time.Duration
 import ru.iqsolution.tkoonline.extensions.isEarlier
 import timber.log.Timber
+import java.time.Duration
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -95,14 +96,8 @@ class BasePoint(
             baseDirection = null
             currentDirection = null
         }
-        val seconds = Duration(
-            locationTime,
-            location.locationTime.withZone(locationTime.zone)
-        ).standardSeconds.absoluteValue
-        val millis = Duration(
-            lastLocation.locationTime,
-            location.locationTime.withZone(lastLocation.locationTime.zone)
-        ).millis.absoluteValue
+        val seconds = abs(Duration.between(locationTime, location.locationTime).toSeconds())
+        val millis = abs(Duration.between(lastLocation.locationTime, location.locationTime).toMillis())
         if (seconds > 0) {
             speedMap.put(
                 seconds.toInt(), if (millis > 0) {
