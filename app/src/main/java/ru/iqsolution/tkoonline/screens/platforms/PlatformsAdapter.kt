@@ -9,8 +9,8 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.item_platform.view.*
 import org.jetbrains.anko.dip
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
 import ru.iqsolution.tkoonline.extensions.inflate
+import ru.iqsolution.tkoonline.extensions.patternTime
 import ru.iqsolution.tkoonline.models.PlatformContainers
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
@@ -70,8 +70,8 @@ class PlatformsAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
             address.text = item.address
             range.text = appContext.getString(
                 R.string.platform_range_n,
-                item.timeLimitFrom.toString(PATTERN_TIME),
-                item.timeLimitTo.toString(PATTERN_TIME)
+                item.timeLimitFrom.format(patternTime),
+                item.timeLimitTo.format(patternTime)
             )
             oval.apply {
                 layoutParams.apply {

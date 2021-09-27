@@ -8,7 +8,6 @@ import com.chibatching.kotpref.bulk
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.jetbrains.anko.activityManager
-import org.joda.time.DateTime
 import org.kodein.di.instance
 import retrofit2.awaitResponse
 import ru.iqsolution.tkoonline.BuildConfig
@@ -23,6 +22,7 @@ import ru.iqsolution.tkoonline.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.workers.UpdateWorker
 import timber.log.Timber
 import java.net.UnknownHostException
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(context), LoginContract.Presenter {
@@ -82,12 +82,20 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                 e.delay()
                 throw e
             }
+            try {
+                require(
+                    ZonedDateTime.parse(responseAuth.expireTime, patternDateTimeZone).isLater()
+                ) { "responseAuth.expireTime <= now" }
+            } catch (e: Throwable) {
+                e.delay("Некорректное системное время")
+                throw e
+            }
             preferences.bulk {
                 invalidAuth = false
                 accessToken = responseAuth.accessKey
                 expiresWhen = responseAuth.expireTime
                 allowPhotoRefKp = responseAuth.noKpPhoto == 1
-                serverTime = responseAuth.currentTime.toString(PATTERN_DATETIME_ZONE)
+                serverTime = responseAuth.currentTime.format(patternDateTimeZone)
                 //elapsedTime = SystemClock.elapsedRealtime()
                 vehicleNumber = qrCode.regNum
                 queName = responseAuth.queName
@@ -99,26 +107,12 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
                         token = responseAuth.accessKey
                         queName = responseAuth.queName
                         carId = qrCode.carId
-                        expires = DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE)
+                        expires = ZonedDateTime.parse(responseAuth.expireTime, patternDateTimeZone)
                     })
                 }
                 // telemetry
                 mileage = 0f
                 packageId = 0
-            }
-            try {
-                require(
-                    DateTime.parse(responseAuth.expireTime, PATTERN_DATETIME_ZONE).isLater()
-                ) { "responseAuth.expireTime <= now" }
-            } catch (e: Throwable) {
-                try {
-                    makeLogout()
-                } catch (e: Throwable) {
-                    e.delay("Некорректное системное время")
-                    throw e
-                }
-                e.delay("Некорректное системное время")
-                throw e
             }
             reference.get()?.onLoggedIn()
         }
@@ -137,7 +131,7 @@ class LoginPresenter(context: Context) : BasePresenter<LoginContract.View>(conte
     @Throws(Throwable::class)
     private suspend fun makeLogout() {
         preferences.expiresWhen?.let {
-            if (!DateTime.parse(it, PATTERN_DATETIME_ZONE).isEarlier(3, TimeUnit.DAYS)) {
+            if (!ZonedDateTime.parse(it, patternDateTimeZone).isEarlier(3, TimeUnit.DAYS)) {
                 val header = preferences.authHeader
                 if (header != null) {
                     server.logout(header).awaitResponse()

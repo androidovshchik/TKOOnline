@@ -11,8 +11,6 @@ import com.google.android.gms.location.LocationSettingsStates
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_platforms.*
 import kotlinx.coroutines.CancellationException
-import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
@@ -34,7 +32,8 @@ import ru.iqsolution.tkoonline.screens.platform.PlatformActivity
 import ru.iqsolution.tkoonline.telemetry.TelemetryService
 import ru.iqsolution.tkoonline.workers.SendWorker
 import timber.log.Timber
-import java.util.*
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 class PlatformsActivity : UserActivity<PlatformsContract.Presenter>(), PlatformsContract.View {
 
@@ -54,7 +53,7 @@ class PlatformsActivity : UserActivity<PlatformsContract.Presenter>(), Platforms
 
     private val cleanChanges = SimpleArrayMap<Int, Int>()
 
-    private var refreshTime: DateTime? = null
+    private var refreshTime: ZonedDateTime? = null
 
     private var locationCount = 0L
 
@@ -133,7 +132,7 @@ class PlatformsActivity : UserActivity<PlatformsContract.Presenter>(), Platforms
     }
 
     override fun onReceivedPlatforms(primary: List<PlatformContainers>, secondary: List<PlatformContainers>) {
-        refreshTime = DateTime.now()
+        refreshTime = ZonedDateTime.now()
         cleanChanges.clear()
         platformsAdapter.apply {
             primaryItems.notifyItems(true, primary)
@@ -307,7 +306,7 @@ class PlatformsActivity : UserActivity<PlatformsContract.Presenter>(), Platforms
         photoEvents: List<PhotoEvent>? = null,
         cleanEvents: List<CleanEvent>? = null
     ) {
-        val zone = DateTimeZone.forTimeZone(TimeZone.getDefault())
+        val zone = ZoneOffset.systemDefault()
         if (platforms != null) {
             clear()
             addAll(platforms)
@@ -321,7 +320,8 @@ class PlatformsActivity : UserActivity<PlatformsContract.Presenter>(), Platforms
                 for (event in photoEvents) {
                     if (item.kpId == event.kpId) {
                         if (!isPrimary) {
-                            val millis = event.whenTime.withZone(zone).millis
+                            val eventTime = event.whenTime.withZoneSameInstant(zone)
+                            val millis = eventTime.toInstant().toEpochMilli()
                             if (item.timestamp < millis) {
                                 item.timestamp = millis
                             }
@@ -335,14 +335,14 @@ class PlatformsActivity : UserActivity<PlatformsContract.Presenter>(), Platforms
             if (cleanEvents != null) {
                 for (event in cleanEvents) {
                     if (item.kpId == event.kpId) {
-                        val eventTime = event.whenTime.withZone(zone)
+                        val eventTime = event.whenTime.withZoneSameInstant(zone)
                         if (!isPrimary) {
-                            val millis = eventTime.millis
+                            val millis = eventTime.toInstant().toEpochMilli()
                             if (item.timestamp < millis) {
                                 item.timestamp = millis
                             }
                         }
-                        if (refreshTime?.withZone(zone)?.isBefore(eventTime) == true) {
+                        if (refreshTime?.withZoneSameInstant(zone)?.isBefore(eventTime) == true) {
                             cleanChanges.get(item.kpId)?.let {
                                 item.status = it // 31 or 10
                                 if (isPrimary) {

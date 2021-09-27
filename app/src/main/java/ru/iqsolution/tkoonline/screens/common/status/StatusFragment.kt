@@ -13,15 +13,15 @@ import androidx.core.view.isVisible
 import com.google.android.gms.location.LocationSettingsStates
 import kotlinx.android.synthetic.main.include_status.*
 import org.jetbrains.anko.locationManager
-import org.joda.time.LocalTime
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
+import ru.iqsolution.tkoonline.extensions.patternTime
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import ru.iqsolution.tkoonline.screens.base.BaseFragment
 import ru.iqsolution.tkoonline.screens.base.user.IUserView
 import ru.iqsolution.tkoonline.telemetry.LocationListener
+import java.time.LocalTime
 
 /**
  * NOTICE should have an id [R.id.status_fragment]
@@ -67,7 +67,7 @@ class StatusFragment : BaseFragment(), StatusListener {
         if (view == null) {
             return
         }
-        status_time.text = LocalTime.now().toString(PATTERN_TIME)
+        status_time.text = LocalTime.now().format(patternTime)
     }
 
     override fun onNfcChanged(available: Boolean) {

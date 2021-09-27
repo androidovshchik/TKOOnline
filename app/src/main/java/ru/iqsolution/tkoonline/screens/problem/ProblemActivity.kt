@@ -12,7 +12,7 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
-import ru.iqsolution.tkoonline.extensions.PATTERN_TIME
+import ru.iqsolution.tkoonline.extensions.patternTime
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
@@ -43,8 +43,8 @@ class ProblemActivity : UserActivity<ProblemContract.Presenter>(), ProblemContra
         platform_range.setTextBoldSpan(
             getString(
                 R.string.platform_range,
-                platform.timeLimitFrom.toString(PATTERN_TIME),
-                platform.timeLimitTo.toString(PATTERN_TIME)
+                platform.timeLimitFrom.format(patternTime),
+                platform.timeLimitTo.format(patternTime)
             ), 2, 7, 11, 16
         )
         val photoTypes = intent.getSerializableExtra(EXTRA_PHOTO_TYPES) as ArrayList<PhotoType>

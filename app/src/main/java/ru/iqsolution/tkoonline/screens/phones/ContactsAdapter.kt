@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.item_phone.view.*
-import org.joda.time.LocalDate
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.ifNullOrBlank
 import ru.iqsolution.tkoonline.extensions.inflate
 import ru.iqsolution.tkoonline.local.entities.Contact
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
+import java.time.LocalDate
 
 class ContactsAdapter : BaseAdapter<Contact>() {
 

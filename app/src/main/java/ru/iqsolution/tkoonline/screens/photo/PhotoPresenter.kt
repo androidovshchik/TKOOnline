@@ -5,12 +5,12 @@ import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.joda.time.DateTime
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.screens.base.user.UserPresenter
 import java.io.File
+import java.time.ZonedDateTime
 
 class PhotoPresenter(context: Context) : UserPresenter<PhotoContract.View>(context), PhotoContract.Presenter {
 
@@ -39,7 +39,7 @@ class PhotoPresenter(context: Context) : UserPresenter<PhotoContract.View>(conte
             }
             // previously it may be empty when there is a new event
             path = internalPhoto.path
-            whenTime = DateTime.now()
+            whenTime = ZonedDateTime.now()
         }
         launch {
             withContext(Dispatchers.IO) {

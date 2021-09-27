@@ -13,13 +13,11 @@ import android.net.NetworkRequest
 import android.nfc.NfcAdapter
 import android.os.BatteryManager
 import org.jetbrains.anko.connectivityManager
-import org.joda.time.DateTimeZone
 import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.extensions.isConnected
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
 import java.lang.ref.WeakReference
-import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
 class StatusManager(context: Context, listener: StatusListener) {
@@ -77,15 +75,6 @@ class StatusManager(context: Context, listener: StatusListener) {
                         state == NfcAdapter.STATE_TURNING_ON)
                 }
                 Intent.ACTION_TIME_TICK, Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED -> {
-                    if (intent.action == Intent.ACTION_TIMEZONE_CHANGED) {
-                        try {
-                            val timeZone = TimeZone.getDefault()
-                            DateTimeZone.setDefault(DateTimeZone.forTimeZone(timeZone))
-                            Timber.d("Changed default timezone to ${timeZone.id}")
-                        } catch (e: Throwable) {
-                            Timber.e(e)
-                        }
-                    }
                     reference.get()?.onTimeChanged()
                 }
                 ACTION_LOCATION -> {
