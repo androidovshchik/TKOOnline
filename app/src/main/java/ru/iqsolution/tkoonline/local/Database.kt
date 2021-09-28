@@ -13,13 +13,12 @@ import ru.iqsolution.tkoonline.local.entities.*
         AccessToken::class,
         PhotoEvent::class,
         CleanEvent::class,
-        TagEvent::class,
         LocationEvent::class,
         Platform::class,
         PhotoType::class,
         Contact::class
     ],
-    version = 13
+    version = 14
 )
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase() {
@@ -31,8 +30,6 @@ abstract class Database : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
 
     abstract fun cleanDao(): CleanDao
-
-    abstract fun tagDao(): TagDao
 
     abstract fun locationDao(): LocationDao
 
@@ -92,6 +89,17 @@ class Migration1213 : Migration(12, 13) {
         database.execSQL(
             """
             CREATE INDEX IF NOT EXISTS `index_tag_events_te_token_id` ON `tag_events` (`te_token_id`);
+        """.trimIndent()
+        )
+    }
+}
+
+class Migration1314 : Migration(13, 14) {
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            """
+            DROP TABLE IF EXISTS `tag_events`;
         """.trimIndent()
         )
     }
