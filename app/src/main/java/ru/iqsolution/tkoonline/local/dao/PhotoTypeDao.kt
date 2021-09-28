@@ -4,7 +4,7 @@ import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.PhotoType
 
 @Dao
-abstract class TypeDao {
+abstract class PhotoTypeDao {
 
     @Query(
         """

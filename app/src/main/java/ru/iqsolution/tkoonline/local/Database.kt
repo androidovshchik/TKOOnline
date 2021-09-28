@@ -15,6 +15,7 @@ import ru.iqsolution.tkoonline.local.entities.*
         CleanEvent::class,
         LocationEvent::class,
         Platform::class,
+        TaskType::class,
         PhotoType::class,
         Contact::class
     ],
@@ -35,7 +36,9 @@ abstract class Database : RoomDatabase() {
 
     abstract fun platformDao(): PlatformDao
 
-    abstract fun typeDao(): TypeDao
+    abstract fun taskTypeDao(): TaskTypeDao
+
+    abstract fun photoTypeDao(): PhotoTypeDao
 
     abstract fun contactDao(): ContactDao
 }
@@ -102,5 +105,6 @@ class Migration1314 : Migration(13, 14) {
             DROP TABLE IF EXISTS `tag_events`;
         """.trimIndent()
         )
+        // todo sql statements
     }
 }
