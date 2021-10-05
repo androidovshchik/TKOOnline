@@ -32,7 +32,7 @@ class ContactsAdapter : BaseAdapter<Contact>() {
             itemView.setOnClickListener {
                 try {
                     val position = bindingAdapterPosition
-                    reference?.get()?.onAdapterEvent(position, items[position])
+                    getAdapterListener()?.onItemClick(position, items[position])
                 } catch (e: Throwable) {
                 }
             }
