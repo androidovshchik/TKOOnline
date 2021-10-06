@@ -2,15 +2,11 @@ package ru.iqsolution.tkoonline.local
 
 import android.content.Context
 import com.chibatching.kotpref.KotprefModel
-import ru.iqsolution.tkoonline.BuildConfig
-import ru.iqsolution.tkoonline.PASSWORD_RETRY
-import ru.iqsolution.tkoonline.extensions.Pattern
-import ru.iqsolution.tkoonline.extensions.isLater
-import ru.iqsolution.tkoonline.extensions.patternDate
-import ru.iqsolution.tkoonline.extensions.patternDateTimeZone
+import ru.iqsolution.tkoonline.*
 import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.SimpleLocation
 import timber.log.Timber
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class Preferences(context: Context) : KotprefModel(context), Memory, Location<Float> {
@@ -27,7 +23,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     var expiresWhen by nullableStringPref(null, "0x01")
 
     // Logout on background thread
-    var allowPhotoRefKp by booleanPref(false, "0x02")
+    var allowCustomTasks by booleanPref(false, "0x02")
 
     /**
      * Logout on background thread
@@ -123,17 +119,14 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
             false
         }
 
-    /**
-     * Currently there is no special time check
-     */
-    val serverDay: String
+    val serverDay: LocalDate
         get() {
-            val now = ZonedDateTime.now()
             serverTime?.let {
-                val serverZone = ZonedDateTime.parse(it, patternDateTimeZone).zone
-                return now.withZoneSameInstant(serverZone).format(patternDate)
+                return ZonedDateTime.parse(it, patternDateTimeZone)
+                    .withZoneSameInstant(midnightZone)
+                    .toLocalDate()
             }
-            return now.format(patternDate)
+            throw RuntimeException()
         }
 
     val location: SimpleLocation?
@@ -148,7 +141,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
         super.logout()
         accessToken = null
         expiresWhen = null
-        allowPhotoRefKp = false
+        allowCustomTasks = false
         serverTime = null
         //elapsedTime = 0L
         vehicleNumber = null
