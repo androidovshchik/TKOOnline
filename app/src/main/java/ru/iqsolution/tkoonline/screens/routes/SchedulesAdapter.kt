@@ -90,7 +90,7 @@ class SchedulesAdapter : BaseAdapter<Schedule>() {
         private val progress: TextView = itemView.tv_progress
 
         init {
-            itemView.setOnClickListener {
+            card.setOnClickListener {
                 try {
                     val position = bindingAdapterPosition
                     val schedule = items[getParentPosition(position)]
