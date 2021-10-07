@@ -14,7 +14,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     override val kotprefName: String = "preferences"
 
     // Logout on background thread
-    override var accessToken by nullableStringPref(null, "0x00")
+    override var token by nullableStringPref(null, "0x00")
 
     /**
      * Logout on background thread
@@ -103,14 +103,14 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
     val isLoggedIn: Boolean
         get() = try {
             check(!invalidAuth) { "invalidAuth" }
-            check(accessToken != null) { "accessToken == null" }
+            check(!token.isNullOrBlank()) { "accessToken == null" }
             expiresWhen.let {
                 check(it != null) { "expiresWhen == null" }
                 check(ZonedDateTime.parse(it, patternDateTimeZone).isLater()) { "expiresWhen <= now" }
             }
-            check(serverTime != null) { "serverTime == null" }
+            check(!serverTime.isNullOrBlank()) { "serverTime == null" }
             check(vehicleNumber != null) { "vehicleNumber == null" }
-            check(queName != null) { "queName == null" }
+            check(!queName.isNullOrBlank()) { "queName == null" }
             check(carId > 0) { "carId <= 0" }
             check(tokenId > 0L) { "tokenId <= 0L" }
             true
@@ -121,12 +121,9 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
 
     val serverDay: LocalDate
         get() {
-            serverTime?.let {
-                return ZonedDateTime.parse(it, patternDateTimeZone)
-                    .withZoneSameInstant(midnightZone)
-                    .toLocalDate()
-            }
-            throw RuntimeException()
+            return ZonedDateTime.parse(serverTime!!, patternDateTimeZone)
+                .withZoneSameInstant(midnightZone)
+                .toLocalDate()
         }
 
     val location: SimpleLocation?
@@ -139,7 +136,7 @@ class Preferences(context: Context) : KotprefModel(context), Memory, Location<Fl
      */
     override fun logout() {
         super.logout()
-        accessToken = null
+        token = null
         expiresWhen = null
         allowCustomTasks = false
         serverTime = null

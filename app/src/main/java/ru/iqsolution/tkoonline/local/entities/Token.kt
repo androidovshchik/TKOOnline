@@ -5,7 +5,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import ru.iqsolution.tkoonline.extensions.Pattern
+import ru.iqsolution.tkoonline.Pattern
+import ru.iqsolution.tkoonline.defaultZone
+import ru.iqsolution.tkoonline.midnightZone
 import java.time.ZonedDateTime
 
 @Entity(
@@ -14,7 +16,7 @@ import java.time.ZonedDateTime
         Index(value = ["t_token"], unique = true)
     ]
 )
-class AccessToken {
+class Token {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "t_id")
@@ -34,8 +36,9 @@ class AccessToken {
     @NonNull
     @Pattern(Pattern.DATETIME_ZONE)
     @ColumnInfo(name = "t_expires")
-    lateinit var expires: ZonedDateTime
-
-    val authHeader: String
-        get() = "Bearer $token"
+    var expires: ZonedDateTime = ZonedDateTime.now()
+        set(value) {
+            field = value.withZoneSameInstant(midnightZone)
+        }
+        get() = field.withZoneSameInstant(defaultZone)
 }

@@ -1,9 +1,6 @@
 package ru.iqsolution.tkoonline
 
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
@@ -22,7 +19,13 @@ val patternTimeMillis: DateTimeFormatter = DateTimeFormatter.ofPattern(Pattern.T
 
 val patternDate: DateTimeFormatter = DateTimeFormatter.ofPattern(Pattern.DATE)
 
+val patternDateHuman: DateTimeFormatter = DateTimeFormatter.ofPattern(Pattern.DATE_HUMAN)
+
 val patternDateTimeZone: DateTimeFormatter = DateTimeFormatter.ofPattern(Pattern.DATETIME_ZONE)
+
+fun LocalDate.toEpochMilli(): Long {
+    return atTime(LocalTime.ofSecondOfDay(0)).toInstant(midnightZone).toEpochMilli()
+}
 
 fun ZonedDateTime.isEarlier(offset: Long = 0L, unit: TimeUnit = TimeUnit.MILLISECONDS): Boolean {
     val now = ZonedDateTime.now()
@@ -59,6 +62,9 @@ annotation class Pattern(val format: String) {
         const val TIME_MILLIS = "HH.mm.ss.SSS"
 
         const val DATE = "yyyyMMdd"
+
+        // для отображения
+        const val DATE_HUMAN = "dd.MM.yyyy"
 
         const val DATETIME_ZONE = "yyyyMMdd'T'HHmmssZ"
     }

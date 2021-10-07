@@ -5,7 +5,7 @@ buildscript {
         retrofit_version = '2.9.0'
         room_version = '2.3.0'
         anko_version = '0.10.8'
-        stetho_version = '1.5.1'
+        stetho_version = '1.6.0'
         andresguard_version = '1.2.21'
     }
     repositories {

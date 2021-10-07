@@ -1,6 +1,6 @@
 package ru.iqsolution.tkoonline.models
 
-import ru.iqsolution.tkoonline.extensions.Pattern
+import ru.iqsolution.tkoonline.Pattern
 import java.io.Serializable
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt

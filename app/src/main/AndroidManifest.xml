@@ -17,7 +17,6 @@
         android:name="android.permission.READ_PHONE_STATE"
         android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
-    <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission
         android:name="android.permission.WAKE_LOCK"
@@ -92,7 +91,7 @@
             android:theme="@style/AppTheme.Translucent"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".screens.platforms.PlatformsActivity"
+            android:name=".screens.routes.RoutesActivity"
             android:launchMode="singleTask"
             android:screenOrientation="sensorPortrait"
             android:windowSoftInputMode="stateHidden" />
@@ -109,11 +108,6 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".screens.outside.OutsideActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="sensorPortrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".screens.platform.PlatformActivity"
             android:launchMode="singleTask"
             android:screenOrientation="sensorPortrait"
             android:windowSoftInputMode="stateHidden" />

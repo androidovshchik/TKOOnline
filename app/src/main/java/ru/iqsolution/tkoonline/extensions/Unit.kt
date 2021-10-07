@@ -16,6 +16,8 @@ fun isPie() = Build.VERSION.SDK_INT == Build.VERSION_CODES.P
 
 fun isQ() = Build.VERSION.SDK_INT == Build.VERSION_CODES.Q
 
+fun isR() = Build.VERSION.SDK_INT == Build.VERSION_CODES.R
+
 fun isNougatPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
 
 fun isNougatMR1Plus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
@@ -27,3 +29,5 @@ fun isOreoMR1Plus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1
 fun isPiePlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 
 fun isQPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+fun isRPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R

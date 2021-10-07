@@ -16,13 +16,8 @@ import com.elvishew.xlog.flattener.PatternFlattener
 import com.elvishew.xlog.printer.file.FilePrinter
 import com.elvishew.xlog.printer.file.backup.NeverBackupStrategy
 import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
-import io.github.inflationx.calligraphy3.CalligraphyConfig
-import io.github.inflationx.calligraphy3.CalligraphyInterceptor
-import io.github.inflationx.viewpump.ViewPump
-import net.danlew.android.joda.ResourceZoneInfoProvider
 import okhttp3.OkHttpClient
 import org.jetbrains.anko.*
-import org.joda.time.DateTimeZone
 import org.kodein.di.*
 import ru.iqsolution.tkoonline.extensions.getTopActivity
 import ru.iqsolution.tkoonline.extensions.isOreoPlus
@@ -85,7 +80,6 @@ abstract class BaseApp : Application(), DIAware, CameraXConfig.Provider {
                 }
             )
         }
-        DateTimeZone.setProvider(ResourceZoneInfoProvider(applicationContext))
         Coil.setImageLoader(
             ImageLoader.Builder(applicationContext)
                 .availableMemoryPercentage(0.5)
@@ -94,18 +88,6 @@ abstract class BaseApp : Application(), DIAware, CameraXConfig.Provider {
                     OkHttpClient.Builder()
                         .cache(null)
                         .build()
-                )
-                .build()
-        )
-        ViewPump.init(
-            ViewPump.builder()
-                .addInterceptor(
-                    CalligraphyInterceptor(
-                        CalligraphyConfig.Builder()
-                            .setDefaultFontPath(null)
-                            .setFontAttrId(R.attr.fontPath)
-                            .build()
-                    )
                 )
                 .build()
         )
