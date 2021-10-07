@@ -19,7 +19,7 @@ import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.Preferences
 import ru.iqsolution.tkoonline.screens.login.LoginActivity
-import ru.iqsolution.tkoonline.screens.platforms.PlatformsActivity
+import ru.iqsolution.tkoonline.screens.routes.RoutesActivity
 
 class LockActivity : Activity(), DIAware {
 
@@ -89,7 +89,7 @@ class LockActivity : Activity(), DIAware {
                 preferences.invalidAuth = true
                 startActivityNoop<LoginActivity>()
             }
-            preferences.isLoggedIn -> startActivityNoop<PlatformsActivity>()
+            preferences.isLoggedIn -> startActivityNoop<RoutesActivity>()
             else -> startActivityNoop<LoginActivity>()
         }
     }
