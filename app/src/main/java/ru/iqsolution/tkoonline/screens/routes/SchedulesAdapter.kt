@@ -1,6 +1,7 @@
 package ru.iqsolution.tkoonline.screens.routes
 
 import android.annotation.SuppressLint
+import android.text.format.DateUtils
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -11,73 +12,40 @@ import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.ifNullOrBlank
 import ru.iqsolution.tkoonline.extensions.inflate
 import ru.iqsolution.tkoonline.local.entities.Route
-import ru.iqsolution.tkoonline.models.Schedule
 import ru.iqsolution.tkoonline.patternDateHuman
 import ru.iqsolution.tkoonline.screens.base.AdapterListener
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
+import ru.iqsolution.tkoonline.toEpochMilli
+import java.time.LocalDate
 
-class SchedulesAdapter : BaseAdapter<Schedule>() {
+class SchedulesAdapter : BaseAdapter<Any>() {
 
     override fun getItemViewType(position: Int): Int {
-        if (getChildPosition(position) >= 0) {
-            return 1
-        }
-        return 0
+        return if (items[position] is LocalDate) 0 else 1
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<Schedule> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<Any> {
         return when (viewType) {
             0 -> HeaderHolder(parent.inflate(R.layout.header_route))
             else -> ItemHolder(parent.inflate(R.layout.item_route))
         }
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<Schedule>, position: Int) {
-        holder.onBindItem(position, items[getParentPosition(position)])
-    }
-
-    override fun getItemCount(): Int {
-        return items.sumOf { 1 + it.routes.size }
-    }
-
-    private fun getParentPosition(position: Int): Int {
-        require(position >= 0)
-        var i = 0
-        for ((j, item) in items.withIndex()) {
-            val size = 1 + item.routes.size
-            if (position < i + size) {
-                return j
-            }
-            i += size
-        }
-        throw RuntimeException()
-    }
-
-    private fun getChildPosition(position: Int): Int {
-        require(position >= 0)
-        var i = 0
-        for (item in items) {
-            val size = 1 + item.routes.size
-            if (position < i + size) {
-                return position - i - 1
-            }
-            i += size
-        }
-        return -1
-    }
-
-    inner class HeaderHolder(itemView: View) : BaseViewHolder<Schedule>(itemView) {
+    inner class HeaderHolder(itemView: View) : BaseViewHolder<Any>(itemView) {
 
         private val date: TextView = itemView.tv_date
 
         @SuppressLint("SetTextI18n")
-        override fun onBindItem(position: Int, item: Schedule) {
-            date.text = item.date.format(patternDateHuman)
+        override fun onBindItem(position: Int, item: Any) {
+            item as LocalDate
+            val day = DateUtils.getRelativeDateTimeString(appContext, item.toEpochMilli(), DateUtils.DAY_IN_MILLIS,
+                DateUtils.WEEK_IN_MILLIS, 0).toString().substringBefore(',')
+            date.text = "$day (${item.format(patternDateHuman)})"
         }
     }
 
-    inner class ItemHolder(itemView: View) : BaseViewHolder<Schedule>(itemView) {
+    inner class ItemHolder(itemView: View) : BaseViewHolder<Any>(itemView) {
 
         private val card: CardView = itemView.cv_route
 
@@ -93,26 +61,24 @@ class SchedulesAdapter : BaseAdapter<Schedule>() {
             card.setOnClickListener {
                 try {
                     val position = bindingAdapterPosition
-                    val schedule = items[getParentPosition(position)]
-                    val route = schedule.routes[getChildPosition(position)]
-                    getListener<Listener>()?.onRouteClick(position, route)
+                    getListener<Listener>()?.onRouteClick(position, items[position] as Route)
                 } catch (e: Throwable) {
                 }
             }
         }
 
         @SuppressLint("SetTextI18n")
-        override fun onBindItem(position: Int, item: Schedule) {
-            val route = item.routes[getChildPosition(position)]
-            card.setCardBackgroundColor(if (route.isDone) GREEN else YELLOW)
-            id.text = "№ ${route.number.ifNullOrBlank { "-" }}"
-            date.text = item.date.format(patternDateHuman)
-            fio.text = route.fio.ifNullOrBlank { "-" }
-            progress.text = "${route.waitCount}/${route.count}"
+        override fun onBindItem(position: Int, item: Any) {
+            item as Route
+            card.setCardBackgroundColor(if (item.isDone) GREEN else YELLOW)
+            id.text = "№ ${item.number.ifNullOrBlank { "-" }}"
+            date.text = item.day.format(patternDateHuman)
+            fio.text = item.fio.ifNullOrBlank { "-" }
+            progress.text = "${item.waitCount}/${item.count}"
         }
     }
 
-    interface Listener : AdapterListener<Schedule> {
+    interface Listener : AdapterListener<Any> {
 
         fun onRouteClick(position: Int, item: Route)
     }

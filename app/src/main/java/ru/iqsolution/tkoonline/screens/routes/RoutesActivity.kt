@@ -5,7 +5,6 @@ import kotlinx.android.synthetic.main.activity_routes.*
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.local.entities.Route
-import ru.iqsolution.tkoonline.models.Schedule
 import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 
 class RoutesActivity : UserActivity<RoutesContract.Presenter>(), RoutesContract.View {
@@ -21,13 +20,13 @@ class RoutesActivity : UserActivity<RoutesContract.Presenter>(), RoutesContract.
         presenter.loadRoutes()
     }
 
-    override fun onRoutes(schedules: List<Schedule>) {
+    override fun onRoutes(items: List<Any>) {
         adapter.items.clear()
-        adapter.items.addAll(schedules)
+        adapter.items.addAll(items)
         adapter.notifyDataSetChanged()
     }
 
-    override fun onItemClick(position: Int, item: Schedule) {
+    override fun onItemClick(position: Int, item: Any) {
     }
 
     override fun onRouteClick(position: Int, item: Route) {

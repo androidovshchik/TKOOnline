@@ -2,13 +2,12 @@ package ru.iqsolution.tkoonline.screens.routes
 
 import android.content.Context
 import com.google.gson.Gson
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.extensions.authHeader
-import ru.iqsolution.tkoonline.models.Schedule
+import ru.iqsolution.tkoonline.extensions.fromJson
+import ru.iqsolution.tkoonline.local.entities.Route
 import ru.iqsolution.tkoonline.patternDate
 import ru.iqsolution.tkoonline.remote.Server
 import ru.iqsolution.tkoonline.screens.base.user.UserPresenter
@@ -26,32 +25,43 @@ class RoutesPresenter(context: Context) : UserPresenter<RoutesContract.View>(con
         baseJob.cancelChildren()
         val car = preferences.carId
         val tokenId = preferences.tokenId
-        val header = preferences.accessToken.authHeader!!
+        val header = preferences.token.authHeader.orEmpty()
         val today = preferences.serverDay
         launch {
-            val schedules = arrayOf(
+            val items = mutableListOf<Any>()
+            arrayOf(
                 today,
                 today.minusDays(1)
-            ).map { day ->
-                async {
-                    val schedule = Schedule(day)
-                    try {
-                        val routes = server.getRoutes(header, day.format(patternDate)).data
-                        routes.forEach {
-                            it.tokenId = tokenId
-                            it.day = day
-                        }
-                        schedule.routes.addAll(routes)
-                        db.routeDao().safeInsert(routes)
-                    } catch (e: UnknownHostException) {
-                        val routes = db.routeDao().getByDay(car, day.format(patternDate))
-                        schedule.routes.addAll(routes)
-                    }
-                    schedule
+            ).forEach { day ->
+                val routes = mutableListOf<Route>()
+                try {
+                    val response = server.getRoutes(header, day.format(patternDate))
+                    routes.addAll(response.data.onEach {
+                        it.tokenId = tokenId
+                        it.day = day
+                    })
+                    routes.addAll(gson.fromJson<List<Route>>("""
+                            [
+        {
+            "route_number": "12312.fsd",
+            "fio": "test",
+            "count": 2,
+            "wait_count": 1
+        }
+    ]
+                    """.trimIndent()).onEach {
+                        it.tokenId = tokenId
+                        it.day = day
+                    })
+                    db.routeDao().safeInsert(routes)
+                } catch (e: UnknownHostException) {
+                    routes.addAll(db.routeDao().getByDay(car, day.format(patternDate)))
                 }
-            }.awaitAll()
-            Timber.i(gson.toJson(schedules))
-            reference.get()?.onRoutes(schedules)
+                items.add(day)
+                items.addAll(routes)
+            }
+            Timber.i(gson.toJson(items))
+            reference.get()?.onRoutes(items)
         }
     }
 }
