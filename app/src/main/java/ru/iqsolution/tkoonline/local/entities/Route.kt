@@ -21,15 +21,18 @@ import java.time.LocalDate
         Index(value = ["r_token_id"])
     ]
 )
-class Route : Serializable {
+class Route : Serializable, Unique {
+
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "r_id")
+    var id: Long? = null
 
     @ColumnInfo(name = "r_token_id")
-    var tokenId = 0L
+    override var tokenId = 0L
 
-    @PrimaryKey
     @SerializedName("route_number")
-    @ColumnInfo(name = "r_id")
-    var number: String? = null
+    @ColumnInfo(name = "r_number")
+    override var routeId: String? = null
 
     @SerializedName("fio")
     @ColumnInfo(name = "r_fio")
@@ -45,7 +48,7 @@ class Route : Serializable {
 
     @NonNull
     @ColumnInfo(name = "r_day")
-    lateinit var day: LocalDate
+    override lateinit var whenDay: LocalDate
 
     val isDone: Boolean
         get() = waitCount == count

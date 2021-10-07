@@ -32,14 +32,14 @@ class Draft : Serializable, BaseTask {
     @ColumnInfo(name = "d_uid")
     var uid: Long? = null
 
-    @ColumnInfo(name = "d_route_id")
-    override var routeId: String? = null
-
     @ColumnInfo(name = "d_token_id")
     override var tokenId = 0L
 
-    @ColumnInfo(name = "d_id")
-    override var id: Int? = null
+    @ColumnInfo(name = "d_route_id")
+    override var routeId: String? = null
+
+    @ColumnInfo(name = "d_task_id")
+    var taskId: Int? = null
 
     @ColumnInfo(name = "d_type_id")
     override var typeId = 0

@@ -1,4 +1,4 @@
-package ru.iqsolution.tkoonline.models
+package ru.iqsolution.tkoonline.local.entities
 
 import java.time.LocalDate
 
