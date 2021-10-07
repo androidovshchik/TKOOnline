@@ -10,8 +10,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.iqsolution.tkoonline.BuildConfig
 import ru.iqsolution.tkoonline.LogInterceptor
-import ru.iqsolution.tkoonline.local.entities.CleanEventToken
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
+import ru.iqsolution.tkoonline.local.entities.TaskEvent
+import java.time.OffsetTime
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
@@ -21,10 +22,12 @@ val remoteModule = DI.Module("remote") {
         GsonBuilder()
             .setLenient()
             .setExclusionStrategies(SerializedNameStrategy())
-            .registerTypeAdapter(ZonedDateTime::class.java, DateTimeSerializer())
-            .registerTypeAdapter(ZonedDateTime::class.java, DateTimeDeserializer())
+            .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeSerializer())
+            .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeDeserializer())
+            .registerTypeAdapter(OffsetTime::class.java, ZonedDateTimeSerializer())
+            .registerTypeAdapter(OffsetTime::class.java, ZonedDateTimeDeserializer())
             .registerTypeAdapter(LocationEventToken::class.java, LocationEventTokenSerializer())
-            .registerTypeAdapter(CleanEventToken::class.java, CleanEventTokenSerializer())
+            .registerTypeAdapter(TaskEvent::class.java, TaskEventSerializer())
             .apply {
                 if (pretty) {
                     setPrettyPrinting()

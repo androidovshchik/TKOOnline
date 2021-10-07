@@ -1,7 +1,7 @@
 package ru.iqsolution.tkoonline.remote.api
 
 import com.google.gson.annotations.SerializedName
-import ru.iqsolution.tkoonline.extensions.Pattern
+import ru.iqsolution.tkoonline.Pattern
 import java.time.ZonedDateTime
 
 class ResponseAuth {
@@ -21,7 +21,4 @@ class ResponseAuth {
 
     @SerializedName("que_name")
     lateinit var queName: String
-
-    val authHeader: String
-        get() = "Bearer $accessKey"
 }
