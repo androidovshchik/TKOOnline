@@ -19,15 +19,16 @@ abstract class RouteDao {
     abstract fun insertAll(items: List<Route>)
 
     @Transaction
-    open suspend fun safeInsert(items: List<Route>) {
-        deleteAll()
+    open suspend fun safeInsert(car: Int, day: String, items: List<Route>) {
+        deleteAll(getByDay(car, day).map { it.id })
         insertAll(items)
     }
 
     @Query(
         """
         DELETE FROM routes
+        WHERE r_id in (:ids)
     """
     )
-    abstract fun deleteAll()
+    abstract fun deleteAll(ids: List<Long?>)
 }
