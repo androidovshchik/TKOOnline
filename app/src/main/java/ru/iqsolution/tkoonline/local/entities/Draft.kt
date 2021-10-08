@@ -29,8 +29,8 @@ import java.time.OffsetTime
 class Draft : Serializable, BaseTask {
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "d_uid")
-    var uid: Long? = null
+    @ColumnInfo(name = "d_id")
+    var id: Long? = null
 
     @ColumnInfo(name = "d_token_id")
     override var tokenId = 0L

@@ -10,14 +10,15 @@ import ru.iqsolution.tkoonline.local.entities.*
 
 @Database(
     entities = [
-        AccessToken::class,
-        PhotoEvent::class,
-        CleanEvent::class,
-        LocationEvent::class,
-        Platform::class,
+        Token::class,
+        Route::class,
+        Task::class,
+        Contact::class,
         TaskType::class,
         PhotoType::class,
-        Contact::class
+        TaskEvent::class,
+        PhotoEvent::class,
+        LocationEvent::class
     ],
     version = 14
 )
@@ -28,19 +29,23 @@ abstract class Database : RoomDatabase() {
 
     abstract fun tokenDao(): TokenDao
 
-    abstract fun photoDao(): PhotoDao
+    abstract fun routeDao(): RouteDao
 
-    abstract fun cleanDao(): CleanDao
+    abstract fun taskDao(): TaskDao
 
-    abstract fun locationDao(): LocationDao
+    abstract fun draftDao(): DraftDao
 
-    abstract fun platformDao(): PlatformDao
+    abstract fun contactDao(): ContactDao
 
     abstract fun taskTypeDao(): TaskTypeDao
 
     abstract fun photoTypeDao(): PhotoTypeDao
 
-    abstract fun contactDao(): ContactDao
+    abstract fun taskEventDao(): TaskEventDao
+
+    abstract fun photoEventDao(): PhotoEventDao
+
+    abstract fun locEventDao(): LocationEventDao
 }
 
 class Migration910 : Migration(9, 10) {
@@ -102,9 +107,34 @@ class Migration1314 : Migration(13, 14) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL(
             """
+            DROP TABLE IF EXISTS `platforms`;
+        """.trimIndent()
+        )
+        database.execSQL(
+            """
+            DROP TABLE IF EXISTS `contacts`;
+        """.trimIndent()
+        )
+        database.execSQL(
+            """
+            DROP TABLE IF EXISTS `photo_types`;
+        """.trimIndent()
+        )
+        database.execSQL(
+            """
+            DROP TABLE IF EXISTS `clean_events`;
+        """.trimIndent()
+        )
+        database.execSQL(
+            """
+            DROP TABLE IF EXISTS `photo_events`;
+        """.trimIndent()
+        )
+        database.execSQL(
+            """
             DROP TABLE IF EXISTS `tag_events`;
         """.trimIndent()
         )
-        // todo sql statements
+        // todo create
     }
 }

@@ -10,8 +10,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import ru.iqsolution.tkoonline.DB_NAME
-import ru.iqsolution.tkoonline.extensions.patternTimeMillis
 import ru.iqsolution.tkoonline.extensions.use
+import ru.iqsolution.tkoonline.patternTimeMillis
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream

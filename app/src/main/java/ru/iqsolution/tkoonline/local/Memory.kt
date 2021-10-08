@@ -6,7 +6,7 @@ package ru.iqsolution.tkoonline.local
 interface Memory {
 
     // Logout on background thread
-    var accessToken: String?
+    var token: String?
 
     // Logout, Read on background thread
     var tokenId: Long
@@ -22,10 +22,6 @@ interface Memory {
      */
     // Write, Logout, Read on background thread
     var packageId: Int
-
-    // Read on background thread
-    val authHeader: String?
-        get() = if (accessToken != null) "Bearer $accessToken" else null
 
     fun logout() {
         mileage = 0f

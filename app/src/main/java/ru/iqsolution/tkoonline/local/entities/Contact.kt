@@ -1,9 +1,6 @@
 package ru.iqsolution.tkoonline.local.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import ru.iqsolution.tkoonline.extensions.asPhone
 import java.io.Serializable
@@ -11,7 +8,17 @@ import java.time.ZonedDateTime
 
 @Entity(
     tableName = "contacts",
+    foreignKeys = [
+        ForeignKey(
+            entity = Token::class,
+            parentColumns = ["t_id"],
+            childColumns = ["c_token_id"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
     indices = [
+        Index(value = ["c_token_id"]),
         Index(value = ["c_phone"], unique = true)
     ]
 )
@@ -21,6 +28,9 @@ class Contact : Serializable {
     @SerializedName("id")
     @ColumnInfo(name = "c_id")
     var id = 0L
+
+    @ColumnInfo(name = "c_token_id")
+    var tokenId = 0L
 
     @SerializedName("name")
     @ColumnInfo(name = "c_name")

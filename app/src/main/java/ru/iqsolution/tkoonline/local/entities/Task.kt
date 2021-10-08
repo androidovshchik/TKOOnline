@@ -27,7 +27,10 @@ import java.time.OffsetTime
 )
 class Task : Serializable, BaseTask {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "tk_uid")
+    var uid: Long? = null
+
     @SerializedName("id")
     @ColumnInfo(name = "tk_id")
     var id = 0

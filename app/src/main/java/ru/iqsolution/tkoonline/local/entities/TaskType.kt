@@ -1,14 +1,24 @@
 package ru.iqsolution.tkoonline.local.entities
 
 import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 @Entity(
-    tableName = "task_types"
+    tableName = "task_types",
+    foreignKeys = [
+        ForeignKey(
+            entity = Token::class,
+            parentColumns = ["t_id"],
+            childColumns = ["tt_token_id"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(value = ["tt_token_id"])
+    ]
 )
 class TaskType : Serializable {
 
@@ -16,6 +26,9 @@ class TaskType : Serializable {
     @SerializedName("id")
     @ColumnInfo(name = "tt_id")
     var id = 0
+
+    @ColumnInfo(name = "tt_token_id")
+    var tokenId = 0L
 
     @NonNull
     @SerializedName("code")

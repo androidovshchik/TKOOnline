@@ -1,6 +1,9 @@
 package ru.iqsolution.tkoonline.local.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import ru.iqsolution.tkoonline.local.entities.Draft
 
 @Dao
@@ -16,13 +19,7 @@ abstract class DraftDao {
     abstract suspend fun getByRouteDay(car: Int, route: String?, day: String): List<Draft>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertAll(items: List<Draft>)
-
-    @Transaction
-    open suspend fun safeInsert(car: Int, route: String?, day: String, items: List<Draft>) {
-        deleteAll(getByRouteDay(car, route, day).map { it.id })
-        insertAll(items)
-    }
+    abstract suspend fun insert(item: Draft): Long
 
     @Query(
         """
@@ -32,12 +29,4 @@ abstract class DraftDao {
     """
     )
     abstract suspend fun updateStatus(id: Long?, status: Int)
-
-    @Query(
-        """
-        DELETE FROM drafts
-        WHERE d_id in (:ids)
-    """
-    )
-    abstract fun deleteAll(ids: List<Long?>)
 }

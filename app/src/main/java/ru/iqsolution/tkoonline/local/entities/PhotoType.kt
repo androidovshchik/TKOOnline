@@ -1,14 +1,24 @@
 package ru.iqsolution.tkoonline.local.entities
 
 import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 @Entity(
-    tableName = "photo_types"
+    tableName = "photo_types",
+    foreignKeys = [
+        ForeignKey(
+            entity = Token::class,
+            parentColumns = ["t_id"],
+            childColumns = ["pt_token_id"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(value = ["pt_token_id"])
+    ]
 )
 class PhotoType : Serializable {
 
@@ -16,6 +26,9 @@ class PhotoType : Serializable {
     @SerializedName("id")
     @ColumnInfo(name = "pt_id")
     var id = Default.OTHER.id
+
+    @ColumnInfo(name = "pt_token_id")
+    var tokenId = 0L
 
     @NonNull
     @SerializedName("description")
