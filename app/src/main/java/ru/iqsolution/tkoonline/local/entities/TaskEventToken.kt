@@ -2,10 +2,10 @@ package ru.iqsolution.tkoonline.local.entities
 
 import androidx.room.Embedded
 
-class LocationEventToken {
+class TaskEventToken {
 
     @Embedded
-    lateinit var location: LocationEvent
+    lateinit var task: TaskEvent
 
     @Embedded
     lateinit var token: Token

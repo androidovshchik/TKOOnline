@@ -3,8 +3,8 @@ package ru.iqsolution.tkoonline.local.entities
 import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
-import ru.iqsolution.tkoonline.extensions.Pattern
-import ru.iqsolution.tkoonline.extensions.isEarlier
+import ru.iqsolution.tkoonline.Pattern
+import ru.iqsolution.tkoonline.isEarlier
 import ru.iqsolution.tkoonline.models.BasePoint
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
     tableName = "location_events",
     foreignKeys = [
         ForeignKey(
-            entity = AccessToken::class,
+            entity = Token::class,
             parentColumns = ["t_id"],
             childColumns = ["le_token_id"],
             onUpdate = ForeignKey.CASCADE,
