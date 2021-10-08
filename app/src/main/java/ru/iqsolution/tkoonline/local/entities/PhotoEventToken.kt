@@ -8,5 +8,5 @@ class PhotoEventToken {
     lateinit var photo: PhotoEvent
 
     @Embedded
-    lateinit var token: AccessToken
+    lateinit var token: Token
 }

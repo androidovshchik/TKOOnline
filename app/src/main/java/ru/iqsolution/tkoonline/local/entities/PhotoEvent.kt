@@ -2,34 +2,29 @@ package ru.iqsolution.tkoonline.local.entities
 
 import androidx.annotation.NonNull
 import androidx.room.*
-import ru.iqsolution.tkoonline.extensions.Pattern
+import ru.iqsolution.tkoonline.Pattern
+import ru.iqsolution.tkoonline.defaultZone
+import ru.iqsolution.tkoonline.midnightZone
 import java.io.Serializable
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 @Entity(
     tableName = "photo_events",
     foreignKeys = [
         ForeignKey(
-            entity = AccessToken::class,
+            entity = Token::class,
             parentColumns = ["t_id"],
             childColumns = ["pe_token_id"],
-            onUpdate = ForeignKey.CASCADE,
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = PhotoEvent::class,
-            parentColumns = ["pe_id"],
-            childColumns = ["pe_related_id"],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [
-        Index(value = ["pe_token_id"]),
-        Index(value = ["pe_related_id"])
+        Index(value = ["pe_token_id"])
     ]
 )
-class PhotoEvent() : Serializable, SendEvent {
+class PhotoEvent() : Serializable, Unique, SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pe_id")
@@ -41,27 +36,15 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_token_id")
     override var tokenId = 0L
 
-    @ColumnInfo(name = "pe_kp_id")
-    var kpId: Int? = null
+    @ColumnInfo(name = "pe_route_id")
+    override var routeId: String? = null
 
-    @ColumnInfo(name = "pe_linked_id")
-    var linkedId: Int? = null
+    @ColumnInfo(name = "pe_event_id")
+    var eventId: Int? = null
 
-    /**
-     * It's value is not [kpId] but it is [id] of parent platform
-     */
-    @ColumnInfo(name = "pe_related_id")
-    var relatedId: Long? = null
-
-    /**
-     * Normally it will never change
-     */
-    @ColumnInfo(name = "pe_type")
+    @ColumnInfo(name = "pe_type_id")
     var typeId = -1
 
-    /**
-     * Normally it will never change
-     */
     @NonNull
     @ColumnInfo(name = "pe_path")
     lateinit var path: String
@@ -75,25 +58,24 @@ class PhotoEvent() : Serializable, SendEvent {
     @NonNull
     @Pattern(Pattern.DATETIME_ZONE)
     @ColumnInfo(name = "pe_when_time")
-    lateinit var whenTime: ZonedDateTime
+    var whenTime: ZonedDateTime = ZonedDateTime.now()
+        set(value) {
+            field = value.withZoneSameInstant(midnightZone)
+        }
+        get() = field.withZoneSameInstant(defaultZone)
 
-    /**
-     * This is ready only after platform's clean event was triggered
-     */
-    @ColumnInfo(name = "pe_ready")
-    var ready = false
+    @NonNull
+    @ColumnInfo(name = "pe_day")
+    override lateinit var whenDay: LocalDate
 
     @ColumnInfo(name = "pe_sent")
     override var sent = false
 
-    constructor(type: Int) : this() {
-        typeId = type
+    constructor(tokenId: Long, routeId: String?, typeId: Int) : this() {
+        this.tokenId = tokenId
+        this.routeId = routeId
+        this.typeId = typeId
         // required for initialization only
         path = ""
-        whenTime = ZonedDateTime.now()
-    }
-
-    constructor(kp: Int, type: Int) : this(type) {
-        kpId = kp
     }
 }

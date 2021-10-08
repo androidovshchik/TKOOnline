@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import ru.iqsolution.tkoonline.extensions.asPhone
 import java.io.Serializable
 import java.time.ZonedDateTime
 
@@ -29,7 +30,7 @@ class Contact : Serializable {
     @ColumnInfo(name = "c_phone")
     var phone: String? = null
         set(value) {
-            field = value?.replace("[^+0-9*#]".toRegex(), "")
+            field = value?.asPhone
         }
 
     @SerializedName("last_login_date")
