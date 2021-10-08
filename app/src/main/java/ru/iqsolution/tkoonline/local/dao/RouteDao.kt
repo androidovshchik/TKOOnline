@@ -19,7 +19,7 @@ abstract class RouteDao {
     abstract fun insertAll(items: List<Route>)
 
     @Transaction
-    open fun safeInsert(items: List<Route>) {
+    open suspend fun safeInsert(items: List<Route>) {
         deleteAll()
         insertAll(items)
     }

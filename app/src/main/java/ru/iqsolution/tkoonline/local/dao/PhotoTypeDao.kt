@@ -12,13 +12,13 @@ abstract class PhotoTypeDao {
         ORDER BY pt_id ASC
     """
     )
-    abstract fun getAll(): List<PhotoType>
+    abstract suspend fun getAll(): List<PhotoType>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insertAll(items: List<PhotoType>)
 
     @Transaction
-    open fun safeInsert(items: List<PhotoType>) {
+    open suspend fun safeInsert(items: List<PhotoType>) {
         deleteAll()
         insertAll(items)
     }

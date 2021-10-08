@@ -1,10 +1,10 @@
 package ru.iqsolution.tkoonline.local.dao
 
 import androidx.room.*
-import ru.iqsolution.tkoonline.local.entities.AccessToken
+import ru.iqsolution.tkoonline.local.entities.Token
 
 @Dao
-interface TokenDao {
+abstract class TokenDao {
 
     @Query(
         """
@@ -12,11 +12,11 @@ interface TokenDao {
         ORDER BY t_id ASC
     """
     )
-    fun getAll(): List<AccessToken>
+    abstract suspend fun getAll(): List<Token>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(item: AccessToken): Long
+    abstract suspend fun insert(item: Token): Long
 
     @Delete
-    fun delete(items: List<AccessToken>)
+    abstract suspend fun delete(items: List<Token>)
 }

@@ -12,13 +12,13 @@ abstract class TaskTypeDao {
         ORDER BY tt_id ASC
     """
     )
-    abstract fun getAll(): List<TaskType>
+    abstract suspend fun getAll(): List<TaskType>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insertAll(items: List<TaskType>)
 
     @Transaction
-    open fun safeInsert(items: List<TaskType>) {
+    open suspend fun safeInsert(items: List<TaskType>) {
         deleteAll()
         insertAll(items)
     }

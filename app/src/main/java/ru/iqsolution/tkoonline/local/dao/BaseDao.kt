@@ -5,8 +5,8 @@ import androidx.room.RawQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 
 @Dao
-interface BaseDao {
+abstract class BaseDao {
 
     @RawQuery
-    fun checkpoint(supportSQLiteQuery: SupportSQLiteQuery): Int
+    abstract suspend fun checkpoint(supportSQLiteQuery: SupportSQLiteQuery): Int
 }
