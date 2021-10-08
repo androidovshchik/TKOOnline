@@ -24,8 +24,8 @@ val remoteModule = DI.Module("remote") {
             .setExclusionStrategies(SerializedNameStrategy())
             .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeSerializer())
             .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeDeserializer())
-            .registerTypeAdapter(OffsetTime::class.java, ZonedDateTimeSerializer())
-            .registerTypeAdapter(OffsetTime::class.java, ZonedDateTimeDeserializer())
+            .registerTypeAdapter(OffsetTime::class.java, OffsetTimeSerializer())
+            .registerTypeAdapter(OffsetTime::class.java, OffsetTimeDeserializer())
             .registerTypeAdapter(LocationEventToken::class.java, LocationEventTokenSerializer())
             .registerTypeAdapter(TaskEvent::class.java, TaskEventSerializer())
             .apply {

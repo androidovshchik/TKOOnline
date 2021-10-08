@@ -2,13 +2,13 @@ package ru.iqsolution.tkoonline.remote
 
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
-import ru.iqsolution.tkoonline.extensions.Pattern
-import ru.iqsolution.tkoonline.extensions.patternDate
-import ru.iqsolution.tkoonline.extensions.patternDateTimeZone
-import ru.iqsolution.tkoonline.extensions.patternTimeZone
-import ru.iqsolution.tkoonline.local.entities.CleanEventToken
+import ru.iqsolution.tkoonline.Pattern
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
+import ru.iqsolution.tkoonline.local.entities.TaskEvent
+import ru.iqsolution.tkoonline.patternDateTimeZone
+import ru.iqsolution.tkoonline.patternTimeZone
 import java.lang.reflect.Type
+import java.time.OffsetTime
 import java.time.ZonedDateTime
 
 class SerializedNameStrategy : ExclusionStrategy {
@@ -22,72 +22,73 @@ class SerializedNameStrategy : ExclusionStrategy {
     }
 }
 
-class DateTimeSerializer : JsonSerializer<ZonedDateTime> {
+class ZonedDateTimeSerializer : JsonSerializer<ZonedDateTime> {
 
     @Pattern(Pattern.DATETIME_ZONE)
-    override fun serialize(
-        src: ZonedDateTime,
-        typeOfSrc: Type,
-        context: JsonSerializationContext
-    ): JsonElement {
+    override fun serialize(src: ZonedDateTime, type: Type, ctx: JsonSerializationContext): JsonElement {
         return JsonPrimitive(src.format(patternDateTimeZone))
     }
 }
 
-class DateTimeDeserializer : JsonDeserializer<ZonedDateTime> {
+class ZonedDateTimeDeserializer : JsonDeserializer<ZonedDateTime> {
 
-    /**
-     * NOTICE [patternDate] is not supported
-     */
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type,
-        context: JsonDeserializationContext
-    ): ZonedDateTime {
-        val value = json.asString
-        return when {
-            value.contains("T") -> ZonedDateTime.parse(json.asString, patternDateTimeZone)
-            else -> ZonedDateTime.parse(json.asString, patternTimeZone)
-        }
+    override fun deserialize(json: JsonElement, type: Type, ctx: JsonDeserializationContext): ZonedDateTime {
+        return ZonedDateTime.parse(json.asString, patternDateTimeZone)
+    }
+}
+
+class OffsetTimeSerializer : JsonSerializer<OffsetTime> {
+
+    @Pattern(Pattern.DATETIME_ZONE)
+    override fun serialize(src: OffsetTime, type: Type, ctx: JsonSerializationContext): JsonElement {
+        return JsonPrimitive(src.format(patternTimeZone))
+    }
+}
+
+class OffsetTimeDeserializer : JsonDeserializer<OffsetTime> {
+
+    override fun deserialize(json: JsonElement, type: Type, ctx: JsonDeserializationContext): OffsetTime {
+        return OffsetTime.parse(json.asString, patternTimeZone)
     }
 }
 
 class LocationEventTokenSerializer : JsonSerializer<LocationEventToken> {
 
-    override fun serialize(src: LocationEventToken, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+    override fun serialize(src: LocationEventToken, type: Type, ctx: JsonSerializationContext): JsonElement {
+        val data = src.location.data
         return JsonObject().apply {
             addProperty("id", src.location.packageId)
             addProperty("v", src.location.version)
             addProperty("auth_key", src.token.token)
             add("data", JsonObject().apply {
-                addProperty("event_time", src.location.data.whenTime.format(patternDateTimeZone))
-                addProperty("time", src.location.data.locationTime.format(patternDateTimeZone))
-                addProperty("lat", src.location.data.latitude)
-                addProperty("lon", src.location.data.longitude)
-                addProperty("height", src.location.data.altitude)
-                addProperty("valid", src.location.data.validity)
-                addProperty("sat_cnt", src.location.data.satellites)
-                addProperty("spd", src.location.data.speed)
-                addProperty("dir", src.location.data.direction)
-                addProperty("race", src.location.data.mileage)
+                addProperty("event_time", data.whenTime.format(patternDateTimeZone))
+                addProperty("time", data.locationTime.format(patternDateTimeZone))
+                addProperty("lat", data.latitude)
+                addProperty("lon", data.longitude)
+                addProperty("height", data.altitude)
+                addProperty("valid", data.validity)
+                addProperty("sat_cnt", data.satellites)
+                addProperty("spd", data.speed)
+                addProperty("dir", data.direction)
+                addProperty("race", data.mileage)
             })
         }
     }
 }
 
-class CleanEventTokenSerializer : JsonSerializer<CleanEventToken> {
+class TaskEventSerializer : JsonSerializer<TaskEvent> {
 
-    override fun serialize(
-        src: CleanEventToken,
-        typeOfSrc: Type,
-        context: JsonSerializationContext
-    ): JsonElement {
+    override fun serialize(src: TaskEvent, type: Type, ctx: JsonSerializationContext): JsonElement {
         return JsonObject().apply {
             add("data", JsonObject().apply {
-                addProperty("time", src.clean.whenTime.format(patternDateTimeZone))
-                addProperty("container_type_fact", src.clean.containerType)
-                addProperty("container_type_volume_fact", src.clean.containerVolume)
-                addProperty("container_count_fact", src.clean.containerCount)
+                addProperty("time", src.whenTime.format(patternDateTimeZone))
+                addProperty("task_id", src.taskId)
+                addProperty("latitude", src.latitude)
+                addProperty("longitude", src.longitude)
+                addProperty("container_type_fact", src.containerType)
+                addProperty("container_type_volume_fact", src.containerVolume)
+                addProperty("container_count_fact", src.containerCount)
+                addProperty("task_type", src.taskType)
             })
         }
     }

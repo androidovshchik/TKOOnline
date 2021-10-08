@@ -1,7 +1,7 @@
 package ru.iqsolution.tkoonline.remote
 
 import android.content.Context
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.kodein.di.DIAware
@@ -12,7 +12,7 @@ import ru.iqsolution.tkoonline.exitUnexpected
 import ru.iqsolution.tkoonline.extensions.bgToast
 import ru.iqsolution.tkoonline.extensions.parseErrors
 import ru.iqsolution.tkoonline.local.Preferences
-import ru.iqsolution.tkoonline.models.ServerError
+import ru.iqsolution.tkoonline.remote.api.ServerError
 import java.lang.ref.WeakReference
 
 @Target(AnnotationTarget.FUNCTION)
@@ -39,11 +39,11 @@ class AppInterceptor(context: Context) : Interceptor, DIAware {
                 tag.value
             }
         }
-        // NOTICE refreshing address only on login request
+        // обновление домена для rest клиента
         if (tag == "login") {
             address = preferences.mainServerAddress
         }
-        builder.url(request.url.toString().replace("localhost", address).toHttpUrlOrNull()!!)
+        builder.url(request.url.toString().replace("localhost", address).toHttpUrl())
         val response = chain.proceed(builder.build())
         if (response.isSuccessful) {
             return response
@@ -67,7 +67,7 @@ class AppInterceptor(context: Context) : Interceptor, DIAware {
                         else -> echoError(response, firstError)
                     }
                 }
-                "platforms", "photos" -> {
+                "routes", "tasks", "phones", "task-types", "photo-types" -> {
                     when (response.code) {
                         400, 401 -> {
                             when {
@@ -85,7 +85,7 @@ class AppInterceptor(context: Context) : Interceptor, DIAware {
                         else -> echoError(response, firstError)
                     }
                 }
-                "clean", "photo", "logout" -> {
+                "task", "photo", "logout" -> {
                     when (response.code) {
                         400, 401, 403 -> {
                         }

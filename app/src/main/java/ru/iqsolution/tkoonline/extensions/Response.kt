@@ -3,11 +3,11 @@ package ru.iqsolution.tkoonline.extensions
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
-import ru.iqsolution.tkoonline.models.ServerError
+import ru.iqsolution.tkoonline.remote.api.ServerError
 import timber.log.Timber
 
 fun retrofit2.Response<*>.parseErrors(): List<ServerError> {
-    return parseErrors(errorBody()?.string() ?: return listOf())
+    return parseErrors(errorBody()?.string() ?: return emptyList())
 }
 
 fun okhttp3.Response.parseErrors(): List<ServerError> {
