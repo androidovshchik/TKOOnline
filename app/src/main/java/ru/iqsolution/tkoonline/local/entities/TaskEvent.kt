@@ -26,7 +26,7 @@ import java.time.ZonedDateTime
         Index(value = ["te_token_id"])
     ]
 )
-class TaskEvent() : Unique, Container, Location<Double>, SendEvent {
+class TaskEvent() : Container, Location<Double>, SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "te_id")
@@ -36,11 +36,14 @@ class TaskEvent() : Unique, Container, Location<Double>, SendEvent {
     override var tokenId = 0L
 
     @ColumnInfo(name = "te_route_id")
-    override var routeId: String? = null
+    var routeId: String? = null
+
+    @ColumnInfo(name = "te_task_uid")
+    var taskUid: Long? = null
 
     @SerializedName("task_id")
     @ColumnInfo(name = "te_task_id")
-    var taskId = 0
+    var taskId: Int? = null
 
     @SerializedName("task_type")
     @ColumnInfo(name = "te_type_id")
@@ -80,11 +83,12 @@ class TaskEvent() : Unique, Container, Location<Double>, SendEvent {
     @ColumnInfo(name = "te_sent")
     override var sent = false
 
-    constructor(tokenId: Long, routeId: String?, taskId: Int, typeId: Int) : this() {
-        this.tokenId = tokenId
-        this.routeId = routeId
-        this.taskId = taskId
-        this.typeId = typeId
+    constructor(task: Task) : this() {
+        tokenId = task.tokenId
+        routeId = task.routeId
+        taskUid = task.uid
+        taskId = task.id
+        typeId = task.typeId
         // required for initialization only
         containerType = ContainerType.UNKNOWN.id
     }

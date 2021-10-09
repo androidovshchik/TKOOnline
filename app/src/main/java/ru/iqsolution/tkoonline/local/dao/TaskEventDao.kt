@@ -62,5 +62,5 @@ abstract class TaskEventDao {
         WHERE te_id = :id
     """
     )
-    abstract suspend fun markAsSent(id: Long, taskId: Int)
+    abstract suspend fun markAsSent(id: Long, taskId: Int?)
 }

@@ -6,7 +6,6 @@ import ru.iqsolution.tkoonline.Pattern
 import ru.iqsolution.tkoonline.defaultZone
 import ru.iqsolution.tkoonline.midnightZone
 import java.io.Serializable
-import java.time.LocalDate
 import java.time.ZonedDateTime
 
 @Entity(
@@ -24,20 +23,23 @@ import java.time.ZonedDateTime
         Index(value = ["pe_token_id"])
     ]
 )
-class PhotoEvent() : Serializable, Unique, SendEvent {
+class PhotoEvent() : Serializable, SendEvent {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pe_id")
     override var id: Long? = null
 
-    /**
-     * May be changed
-     */
     @ColumnInfo(name = "pe_token_id")
     override var tokenId = 0L
 
     @ColumnInfo(name = "pe_route_id")
-    override var routeId: String? = null
+    var routeId: String? = null
+
+    @ColumnInfo(name = "pe_task_uid")
+    var taskUid: Long? = null
+
+    @ColumnInfo(name = "pe_task_id")
+    var taskId: Int? = null
 
     @ColumnInfo(name = "pe_event_id")
     var eventId: Int? = null
@@ -64,17 +66,15 @@ class PhotoEvent() : Serializable, Unique, SendEvent {
         }
         get() = field.withZoneSameInstant(defaultZone)
 
-    @NonNull
-    @ColumnInfo(name = "pe_day")
-    override lateinit var whenDay: LocalDate
-
     @ColumnInfo(name = "pe_sent")
     override var sent = false
 
-    constructor(tokenId: Long, routeId: String?, typeId: Int) : this() {
-        this.tokenId = tokenId
-        this.routeId = routeId
-        this.typeId = typeId
+    constructor(task: Task) : this() {
+        tokenId = task.tokenId
+        routeId = task.routeId
+        taskUid = task.uid
+        taskId = task.id
+        typeId = task.typeId
         // required for initialization only
         path = ""
     }
