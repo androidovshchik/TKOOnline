@@ -8,11 +8,12 @@ import androidx.work.WorkerParameters
 import com.chibatching.kotpref.blockingBulk
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.exitUnexpected
+import ru.iqsolution.tkoonline.extensions.authHeader
 import ru.iqsolution.tkoonline.local.Preferences
+import ru.iqsolution.tkoonline.midnightZone
 import ru.iqsolution.tkoonline.remote.Server
 import timber.log.Timber
 import java.time.Duration
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
@@ -24,7 +25,7 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
     private val server: Server by instance()
 
     override fun doWork(): Result {
-        val header = preferences.authHeader ?: return Result.success()
+        val header = preferences.token?.authHeader ?: return Result.success()
         if (!applicationContext.exitUnexpected()) {
             try {
                 server.logout(header).execute()
@@ -43,8 +44,7 @@ class MidnightWorker(context: Context, params: WorkerParameters) : BaseWorker(co
         private const val NAME = "MIDNIGHT"
 
         fun launch(context: Context) {
-            // Также авторизация сбрасывается сервером ежедневно в 02:00 (UTC+3)
-            val now = ZonedDateTime.now(ZoneOffset.ofHours(1))
+            val now = ZonedDateTime.now(midnightZone)
             val delay = Duration.between(now, now.plusDays(1).truncatedTo(ChronoUnit.DAYS)).toMillis()
             val request = OneTimeWorkRequestBuilder<MidnightWorker>()
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)

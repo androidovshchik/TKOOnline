@@ -12,11 +12,11 @@ abstract class TokenDao {
         ORDER BY t_id ASC
     """
     )
-    abstract suspend fun getAll(): List<Token>
+    abstract fun getAll(): List<Token>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insert(item: Token): Long
 
     @Delete
-    abstract suspend fun delete(items: List<Token>)
+    abstract fun delete(items: List<Token>)
 }
