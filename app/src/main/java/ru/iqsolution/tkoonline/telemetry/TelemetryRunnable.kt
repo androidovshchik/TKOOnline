@@ -2,6 +2,7 @@ package ru.iqsolution.tkoonline.telemetry
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -16,7 +17,7 @@ class TelemetryRunnable(context: Context) : Runnable {
             }
         } catch (e: Throwable) {
             Timber.e(e)
-            Handler().postDelayed(this, 3000)
+            Handler(Looper.getMainLooper()).postDelayed(this, 3000)
         }
     }
 }

@@ -16,7 +16,7 @@ abstract class LocationEventDao {
         WHERE le_sent = 0
     """
     )
-    abstract suspend fun getSendCount(): Int
+    abstract fun getSendCount(): Int
 
     /**
      * Only debug feature for routing
@@ -40,10 +40,10 @@ abstract class LocationEventDao {
         LIMIT 1
     """
     )
-    abstract suspend fun getLastEvent(): LocationEventToken?
+    abstract fun getLastEvent(): LocationEventToken?
 
     @Insert
-    abstract suspend fun insert(item: LocationEvent)
+    abstract fun insert(item: LocationEvent)
 
     @Query(
         """
@@ -52,11 +52,11 @@ abstract class LocationEventDao {
         WHERE le_id = :id
     """
     )
-    abstract suspend fun markAsSent(id: Long)
+    abstract fun markAsSent(id: Long)
 
     /**
      * Lifetime is less than 48 hours
      */
     @Delete
-    abstract suspend fun delete(item: LocationEvent)
+    abstract fun delete(item: LocationEvent)
 }

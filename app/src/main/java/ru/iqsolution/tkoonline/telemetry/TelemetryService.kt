@@ -120,9 +120,9 @@ class TelemetryService : BaseService(), TelemetryListener {
     }
 
     private fun sendLastEvent() {
-        db.locationDao().getLastSendEvent()?.let {
+        db.locEventDao().getLastEvent()?.let {
             if (!it.location.isValid) {
-                db.locationDao().delete(it.location)
+                db.locEventDao().delete(it.location)
                 checkCount()
                 return
             }
@@ -146,7 +146,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                     basicPublish("cars", user, null, json.toByteArray(Charsets.UTF_8))
                     txCommit()
                 }
-                db.locationDao().markAsSent(it.location.id ?: 0L)
+                db.locEventDao().markAsSent(it.location.id ?: 0L)
                 checkCount()
             } catch (e: Throwable) {
                 Timber.e(e)
@@ -214,7 +214,7 @@ class TelemetryService : BaseService(), TelemetryListener {
         if (eventDelay > 0L) {
             Timber.i("Event after delay $eventDelay")
             with(preferenceHolder) {
-                db.locationDao().insert(LocationEvent(point, tokenId, packageId, mileage, true).also {
+                db.locEventDao().insert(LocationEvent(point, tokenId, packageId, mileage, true).also {
                     packageId++
                     lastEventTime = it.data.whenTime
                 })
@@ -289,7 +289,7 @@ class TelemetryService : BaseService(), TelemetryListener {
                 it.replaceWith(config)?.let { state ->
                     Timber.i("Replace state with $state")
                     basePoint = BasePoint(location, state)
-                    db.locationDao().insert(LocationEvent(it, tokenId, packageId, distance).also { event ->
+                    db.locEventDao().insert(LocationEvent(it, tokenId, packageId, distance).also { event ->
                         packageId++
                         lastEventTime = event.data.whenTime
                     })
@@ -318,7 +318,7 @@ class TelemetryService : BaseService(), TelemetryListener {
 
     private fun checkCount() {
         sendBroadcast(Intent(ACTION_ROUTE))
-        val locationCount = db.locationDao().getSendCount()
+        val locationCount = db.locEventDao().getSendCount()
         if (locationCount <= 0) {
             sendBroadcast(Intent(ACTION_CLOUD))
         }

@@ -8,7 +8,7 @@ import ru.iqsolution.tkoonline.local.Preferences
 class PreferenceHolder : Memory {
 
     // Unused
-    override var accessToken: String? = null
+    override var token: String? = null
 
     // Only read and doesn't update
     override var tokenId = 0L
