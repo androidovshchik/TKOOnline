@@ -9,7 +9,6 @@ import ru.iqsolution.tkoonline.midnightZone
 import ru.iqsolution.tkoonline.models.Container
 import ru.iqsolution.tkoonline.models.ContainerType
 import ru.iqsolution.tkoonline.models.Location
-import java.time.LocalDate
 import java.time.ZonedDateTime
 
 @Entity(
@@ -41,7 +40,7 @@ class TaskEvent() : Unique, Container, Location<Double>, SendEvent {
 
     @SerializedName("task_id")
     @ColumnInfo(name = "te_task_id")
-    var taskId: Int? = null
+    var taskId = 0
 
     @SerializedName("task_type")
     @ColumnInfo(name = "te_type_id")
@@ -78,14 +77,10 @@ class TaskEvent() : Unique, Container, Location<Double>, SendEvent {
         }
         get() = field.withZoneSameInstant(defaultZone)
 
-    @NonNull
-    @ColumnInfo(name = "te_day")
-    override lateinit var whenDay: LocalDate
-
     @ColumnInfo(name = "te_sent")
     override var sent = false
 
-    constructor(tokenId: Long, routeId: String?, taskId: Int?, typeId: Int) : this() {
+    constructor(tokenId: Long, routeId: String?, taskId: Int, typeId: Int) : this() {
         this.tokenId = tokenId
         this.routeId = routeId
         this.taskId = taskId

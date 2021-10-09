@@ -115,5 +115,5 @@ class Task : Serializable, BaseTask {
 
     @NonNull
     @ColumnInfo(name = "tk_day")
-    override lateinit var whenDay: LocalDate
+    lateinit var whenDay: LocalDate
 }
