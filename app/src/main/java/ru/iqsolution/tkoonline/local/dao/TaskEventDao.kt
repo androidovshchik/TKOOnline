@@ -16,7 +16,7 @@ abstract class TaskEventDao {
         WHERE te_sent = 0
     """
     )
-    abstract fun getSendCount(): Int
+    abstract suspend fun getSendCount(): Int
 
     @Query(
         """
@@ -26,19 +26,21 @@ abstract class TaskEventDao {
         ORDER BY te_id DESC
     """
     )
-    abstract fun getDayEvents(car: Int, route: String?, day: String): List<TaskEvent>
+    abstract suspend fun getDayEvents(car: Int, route: String?, day: String): List<TaskEvent>
 
     @Transaction
     @Query(
         """
         SELECT * FROM task_events 
         INNER JOIN tokens ON te_token_id = t_id
-        WHERE t_car_id = :car AND te_route_id = :route AND te_task_id = :taskId AND te_when_time LIKE :day || '%'
+        WHERE t_car_id = :car AND te_route_id = :route 
+            AND (te_task_uid = :taskUid OR (te_task_id IS NOT NULL AND te_task_id = :taskId)) 
+            AND te_when_time LIKE :day || '%'
         ORDER BY te_id DESC
         LIMIT 1
     """
     )
-    abstract fun getLastEvent(car: Int, route: String?, taskId: Int, day: String): TaskEvent?
+    abstract suspend fun getLastEvent(car: Int, route: String?, taskUid: Long?, taskId: Int?, day: String): TaskEvent?
 
     @Query(
         """
@@ -48,17 +50,17 @@ abstract class TaskEventDao {
         ORDER BY te_id ASC
     """
     )
-    abstract fun getSendEvents(): List<TaskEventToken>
+    abstract suspend fun getSendEvents(): List<TaskEventToken>
 
     @Insert
-    abstract fun insert(item: TaskEvent): Long
+    abstract suspend fun insert(item: TaskEvent)
 
     @Query(
         """
         UPDATE task_events 
-        SET te_sent = 1 
+        SET te_task_id = :taskId AND te_sent = 1 
         WHERE te_id = :id
     """
     )
-    abstract fun markAsSent(id: Long)
+    abstract suspend fun markAsSent(id: Long, taskId: Int)
 }

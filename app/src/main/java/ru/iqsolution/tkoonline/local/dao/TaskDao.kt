@@ -35,6 +35,15 @@ abstract class TaskDao {
 
     @Query(
         """
+        UPDATE tasks 
+        SET tk_id = :id
+        WHERE tk_uid = :uid
+    """
+    )
+    abstract suspend fun updateId(uid: Long?, id: Int?)
+
+    @Query(
+        """
         DELETE FROM tasks
         WHERE tk_uid in (:uids)
     """
