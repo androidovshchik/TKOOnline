@@ -47,13 +47,13 @@ abstract class PhotoEventDao {
         ORDER BY pe_id ASC
     """
     )
-    abstract suspend fun getSendEvents(): List<PhotoEventToken>
+    abstract fun getSendEvents(): List<PhotoEventToken>
 
     @Insert
-    abstract suspend fun insert(item: PhotoEvent)
+    abstract fun insert(item: PhotoEvent)
 
     @Update
-    abstract suspend fun update(item: PhotoEvent)
+    abstract fun update(item: PhotoEvent)
 
     @Query(
         """

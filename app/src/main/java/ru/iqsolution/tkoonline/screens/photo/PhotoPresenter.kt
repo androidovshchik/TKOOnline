@@ -29,7 +29,7 @@ class PhotoPresenter(context: Context) : UserPresenter<PhotoContract.View>(conte
     /**
      * Normally there will be no case when file doesn't exist and id is null
      */
-    override fun saveEvent(photoEvent: PhotoEvent, linkedIds: List<Int>, externalFile: File) {
+    override fun saveEvent(photoEvent: PhotoEvent, externalFile: File) {
         val internalPhoto = File(fileManager.photosDir, externalFile.name)
         photoEvent.apply {
             preferences.also {
@@ -48,14 +48,9 @@ class PhotoPresenter(context: Context) : UserPresenter<PhotoContract.View>(conte
                     deleteFile(externalFile)
                 }
                 if (photoEvent.id == null) {
-                    if (photoEvent.kpId == null) {
-                        db.photoDao().insert(photoEvent)
-                    } else {
-                        db.photoDao().insertMultiple(photoEvent, linkedIds)
-                    }
+                    db.photoEventDao().insert(photoEvent)
                 } else {
-                    // NOTICE events without kp id have no updates
-                    db.photoDao().updateMultiple(photoEvent)
+                    db.photoEventDao().update(photoEvent)
                 }
             }
             reference.get()?.closePreview(Activity.RESULT_OK)
@@ -69,9 +64,7 @@ class PhotoPresenter(context: Context) : UserPresenter<PhotoContract.View>(conte
             return
         }
         launch {
-            withContext(Dispatchers.IO) {
-                db.photoDao().delete(photoEvent)
-            }
+            db.photoEventDao().delete(photoEvent)
             reference.get()?.closePreview(Activity.RESULT_OK)
         }
     }

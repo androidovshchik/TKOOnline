@@ -8,7 +8,10 @@ import coil.load
 import kotlinx.android.synthetic.main.activity_photo.*
 import kotlinx.android.synthetic.main.include_toolbar.*
 import org.kodein.di.instance
-import ru.iqsolution.tkoonline.*
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_EVENT
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_PATH
+import ru.iqsolution.tkoonline.EXTRA_PHOTO_TITLE
+import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.FileManager
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
@@ -35,7 +38,6 @@ class PhotoActivity : UserActivity<PhotoContract.Presenter>(), PhotoContract.Vie
         setContentView(R.layout.activity_photo)
         photoEvent = intent.getSerializableExtra(EXTRA_PHOTO_EVENT) as PhotoEvent
         externalPhoto = presenter.getExternalFile(photoEvent) ?: return
-        val linkedIds = intent.getIntegerArrayListExtra(EXTRA_PHOTO_IDS).orEmpty()
         toolbar_back.setOnClickListener {
             onBackPressed()
         }
@@ -56,7 +58,7 @@ class PhotoActivity : UserActivity<PhotoContract.Presenter>(), PhotoContract.Vie
         }
         photo_save.setOnClickListener {
             setTouchable(false)
-            presenter.saveEvent(photoEvent, linkedIds, externalPhoto)
+            presenter.saveEvent(photoEvent, externalPhoto)
         }
         if (photoEvent.sent) {
             photo_delete.isEnabled = false

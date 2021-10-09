@@ -50,7 +50,7 @@ abstract class TaskEventDao {
         ORDER BY te_id ASC
     """
     )
-    abstract suspend fun getSendEvents(): List<TaskEventToken>
+    abstract fun getSendEvents(): List<TaskEventToken>
 
     @Insert
     abstract suspend fun insert(item: TaskEvent)
