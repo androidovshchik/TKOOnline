@@ -88,7 +88,7 @@ class TaskEventSerializer : JsonSerializer<TaskEvent> {
                 addProperty("container_type_fact", src.containerType)
                 addProperty("container_type_volume_fact", src.containerVolume)
                 addProperty("container_count_fact", src.containerCount)
-                addProperty("task_type", src.taskType)
+                addProperty("task_type", src.typeId)
             })
         }
     }

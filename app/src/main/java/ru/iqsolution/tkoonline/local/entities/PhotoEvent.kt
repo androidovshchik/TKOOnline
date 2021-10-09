@@ -36,7 +36,7 @@ class PhotoEvent() : Serializable, SendEvent {
     var routeId: String? = null
 
     @ColumnInfo(name = "pe_task_uid")
-    var taskUid: Long? = null
+    var taskUid = 0L
 
     @ColumnInfo(name = "pe_task_id")
     var taskId: Int? = null
@@ -72,7 +72,7 @@ class PhotoEvent() : Serializable, SendEvent {
     constructor(task: Task) : this() {
         tokenId = task.tokenId
         routeId = task.routeId
-        taskUid = task.uid
+        taskUid = task.uid ?: 0L
         taskId = task.id
         typeId = task.typeId
         // required for initialization only

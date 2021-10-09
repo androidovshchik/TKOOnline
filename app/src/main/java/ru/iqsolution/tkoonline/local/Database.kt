@@ -33,8 +33,6 @@ abstract class Database : RoomDatabase() {
 
     abstract fun taskDao(): TaskDao
 
-    abstract fun draftDao(): DraftDao
-
     abstract fun contactDao(): ContactDao
 
     abstract fun taskTypeDao(): TaskTypeDao

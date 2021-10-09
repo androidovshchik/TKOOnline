@@ -39,7 +39,7 @@ class TaskEvent() : Container, Location<Double>, SendEvent {
     var routeId: String? = null
 
     @ColumnInfo(name = "te_task_uid")
-    var taskUid: Long? = null
+    var taskUid = 0L
 
     @SerializedName("task_id")
     @ColumnInfo(name = "te_task_id")
@@ -86,7 +86,7 @@ class TaskEvent() : Container, Location<Double>, SendEvent {
     constructor(task: Task) : this() {
         tokenId = task.tokenId
         routeId = task.routeId
-        taskUid = task.uid
+        taskUid = task.uid ?: 0L
         taskId = task.id
         typeId = task.typeId
         // required for initialization only

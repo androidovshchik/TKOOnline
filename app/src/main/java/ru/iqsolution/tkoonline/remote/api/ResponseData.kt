@@ -18,15 +18,3 @@ class ResponsePhones : ResponseData<Contact>()
 class ResponseTaskTypes : ResponseData<TaskType>()
 
 class ResponsePhotoTypes : ResponseData<PhotoType>()
-
-class ResponseTask : ResponseData<TaskEvent>() {
-
-    @SerializedName("id")
-    var id = 0
-}
-
-class ResponsePhoto : ResponseData<PhotoEvent>() {
-
-    @SerializedName("id")
-    var id = 0
-}
