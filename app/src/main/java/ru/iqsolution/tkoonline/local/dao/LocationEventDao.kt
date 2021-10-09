@@ -16,7 +16,20 @@ abstract class LocationEventDao {
         WHERE le_sent = 0
     """
     )
-    abstract suspend fun getCount(): Int
+    abstract suspend fun getSendCount(): Int
+
+    /**
+     * Only debug feature for routing
+     */
+    @Query(
+        """
+        SELECT location_events.*, tokens.* FROM location_events 
+        INNER JOIN tokens ON le_token_id = t_id
+        WHERE t_car_id = :car AND le_when_time LIKE :day || '%'
+        ORDER BY le_id ASC
+    """
+    )
+    abstract suspend fun getDayEvents(car: Int, day: String): List<LocationEventToken>
 
     @Query(
         """
@@ -28,19 +41,6 @@ abstract class LocationEventDao {
     """
     )
     abstract suspend fun getLastEvent(): LocationEventToken?
-
-    /**
-     * Only debug feature for routing
-     */
-    @Query(
-        """
-        SELECT location_events.*, tokens.* FROM location_events 
-        INNER JOIN tokens ON le_token_id = t_id
-        WHERE t_car_id = :carId AND le_when_time LIKE :day || '%'
-        ORDER BY le_id ASC
-    """
-    )
-    abstract suspend fun getDayEvents(day: String, carId: Int): List<LocationEventToken>
 
     @Insert
     abstract suspend fun insert(item: LocationEvent)

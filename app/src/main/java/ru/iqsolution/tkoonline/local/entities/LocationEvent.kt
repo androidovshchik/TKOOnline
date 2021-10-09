@@ -4,7 +4,9 @@ import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import ru.iqsolution.tkoonline.Pattern
+import ru.iqsolution.tkoonline.defaultZone
 import ru.iqsolution.tkoonline.isEarlier
+import ru.iqsolution.tkoonline.midnightZone
 import ru.iqsolution.tkoonline.models.BasePoint
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
@@ -92,13 +94,21 @@ class LocationEvent() : SendEvent {
         @Pattern(Pattern.DATETIME_ZONE)
         @ColumnInfo(name = "le_when_time")
         @SerializedName("event_time")
-        lateinit var whenTime: ZonedDateTime
+        var whenTime: ZonedDateTime = ZonedDateTime.now()
+            set(value) {
+                field = value.withZoneSameInstant(midnightZone)
+            }
+            get() = field.withZoneSameInstant(defaultZone)
 
         @NonNull
         @Pattern(Pattern.DATETIME_ZONE)
         @ColumnInfo(name = "le_location_time")
         @SerializedName("time")
-        lateinit var locationTime: ZonedDateTime
+        var locationTime: ZonedDateTime = ZonedDateTime.now()
+            set(value) {
+                field = value.withZoneSameInstant(midnightZone)
+            }
+            get() = field.withZoneSameInstant(defaultZone)
 
         @ColumnInfo(name = "le_latitude")
         @SerializedName("lat")
