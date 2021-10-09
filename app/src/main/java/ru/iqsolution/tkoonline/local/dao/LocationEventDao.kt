@@ -8,7 +8,7 @@ import ru.iqsolution.tkoonline.local.entities.LocationEvent
 import ru.iqsolution.tkoonline.local.entities.LocationEventToken
 
 @Dao
-interface LocationDao {
+abstract class LocationEventDao {
 
     @Query(
         """
@@ -16,7 +16,7 @@ interface LocationDao {
         WHERE le_sent = 0
     """
     )
-    fun getSendCount(): Int
+    abstract suspend fun getCount(): Int
 
     @Query(
         """
@@ -27,7 +27,7 @@ interface LocationDao {
         LIMIT 1
     """
     )
-    fun getLastSendEvent(): LocationEventToken?
+    abstract suspend fun getLastEvent(): LocationEventToken?
 
     /**
      * Only debug feature for routing
@@ -40,21 +40,23 @@ interface LocationDao {
         ORDER BY le_id ASC
     """
     )
-    fun getDayCarEvents(day: String, carId: Int): List<LocationEventToken>
+    abstract suspend fun getDayEvents(day: String, carId: Int): List<LocationEventToken>
 
     @Insert
-    fun insert(item: LocationEvent)
+    abstract suspend fun insert(item: LocationEvent)
 
     @Query(
         """
-        UPDATE location_events SET le_sent = 1 WHERE le_id = :id
+        UPDATE location_events 
+        SET le_sent = 1 
+        WHERE le_id = :id
     """
     )
-    fun markAsSent(id: Long)
+    abstract suspend fun markAsSent(id: Long)
 
     /**
      * Lifetime is less than 48 hours
      */
     @Delete
-    fun delete(item: LocationEvent)
+    abstract suspend fun delete(item: LocationEvent)
 }

@@ -22,7 +22,10 @@ import java.io.Serializable
 )
 class PhotoType : Serializable {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "pt_uid")
+    var uid: Long? = null
+
     @SerializedName("id")
     @ColumnInfo(name = "pt_id")
     var id = Default.OTHER.id

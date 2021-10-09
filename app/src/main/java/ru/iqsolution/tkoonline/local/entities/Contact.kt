@@ -24,7 +24,10 @@ import java.time.ZonedDateTime
 )
 class Contact : Serializable {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "c_uid")
+    var uid: Long? = null
+
     @SerializedName("id")
     @ColumnInfo(name = "c_id")
     var id = 0L

@@ -22,7 +22,10 @@ import java.io.Serializable
 )
 class TaskType : Serializable {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "tt_uid")
+    var uid: Long? = null
+
     @SerializedName("id")
     @ColumnInfo(name = "tt_id")
     var id = 0
