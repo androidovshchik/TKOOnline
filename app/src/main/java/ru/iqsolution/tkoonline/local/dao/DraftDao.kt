@@ -13,7 +13,7 @@ abstract class DraftDao {
         """
         SELECT drafts.* FROM drafts 
         INNER JOIN tokens ON d_token_id = t_id
-        WHERE t_car_id = :car AND d_route_id == :route AND d_day LIKE :day || '%'
+        WHERE t_car_id = :car AND d_route_id = :route AND d_day LIKE :day || '%'
     """
     )
     abstract suspend fun getByRouteDay(car: Int, route: String?, day: String): List<Draft>

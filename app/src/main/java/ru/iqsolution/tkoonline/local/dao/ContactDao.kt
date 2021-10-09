@@ -4,38 +4,42 @@ import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.Contact
 
 @Dao
-interface ContactDao {
+abstract class ContactDao {
 
     @Query(
         """
         SELECT * FROM contacts 
+        INNER JOIN tokens ON c_token_id = t_id
+        WHERE t_car_id = :car
         ORDER BY c_name ASC
     """
     )
-    fun getAll(): List<Contact>
+    abstract suspend fun getAll(car: Int): List<Contact>
 
     @Query(
         """
         SELECT * FROM contacts 
-        WHERE c_phone = :numbers
+        INNER JOIN tokens ON c_token_id = t_id
+        WHERE t_car_id = :car AND c_phone = :numbers
         LIMIT 1
     """
     )
-    fun getByPhone(numbers: String?): Contact?
+    abstract suspend fun getByPhone(car: Int, numbers: String?): Contact?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(items: List<Contact>)
+    abstract fun insertAll(items: List<Contact>)
 
     @Transaction
-    fun safeInsert(items: List<Contact>) {
-        deleteAll()
+    open suspend fun safeInsert(car: Int, items: List<Contact>) {
+        deleteAll(getAll(car).map { it.uid })
         insertAll(items)
     }
 
     @Query(
         """
         DELETE FROM contacts
+        WHERE c_uid in (:uids)
     """
     )
-    fun deleteAll()
+    abstract fun deleteAll(uids: List<Long?>)
 }
