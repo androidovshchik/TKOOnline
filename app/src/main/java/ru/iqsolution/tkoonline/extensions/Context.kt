@@ -32,13 +32,13 @@ fun Context.longBgToast(message: String) = sendBroadcast(intentFor<ToastReceiver
     putExtra(ToastReceiver.EXTRA_DURATION, Toast.LENGTH_LONG)
 })
 
-tailrec fun Context?.activity(): Activity? = when (this) {
+tailrec fun Context?.getActivity(): Activity? = when (this) {
     is Activity -> this
-    else -> (this as? ContextWrapper)?.baseContext?.activity()
+    else -> (this as? ContextWrapper)?.baseContext?.getActivity()
 }
 
-inline fun <reified T> Context.activityCallback(action: T.() -> Unit) {
-    activity()?.let {
+inline fun <reified T> Context.doActivityCallback(action: T.() -> Unit) {
+    getActivity()?.let {
         if (it is T && !it.isFinishing) {
             action(it)
         }

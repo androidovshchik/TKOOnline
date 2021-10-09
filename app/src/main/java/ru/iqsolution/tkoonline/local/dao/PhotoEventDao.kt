@@ -65,7 +65,7 @@ abstract class PhotoEventDao {
     abstract fun _updateEvent(ids: List<Long?>, eventId: Int)
 
     @Transaction
-    open suspend fun changeEvent(car: Int, route: String?, event: TaskEvent, eventId: Int, day: String) {
+    open suspend fun setEvent(car: Int, route: String?, event: TaskEvent, eventId: Int, day: String) {
         val events = getTaskEvents(car, route, event.taskUid, event.taskId, day)
         _updateEvent(events.filter { it.eventId == null }.map { it.id }, eventId)
     }
