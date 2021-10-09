@@ -57,7 +57,7 @@ class PhonesActivity : UserActivity<PhonesContract.Presenter>(), PhonesContract.
         contactsAdapter.notifyDataSetChanged()
     }
 
-    override fun onAdapterEvent(position: Int, item: Contact) {
+    override fun onItemClick(position: Int, item: Contact) {
         startActivity(Intent(Intent.ACTION_CALL).apply {
             data = Uri.parse("tel:${Uri.encode(item.phone)}")
         })
