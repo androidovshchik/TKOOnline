@@ -3,8 +3,10 @@ package ru.iqsolution.tkoonline.local.dao
 import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoEventToken
+import ru.iqsolution.tkoonline.local.entities.TaskEvent
 
 @Dao
+@Suppress("FunctionName")
 abstract class PhotoEventDao {
 
     @Query(
@@ -35,7 +37,7 @@ abstract class PhotoEventDao {
         ORDER BY pe_id ASC
     """
     )
-    abstract suspend fun getDayKpEvents(car: Int, route: String?, taskUid: Long?, taskId: Int?, day: String): List<PhotoEvent>
+    abstract suspend fun getTaskEvents(car: Int, route: String?, taskUid: Long?, taskId: Int?, day: String): List<PhotoEvent>
 
     @Query(
         """
@@ -60,7 +62,22 @@ abstract class PhotoEventDao {
         WHERE pe_id in (:ids)
     """
     )
-    abstract suspend fun updateEvent(ids: List<Long?>, eventId: Int)
+    abstract fun _updateEvent(ids: List<Long?>, eventId: Int)
+
+    @Transaction
+    open suspend fun changeEvent(car: Int, route: String?, event: TaskEvent, eventId: Int, day: String) {
+        val events = getTaskEvents(car, route, event.taskUid, event.taskId, day)
+        _updateEvent(events.filter { it.eventId == null }.map { it.id }, eventId)
+    }
+
+    @Query(
+        """
+        UPDATE photo_events 
+        SET pe_task_id = :taskId
+        WHERE pe_task_uid = :taskUid
+    """
+    )
+    abstract suspend fun updateId(taskUid: Long?, taskId: Int?)
 
     @Query(
         """

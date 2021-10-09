@@ -58,6 +58,15 @@ abstract class TaskEventDao {
     @Query(
         """
         UPDATE task_events 
+        SET te_task_id = :taskId
+        WHERE te_task_uid = :taskUid
+    """
+    )
+    abstract suspend fun updateId(taskUid: Long?, taskId: Int?)
+
+    @Query(
+        """
+        UPDATE task_events 
         SET te_task_id = :taskId AND te_sent = 1 
         WHERE te_id = :id
     """
