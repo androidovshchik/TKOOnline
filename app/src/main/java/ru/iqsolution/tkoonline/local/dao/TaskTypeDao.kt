@@ -4,6 +4,7 @@ import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.TaskType
 
 @Dao
+@Suppress("FunctionName")
 abstract class TaskTypeDao {
 
     @Query(
@@ -17,12 +18,12 @@ abstract class TaskTypeDao {
     abstract suspend fun getAll(car: Int): List<TaskType>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertAll(items: List<TaskType>)
+    abstract fun _insertAll(items: List<TaskType>)
 
     @Transaction
-    open suspend fun safeInsert(car: Int, items: List<TaskType>) {
-        deleteAll(getAll(car).map { it.uid })
-        insertAll(items)
+    open suspend fun replaceAll(car: Int, items: List<TaskType>) {
+        _deleteAll(getAll(car).map { it.uid })
+        _insertAll(items)
     }
 
     @Query(
@@ -31,5 +32,5 @@ abstract class TaskTypeDao {
         WHERE tt_uid in (:uids)
     """
     )
-    abstract fun deleteAll(uids: List<Long?>)
+    abstract fun _deleteAll(uids: List<Long?>)
 }

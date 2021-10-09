@@ -4,6 +4,7 @@ import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.PhotoType
 
 @Dao
+@Suppress("FunctionName")
 abstract class PhotoTypeDao {
 
     @Query(
@@ -17,12 +18,12 @@ abstract class PhotoTypeDao {
     abstract suspend fun getAll(car: Int): List<PhotoType>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertAll(items: List<PhotoType>)
+    abstract fun _insertAll(items: List<PhotoType>)
 
     @Transaction
-    open suspend fun safeInsert(car: Int, items: List<PhotoType>) {
-        deleteAll(getAll(car).map { it.uid })
-        insertAll(items)
+    open suspend fun replaceAll(car: Int, items: List<PhotoType>) {
+        _deleteAll(getAll(car).map { it.uid })
+        _insertAll(items)
     }
 
     @Query(
@@ -31,5 +32,5 @@ abstract class PhotoTypeDao {
         WHERE pt_uid in (:uids)
     """
     )
-    abstract fun deleteAll(uids: List<Long?>)
+    abstract fun _deleteAll(uids: List<Long?>)
 }

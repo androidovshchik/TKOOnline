@@ -4,6 +4,7 @@ import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.Route
 
 @Dao
+@Suppress("FunctionName")
 abstract class RouteDao {
 
     @Query(
@@ -16,12 +17,12 @@ abstract class RouteDao {
     abstract suspend fun getByDay(car: Int, day: String): List<Route>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertAll(items: List<Route>)
+    abstract fun _insertAll(items: List<Route>)
 
     @Transaction
-    open suspend fun safeInsert(car: Int, day: String, items: List<Route>) {
-        deleteAll(getByDay(car, day).map { it.id })
-        insertAll(items)
+    open suspend fun replaceAll(car: Int, day: String, items: List<Route>) {
+        _deleteAll(getByDay(car, day).map { it.id })
+        _insertAll(items)
     }
 
     @Query(
@@ -30,5 +31,5 @@ abstract class RouteDao {
         WHERE r_id in (:ids)
     """
     )
-    abstract fun deleteAll(ids: List<Long?>)
+    abstract fun _deleteAll(ids: List<Long?>)
 }

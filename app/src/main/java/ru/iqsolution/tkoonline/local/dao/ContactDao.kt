@@ -4,6 +4,7 @@ import androidx.room.*
 import ru.iqsolution.tkoonline.local.entities.Contact
 
 @Dao
+@Suppress("FunctionName")
 abstract class ContactDao {
 
     @Query(
@@ -27,12 +28,12 @@ abstract class ContactDao {
     abstract suspend fun getByPhone(car: Int, numbers: String?): Contact?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertAll(items: List<Contact>)
+    abstract fun _insertAll(items: List<Contact>)
 
     @Transaction
-    open suspend fun safeInsert(car: Int, items: List<Contact>) {
-        deleteAll(getAll(car).map { it.uid })
-        insertAll(items)
+    open suspend fun replaceAll(car: Int, items: List<Contact>) {
+        _deleteAll(getAll(car).map { it.uid })
+        _insertAll(items)
     }
 
     @Query(
@@ -41,5 +42,5 @@ abstract class ContactDao {
         WHERE c_uid in (:uids)
     """
     )
-    abstract fun deleteAll(uids: List<Long?>)
+    abstract fun _deleteAll(uids: List<Long?>)
 }
