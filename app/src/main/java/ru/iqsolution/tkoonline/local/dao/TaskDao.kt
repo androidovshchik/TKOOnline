@@ -10,7 +10,7 @@ abstract class TaskDao {
         """
         SELECT tasks.* FROM tasks 
         INNER JOIN tokens ON tk_token_id = t_id
-        WHERE t_car_id = :car AND tk_route_id = :route AND tk_day LIKE :day || '%'
+        WHERE t_car_id = :car AND tk_route_id = :route AND tk_when_day LIKE :day || '%'
     """
     )
     abstract suspend fun getByRouteDay(car: Int, route: String?, day: String): List<Task>
@@ -20,7 +20,7 @@ abstract class TaskDao {
 
     @Transaction
     open suspend fun safeInsert(car: Int, route: String?, day: String, items: List<Task>) {
-        deleteAll(getByRouteDay(car, route, day).map { it.uid })
+        deleteAll(getByRouteDay(car, route, day).filter { !it.draft }.map { it.uid })
         insertAll(items)
     }
 
@@ -28,7 +28,7 @@ abstract class TaskDao {
         """
         UPDATE tasks 
         SET tk_status = :status
-        WHERE tk_uid == :uid
+        WHERE tk_uid = :uid
     """
     )
     abstract suspend fun updateStatus(uid: Long?, status: Int)

@@ -5,6 +5,8 @@ import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import ru.iqsolution.tkoonline.Pattern
 import ru.iqsolution.tkoonline.defaultZone
+import ru.iqsolution.tkoonline.models.Container
+import ru.iqsolution.tkoonline.models.Location
 import ru.iqsolution.tkoonline.models.PlatformStatus
 import java.io.Serializable
 import java.time.LocalDate
@@ -25,21 +27,21 @@ import java.time.OffsetTime
         Index(value = ["tk_token_id"])
     ]
 )
-class Task : Serializable, BaseTask {
+class Task : Serializable, Container, Location<Double> {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "tk_uid")
     var uid: Long? = null
 
-    @SerializedName("id")
-    @ColumnInfo(name = "tk_id")
-    var id = 0
-
     @ColumnInfo(name = "tk_token_id")
-    override var tokenId = 0L
+    var tokenId = 0L
 
     @ColumnInfo(name = "tk_route_id")
-    override var routeId: String? = null
+    var routeId: String? = null
+
+    @SerializedName("id")
+    @ColumnInfo(name = "tk_id")
+    var id: Int? = null
 
     @SerializedName("cs_id")
     @ColumnInfo(name = "tk_kp_id")
@@ -47,12 +49,12 @@ class Task : Serializable, BaseTask {
 
     @SerializedName("task_type")
     @ColumnInfo(name = "tk_type_id")
-    override var typeId = 0
+    var typeId = 0
 
     @NonNull
     @SerializedName("address")
     @ColumnInfo(name = "tk_address")
-    override lateinit var address: String
+    lateinit var address: String
 
     @SerializedName("latitude")
     @ColumnInfo(name = "tk_lat")
@@ -95,25 +97,30 @@ class Task : Serializable, BaseTask {
     @Pattern(Pattern.TIME_ZONE)
     @SerializedName("time_limit_from")
     @ColumnInfo(name = "tk_time_from")
-    override var timeLimitFrom: OffsetTime = OffsetTime.now()
+    var timeLimitFrom: OffsetTime = OffsetTime.now()
         get() = field.withOffsetSameInstant(defaultZone)
 
     @NonNull
     @Pattern(Pattern.TIME_ZONE)
     @SerializedName("time_limit_to")
     @ColumnInfo(name = "tk_time_to")
-    override var timeLimitTo: OffsetTime = OffsetTime.now()
+    var timeLimitTo: OffsetTime = OffsetTime.now()
         get() = field.withOffsetSameInstant(defaultZone)
 
     @SerializedName("status")
     @ColumnInfo(name = "tk_status")
-    override var status = PlatformStatus.NO_TASK.id
+    var status = PlatformStatus.NO_TASK.id
 
     @SerializedName("too_late")
     @ColumnInfo(name = "tk_late")
     var tooLate = false
 
+    @ColumnInfo(name = "tk_is_draft")
+    var draft = false
+
     @NonNull
-    @ColumnInfo(name = "tk_day")
+    @ColumnInfo(name = "tk_when_day")
     lateinit var whenDay: LocalDate
+
+    fun toPlatformStatus() = PlatformStatus.fromId(status)
 }
