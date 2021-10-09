@@ -69,12 +69,12 @@ class PhotoEvent() : Serializable, SendEvent {
     @ColumnInfo(name = "pe_sent")
     override var sent = false
 
-    constructor(task: Task) : this() {
+    constructor(task: Task, typeId: Int) : this() {
         tokenId = task.tokenId
         routeId = task.routeId
         taskUid = task.uid ?: 0L
         taskId = task.id
-        typeId = task.typeId
+        this.typeId = typeId
         // required for initialization only
         path = ""
     }

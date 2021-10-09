@@ -1,5 +1,6 @@
 package ru.iqsolution.tkoonline.screens.problem
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -12,39 +13,38 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.matchParent
 import org.kodein.di.instance
 import ru.iqsolution.tkoonline.*
-import ru.iqsolution.tkoonline.extensions.patternTime
 import ru.iqsolution.tkoonline.extensions.setTextBoldSpan
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.local.entities.PhotoEvent
 import ru.iqsolution.tkoonline.local.entities.PhotoType
-import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.local.entities.Task
 import ru.iqsolution.tkoonline.screens.base.user.UserActivity
 import ru.iqsolution.tkoonline.screens.photo.PhotoActivity
 
 /**
- * Returns [android.app.Activity.RESULT_OK] if photo event was saved
+ * Returns [RESULT_OK] if photo event was saved
  */
 class ProblemActivity : UserActivity<ProblemContract.Presenter>(), ProblemContract.View {
 
     override val presenter: ProblemPresenter by instance()
 
-    private lateinit var platform: PlatformContainers
+    private lateinit var task: Task
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        task = intent.getSerializableExtra(EXTRA_TASK) as Task
         setContentView(R.layout.activity_problem)
-        platform = intent.getSerializableExtra(EXTRA_PLATFORM) as PlatformContainers
         toolbar_back.setOnClickListener {
             onBackPressed()
         }
-        toolbar_title.text = platform.address
-        platform_id.setTextBoldSpan(getString(R.string.platform_id, platform.kpId), 0, 3)
+        toolbar_title.text = task.address
+        platform_id.setTextBoldSpan(getString(R.string.platform_id, task.kpId), 0, 3)
         platform_range.setTextBoldSpan(
             getString(
                 R.string.platform_range,
-                platform.timeLimitFrom.format(patternTime),
-                platform.timeLimitTo.format(patternTime)
+                task.timeLimitFrom.format(patternTime),
+                task.timeLimitTo.format(patternTime)
             ), 2, 7, 11, 16
         )
         val photoTypes = intent.getSerializableExtra(EXTRA_PHOTO_TYPES) as ArrayList<PhotoType>
@@ -67,8 +67,7 @@ class ProblemActivity : UserActivity<ProblemContract.Presenter>(), ProblemContra
                 startActivityNoop<PhotoActivity>(
                     REQUEST_PHOTO,
                     EXTRA_PHOTO_TITLE to photoType.description,
-                    EXTRA_PHOTO_EVENT to PhotoEvent(platform.kpId, photoType.id),
-                    EXTRA_PHOTO_IDS to platform.linkedIds.toList()
+                    EXTRA_PHOTO_EVENT to PhotoEvent(task, photoType.id)
                 )
             }
         })
