@@ -6,7 +6,7 @@ import android.app.Fragment
 import android.os.Bundle
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
-import ru.iqsolution.tkoonline.extensions.activityCallback
+import ru.iqsolution.tkoonline.extensions.doActivityCallback
 
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseFragment : Fragment(), DIAware {
@@ -18,6 +18,6 @@ abstract class BaseFragment : Fragment(), DIAware {
         get() = arguments ?: Bundle()
 
     inline fun <reified T> activityCallback(action: T.() -> Unit) {
-        context?.activityCallback(action)
+        context?.doActivityCallback(action)
     }
 }

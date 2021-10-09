@@ -1,10 +1,8 @@
 package ru.iqsolution.tkoonline.screens.base.user
 
 import android.content.Context
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import ru.iqsolution.tkoonline.local.entities.LocationEvent
+import ru.iqsolution.tkoonline.patternDate
 import ru.iqsolution.tkoonline.screens.base.BasePresenter
 
 abstract class UserPresenter<V : IUserView>(context: Context) : BasePresenter<V>(context),
@@ -12,25 +10,18 @@ abstract class UserPresenter<V : IUserView>(context: Context) : BasePresenter<V>
 
     override fun calculateSend() {
         launch {
-            var photoCount: Int
-            val allCount = withContext(Dispatchers.IO) {
-                photoCount = db.photoDao().getSendCount()
-                photoCount + db.cleanDao().getSendCount() + db.locationDao().getSendCount()
-            }
+            val photoCount = db.photoEventDao().getSendCount()
+            val allCount = photoCount + db.taskEventDao().getSendCount() + db.locEventDao().getSendCount()
             reference.get()?.onCloudUpdate(allCount, photoCount)
         }
     }
 
-    override fun loadRoute() {
-        val day = preferences.serverDay
+    override fun loadDebugRoute() {
         val carId = preferences.carId
+        val day = preferences.serverDay
         launch {
-            val locationEvents = mutableListOf<LocationEvent>()
-            withContext(Dispatchers.IO) {
-                locationEvents.addAll(
-                    db.locationDao().getDayCarEvents(day, carId).map { it.location })
-            }
-            reference.get()?.onRoute(locationEvents)
+            val events = db.locEventDao().getDayEvents(carId, day.format(patternDate)).map { it.location }
+            reference.get()?.onDebugRoute(events)
         }
     }
 }

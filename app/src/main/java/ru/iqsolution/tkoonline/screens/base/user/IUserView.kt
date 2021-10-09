@@ -6,9 +6,9 @@ import ru.iqsolution.tkoonline.telemetry.LocationListener
 
 interface IUserView : IBaseView, LocationListener {
 
-    fun updateRoute()
+    fun updateDebugRoute()
 
-    fun onRoute(locationEvents: List<LocationEvent>) {
+    fun onDebugRoute(events: List<LocationEvent>) {
     }
 
     fun updateCloud()

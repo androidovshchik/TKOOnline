@@ -2,7 +2,7 @@ package ru.iqsolution.tkoonline.models
 
 import android.location.Location
 import android.util.SparseIntArray
-import ru.iqsolution.tkoonline.extensions.isEarlier
+import ru.iqsolution.tkoonline.isEarlier
 import timber.log.Timber
 import java.time.Duration
 import kotlin.math.abs
@@ -96,7 +96,7 @@ class BasePoint(
             baseDirection = null
             currentDirection = null
         }
-        val seconds = abs(Duration.between(locationTime, location.locationTime).toSeconds())
+        val seconds = abs(Duration.between(locationTime, location.locationTime).seconds)
         val millis = abs(Duration.between(lastLocation.locationTime, location.locationTime).toMillis())
         if (seconds > 0) {
             speedMap.put(

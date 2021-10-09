@@ -47,9 +47,9 @@ abstract class UserActivity<P : IUserPresenter<*>> : BaseActivity<P>(), IUserVie
     }
 
     @Suppress("ConstantConditionIf")
-    override fun updateRoute() {
+    override fun updateDebugRoute() {
         if (!BuildConfig.PROD) {
-            presenter.loadRoute()
+            presenter.loadDebugRoute()
         }
     }
 

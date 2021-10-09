@@ -6,5 +6,5 @@ interface IUserPresenter<V : IUserView> : IBasePresenter<V> {
 
     fun calculateSend()
 
-    fun loadRoute()
+    fun loadDebugRoute()
 }

@@ -12,7 +12,7 @@ import android.view.WindowManager
 import org.jetbrains.anko.inputMethodManager
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
-import ru.iqsolution.tkoonline.extensions.activityCallback
+import ru.iqsolution.tkoonline.extensions.doActivityCallback
 
 abstract class BaseDialogFragment : DialogFragment(), DIAware {
 
@@ -33,6 +33,6 @@ abstract class BaseDialogFragment : DialogFragment(), DIAware {
     }
 
     inline fun <reified T> activityCallback(action: T.() -> Unit) {
-        context?.activityCallback(action)
+        context?.doActivityCallback(action)
     }
 }

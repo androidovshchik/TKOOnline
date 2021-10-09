@@ -9,8 +9,8 @@ import org.jetbrains.anko.activityManager
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
 import ru.iqsolution.tkoonline.R
-import ru.iqsolution.tkoonline.extensions.activity
-import ru.iqsolution.tkoonline.extensions.activityCallback
+import ru.iqsolution.tkoonline.extensions.doActivityCallback
+import ru.iqsolution.tkoonline.extensions.getActivity
 import ru.iqsolution.tkoonline.extensions.startActivityNoop
 import ru.iqsolution.tkoonline.screens.LockActivity
 
@@ -40,7 +40,7 @@ class AppAlertDialog(context: Context) : AlertDialog(context, R.style.AppAlertDi
     override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean = context.run {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (activityManager.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_NONE) {
-                activity()?.startActivityNoop<LockActivity>()
+                getActivity()?.startActivityNoop<LockActivity>()
             }
             return true
         }
@@ -48,7 +48,7 @@ class AppAlertDialog(context: Context) : AlertDialog(context, R.style.AppAlertDi
     }
 
     inline fun <reified T> activityCallback(action: T.() -> Unit) {
-        context.activityCallback(action)
+        context.doActivityCallback(action)
     }
 }
 
