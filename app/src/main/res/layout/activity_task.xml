@@ -38,75 +38,47 @@
                 android:layout_height="1dp"
                 android:background="@color/colorDivider" />
 
-            <TextView
-                android:id="@+id/tv_plan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
-                android:paddingStart="12dp"
-                android:paddingTop="6dp"
-                android:text="Контейнеры план:"
-                android:textColor="@color/colorTextGrayLight"
-                android:textSize="14sp" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_containers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="2"
+                tools:itemCount="1"
                 tools:listitem="@layout/item_container" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="20dp"
                 android:background="@color/colorDivider" />
 
-            <TextView
-                android:id="@+id/tv_fact"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
-                android:paddingStart="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="12dp"
-                android:text="Контейнеры факт:"
-                android:textColor="@color/colorTextGrayLight"
-                android:textSize="14sp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_tags"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="2"
-                tools:listitem="@layout/item_tag" />
-
-            <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
+            <ru.iqsolution.tkoonline.screens.task.GalleryLayout
                 android:id="@+id/gallery_before"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="43dp"
+                android:layout_marginTop="9dp"
                 app:photoType="0" />
 
-            <ru.iqsolution.tkoonline.screens.platform.GalleryLayout
+            <ru.iqsolution.tkoonline.screens.task.GalleryLayout
                 android:id="@+id/gallery_after"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="9dp"
                 app:photoType="1" />
 
+            <ru.iqsolution.tkoonline.screens.task.GalleryLayout
+                android:id="@+id/gallery_problem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="9dp" />
+
             <Button
                 android:id="@+id/platform_report"
                 android:layout_width="match_parent"
                 android:layout_height="53dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="39dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginBottom="32dp"
                 android:background="@drawable/button_gray"
                 android:fontFamily="@font/roboto_medium"
                 android:foreground="?android:attr/selectableItemBackground"
@@ -134,7 +106,7 @@
                     android:lineSpacingExtra="3dp"
                     android:paddingStart="24dp"
                     android:paddingEnd="24dp"
-                    android:text="КП не убрана"
+                    android:text="Не завершено"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="16sp" />
@@ -156,7 +128,7 @@
                     android:lineSpacingExtra="3dp"
                     android:paddingStart="24dp"
                     android:paddingEnd="24dp"
-                    android:text="КП убрана"
+                    android:text="Завершено"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="16sp" />
