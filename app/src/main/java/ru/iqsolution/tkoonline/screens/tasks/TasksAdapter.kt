@@ -10,14 +10,14 @@ import kotlinx.android.synthetic.main.item_platform.view.*
 import org.jetbrains.anko.dip
 import ru.iqsolution.tkoonline.R
 import ru.iqsolution.tkoonline.extensions.inflate
-import ru.iqsolution.tkoonline.models.PlatformContainers
+import ru.iqsolution.tkoonline.local.entities.Task
 import ru.iqsolution.tkoonline.patternTime
 import ru.iqsolution.tkoonline.screens.base.BaseAdapter
 import ru.iqsolution.tkoonline.screens.base.BaseViewHolder
 
-class TasksAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
+class TasksAdapter(context: Context) : BaseAdapter<Task>() {
 
-    val primaryItems = mutableListOf<PlatformContainers>()
+    val primaryItems = mutableListOf<Task>()
 
     private val minSize = context.dip(17)
 
@@ -27,7 +27,7 @@ class TasksAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
         return ViewHolder(parent.inflate(R.layout.item_platform))
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<PlatformContainers>, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewHolder<Task>, position: Int) {
         val item = when {
             position < primaryItems.size -> primaryItems[position]
             else -> items[position - primaryItems.size]
@@ -37,7 +37,7 @@ class TasksAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
 
     override fun getItemCount() = primaryItems.size + items.size
 
-    inner class ViewHolder(itemView: View) : BaseViewHolder<PlatformContainers>(itemView) {
+    inner class ViewHolder(itemView: View) : BaseViewHolder<Task>(itemView) {
 
         private val address: TextView = itemView.container_address
 
@@ -60,13 +60,9 @@ class TasksAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
         }
 
         @SuppressLint("SetTextI18n")
-        override fun onBindItem(position: Int, item: PlatformContainers) {
+        override fun onBindItem(position: Int, item: Task) {
             val size = if (item.meters < 80) maxSize else minSize
-            itemView.setBackgroundColor(
-                if (item.highlighted) {
-                    Color.parseColor("#804D4A5B")
-                } else Color.WHITE
-            )
+            itemView.setBackgroundColor(if (item.highlighted) HIGHLIGHT else Color.WHITE)
             address.text = item.address
             range.text = appContext.getString(
                 R.string.platform_range_n,
@@ -81,5 +77,10 @@ class TasksAdapter(context: Context) : BaseAdapter<PlatformContainers>() {
                 setBackgroundResource(item.toPlatformStatus().drawable)
             }
         }
+    }
+
+    companion object {
+
+        private const val HIGHLIGHT = 0x804D4A5B.toInt()
     }
 }
